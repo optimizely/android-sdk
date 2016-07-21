@@ -1,1 +1,1 @@
-include ':event-dispatcher'
+include ':event-handler'
