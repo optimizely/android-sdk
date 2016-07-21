@@ -22,6 +22,6 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     provided 'com.optimizely.ab:core-api:0.1.64'
-    compile 'org.slf4j:slf4j-api:1.7.21'
-    compile 'org.slf4j:slf4j-android:1.7.21'
+    provided 'org.slf4j:slf4j-api:1.7.21'
+    provided 'org.slf4j:slf4j-android:1.7.21'
 }
