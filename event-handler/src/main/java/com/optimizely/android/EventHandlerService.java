@@ -4,10 +4,7 @@ import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import org.slf4j.Logger;
@@ -27,7 +24,7 @@ public class EventHandlerService extends IntentService {
 
     public EventHandlerService() {
         super("EventHandlerService");
-        eventClient = new EventClient();
+        eventClient = new EventClient(LoggerFactory.getLogger(EventClient.class));
     }
 
     @Override
@@ -64,7 +61,7 @@ public class EventHandlerService extends IntentService {
         List<Pair<Long, URL>> events = eventDAO.getEvents();
         while (events.iterator().hasNext()) {
             Pair<Long, URL> event = events.iterator().next();
-            boolean eventWasSent = eventClient.sendEvent(event.second);
+            boolean eventWasSent = eventClient.sendEvent(new URLProxy(event.second));
             if (eventWasSent) {
                 boolean eventWasDeleted = eventDAO.removeEvent(event.first);
                 if (eventWasDeleted) {
@@ -84,7 +81,7 @@ public class EventHandlerService extends IntentService {
      * @return true if event was flushed, otherwise false
      */
     boolean flushEvent(EventDAO eventDAO, URL url) {
-        boolean eventWasSent = eventClient.sendEvent(url);
+        boolean eventWasSent = eventClient.sendEvent(new URLProxy(url));
 
         if (eventWasSent) {
             return true;

@@ -1,23 +1,26 @@
 package com.optimizely.android;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * Created by jdeffibaugh on 7/21/16 for Optimizely.
  *
  * Makes network requests related to events
  */
-public class EventClient {
-    private final Logger logger = LoggerFactory.getLogger(EventHandlerService.class);
+class EventClient {
+    // Package private and non final so it can easily be mocked for tests
+    private Logger logger;
 
-    boolean sendEvent(URL url) {
+    EventClient(Logger logger) {
+        this.logger = logger;
+    }
+
+    boolean sendEvent(URLProxy url) {
         try {
             logger.info("Dispatching event: {}", url);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -35,4 +38,5 @@ public class EventClient {
             return false;
         }
     }
+
 }
