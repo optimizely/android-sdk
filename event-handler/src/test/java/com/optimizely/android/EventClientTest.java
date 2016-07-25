@@ -3,6 +3,9 @@ package com.optimizely.android;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -20,20 +23,19 @@ import static org.mockito.Mockito.when;
  *
  * Tests {@link EventClient}
  */
+@RunWith(MockitoJUnitRunner.class)
 public class EventClientTest {
 
+    @Mock Logger logger;
+    @Mock URLProxy url;
+    @Mock HttpURLConnection urlConnection;
+
     EventClient eventClient;
-    Logger logger;
-    HttpURLConnection urlConnection;
-    URLProxy url;
 
     @Before
     public void setupEventClient() throws IOException {
-        logger = mock(Logger.class);
         this.eventClient = new EventClient(logger);
-        url = mock(URLProxy.class);
         when(url.toString()).thenReturn("http://www.foo.com");
-        urlConnection = mock(HttpURLConnection.class);
     }
 
     @Test
