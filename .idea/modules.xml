@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/event-handler/event-dispatcher.iml" filepath="$PROJECT_DIR$/event-handler/event-dispatcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/event-handler/event-handler.iml" filepath="$PROJECT_DIR$/event-handler/event-handler.iml" />
       <module fileurl="file://$PROJECT_DIR$/optimizely-ab-android-sdk.iml" filepath="$PROJECT_DIR$/optimizely-ab-android-sdk.iml" />
     </modules>
   </component>
