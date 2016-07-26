@@ -24,7 +24,8 @@ public class EventIntentService extends IntentService {
 
         EventClient eventClient = new EventClient(LoggerFactory.getLogger(EventClient.class));
         EventDAO eventDAO = EventDAO.getInstance(this, LoggerFactory.getLogger(EventDAO.class));
-        eventFlusher = new EventFlusher(this, eventDAO, eventClient, LoggerFactory.getLogger(EventFlusher.class));
+        EventScheduler eventScheduler = new EventScheduler(this);
+        eventFlusher = new EventFlusher(eventDAO, eventClient, eventScheduler, LoggerFactory.getLogger(EventFlusher.class));
     }
 
     @Override
@@ -35,7 +36,7 @@ public class EventIntentService extends IntentService {
         }
 
         if (eventFlusher != null) {
-            eventFlusher.process(intent);
+            eventFlusher.flush(intent);
             logger.info("Handled intent");
         } else {
             logger.warn("Unable to create dependencies needed by intent handler");

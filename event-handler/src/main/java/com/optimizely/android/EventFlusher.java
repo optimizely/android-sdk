@@ -1,8 +1,5 @@
 package com.optimizely.android;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Pair;
@@ -11,6 +8,7 @@ import org.slf4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -22,36 +20,35 @@ import java.util.List;
  */
 public class EventFlusher {
 
-    @NonNull private final Context context;
-    @NonNull private EventDAO eventDAO;
+    @NonNull private final EventScheduler eventScheduler;
+    @NonNull private final EventDAO eventDAO;
     @NonNull private final EventClient eventClient;
     @NonNull private final Logger logger;
 
-
-    public EventFlusher(@NonNull Context context, @NonNull EventDAO eventDAO, @NonNull EventClient eventClient, @NonNull Logger logger) {
-        this.context = context;
+    public EventFlusher(@NonNull EventDAO eventDAO, @NonNull EventClient eventClient, @NonNull EventScheduler eventScheduler, @NonNull Logger logger) {
         this.eventDAO = eventDAO;
         this.eventClient = eventClient;
+        this.eventScheduler = eventScheduler;
         this.logger = logger;
     }
 
-    public void process(@NonNull Intent intent) {
+    public void flush(@NonNull Intent intent) {
         // Flush events still in storage
-        boolean eventsWereStored = flushEvents();
+        boolean flushed = flushEvents();
 
         if (intent.hasExtra(EventIntentService.EXTRA_URL)) {
             try {
                 String urlExtra = intent.getStringExtra(EventIntentService.EXTRA_URL);
                 Event event = new Event(new URL(urlExtra));
                 // Send the event that triggered this run of the service for store it if sending fails
-                eventsWereStored = flushEvent(event);
+                flushed = flushEvent(event);
             } catch (MalformedURLException e) {
                 logger.error("Received a malformed URL in event handler service", e);
             }
         }
 
-        if (eventsWereStored) {
-            schedule();
+        if (!flushed) {
+            eventScheduler.schedule();
             logger.info("Scheduled events to be flushed");
         }
     }
@@ -63,13 +60,15 @@ public class EventFlusher {
      */
     private boolean flushEvents() {
         List<Pair<Long, Event>> events = eventDAO.getEvents();
-        while (events.iterator().hasNext()) {
-            Pair<Long, Event> event = events.iterator().next();
+        Iterator<Pair<Long,Event>> iterator = events.iterator();
+        while (iterator.hasNext()) {
+            Pair<Long, Event> event = iterator.next();
             boolean eventWasSent = eventClient.sendEvent(event.second);
             if (eventWasSent) {
+                iterator.remove();
                 boolean eventWasDeleted = eventDAO.removeEvent(event.first);
-                if (eventWasDeleted) {
-                    events.iterator().remove();
+                if (!eventWasDeleted) {
+                    logger.warn("Unable to delete an event from local storage that was sent to successfully");
                 }
             }
         }
@@ -100,10 +99,5 @@ public class EventFlusher {
         }
     }
 
-    private void schedule() {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getService(context, 1, new Intent(context, EventIntentService.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        // Use inexact repeating so that the load on the server is more distributed
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, AlarmManager.INTERVAL_HOUR, AlarmManager.INTERVAL_HOUR, pendingIntent);
-    }
+
 }

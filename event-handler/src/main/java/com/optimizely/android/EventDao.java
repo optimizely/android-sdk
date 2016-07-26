@@ -10,6 +10,7 @@ import android.util.Pair;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class EventDAO {
         return new EventDAO(sqLiteDatabase, logger);
     }
 
-    boolean storeEvent(@NonNull Event event) {
+    public boolean storeEvent(@NonNull Event event) {
         ContentValues values = new ContentValues();
         values.put(EventTable.Column.URL, event.toString());
 
@@ -50,8 +51,8 @@ public class EventDAO {
         return newRowId != -1;
     }
 
-    List<Pair<Long, Event>> getEvents() {
-        List<Pair<Long, Event>> events = new ArrayList<>();
+    public List<Pair<Long, Event>> getEvents() {
+        List<Pair<Long, Event>> events = new LinkedList<>();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -93,7 +94,7 @@ public class EventDAO {
         return events;
     }
 
-    boolean removeEvent(long eventId) {
+    public boolean removeEvent(long eventId) {
         // Define 'where' part of query.
         String selection = EventTable._ID + " = ?";
         // Specify arguments in placeholder order.

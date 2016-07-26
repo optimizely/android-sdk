@@ -48,7 +48,7 @@ public class EventIntentServiceTest {
         EventFlusher eventFlusher = mock(EventFlusher.class);
         service.eventFlusher = eventFlusher;
         service.onHandleIntent(intent);
-        verify(eventFlusher).process(intent);
+        verify(eventFlusher).flush(intent);
         verify(logger).info("Handled intent");
     }
 }

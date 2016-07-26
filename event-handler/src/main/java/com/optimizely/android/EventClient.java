@@ -20,7 +20,7 @@ public class EventClient {
         this.logger = logger;
     }
 
-    boolean sendEvent(Event event) {
+    public boolean sendEvent(Event event) {
         try {
             logger.info("Dispatching event: {}", event);
             HttpURLConnection urlConnection = (HttpURLConnection) event.send();
