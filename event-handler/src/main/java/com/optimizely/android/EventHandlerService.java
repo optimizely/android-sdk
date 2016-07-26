@@ -18,7 +18,7 @@ import java.util.List;
 public class EventHandlerService extends IntentService {
     private final Logger logger = LoggerFactory.getLogger(EventHandlerService.class);
 
-    static final String EXTRA_URL = "com.optimizely.android.EXTRA_URL";
+    static final String EXTRA_STRING_URL = "com.optimizely.android.EXTRA_STRING_URL";
 
     @NonNull EventClient eventClient;
 
@@ -35,14 +35,14 @@ public class EventHandlerService extends IntentService {
         // Flush events still in storage
         boolean eventsWereStored = flushEvents(eventDAO);
 
-        if (intent.hasExtra(EXTRA_URL)) {
+        if (intent.hasExtra(EXTRA_STRING_URL)) {
             try {
-                String urlExtra = intent.getStringExtra(EXTRA_URL);
-                URLProxy url = new URLProxy(new URL(urlExtra));
+                String eventExtra = intent.getStringExtra(EXTRA_STRING_URL);
+                Event event = new Event(new URL(eventExtra));
                 // Send the event that triggered this run of the service for store it if sending fails
-                eventsWereStored = flushEvent(eventDAO, url);
+                eventsWereStored = flushEvent(eventDAO, event);
             } catch (MalformedURLException e) {
-                logger.error("Received a malformed URL in event handler service", e);
+                logger.error("Received a malformed event in event handler service", e);
             }
         }
 
@@ -58,9 +58,9 @@ public class EventHandlerService extends IntentService {
      * @return true if all events were flushed, otherwise false
      */
     boolean flushEvents(EventDAO eventDAO) {
-        List<Pair<Long, URLProxy>> events = eventDAO.getEvents();
+        List<Pair<Long, Event>> events = eventDAO.getEvents();
         while (events.iterator().hasNext()) {
-            Pair<Long, URLProxy> event = events.iterator().next();
+            Pair<Long, Event> event = events.iterator().next();
             boolean eventWasSent = eventClient.sendEvent(event.second);
             if (eventWasSent) {
                 boolean eventWasDeleted = eventDAO.removeEvent(event.first);
@@ -77,18 +77,18 @@ public class EventHandlerService extends IntentService {
      * Flush a single event
      *
      * @param eventDAO used to access the DB
-     * @param url      the URL of the request for sending the event
+     * @param event      the event to send
      * @return true if event was flushed, otherwise false
      */
-    boolean flushEvent(EventDAO eventDAO, URLProxy url) {
-        boolean eventWasSent = eventClient.sendEvent(url);
+    boolean flushEvent(EventDAO eventDAO, Event event) {
+        boolean eventWasSent = eventClient.sendEvent(event);
 
         if (eventWasSent) {
             return true;
         } else {
-            boolean eventWasStored = eventDAO.storeEvent(url);
+            boolean eventWasStored = eventDAO.storeEvent(event);
             if (!eventWasStored) {
-                logger.error("Unable to send or store event {}", url);
+                logger.error("Unable to send or store event {}", event);
                 // Return true since nothing was stored
                 return true;
             } else {

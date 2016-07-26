@@ -46,32 +46,32 @@ public class EventDAOTest {
 
     @Test
     public void storeEvent() {
-        URLProxy urlProxy = mock(URLProxy.class);
-        when(urlProxy.toString()).thenReturn("http://www.foo.com?bar=baz");
-        assertTrue(eventDAO.storeEvent(urlProxy));
-        verify(logger).info("Inserted {} into db", urlProxy);
+        Event event = mock(Event.class);
+        when(event.toString()).thenReturn("http://www.foo.com?bar=baz");
+        assertTrue(eventDAO.storeEvent(event));
+        verify(logger).info("Inserted {} into db", event);
     }
 
     @Test
     public void getEvents() {
-        URLProxy url1 = mock(URLProxy.class);
-        URLProxy url2 = mock(URLProxy.class);
-        URLProxy url3 = mock(URLProxy.class);
+        Event event1 = mock(Event.class);
+        Event event2 = mock(Event.class);
+        Event event3 = mock(Event.class);
 
-        when(url1.toString()).thenReturn("http://www.foo1.com?bar1=baz1");
-        when(url2.toString()).thenReturn("http://www.foo2.com?bar2=baz2");
-        when(url3.toString()).thenReturn("http://www.foo3.com?bar3=baz3");
+        when(event1.toString()).thenReturn("http://www.foo1.com?bar1=baz1");
+        when(event2.toString()).thenReturn("http://www.foo2.com?bar2=baz2");
+        when(event3.toString()).thenReturn("http://www.foo3.com?bar3=baz3");
 
-        assertTrue(eventDAO.storeEvent(url1));
-        assertTrue(eventDAO.storeEvent(url2));
-        assertTrue(eventDAO.storeEvent(url3));
+        assertTrue(eventDAO.storeEvent(event1));
+        assertTrue(eventDAO.storeEvent(event2));
+        assertTrue(eventDAO.storeEvent(event3));
 
-        List<Pair<Long,URLProxy>> events = eventDAO.getEvents();
+        List<Pair<Long,Event>> events = eventDAO.getEvents();
         assertTrue(events.size() == 3);
 
-        Pair<Long,URLProxy> pair1 = events.get(0);
-        Pair<Long,URLProxy> pair2 = events.get(1);
-        Pair<Long,URLProxy> pair3 = events.get(2);
+        Pair<Long,Event> pair1 = events.get(0);
+        Pair<Long,Event> pair2 = events.get(1);
+        Pair<Long,Event> pair3 = events.get(2);
 
         assertEquals(1, pair1.first.longValue());
         assertEquals(2, pair2.first.longValue());
@@ -86,18 +86,18 @@ public class EventDAOTest {
 
     @Test
     public void removeEventSuccess() {
-        URLProxy urlProxy = mock(URLProxy.class);
-        when(urlProxy.toString()).thenReturn("http://www.foo.com?bar=baz");
-        assertTrue(eventDAO.storeEvent(urlProxy));
+        Event event = mock(Event.class);
+        when(event.toString()).thenReturn("http://www.foo.com?bar=baz");
+        assertTrue(eventDAO.storeEvent(event));
         assertTrue(eventDAO.removeEvent(1));
         verify(logger).info("Removed event with id {} from db", 1L);
     }
 
     @Test
     public void removeEventInvalid() {
-        URLProxy urlProxy = mock(URLProxy.class);
-        when(urlProxy.toString()).thenReturn("http://www.foo.com?bar=baz");
-        assertTrue(eventDAO.storeEvent(urlProxy));
+        Event event = mock(Event.class);
+        when(event.toString()).thenReturn("http://www.foo.com?bar=baz");
+        assertTrue(eventDAO.storeEvent(event));
         assertFalse(eventDAO.removeEvent(2));
         verify(logger).error("Tried to remove an event id {} that does not exist", 2L);
     }

@@ -20,10 +20,10 @@ class EventClient {
         this.logger = logger;
     }
 
-    boolean sendEvent(URLProxy url) {
+    boolean sendEvent(Event event) {
         try {
-            logger.info("Dispatching event: {}", url);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            logger.info("Dispatching event: {}", event);
+            HttpURLConnection urlConnection = (HttpURLConnection) event.send();
             int status = urlConnection.getResponseCode();
             if (status >= 200 && status < 300) {
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
@@ -34,7 +34,7 @@ class EventClient {
                 return false;
             }
         } catch (IOException e) {
-            logger.error("Unable to send event: {}", url, e);
+            logger.error("Unable to send event: {}", event, e);
             return false;
         }
     }

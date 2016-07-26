@@ -31,7 +31,7 @@ public class OptlyEventHandlerTest {
     @Mock Logger logger;
 
     OptlyEventHandler optlyEventHandler;
-    String urlString = "http://www.foo.com";
+    String url = "http://www.foo.com";
     Map<String,String> params;
 
     @Before
@@ -47,23 +47,23 @@ public class OptlyEventHandlerTest {
 
     @Test
     public void dispatchEventSuccess() throws MalformedURLException {
-        optlyEventHandler.dispatchEvent(urlString, params);
+        optlyEventHandler.dispatchEvent(url, params);
         verify(context).startService(any(Intent.class));
-        verify(logger).info("Sent URL {} to the event handler service", new URL("http://www.foo.com?key1=val1&key2=val2&key3=val3"));
+        verify(logger).info("Sent url {} to the event handler service", new Event(new URL("http://www.foo.com?key1=val1&key2=val2&key3=val3")));
     }
 
     @Test public void dispatchEventNullURL() {
        optlyEventHandler.dispatchEvent(null, params);
-       verify(logger).error("Event dispatcher received a null urlString");
+       verify(logger).error("Event dispatcher received a null url");
     }
 
     @Test public void dispatchEventNullParams() {
-        optlyEventHandler.dispatchEvent(urlString, null);
+        optlyEventHandler.dispatchEvent(url, null);
         verify(logger).error("Event dispatcher received a null params map");
     }
 
     @Test public void dispatchEventMalformedURL() {
         optlyEventHandler.dispatchEvent("malformedUrl", params);
-        verify(logger).error(contains("Received a malformed URL from optly core"), any(MalformedURLException.class));
+        verify(logger).error(contains("Received a malformed url from optly core"), any(MalformedURLException.class));
     }
 }

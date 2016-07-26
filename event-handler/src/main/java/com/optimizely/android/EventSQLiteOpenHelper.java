@@ -5,7 +5,6 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.optimizely.android.EventContract.Event;
 
 import org.slf4j.Logger;
 
@@ -20,13 +19,13 @@ public class EventSQLiteOpenHelper extends SQLiteOpenHelper {
     static final String DB_NAME = "optly-events";
 
     static final String SQL_CREATE_EVENT_TABLE =
-            "CREATE TABLE " + Event.TABLE_NAME + " (" +
-                    Event._ID + " INTEGER PRIMARY KEY, " +
-                    Event.COLUMN_NAME_URL + " TEXT NOT NULL" +
+            "CREATE TABLE " + EventTable.NAME + " (" +
+                    EventTable._ID + " INTEGER PRIMARY KEY, " +
+                    EventTable.Column.URL + " TEXT NOT NULL" +
             ")";
 
     private static final String SQL_DELETE_EVENT_TABLE =
-            "DROP TABLE IF EXISTS " + Event.TABLE_NAME;
+            "DROP TABLE IF EXISTS " + EventTable.NAME;
 
     private final Logger logger;
 

@@ -44,10 +44,10 @@ public class EventSQLiteOpenHelperTest {
                 new EventSQLiteOpenHelper(context, EventSQLiteOpenHelper.DB_NAME, null, 1, logger);
         SQLiteDatabase db = eventSQLiteOpenHelper.getWritableDatabase();
         String[] projection = {
-                EventContract.Event._ID,
-                EventContract.Event.COLUMN_NAME_URL,
+                EventTable.Column._ID,
+                EventTable.Column.URL,
         };
-        Cursor cursor = db.query(EventContract.Event.TABLE_NAME, projection, null, null, null, null, null);
+        Cursor cursor = db.query(EventTable.NAME, projection, null, null, null, null, null);
         assertEquals(2, cursor.getColumnCount());
         cursor.close();
 

@@ -31,9 +31,9 @@ public class OptlyEventHandler implements EventHandler {
     }
 
     @Override
-    public void dispatchEvent(String urlString, Map<String, String> params) {
-        if (urlString == null) {
-            logger.error("Event dispatcher received a null urlString");
+    public void dispatchEvent(String url, Map<String, String> params) {
+        if (url == null) {
+            logger.error("Event dispatcher received a null url");
             return;
         }
         if (params == null) {
@@ -42,17 +42,17 @@ public class OptlyEventHandler implements EventHandler {
         }
 
         try {
-            URLProxy url = generateRequest(urlString, params);
+            Event event = generateRequest(url, params);
             Intent intent = new Intent(context, EventHandlerService.class);
-            intent.putExtra(EventHandlerService.EXTRA_URL, url.toString());
+            intent.putExtra(EventHandlerService.EXTRA_STRING_URL, event.toString());
             context.startService(intent);
-            logger.info("Sent URL {} to the event handler service", url);
+            logger.info("Sent url {} to the event handler service", event);
         } catch (MalformedURLException e) {
-            logger.error("Received a malformed URL from optly core", e);
+            logger.error("Received a malformed url from optly core", e);
         }
     }
 
-    private URLProxy generateRequest(@NonNull String url, @NonNull Map<String,String> params) throws MalformedURLException {
+    private Event generateRequest(@NonNull String url, @NonNull Map<String,String> params) throws MalformedURLException {
         url = url + "?";
         StringBuilder urlSb = new StringBuilder(url);
         for (Map.Entry<String, String> param : params.entrySet()) {
@@ -62,6 +62,6 @@ public class OptlyEventHandler implements EventHandler {
             urlSb.append("&");
         }
         urlSb.deleteCharAt(urlSb.length() - 1);
-        return new URLProxy(new URL(urlSb.toString()));
+        return new Event(new URL(urlSb.toString()));
     }
 }
