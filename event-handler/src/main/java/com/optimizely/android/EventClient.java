@@ -12,7 +12,7 @@ import java.net.HttpURLConnection;
  *
  * Makes network requests related to events
  */
-class EventClient {
+public class EventClient {
     // Package private and non final so it can easily be mocked for tests
     private Logger logger;
 

@@ -11,12 +11,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -49,7 +47,7 @@ public class OptlyEventHandlerTest {
     public void dispatchEventSuccess() throws MalformedURLException {
         optlyEventHandler.dispatchEvent(url, params);
         verify(context).startService(any(Intent.class));
-        verify(logger).info("Sent url {} to the event handler service", new Event(new URL("http://www.foo.com?key1=val1&key2=val2&key3=val3")));
+        verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com?key1=val1&key2=val2&key3=val3");
     }
 
     @Test public void dispatchEventNullURL() {
@@ -60,10 +58,5 @@ public class OptlyEventHandlerTest {
     @Test public void dispatchEventNullParams() {
         optlyEventHandler.dispatchEvent(url, null);
         verify(logger).error("Event dispatcher received a null params map");
-    }
-
-    @Test public void dispatchEventMalformedURL() {
-        optlyEventHandler.dispatchEvent("malformedUrl", params);
-        verify(logger).error(contains("Received a malformed url from optly core"), any(MalformedURLException.class));
     }
 }

@@ -1,63 +1,67 @@
 package com.optimizely.android;
 
 import android.app.AlarmManager;
-import android.app.IntentService;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * Created by jdeffibaugh on 7/25/16 for Optimizely.
+ *
+ * Flushes {@link Event} intents sent to {@link EventIntentService}
+ *
+ * This abstraction makes unit testing much simpler
+ */
+public class EventFlusher {
 
-public class EventHandlerService extends IntentService {
-    private final Logger logger = LoggerFactory.getLogger(EventHandlerService.class);
+    @NonNull private final Context context;
+    @NonNull private EventDAO eventDAO;
+    @NonNull private final EventClient eventClient;
+    @NonNull private final Logger logger;
 
-    static final String EXTRA_STRING_URL = "com.optimizely.android.EXTRA_STRING_URL";
 
-    @NonNull EventClient eventClient;
-
-    public EventHandlerService() {
-        super("EventHandlerService");
-        eventClient = new EventClient(LoggerFactory.getLogger(EventClient.class));
+    public EventFlusher(@NonNull Context context, @NonNull EventDAO eventDAO, @NonNull EventClient eventClient, @NonNull Logger logger) {
+        this.context = context;
+        this.eventDAO = eventDAO;
+        this.eventClient = eventClient;
+        this.logger = logger;
     }
 
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        if (intent == null) return;
-
-        EventDAO eventDAO = EventDAO.getInstance(this, LoggerFactory.getLogger(EventDAO.class));
+    public void process(@NonNull Intent intent) {
         // Flush events still in storage
-        boolean eventsWereStored = flushEvents(eventDAO);
+        boolean eventsWereStored = flushEvents();
 
-        if (intent.hasExtra(EXTRA_STRING_URL)) {
+        if (intent.hasExtra(EventIntentService.EXTRA_URL)) {
             try {
-                String eventExtra = intent.getStringExtra(EXTRA_STRING_URL);
-                Event event = new Event(new URL(eventExtra));
+                String urlExtra = intent.getStringExtra(EventIntentService.EXTRA_URL);
+                Event event = new Event(new URL(urlExtra));
                 // Send the event that triggered this run of the service for store it if sending fails
-                eventsWereStored = flushEvent(eventDAO, event);
+                eventsWereStored = flushEvent(event);
             } catch (MalformedURLException e) {
-                logger.error("Received a malformed event in event handler service", e);
+                logger.error("Received a malformed URL in event handler service", e);
             }
         }
 
         if (eventsWereStored) {
             schedule();
+            logger.info("Scheduled events to be flushed");
         }
     }
 
     /**
      * Flush all events in storage
      *
-     * @param eventDAO used to access the DB
      * @return true if all events were flushed, otherwise false
      */
-    boolean flushEvents(EventDAO eventDAO) {
+    private boolean flushEvents() {
         List<Pair<Long, Event>> events = eventDAO.getEvents();
         while (events.iterator().hasNext()) {
             Pair<Long, Event> event = events.iterator().next();
@@ -76,11 +80,10 @@ public class EventHandlerService extends IntentService {
     /**
      * Flush a single event
      *
-     * @param eventDAO used to access the DB
-     * @param event      the event to send
+     * @param event an {@link Event} instance to flush
      * @return true if event was flushed, otherwise false
      */
-    boolean flushEvent(EventDAO eventDAO, Event event) {
+    private boolean flushEvent(Event event) {
         boolean eventWasSent = eventClient.sendEvent(event);
 
         if (eventWasSent) {
@@ -97,9 +100,9 @@ public class EventHandlerService extends IntentService {
         }
     }
 
-    void schedule() {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 1, new Intent(this, EventHandlerService.class), PendingIntent.FLAG_UPDATE_CURRENT);
+    private void schedule() {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getService(context, 1, new Intent(context, EventIntentService.class), PendingIntent.FLAG_UPDATE_CURRENT);
         // Use inexact repeating so that the load on the server is more distributed
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, AlarmManager.INTERVAL_HOUR, AlarmManager.INTERVAL_HOUR, pendingIntent);
     }

@@ -6,7 +6,7 @@
 
     <application>
         <service
-            android:name=".EventHandlerService"
+            android:name=".EventIntentService"
             android:exported="false">
         </service>
     </application>

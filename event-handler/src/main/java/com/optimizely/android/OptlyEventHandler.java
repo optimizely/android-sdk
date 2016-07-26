@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 
 /**
@@ -42,9 +41,9 @@ public class OptlyEventHandler implements EventHandler {
         }
 
         try {
-            Event event = generateRequest(url, params);
-            Intent intent = new Intent(context, EventHandlerService.class);
-            intent.putExtra(EventHandlerService.EXTRA_STRING_URL, event.toString());
+            String event = generateRequest(url, params);
+            Intent intent = new Intent(context, EventIntentService.class);
+            intent.putExtra(EventIntentService.EXTRA_URL, event);
             context.startService(intent);
             logger.info("Sent url {} to the event handler service", event);
         } catch (MalformedURLException e) {
@@ -52,7 +51,7 @@ public class OptlyEventHandler implements EventHandler {
         }
     }
 
-    private Event generateRequest(@NonNull String url, @NonNull Map<String,String> params) throws MalformedURLException {
+    private String generateRequest(@NonNull String url, @NonNull Map<String,String> params) throws MalformedURLException {
         url = url + "?";
         StringBuilder urlSb = new StringBuilder(url);
         for (Map.Entry<String, String> param : params.entrySet()) {
@@ -62,6 +61,6 @@ public class OptlyEventHandler implements EventHandler {
             urlSb.append("&");
         }
         urlSb.deleteCharAt(urlSb.length() - 1);
-        return new Event(new URL(urlSb.toString()));
+        return urlSb.toString();
     }
 }
