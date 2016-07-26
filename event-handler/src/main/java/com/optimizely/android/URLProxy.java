@@ -9,14 +9,19 @@ import java.net.URLConnection;
  *
  * Proxies {@link URL} because this class is final and not easily mockable when testing.
  */
-class URLProxy {
+public class URLProxy {
     private URL url;
 
-    URLProxy(URL url) {
+    public URLProxy(URL url) {
         this.url = url;
     }
 
-    URLConnection openConnection() throws IOException {
+    public URLConnection openConnection() throws IOException {
         return this.url.openConnection();
+    }
+
+    @Override
+    public String toString() {
+        return this.url.toString();
     }
 }

@@ -25,21 +25,21 @@ import org.slf4j.LoggerFactory;
  */
 public class EventDAO {
 
-    private final Logger logger = LoggerFactory.getLogger(EventDAO.class);
-
     @NonNull SQLiteDatabase db;
+    @NonNull Logger logger;
 
-    private EventDAO(@NonNull SQLiteDatabase db) {
+    private EventDAO(@NonNull SQLiteDatabase db, @NonNull Logger logger) {
         this.db = db;
+        this.logger = logger;
     }
 
-    static EventDAO getInstance(Context context) {
-        EventSQLiteOpenHelper sqLiteOpenHelper = new EventSQLiteOpenHelper(context, EventSQLiteOpenHelper.DB_NAME, null, EventSQLiteOpenHelper.VERSION, null);
+    static EventDAO getInstance(@NonNull Context context, @NonNull Logger logger) {
+        EventSQLiteOpenHelper sqLiteOpenHelper = new EventSQLiteOpenHelper(context, EventSQLiteOpenHelper.DB_NAME, null, EventSQLiteOpenHelper.VERSION, null, LoggerFactory.getLogger(EventSQLiteOpenHelper.class));
         SQLiteDatabase sqLiteDatabase = sqLiteOpenHelper.getWritableDatabase();
-        return new EventDAO(sqLiteDatabase);
+        return new EventDAO(sqLiteDatabase, logger);
     }
 
-    boolean storeEvent(@NonNull URL event) {
+    boolean storeEvent(@NonNull URLProxy event) {
         ContentValues values = new ContentValues();
         values.put(Event.COLUMN_NAME_URL, event.toString());
 
@@ -48,11 +48,13 @@ public class EventDAO {
         long newRowId;
         newRowId = db.insert(Event.TABLE_NAME, null, values);
 
+        logger.info("Inserted {} into db", event);
+
         return newRowId != -1;
     }
 
-    List<Pair<Long, URL>> getEvents() {
-        List<Pair<Long, URL>> events = new ArrayList<>();
+    List<Pair<Long, URLProxy>> getEvents() {
+        List<Pair<Long, URLProxy>> events = new ArrayList<>();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -80,7 +82,7 @@ public class EventDAO {
                     cursor.getColumnIndexOrThrow(Event.COLUMN_NAME_URL)
             );
             try {
-                events.add(new Pair<>(itemId, new URL(urlString)));
+                events.add(new Pair<>(itemId, new URLProxy(new URL(urlString))));
             } catch (MalformedURLException e) {
                 logger.error("Retreived a malformed URL from storage", e);
 
@@ -88,6 +90,8 @@ public class EventDAO {
         } while (cursor.moveToNext());
 
         cursor.close();
+
+        logger.info("Got events from db");
 
         return events;
     }
@@ -99,6 +103,13 @@ public class EventDAO {
         String[] selectionArgs = { String.valueOf(eventId) };
         // Issue SQL statement.
         int numRowsDeleted = db.delete(Event.TABLE_NAME, selection, selectionArgs);
+
+        if (numRowsDeleted > 0) {
+            logger.info("Removed event with id {} from db", eventId);
+            return true;
+        } else {
+            logger.error("Tried to remove an event id {} that does not exist", eventId);
+        }
 
         return numRowsDeleted > 0;
     }

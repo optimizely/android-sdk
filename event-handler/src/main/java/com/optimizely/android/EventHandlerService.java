@@ -31,14 +31,14 @@ public class EventHandlerService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent == null) return;
 
-        EventDAO eventDAO = EventDAO.getInstance(this);
+        EventDAO eventDAO = EventDAO.getInstance(this, LoggerFactory.getLogger(EventDAO.class));
         // Flush events still in storage
         boolean eventsWereStored = flushEvents(eventDAO);
 
         if (intent.hasExtra(EXTRA_URL)) {
             try {
                 String urlExtra = intent.getStringExtra(EXTRA_URL);
-                URL url = new URL(urlExtra);
+                URLProxy url = new URLProxy(new URL(urlExtra));
                 // Send the event that triggered this run of the service for store it if sending fails
                 eventsWereStored = flushEvent(eventDAO, url);
             } catch (MalformedURLException e) {
@@ -58,10 +58,10 @@ public class EventHandlerService extends IntentService {
      * @return true if all events were flushed, otherwise false
      */
     boolean flushEvents(EventDAO eventDAO) {
-        List<Pair<Long, URL>> events = eventDAO.getEvents();
+        List<Pair<Long, URLProxy>> events = eventDAO.getEvents();
         while (events.iterator().hasNext()) {
-            Pair<Long, URL> event = events.iterator().next();
-            boolean eventWasSent = eventClient.sendEvent(new URLProxy(event.second));
+            Pair<Long, URLProxy> event = events.iterator().next();
+            boolean eventWasSent = eventClient.sendEvent(event.second);
             if (eventWasSent) {
                 boolean eventWasDeleted = eventDAO.removeEvent(event.first);
                 if (eventWasDeleted) {
@@ -80,8 +80,8 @@ public class EventHandlerService extends IntentService {
      * @param url      the URL of the request for sending the event
      * @return true if event was flushed, otherwise false
      */
-    boolean flushEvent(EventDAO eventDAO, URL url) {
-        boolean eventWasSent = eventClient.sendEvent(new URLProxy(url));
+    boolean flushEvent(EventDAO eventDAO, URLProxy url) {
+        boolean eventWasSent = eventClient.sendEvent(url);
 
         if (eventWasSent) {
             return true;

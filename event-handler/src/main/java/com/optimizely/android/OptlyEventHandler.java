@@ -42,7 +42,7 @@ public class OptlyEventHandler implements EventHandler {
         }
 
         try {
-            URL url = generateRequest(urlString, params);
+            URLProxy url = generateRequest(urlString, params);
             Intent intent = new Intent(context, EventHandlerService.class);
             intent.putExtra(EventHandlerService.EXTRA_URL, url.toString());
             context.startService(intent);
@@ -52,7 +52,7 @@ public class OptlyEventHandler implements EventHandler {
         }
     }
 
-    private URL generateRequest(@NonNull String url, @NonNull Map<String,String> params) throws MalformedURLException {
+    private URLProxy generateRequest(@NonNull String url, @NonNull Map<String,String> params) throws MalformedURLException {
         url = url + "?";
         StringBuilder urlSb = new StringBuilder(url);
         for (Map.Entry<String, String> param : params.entrySet()) {
@@ -62,6 +62,6 @@ public class OptlyEventHandler implements EventHandler {
             urlSb.append("&");
         }
         urlSb.deleteCharAt(urlSb.length() - 1);
-        return new URL(urlSb.toString());
+        return new URLProxy(new URL(urlSb.toString()));
     }
 }
