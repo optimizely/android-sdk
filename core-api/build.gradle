@@ -1,0 +1,76 @@
+dependencies {
+    compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+
+    provided group: 'com.google.code.findbugs', name: 'annotations', version: findbugsVersion
+    provided group: 'com.google.code.findbugs', name: 'jsr305', version: findbugsVersion
+
+    // an assortment of json parsers
+    provided group: 'com.google.code.gson', name: 'gson', version: gsonVersion, optional
+    provided group: 'org.json', name: 'json', version: jsonVersion, optional
+    provided group: 'com.googlecode.json-simple', name: 'json-simple', version: jsonSimpleVersion, optional
+    provided group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion, optional
+}
+
+task build << {
+    // add the build version information into a file that'll go into the distribution
+    ext.buildVersion = new File(projectDir, "src/main/resources/optimizely-build-version")
+    buildVersion.text = version
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+    }
+}
+
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            pom.withXml {
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    url 'https://github.com/optimizely/java-sdk'
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/license/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'optimizely'
+                            name 'Optimizely'
+                            email 'developers@optimizely.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    pkg {
+        repo = 'optimizely'
+        name = 'optimizely-sdk-core-api'
+        userOrg = 'optimizely'
+        version {
+            name = getVersion()
+        }
+        publications = ['mavenJava']
+    }
+}
+
+publishArtifacts()

@@ -1,0 +1,114 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+
+    dependencies {
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:latest.release'
+    }
+}
+
+plugins {
+    id 'net.researchgate.release' version '2.2.1'
+    id 'nebula.optional-base' version '3.0.3'
+    id "me.champeau.gradle.jmh" version "0.3.1"
+}
+
+allprojects {
+    group = 'com.optimizely.ab'
+}
+
+apply from: 'gradle/license.gradle'
+apply from: 'gradle/publish.gradle'
+
+subprojects {
+    apply plugin: 'findbugs'
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'nebula.provided-base'
+    apply plugin: 'nebula.optional-base'
+    apply plugin: 'me.champeau.gradle.jmh'
+
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+
+    repositories {
+        jcenter()
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
+
+    tasks.withType(FindBugs) {
+        reports {
+            xml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    test {
+        useJUnit {
+            excludeCategories 'com.optimizely.ab.categories.ExhaustiveTest'
+        }
+
+        testLogging {
+            showStandardStreams = false
+        }
+    }
+
+    task exhaustiveTest(type: Test) {
+        useJUnit {
+            includeCategories 'com.optimizely.ab.categories.ExhaustiveTest'
+        }
+    }
+
+    jmh {
+        duplicateClassesStrategy = 'warn'
+    }
+
+    sourceSets {
+        jmh.java.srcDirs += sourceSets.test.java.srcDirs
+    }
+
+    dependencies {
+        afterEvaluate {
+            jmh configurations.testCompile.allDependencies
+        }
+    }
+
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: junitVersion
+        testCompile group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
+        testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
+        testCompile group: 'com.google.guava', name: 'guava', version: guavaVersion
+
+        // logging dependencies (logback)
+        testCompile group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
+        testCompile group: 'ch.qos.logback', name: 'logback-core', version: logbackVersion
+    }
+
+    // for commits performed by the release plugin, skip the travis build (as it would attempt to bump the version)
+    release {
+        preCommitText = '[ci skip]'
+    }
+}
+
+// todo: remove this wrapper version once we're publishing to jcenter/maven central
+task wrapper(type: Wrapper) {
+    distributionUrl = gradleWrapperUrl
+}

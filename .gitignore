@@ -1,0 +1,23 @@
+*.un~
+.gradle
+.settings
+*.swp
+
+# intellij config files
+*.iml
+*.ipr
+*.iml
+*.iws
+.idea
+
+# eclipse config files
+.classpath
+.project
+
+**/build
+out
+classes
+
+.vagrant
+.DS_Store
+.venv
