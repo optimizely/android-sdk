@@ -48,7 +48,7 @@ public class EventFlusher {
         }
 
         if (!flushed) {
-            eventScheduler.schedule();
+            eventScheduler.schedule(intent);
             logger.info("Scheduled events to be flushed");
         }
     }

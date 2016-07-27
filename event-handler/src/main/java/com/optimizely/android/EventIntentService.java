@@ -11,6 +11,7 @@ public class EventIntentService extends IntentService {
     Logger logger = LoggerFactory.getLogger(EventIntentService.class);
 
     static final String EXTRA_URL = "com.optimizely.android.EXTRA_URL";
+    static final String EXTRA_DURATION = "com.optimizely.android.EXTRA_DURATION";
 
     @Nullable EventFlusher eventFlusher;
 
@@ -24,7 +25,8 @@ public class EventIntentService extends IntentService {
 
         EventClient eventClient = new EventClient(LoggerFactory.getLogger(EventClient.class));
         EventDAO eventDAO = EventDAO.getInstance(this, LoggerFactory.getLogger(EventDAO.class));
-        EventScheduler eventScheduler = new EventScheduler(this);
+        OptlyStorage optlyStorage = new OptlyStorage(this);
+        EventScheduler eventScheduler = new EventScheduler(this, optlyStorage);
         eventFlusher = new EventFlusher(eventDAO, eventClient, eventScheduler, LoggerFactory.getLogger(EventFlusher.class));
     }
 
