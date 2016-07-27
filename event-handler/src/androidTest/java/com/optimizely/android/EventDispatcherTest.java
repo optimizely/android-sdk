@@ -1,8 +1,7 @@
 package com.optimizely.android;
 
-import android.content.Context;
+import android.app.AlarmManager;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Pair;
 
@@ -26,26 +25,27 @@ import static org.mockito.Mockito.when;
 /**
  * Created by jdeffibaugh on 7/25/16 for Optimizely.
  *
- * Tests {@link EventFlusher}
+ * Tests {@link EventDispatcher}
  */
 @RunWith(AndroidJUnit4.class)
-public class EventFlusherTest {
+public class EventDispatcherTest {
 
-    EventFlusher eventFlusher;
+    EventDispatcher eventDispatcher;
+    OptlyStorage optlyStorage;
     EventDAO eventDAO;
     EventClient eventClient;
-    EventScheduler eventScheduler;
+    ServiceScheduler serviceScheduler;
     Logger logger;
 
     @Before
     public void setup() {
-        Context context = InstrumentationRegistry.getTargetContext();
         eventDAO = mock(EventDAO.class);
         eventClient = mock(EventClient.class);
         logger = mock(Logger.class);
-        eventScheduler = mock(EventScheduler.class);
+        serviceScheduler = mock(ServiceScheduler.class);
+        optlyStorage = mock(OptlyStorage.class);
 
-        eventFlusher = new EventFlusher(eventDAO, eventClient, eventScheduler, logger);
+        eventDispatcher = new EventDispatcher(optlyStorage, eventDAO, eventClient, serviceScheduler, logger);
     }
 
     @Test
@@ -67,10 +67,14 @@ public class EventFlusherTest {
         when(eventDAO.removeEvent(3L)).thenReturn(true);
 
         Intent intent = mock(Intent.class);
-        eventFlusher.flush(intent);
+        when(intent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1)).thenReturn(-1L);
+        when(optlyStorage.getLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR)).thenReturn(AlarmManager.INTERVAL_HOUR);
+        eventDispatcher.dispatch(intent);
 
+        verify(serviceScheduler).schedule(EventIntentService.class, AlarmManager.INTERVAL_HOUR);
+        verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
         verify(logger).warn("Unable to delete an event from local storage that was sent to successfully");
-        verify(logger).info("Scheduled events to be flushed");
+        verify(logger).info("Scheduled events to be dispatched");
     }
 
     @Test
@@ -83,11 +87,27 @@ public class EventFlusherTest {
         Intent intent = mock(Intent.class);
         when(intent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
         when(intent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
+        when(intent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1)).thenReturn(AlarmManager.INTERVAL_HOUR);
         when(eventClient.sendEvent(event)).thenReturn(false);
         when(eventDAO.storeEvent(event)).thenReturn(true);
 
-        eventFlusher.flush(intent);
-        verify(logger).info("Scheduled events to be flushed");
+        eventDispatcher.dispatch(intent);
+        verify(serviceScheduler).schedule(EventIntentService.class, AlarmManager.INTERVAL_HOUR);
+        verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
+        verify(logger).info("Scheduled events to be dispatched");
+    }
+
+    @Test
+    public void getIntervalFromIntent() throws MalformedURLException {
+        String url= "http://www.foo.com";
+        Event event = new Event(new URL(url));
+
+        when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
+
+        Intent intent = mock(Intent.class);
+        when(intent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
+        when(intent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
+
     }
 
     @Test
@@ -103,9 +123,18 @@ public class EventFlusherTest {
         when(eventClient.sendEvent(event)).thenReturn(false);
         when(eventDAO.storeEvent(event)).thenReturn(false);
 
-        eventFlusher.flush(intent);
+        eventDispatcher.dispatch(intent);
         verify(logger).error("Unable to send or store event {}", event);
-        verify(logger, never()).info("Scheduled events to be flushed");
+        verify(logger, never()).info("Scheduled events to be dispatched");
+    }
+
+    @Test
+    public void unschedulesServiceWhenNoEventsToFlush() {
+        when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
+        Intent intent = mock(Intent.class);
+        eventDispatcher.dispatch(intent);
+        verify(serviceScheduler).unschedule(EventIntentService.class);
+        verify(logger).info("Unscheduled event dispatch");
     }
 
     @Test
@@ -118,7 +147,7 @@ public class EventFlusherTest {
         when(intent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
         when(intent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
 
-        eventFlusher.flush(intent);
+        eventDispatcher.dispatch(intent);
 
         verify(logger).error(contains("Received a malformed URL in event handler service"), any(MalformedURLException.class));
     }

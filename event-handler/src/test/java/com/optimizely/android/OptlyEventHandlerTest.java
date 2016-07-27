@@ -59,4 +59,6 @@ public class OptlyEventHandlerTest {
         optlyEventHandler.dispatchEvent(url, null);
         verify(logger).error("Event dispatcher received a null params map");
     }
+
+    // TODO add test for empty params and empty url
 }

@@ -45,10 +45,10 @@ public class EventIntentServiceTest {
     @Test
     public void forwardsToIntentHandler() {
         Intent intent = mock(Intent.class);
-        EventFlusher eventFlusher = mock(EventFlusher.class);
-        service.eventFlusher = eventFlusher;
+        EventDispatcher eventDispatcher = mock(EventDispatcher.class);
+        service.eventDispatcher = eventDispatcher;
         service.onHandleIntent(intent);
-        verify(eventFlusher).flush(intent);
+        verify(eventDispatcher).dispatch(intent);
         verify(logger).info("Handled intent");
     }
 }

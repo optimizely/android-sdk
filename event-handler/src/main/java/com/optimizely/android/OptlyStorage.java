@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 public class OptlyStorage {
 
     static final String PREFS_NAME = "optly";
-    static final String KEY_FLUSH_EVENTS_INTERVAl = "flushEventsInterval";
 
     @NonNull private Context context;
 
@@ -21,7 +20,7 @@ public class OptlyStorage {
     }
 
     public void saveLong(String key, long value) {
-        getWritablePrefs().putLong(KEY_FLUSH_EVENTS_INTERVAl, value ).apply();
+        getWritablePrefs().putLong(EventIntentService.EXTRA_INTERVAL, value ).apply();
     }
 
     public long getLong(String key, long defaultValue) {
@@ -29,10 +28,10 @@ public class OptlyStorage {
     }
 
     private SharedPreferences.Editor getWritablePrefs() {
-        return context.getSharedPreferences(KEY_FLUSH_EVENTS_INTERVAl, Context.MODE_PRIVATE).edit();
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit();
     }
 
     private SharedPreferences getReadablePrefs() {
-        return context.getSharedPreferences(KEY_FLUSH_EVENTS_INTERVAl, Context.MODE_PRIVATE);
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 }
