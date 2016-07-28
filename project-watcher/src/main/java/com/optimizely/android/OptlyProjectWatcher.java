@@ -8,6 +8,8 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.optimizely.ab.config.ProjectConfig;
+
 /**
  * Created by jdeffibaugh on 7/28/16 for Optimizely.
  *
@@ -18,8 +20,10 @@ public class OptlyProjectWatcher implements ProjectWatcher {
     @Nullable private OnDataFileLoadedListener onDataFileLoadedListener;
     @NonNull private final DataFileServiceConnection dataFileServiceConnection;
     boolean bound = false;
+    @NonNull private ProjectConfig projectConfig;
 
-    public OptlyProjectWatcher() {
+    public OptlyProjectWatcher(@NonNull ProjectConfig projectConfig) {
+        this.projectConfig = projectConfig;
         dataFileServiceConnection = new DataFileServiceConnection(this);
     }
 
@@ -47,6 +51,11 @@ public class OptlyProjectWatcher implements ProjectWatcher {
         return bound;
     }
 
+    @NonNull
+    ProjectConfig getProjectConfig() {
+        return projectConfig;
+    }
+
     void notifyListener(String dataFile) {
         if (onDataFileLoadedListener != null) {
             onDataFileLoadedListener.onDataFileLoaded(dataFile);
@@ -68,7 +77,7 @@ public class OptlyProjectWatcher implements ProjectWatcher {
             DataFileService.LocalBinder binder = (DataFileService.LocalBinder) service;
             DataFileService dataFileService = binder.getService();
             if (dataFileService != null) {
-                dataFileService.getDataFile(new OnDataFileLoadedListener() {
+                dataFileService.getDataFile(optlyProjectWatcher.getProjectConfig(), new OnDataFileLoadedListener() {
                     @Override
                     public void onDataFileLoaded(String dataFile) {
                         if (optlyProjectWatcher.isBound()) {

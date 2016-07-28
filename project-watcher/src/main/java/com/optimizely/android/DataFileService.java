@@ -6,39 +6,32 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import com.optimizely.ab.config.ProjectConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataFileService extends Service {
     @NonNull private final IBinder binder = new LocalBinder();
-    @Nullable private DataFileClient dataFileClient;
-    @Nullable private DataFileCache dataFileCache;
 
     Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Override
-    public void onCreate() {
-        dataFileClient = new DataFileClient();
-        dataFileCache = new DataFileCache(this, LoggerFactory.getLogger(DataFileCache.class));
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
     }
 
-    public void getDataFile(OnDataFileLoadedListener onDataFileLoadedListener) {
-        if (dataFileCache != null && dataFileClient != null) {
-            RequestDataFileFromClientTask requestDataFileFromClientTask =
-                    new RequestDataFileFromClientTask(dataFileCache, dataFileClient, onDataFileLoadedListener);
-            LoadDataFileFromCacheTask loadDataFileFromCacheTask =
-                    new LoadDataFileFromCacheTask(dataFileCache, requestDataFileFromClientTask, onDataFileLoadedListener);
-            loadDataFileFromCacheTask.execute();
+    public void getDataFile(@NonNull ProjectConfig projectConfig, @NonNull OnDataFileLoadedListener onDataFileLoadedListener) {
+        DataFileClient dataFileClient = new DataFileClient(projectConfig, new OptlyStorage(this), LoggerFactory.getLogger(DataFileClient.class));
+        DataFileCache dataFileCache = new DataFileCache(this, projectConfig, LoggerFactory.getLogger(DataFileCache.class));
+        RequestDataFileFromClientTask requestDataFileFromClientTask =
+                new RequestDataFileFromClientTask(dataFileCache, dataFileClient, onDataFileLoadedListener);
+        LoadDataFileFromCacheTask loadDataFileFromCacheTask =
+                new LoadDataFileFromCacheTask(dataFileCache, requestDataFileFromClientTask, onDataFileLoadedListener);
+        loadDataFileFromCacheTask.execute();
 
-            logger.info("Refreshing data file");
-        }
+        logger.info("Refreshing data file");
     }
 
     static class LoadDataFileFromCacheTask extends AsyncTask<Void, Void, String> {
