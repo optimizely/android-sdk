@@ -8,15 +8,20 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DataFileService extends Service {
     @NonNull private final IBinder binder = new LocalBinder();
     @Nullable private DataFileClient dataFileClient;
     @Nullable private DataFileCache dataFileCache;
 
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     @Override
     public void onCreate() {
         dataFileClient = new DataFileClient();
-        dataFileCache = new DataFileCache(this);
+        dataFileCache = new DataFileCache(this, LoggerFactory.getLogger(DataFileCache.class));
     }
 
     @Override
@@ -31,6 +36,8 @@ public class DataFileService extends Service {
             LoadDataFileFromCacheTask loadDataFileFromCacheTask =
                     new LoadDataFileFromCacheTask(dataFileCache, requestDataFileFromClientTask, onDataFileLoadedListener);
             loadDataFileFromCacheTask.execute();
+
+            logger.info("Refreshing data file");
         }
     }
 
@@ -81,7 +88,8 @@ public class DataFileService extends Service {
         protected String doInBackground(Void... params) {
             String dataFile = dataFileClient.request();
             if (dataFile != null) {
-                dataFileCache.save(dataFile);
+                dataFileCache.delete(); // Delete the old file first
+                dataFileCache.save(dataFile); // save the new file from the CDN
             }
 
             return dataFile;
