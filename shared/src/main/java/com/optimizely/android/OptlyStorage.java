@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 /**
  * Created by jdeffibaugh on 7/26/16 for Optimizely.
  *
- * Wrapper for {@link android.content.SharedPreferences}
+ * Wrapper for {@link SharedPreferences}
  */
 public class OptlyStorage {
 
@@ -20,7 +20,7 @@ public class OptlyStorage {
     }
 
     public void saveLong(String key, long value) {
-        getWritablePrefs().putLong(EventIntentService.EXTRA_INTERVAL, value ).apply();
+        getWritablePrefs().putLong(key, value ).apply();
     }
 
     public long getLong(String key, long defaultValue) {

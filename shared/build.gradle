@@ -23,8 +23,6 @@ android {
 }
 
 dependencies {
-    compile project(':shared')
-    
     provided "com.optimizely.ab:core-api:$java_core_ver"
     provided "org.slf4j:slf4j-api:$slf4j_ver"
     provided "org.slf4j:slf4j-android:$slf4j_ver"
