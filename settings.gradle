@@ -1,1 +1,1 @@
-include ':event-handler', ':project-watcher', ':shared'
+include ':event-handler', ':project-watcher', ':shared', ':testapp'

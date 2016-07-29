@@ -31,7 +31,7 @@ public class EventIntentService extends IntentService {
                 new ServiceScheduler.PendingIntentFactory(this),
                 LoggerFactory.getLogger(ServiceScheduler.class));
         OptlyStorage optlyStorage = new OptlyStorage(this);
-        eventDispatcher = new EventDispatcher(optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
+        eventDispatcher = new EventDispatcher(this, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
     }
 
     @Override

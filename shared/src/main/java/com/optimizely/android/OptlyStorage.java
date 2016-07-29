@@ -3,6 +3,7 @@ package com.optimizely.android;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Created by jdeffibaugh on 7/26/16 for Optimizely.
@@ -25,6 +26,23 @@ public class OptlyStorage {
 
     public long getLong(String key, long defaultValue) {
         return getReadablePrefs().getLong(key, defaultValue);
+    }
+
+    public void saveString(String key, String value) {
+        getWritablePrefs().putString(key, value).apply();
+    }
+
+    public boolean getBoolean(String key) {
+        return getReadablePrefs().getBoolean(key, false);
+    }
+
+    public void saveBoolean(String key, boolean value) {
+        getWritablePrefs().putBoolean(key, value).apply();
+    }
+
+    @Nullable
+    public String getString(String key) {
+        getReadablePrefs().getString(key, null);
     }
 
     private SharedPreferences.Editor getWritablePrefs() {

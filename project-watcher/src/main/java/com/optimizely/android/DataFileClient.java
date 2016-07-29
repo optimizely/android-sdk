@@ -2,8 +2,6 @@ package com.optimizely.android;
 
 import android.support.annotation.NonNull;
 
-import com.optimizely.ab.config.ProjectConfig;
-
 import org.slf4j.Logger;
 
 import java.io.BufferedInputStream;
@@ -23,12 +21,12 @@ public class DataFileClient {
 
     private static String LAST_MODIFIED_HEADER_KEY = "com.optimizely.android.LAST_MODIFIED_HEADER";
 
-    @NonNull private final ProjectConfig projectConfig;
+    @NonNull String projectId;
     @NonNull private final OptlyStorage optlyStorage;
     @NonNull private final Logger logger;
 
-    DataFileClient(@NonNull ProjectConfig projectConfig, @NonNull OptlyStorage optlyStorage, @NonNull Logger logger) {
-        this.projectConfig = projectConfig;
+    DataFileClient(@NonNull String projectId, @NonNull OptlyStorage optlyStorage, @NonNull Logger logger) {
+        this.projectId = projectId;
         this.optlyStorage = optlyStorage;
         this.logger = logger;
     }
@@ -36,7 +34,7 @@ public class DataFileClient {
     String request() {
         HttpURLConnection urlConnection = null;
         try {
-            String endPoint = String.format("https://cdn.optimizely.com/json/%s.json", projectConfig.getProjectId());
+            String endPoint = String.format("https://cdn.optimizely.com/json/%s.json", projectId);
             URL url = new URL(endPoint);
             logger.info("Requesting data file from {}", endPoint);
             urlConnection = (HttpURLConnection) url.openConnection();

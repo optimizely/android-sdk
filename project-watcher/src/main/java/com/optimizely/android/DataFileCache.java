@@ -3,8 +3,6 @@ package com.optimizely.android;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.optimizely.ab.config.ProjectConfig;
-
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
@@ -24,18 +22,18 @@ public class DataFileCache {
     private static final String OPTLY_DATA_FILE_NAME = "optly-data-file-%s.json";
 
     @NonNull private Context context;
-    @NonNull private ProjectConfig projectConfig;
+    @NonNull String projectId;
     @NonNull private Logger logger;
 
-    public DataFileCache(@NonNull Context context, @NonNull ProjectConfig projectConfig, @NonNull Logger logger) {
+    public DataFileCache(@NonNull Context context, @NonNull String projectId, @NonNull Logger logger) {
         this.context = context;
-        this.projectConfig = projectConfig;
+        this.projectId = projectId;
         this.logger = logger;
     }
 
     String load() {
         try {
-            FileInputStream fis = context.openFileInput(String.format(OPTLY_DATA_FILE_NAME, projectConfig.getProjectId()));
+            FileInputStream fis = context.openFileInput(String.format(OPTLY_DATA_FILE_NAME, projectId));
             InputStreamReader inputStreamReader = new InputStreamReader(fis);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             StringBuilder sb = new StringBuilder();
@@ -60,7 +58,7 @@ public class DataFileCache {
     boolean save(String dataFile) {
         try {
             FileOutputStream fos = context.openFileOutput(String.format(OPTLY_DATA_FILE_NAME,
-                    projectConfig.getProjectId()), Context.MODE_PRIVATE);
+                    projectId), Context.MODE_PRIVATE);
             fos.write(dataFile.getBytes());
             return  true;
         } catch (IOException e) {

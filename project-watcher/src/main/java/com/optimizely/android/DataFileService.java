@@ -6,8 +6,7 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-
-import com.optimizely.ab.config.ProjectConfig;
+import android.support.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,17 +15,44 @@ public class DataFileService extends Service {
     @NonNull private final IBinder binder = new LocalBinder();
 
     Logger logger = LoggerFactory.getLogger(getClass());
+    public static String EXTRA_PROJECT_ID = "com.optimizely.android.EXTRA_PROJECT_ID";
+
+    private boolean isBound;
 
     @Override
     public IBinder onBind(Intent intent) {
+        isBound = true;
         return binder;
     }
 
-    public void getDataFile(@NonNull ProjectConfig projectConfig, @NonNull OnDataFileLoadedListener onDataFileLoadedListener) {
-        DataFileClient dataFileClient = new DataFileClient(projectConfig, new OptlyStorage(this), LoggerFactory.getLogger(DataFileClient.class));
-        DataFileCache dataFileCache = new DataFileCache(this, projectConfig, LoggerFactory.getLogger(DataFileCache.class));
+    @Override
+    public boolean onUnbind(Intent intent) {
+        isBound = false;
+        return false;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            if (intent.hasExtra(EXTRA_PROJECT_ID)) {
+                String projectId = intent.getStringExtra(EXTRA_PROJECT_ID);
+                getDataFile(projectId, null);
+                BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(this, LoggerFactory.getLogger(BackgroundWatchersCache.class));
+                backgroundWatchersCache.setIsWatching(projectId, true);
+            }
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    boolean isBound() {
+        return  isBound;
+    }
+
+    public void getDataFile(String projectId, @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
+        DataFileClient dataFileClient = new DataFileClient(projectId, new OptlyStorage(this), LoggerFactory.getLogger(DataFileClient.class));
+        DataFileCache dataFileCache = new DataFileCache(this, projectId, LoggerFactory.getLogger(DataFileCache.class));
         RequestDataFileFromClientTask requestDataFileFromClientTask =
-                new RequestDataFileFromClientTask(dataFileCache, dataFileClient, onDataFileLoadedListener);
+                new RequestDataFileFromClientTask(this, dataFileCache, dataFileClient, onDataFileLoadedListener);
         LoadDataFileFromCacheTask loadDataFileFromCacheTask =
                 new LoadDataFileFromCacheTask(dataFileCache, requestDataFileFromClientTask, onDataFileLoadedListener);
         loadDataFileFromCacheTask.execute();
@@ -38,11 +64,11 @@ public class DataFileService extends Service {
 
         @NonNull private final DataFileCache dataFileCache;
         @NonNull private final RequestDataFileFromClientTask requestDataFileFromClientTask;
-        private OnDataFileLoadedListener onDataFileLoadedListener;
+        @Nullable private final OnDataFileLoadedListener onDataFileLoadedListener;
 
         LoadDataFileFromCacheTask(@NonNull DataFileCache dataFileCache,
                                   @NonNull RequestDataFileFromClientTask requestDataFileFromClientTask,
-                                  @NonNull OnDataFileLoadedListener onDataFileLoadedListener) {
+                                  @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
             this.dataFileCache = dataFileCache;
             this.requestDataFileFromClientTask = requestDataFileFromClientTask;
             this.onDataFileLoadedListener = onDataFileLoadedListener;
@@ -56,7 +82,9 @@ public class DataFileService extends Service {
         @Override
         protected void onPostExecute(String dataFile) {
             if (dataFile != null) {
-                onDataFileLoadedListener.onDataFileLoaded(dataFile);
+                if (onDataFileLoadedListener != null) {
+                    onDataFileLoadedListener.onDataFileLoaded(dataFile);
+                }
             }
 
             requestDataFileFromClientTask.execute();
@@ -65,13 +93,16 @@ public class DataFileService extends Service {
 
     static class RequestDataFileFromClientTask extends AsyncTask<Void, Void, String> {
 
+        @NonNull private final DataFileService dataFileService;
         @NonNull private final DataFileCache dataFileCache;
         @NonNull private final DataFileClient dataFileClient;
-        private OnDataFileLoadedListener onDataFileLoadedListener;
+        @Nullable private final OnDataFileLoadedListener onDataFileLoadedListener;
 
-        RequestDataFileFromClientTask(@NonNull DataFileCache dataFileCache,
+        RequestDataFileFromClientTask(@NonNull DataFileService dataFileService,
+                                      @NonNull DataFileCache dataFileCache,
                                       @NonNull DataFileClient dataFileClient,
-                                      @NonNull OnDataFileLoadedListener onDataFileLoadedListener) {
+                                      @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
+            this.dataFileService = dataFileService;
             this.dataFileCache = dataFileCache;
             this.dataFileClient = dataFileClient;
             this.onDataFileLoadedListener = onDataFileLoadedListener;
@@ -93,7 +124,14 @@ public class DataFileService extends Service {
             // If dataFile isn't null the dataFile has been modified on the CDN because we are
             // using last-modified and since-last-modified headers.
             if (dataFile != null) {
-                onDataFileLoadedListener.onDataFileLoaded(dataFile);
+                if (onDataFileLoadedListener != null) {
+                    onDataFileLoadedListener.onDataFileLoaded(dataFile);
+                }
+            }
+
+            if (!dataFileService.isBound()) {
+                // We are running in the background so stop the service
+                dataFileService.stopSelf();
             }
         }
     }

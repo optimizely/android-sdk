@@ -1,4 +1,4 @@
-package com.optimizely.android.shared;
+package com.optimizely.android.testapp;
 
 import org.junit.Test;
 

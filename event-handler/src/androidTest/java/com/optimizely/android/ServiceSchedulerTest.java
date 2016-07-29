@@ -12,8 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
-import dalvik.annotation.TestTarget;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
@@ -35,9 +33,11 @@ public class ServiceSchedulerTest {
     AlarmManager alarmManager;
     Logger logger;
     ServiceScheduler serviceScheduler;
+    Context context;
 
     @Before
     public void setup() {
+        context = InstrumentationRegistry.getTargetContext();
         optlyStorage = mock(OptlyStorage.class);
         alarmManager = mock(AlarmManager.class);
         pendingIntentFactory = mock(ServiceScheduler.PendingIntentFactory.class);
@@ -47,12 +47,12 @@ public class ServiceSchedulerTest {
 
     @Test
     public void testScheduleWithNoDurationExtra() {
-        when(pendingIntentFactory.hasPendingIntent(EventIntentService.class)).thenReturn(false);
+        when(pendingIntentFactory.hasPendingIntent(new Intent(context, EventIntentService.class))).thenReturn(false);
         PendingIntent pendingIntent = getPendingIntent();
-        when(pendingIntentFactory.getPendingIntent(EventIntentService.class)).thenReturn(pendingIntent);
+        when(pendingIntentFactory.getPendingIntent(new Intent(context, EventIntentService.class))).thenReturn(pendingIntent);
         when(optlyStorage.getLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR)).thenReturn(AlarmManager.INTERVAL_HOUR);
 
-        serviceScheduler.schedule(EventIntentService.class, AlarmManager.INTERVAL_HOUR);
+        serviceScheduler.schedule(new Intent(context, EventIntentService.class), AlarmManager.INTERVAL_HOUR);
 
         verify(alarmManager).setInexactRepeating(AlarmManager.ELAPSED_REALTIME, AlarmManager.INTERVAL_HOUR, AlarmManager.INTERVAL_HOUR, pendingIntent);
         verify(logger).info("Scheduled {}", EventIntentService.class.getSimpleName());
@@ -60,37 +60,23 @@ public class ServiceSchedulerTest {
     }
 
     @Test
-    public void schedulingInvalidClass() {
-        serviceScheduler.schedule(String.class, 1);
-        verify(logger).error("Tried to schedule {} which is not a Service", String.class);
-    }
-
-    @Test
-    public void unschedulingInvalidClass() {
-        PendingIntent pendingIntent = getPendingIntent();
-        when(pendingIntentFactory.getPendingIntent(EventIntentService.class)).thenReturn(pendingIntent);
-        serviceScheduler.unschedule(String.class);
-        verify(logger).error("Tried to unschedule {} which is not a Service", String.class);
-    }
-
-    @Test
     public void invalidDuration() {
-        serviceScheduler.schedule(EventIntentService.class, 0);
+        serviceScheduler.schedule(new Intent(context, EventIntentService.class), 0);
         verify(logger).error("Tried to schedule an interval less than 1");
     }
 
     @Test
     public void testScheduleWithDurationExtra() {
-        when(pendingIntentFactory.hasPendingIntent(EventIntentService.class)).thenReturn(false);
+        when(pendingIntentFactory.hasPendingIntent(new Intent(context, EventIntentService.class))).thenReturn(false);
         PendingIntent pendingIntent = getPendingIntent();
-        when(pendingIntentFactory.getPendingIntent(EventIntentService.class)).thenReturn(pendingIntent);
+        when(pendingIntentFactory.getPendingIntent(new Intent(context, EventIntentService.class))).thenReturn(pendingIntent);
         when(optlyStorage.getLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR)).thenReturn(AlarmManager.INTERVAL_HOUR);
 
         long duration = AlarmManager.INTERVAL_DAY;
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, EventIntentService.class);
         intent.putExtra(EventIntentService.EXTRA_INTERVAL, duration);
-        serviceScheduler.schedule(EventIntentService.class, duration);
+        serviceScheduler.schedule(new Intent(context, EventIntentService.class), duration);
 
         verify(alarmManager).setInexactRepeating(AlarmManager.ELAPSED_REALTIME, duration, duration, pendingIntent);
         verify(logger).info("Scheduled {}", EventIntentService.class.getSimpleName());
@@ -99,9 +85,9 @@ public class ServiceSchedulerTest {
 
     @Test
     public void testAlreadyScheduledAlarm() {
-        when(pendingIntentFactory.hasPendingIntent(EventIntentService.class)).thenReturn(true);
+        when(pendingIntentFactory.hasPendingIntent(new Intent(context, EventIntentService.class))).thenReturn(true);
 
-        serviceScheduler.schedule(EventIntentService.class, AlarmManager.INTERVAL_HOUR);
+        serviceScheduler.schedule(new Intent(context, EventIntentService.class), AlarmManager.INTERVAL_HOUR);
 
         verify(logger).debug("Not scheduling {}. It's already scheduled", EventIntentService.class.getSimpleName());
     }
@@ -132,18 +118,18 @@ public class ServiceSchedulerTest {
     public void hasPendingIntent() {
         Context context = InstrumentationRegistry.getTargetContext();
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(context);
-        assertFalse(pendingIntentFactory.hasPendingIntent(EventIntentService.class));
-        PendingIntent pendingIntent1 = pendingIntentFactory.getPendingIntent(EventIntentService.class);
-        assertTrue(pendingIntentFactory.hasPendingIntent(EventIntentService.class));
-        PendingIntent pendingIntent2 = pendingIntentFactory.getPendingIntent(EventIntentService.class);
+        assertFalse(pendingIntentFactory.hasPendingIntent(new Intent(context, EventIntentService.class)));
+        PendingIntent pendingIntent1 = pendingIntentFactory.getPendingIntent(new Intent(context, EventIntentService.class));
+        assertTrue(pendingIntentFactory.hasPendingIntent(new Intent(context, EventIntentService.class)));
+        PendingIntent pendingIntent2 = pendingIntentFactory.getPendingIntent(new Intent(context, EventIntentService.class));
         assertEquals(pendingIntent1, pendingIntent2);
     }
 
     @Test
     public void testCancel() {
         PendingIntent pendingIntent = getPendingIntent();
-        when(pendingIntentFactory.getPendingIntent(EventIntentService.class)).thenReturn(pendingIntent);
-        serviceScheduler.unschedule(EventIntentService.class);
+        when(pendingIntentFactory.getPendingIntent(new Intent(context, EventIntentService.class))).thenReturn(pendingIntent);
+        serviceScheduler.unschedule(new Intent(context, EventIntentService.class));
         verify(alarmManager).cancel(pendingIntent);
         verify(logger).info("Unscheduled {}", EventIntentService.class.getSimpleName());
     }

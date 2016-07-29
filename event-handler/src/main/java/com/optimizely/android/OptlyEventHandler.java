@@ -27,11 +27,15 @@ public class OptlyEventHandler implements EventHandler {
     @NonNull private final Context context;
     private long flushInterval = -1;
 
+    public static OptlyEventHandler getInstance(@NonNull Context context) {
+        return new OptlyEventHandler(context);
+    }
+
     /**
      * Constructs a new instance
      * @param context any valid Android {@link Context}
      */
-    public OptlyEventHandler(@NonNull Context context) {
+    private OptlyEventHandler(@NonNull Context context) {
         this.context = context;
     }
 
