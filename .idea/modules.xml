@@ -2,13 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/android-sdk/wrapper.iml" filepath="$PROJECT_DIR$/android-sdk/wrapper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/event-handler/event-dispatcher.iml" filepath="$PROJECT_DIR$/event-handler/event-dispatcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-sdk/android-sdk.iml" filepath="$PROJECT_DIR$/android-sdk/android-sdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/event-handler/event-handler.iml" filepath="$PROJECT_DIR$/event-handler/event-handler.iml" />
       <module fileurl="file://$PROJECT_DIR$/optimizely-ab-android-sdk.iml" filepath="$PROJECT_DIR$/optimizely-ab-android-sdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/project-watcher/project-watcher.iml" filepath="$PROJECT_DIR$/project-watcher/project-watcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
-      <module fileurl="file://$PROJECT_DIR$/testapp/testapp.iml" filepath="$PROJECT_DIR$/testapp/testapp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test-app/test-app.iml" filepath="$PROJECT_DIR$/test-app/test-app.iml" />
     </modules>
   </component>
 </project>

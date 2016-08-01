@@ -23,7 +23,6 @@ android {
 }
 
 dependencies {
-    compile project(':shared')
     compile project(':event-handler')
     compile project(':project-watcher')
 
