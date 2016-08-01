@@ -9,8 +9,6 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.optimizely.ab.config.ProjectConfig;
-
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;

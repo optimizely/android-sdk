@@ -24,10 +24,9 @@ android {
 
 dependencies {
     compile project(':shared')
+    compile project(':event-handler')
+    compile project(':project-watcher')
 
-    compile "com.optimizely.ab:core-api:$java_core_ver"
-    compile "org.slf4j:slf4j-api:$slf4j_ver"
-    compile "org.slf4j:slf4j-android:$slf4j_ver"
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"
