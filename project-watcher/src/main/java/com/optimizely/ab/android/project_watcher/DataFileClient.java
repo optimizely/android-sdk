@@ -2,6 +2,7 @@ package com.optimizely.ab.android.project_watcher;
 
 import android.support.annotation.NonNull;
 
+import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 
 import org.slf4j.Logger;
@@ -21,15 +22,13 @@ import java.net.URLConnection;
  */
 public class DataFileClient {
 
-    private static String LAST_MODIFIED_HEADER_KEY = "com.optimizely.ab.android.LAST_MODIFIED_HEADER";
-
     @NonNull String projectId;
-    @NonNull private final OptlyStorage optlyStorage;
+    @NonNull private final Client client;
     @NonNull private final Logger logger;
 
-    DataFileClient(@NonNull String projectId, @NonNull OptlyStorage optlyStorage, @NonNull Logger logger) {
+    DataFileClient(@NonNull Client client, @NonNull String projectId, @NonNull Logger logger) {
+        this.client = client;
         this.projectId = projectId;
-        this.optlyStorage = optlyStorage;
         this.logger = logger;
     }
 
@@ -41,15 +40,14 @@ public class DataFileClient {
             logger.info("Requesting data file from {}", endPoint);
             urlConnection = (HttpURLConnection) url.openConnection();
 
-            setIfModifiedSince(urlConnection);
+            client.setIfModifiedSince(urlConnection);
 
             urlConnection.connect();
 
             int status = urlConnection.getResponseCode();
             if (status >= 200 && status < 300) {
-                saveLastModified(urlConnection);
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                return readStream(in);
+                client.saveLastModified(urlConnection);
+                return client.readStream(urlConnection);
             } else if (status == 304) {
                 logger.info("Data file has not been modified on the cdn");
                 return null;
@@ -70,22 +68,5 @@ public class DataFileClient {
         }
     }
 
-    private void setIfModifiedSince(URLConnection urlConnection) {
-        long lastModified = optlyStorage.getLong(LAST_MODIFIED_HEADER_KEY, 0);
-        if (lastModified > 0) {
-            urlConnection.setIfModifiedSince(lastModified);
-        }
-    }
 
-    private void saveLastModified(URLConnection urlConnection) {
-        long lastModified = urlConnection.getLastModified();
-        if (lastModified != 0) {
-            optlyStorage.saveLong(LAST_MODIFIED_HEADER_KEY, urlConnection.getLastModified());
-        }
-    }
-
-    private String readStream(InputStream inputStream) throws IOException {
-        java.util.Scanner s = new java.util.Scanner(inputStream).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
-    }
 }

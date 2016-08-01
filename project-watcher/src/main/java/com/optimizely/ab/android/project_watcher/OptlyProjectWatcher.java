@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,9 @@ public class OptlyProjectWatcher implements ProjectWatcher {
     @Override
     public void stopWatching(Context context) {
         getServiceScheduler(context).unschedule(getWatchInBackgroundIntent(context));
-        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(context, LoggerFactory.getLogger(BackgroundWatchersCache.class));
+        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(BackgroundWatchersCache.class));
         backgroundWatchersCache.setIsWatching(projectId, false);
     }
 

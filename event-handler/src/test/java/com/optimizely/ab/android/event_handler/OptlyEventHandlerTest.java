@@ -60,5 +60,14 @@ public class OptlyEventHandlerTest {
         verify(logger).error("Event dispatcher received a null params map");
     }
 
-    // TODO add test for empty params and empty url
+    @Test public void dispatchEmptyUrlString() {
+        optlyEventHandler.dispatchEvent("", params);
+        verify(logger).error("Event dispatcher received an empty url");
+    }
+
+    @Test public void dispatchEmptyParams() {
+        optlyEventHandler.dispatchEvent(url, new HashMap<String, String>());
+        verify(context).startService(any(Intent.class));
+        verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
+    }
 }
