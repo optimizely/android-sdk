@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/project-watcher/project-watcher.iml" filepath="$PROJECT_DIR$/project-watcher/project-watcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/testapp/testapp.iml" filepath="$PROJECT_DIR$/testapp/testapp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wrapper/wrapper.iml" filepath="$PROJECT_DIR$/wrapper/wrapper.iml" />
     </modules>
   </component>
 </project>
