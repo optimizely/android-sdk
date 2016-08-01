@@ -9,6 +9,7 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.android.OnDataFileLoadedListener;
+import com.optimizely.android.OptlyAndroid;
 import com.optimizely.android.OptlyEventHandler;
 import com.optimizely.android.OptlyProjectWatcher;
 import com.optimizely.android.ProjectWatcher;
@@ -41,11 +42,7 @@ public class MainActivity extends AppCompatActivity implements OnDataFileLoadedL
 
     @Override
     public void onDataFileLoaded(String dataFile) {
-        // create Android event handler
-        EventHandler eventHandler = OptlyEventHandler.getInstance(this);
-
-        // instantiate Optimizely object
-        Optimizely optimizely = Optimizely.builder(dataFile, eventHandler).build();
+        Optimizely optimizely = OptlyAndroid.newInstance(this, dataFile);
 
         // activate user in the experiment
         Variation variation = optimizely.activate("experiment1", "user1");
