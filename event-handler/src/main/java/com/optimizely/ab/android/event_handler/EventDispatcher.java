@@ -60,12 +60,12 @@ public class EventDispatcher {
 
         if (!dispatched) {
             long interval = getInterval(intent);
-            serviceScheduler.schedule(new Intent(context, EventIntentService.class), interval);
+            serviceScheduler.schedule(intent, interval);
             saveInterval(interval);
             logger.info("Scheduled events to be dispatched");
         } else {
             // Quit trying to dispatch events because their aren't any in storage
-            serviceScheduler.unschedule(new Intent(context, EventIntentService.class));
+            serviceScheduler.unschedule(intent);
             logger.info("Unscheduled event dispatch");
         }
     }

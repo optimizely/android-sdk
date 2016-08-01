@@ -78,7 +78,7 @@ public class EventDispatcherTest {
         when(optlyStorage.getLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR)).thenReturn(AlarmManager.INTERVAL_HOUR);
         eventDispatcher.dispatch(intent);
 
-        verify(serviceScheduler).schedule(new Intent(context, EventIntentService.class), AlarmManager.INTERVAL_HOUR);
+        verify(serviceScheduler).schedule(intent, AlarmManager.INTERVAL_HOUR);
         verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
         verify(logger).warn("Unable to delete an event from local storage that was sent to successfully");
         verify(logger).info("Scheduled events to be dispatched");
@@ -99,7 +99,7 @@ public class EventDispatcherTest {
         when(eventDAO.storeEvent(event)).thenReturn(true);
 
         eventDispatcher.dispatch(intent);
-        verify(serviceScheduler).schedule(new Intent(context, EventIntentService.class), AlarmManager.INTERVAL_HOUR);
+        verify(serviceScheduler).schedule(intent, AlarmManager.INTERVAL_HOUR);
         verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
         verify(logger).info("Scheduled events to be dispatched");
     }
@@ -140,7 +140,7 @@ public class EventDispatcherTest {
         when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
         Intent intent = mock(Intent.class);
         eventDispatcher.dispatch(intent);
-        verify(serviceScheduler).unschedule(new Intent(context, EventIntentService.class));
+        verify(serviceScheduler).unschedule(intent);
         verify(logger).info("Unscheduled event dispatch");
     }
 
