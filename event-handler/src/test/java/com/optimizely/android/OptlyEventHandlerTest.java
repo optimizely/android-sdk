@@ -34,7 +34,7 @@ public class OptlyEventHandlerTest {
 
     @Before
     public void setupEventHandler() {
-        optlyEventHandler = new OptlyEventHandler(context);
+        optlyEventHandler = OptlyEventHandler.getInstance(context);
         optlyEventHandler.logger = logger;
 
         params = new HashMap<>();

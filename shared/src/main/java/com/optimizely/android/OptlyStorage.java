@@ -42,7 +42,7 @@ public class OptlyStorage {
 
     @Nullable
     public String getString(String key) {
-        getReadablePrefs().getString(key, null);
+        return getReadablePrefs().getString(key, null);
     }
 
     private SharedPreferences.Editor getWritablePrefs() {
