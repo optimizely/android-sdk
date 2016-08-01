@@ -23,15 +23,11 @@ android {
 }
 
 dependencies {
-    // Android Project Watcher
-    compile project(':project-watcher')
-    // Android Event Handler
-    compile project(':event-handler')
-    // SST Java
-    compile "com.optimizely.ab:core-api:$java_core_ver"
+    // Includes SST Java core and project watcher and event handler modules
+    compile project(':wrapper')
+
     // Needed by SST Java
     compile 'com.google.code.gson:gson:2.6.2'
-
 
     compile "com.android.support:appcompat-v7:23.0.1"
 
