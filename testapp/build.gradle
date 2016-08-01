@@ -24,7 +24,7 @@ android {
 
 dependencies {
     // Includes SST Java core and project watcher and event handler modules
-    compile project(':wrapper')
+    compile project(':android-sdk')
 
     // Needed by SST Java
     compile 'com.google.code.gson:gson:2.6.2'

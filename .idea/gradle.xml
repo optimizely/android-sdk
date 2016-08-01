@@ -8,21 +8,21 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/android-sdk" />
             <option value="$PROJECT_DIR$/event-handler" />
             <option value="$PROJECT_DIR$/project-watcher" />
             <option value="$PROJECT_DIR$/shared" />
             <option value="$PROJECT_DIR$/testapp" />
-            <option value="$PROJECT_DIR$/wrapper" />
           </set>
         </option>
         <option name="myModules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/android-sdk" />
             <option value="$PROJECT_DIR$/event-handler" />
             <option value="$PROJECT_DIR$/project-watcher" />
             <option value="$PROJECT_DIR$/shared" />
             <option value="$PROJECT_DIR$/testapp" />
-            <option value="$PROJECT_DIR$/wrapper" />
           </set>
         </option>
       </GradleProjectSettings>
