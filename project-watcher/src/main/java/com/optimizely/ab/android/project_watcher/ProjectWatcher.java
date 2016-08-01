@@ -10,11 +10,11 @@ import java.util.concurrent.TimeUnit;
  * Project Watcher interface
  */
 public interface ProjectWatcher {
-    void startWatching(Context context, OnDataFileLoadedListener onDataFileLoadedListener);
+    void loadDataFile(Context context, OnDataFileLoadedListener onDataFileLoadedListener);
+
+    void cancelDataFileLoad(Context context);
+
+    void startWatching(Context context, TimeUnit timeUnit, long interval);
 
     void stopWatching(Context context);
-
-    void startWatchingInBackground(Context context, TimeUnit timeUnit, long interval);
-
-    void stopWatchingInBackground(Context context);
 }

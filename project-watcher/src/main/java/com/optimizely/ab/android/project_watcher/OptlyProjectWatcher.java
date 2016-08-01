@@ -37,14 +37,14 @@ public class OptlyProjectWatcher implements ProjectWatcher {
     }
 
     @Override
-    public void startWatching(Context context, OnDataFileLoadedListener onDataFileLoadedListener) {
+    public void loadDataFile(Context context, OnDataFileLoadedListener onDataFileLoadedListener) {
         this.onDataFileLoadedListener = onDataFileLoadedListener;
         final Intent intent = new Intent(context, DataFileService.class);
         context.bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
-    public void stopWatching(Context context) {
+    public void cancelDataFileLoad(Context context) {
         if (bound) {
             context.unbindService(dataFileServiceConnection);
             bound = false;
@@ -53,12 +53,12 @@ public class OptlyProjectWatcher implements ProjectWatcher {
     }
 
     @Override
-    public void startWatchingInBackground(Context context, TimeUnit timeUnit, long interval) {
+    public void startWatching(Context context, TimeUnit timeUnit, long interval) {
         getServiceScheduler(context).schedule(getWatchInBackgroundIntent(context), timeUnit.toMillis(interval));
     }
 
     @Override
-    public void stopWatchingInBackground(Context context) {
+    public void stopWatching(Context context) {
         getServiceScheduler(context).unschedule(getWatchInBackgroundIntent(context));
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(context, LoggerFactory.getLogger(BackgroundWatchersCache.class));
         backgroundWatchersCache.setIsWatching(projectId, false);
