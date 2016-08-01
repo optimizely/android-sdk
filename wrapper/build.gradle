@@ -1,14 +1,18 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tools_version
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 24
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
     buildTypes {
         release {
@@ -19,7 +23,25 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile project(':shared')
+    compile project(':event-handler')
+    compile project(':project-watcher')
+
+    provided "com.android.support:support-annotations:$support_annotations_ver"
+
+    testCompile "junit:junit:$junit_ver"
+    testCompile "org.mockito:mockito-core:$mockito_ver"
+    testCompile "org.slf4j:slf4j-api:$slf4j_ver"
+    testCompile "org.slf4j:slf4j-android:$slf4j_ver"
+
+    androidTestCompile "com.android.support.test:runner:$support_test_runner_ver"
+    // Set this dependency to use JUnit 4 rules
+    androidTestCompile "com.android.support.test:rules:$support_test_runner_ver"
+    // Set this dependency to build and run Espresso tests
+    androidTestCompile "com.android.support.test.espresso:espresso-core:$espresso_ver"
+    androidTestCompile "org.mockito:mockito-core:$mockito_ver"
+    androidTestCompile "org.slf4j:slf4j-api:$slf4j_ver"
+    androidTestCompile "org.slf4j:slf4j-android:$slf4j_ver"
+    androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
+    androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
 }
