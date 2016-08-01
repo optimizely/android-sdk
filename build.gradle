@@ -21,6 +21,22 @@ allprojects {
     }
 }
 
+ext {
+    compile_sdk_version = 23
+    build_tools_version = "23.0.3"
+    min_sdk_version = 14
+    target_sdk_version = 23
+
+    java_core_ver = "0.1.64"
+    slf4j_ver = "1.7.21"
+    support_annotations_ver = "23.4.0"
+    junit_ver = "4.12"
+    mockito_ver = "1.10.19"
+    support_test_runner_ver = "0.4"
+    dexmaker_ver = "1.2"
+    espresso_ver = "2.2.1"
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

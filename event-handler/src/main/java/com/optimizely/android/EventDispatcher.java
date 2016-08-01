@@ -1,6 +1,7 @@
 package com.optimizely.android;
 
 import android.app.AlarmManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Pair;
@@ -23,13 +24,15 @@ import java.util.List;
  */
 public class EventDispatcher {
 
+    @NonNull private final Context context;
     @NonNull private final ServiceScheduler serviceScheduler;
     @NonNull private final EventDAO eventDAO;
     @NonNull private final EventClient eventClient;
     @NonNull private final Logger logger;
     @NonNull private final OptlyStorage optlyStorage;
 
-    public EventDispatcher(@NonNull OptlyStorage optlyStorage, @NonNull EventDAO eventDAO, @NonNull EventClient eventClient, @NonNull ServiceScheduler serviceScheduler, @NonNull Logger logger) {
+    public EventDispatcher(@NonNull Context context, @NonNull OptlyStorage optlyStorage, @NonNull EventDAO eventDAO, @NonNull EventClient eventClient, @NonNull ServiceScheduler serviceScheduler, @NonNull Logger logger) {
+        this.context = context;
         this.optlyStorage = optlyStorage;
         this.eventDAO = eventDAO;
         this.eventClient = eventClient;
@@ -54,12 +57,12 @@ public class EventDispatcher {
 
         if (!dispatched) {
             long interval = getInterval(intent);
-            serviceScheduler.schedule(EventIntentService.class, interval);
+            serviceScheduler.schedule(new Intent(context, EventIntentService.class), interval);
             saveInterval(interval);
             logger.info("Scheduled events to be dispatched");
         } else {
             // Quit trying to dispatch events because their aren't any in storage
-            serviceScheduler.unschedule(EventIntentService.class);
+            serviceScheduler.unschedule(new Intent(context, EventIntentService.class));
             logger.info("Unscheduled event dispatch");
         }
     }
