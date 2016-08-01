@@ -12,7 +12,7 @@
             <option value="$PROJECT_DIR$/event-handler" />
             <option value="$PROJECT_DIR$/project-watcher" />
             <option value="$PROJECT_DIR$/shared" />
-            <option value="$PROJECT_DIR$/testapp" />
+            <option value="$PROJECT_DIR$/test-app" />
           </set>
         </option>
         <option name="myModules">
@@ -22,7 +22,7 @@
             <option value="$PROJECT_DIR$/event-handler" />
             <option value="$PROJECT_DIR$/project-watcher" />
             <option value="$PROJECT_DIR$/shared" />
-            <option value="$PROJECT_DIR$/testapp" />
+            <option value="$PROJECT_DIR$/test-app" />
           </set>
         </option>
       </GradleProjectSettings>
