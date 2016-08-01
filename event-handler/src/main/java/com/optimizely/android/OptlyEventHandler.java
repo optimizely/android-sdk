@@ -1,6 +1,5 @@
 package com.optimizely.android;
 
-import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -39,7 +38,7 @@ public class OptlyEventHandler implements EventHandler {
     /**
      * Sets event flushing interval
      *
-     * Events will only be scheduled to flush as long as events remain in storage.
+     * Events will only be scheduled to dispatch as long as events remain in storage.
      *
      * Events are put into storage when they fail to send over network.
      * @param timeUnit a {@link TimeUnit}
@@ -65,7 +64,7 @@ public class OptlyEventHandler implements EventHandler {
             Intent intent = new Intent(context, EventIntentService.class);
             intent.putExtra(EventIntentService.EXTRA_URL, event);
             if (flushInterval != -1) {
-                intent.putExtra(EventIntentService.EXTRA_DURATION, flushInterval);
+                intent.putExtra(EventIntentService.EXTRA_INTERVAL, flushInterval);
             }
             context.startService(intent);
             logger.info("Sent url {} to the event handler service", event);

@@ -60,7 +60,7 @@ public class EventReschedulerTest {
 
     @Test
     public void onReceiveValidPackageReplaced() {
-        when(intent.getAction()).thenReturn(Intent.ACTION_PACKAGE_REPLACED);
+        when(intent.getAction()).thenReturn(Intent.ACTION_MY_PACKAGE_REPLACED);
         rescheduler.onReceive(context, intent);
         verify(logger).info("Rescheduling event flushing if necessary");
     }
