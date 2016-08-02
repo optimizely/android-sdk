@@ -29,8 +29,8 @@ public class DataFileLoader {
 
     public void getDataFile(String projectId, @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
         DataFileClient dataFileClient = new DataFileClient(
-                new Client(new OptlyStorage(dataFileService), LoggerFactory.getLogger(OptlyStorage.class)),
                 projectId,
+                new Client(new OptlyStorage(dataFileService), LoggerFactory.getLogger(OptlyStorage.class)),
                 LoggerFactory.getLogger(DataFileClient.class));
         DataFileCache dataFileCache = new DataFileCache(
                 projectId,

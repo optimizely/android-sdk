@@ -26,7 +26,7 @@ public class DataFileClient {
     @NonNull private final Client client;
     @NonNull private final Logger logger;
 
-    DataFileClient(@NonNull Client client, @NonNull String projectId, @NonNull Logger logger) {
+    DataFileClient(@NonNull String projectId, @NonNull Client client, @NonNull Logger logger) {
         this.client = client;
         this.projectId = projectId;
         this.logger = logger;
