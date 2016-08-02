@@ -8,6 +8,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.util.Scanner;
 
 /**
  * Created by jdeffibaugh on 8/1/16 for Optimizely.
@@ -16,7 +17,7 @@ import java.net.URLConnection;
  */
 public class Client {
 
-    private static String LAST_MODIFIED_HEADER_KEY = "com.optimizely.ab.android.LAST_MODIFIED_HEADER";
+    static String LAST_MODIFIED_HEADER_KEY = "com.optimizely.ab.android.LAST_MODIFIED_HEADER";
 
     @NonNull private final OptlyStorage optlyStorage;
     @NonNull private final Logger logger;
@@ -26,23 +27,25 @@ public class Client {
         this.logger = logger;
     }
 
-    public void setIfModifiedSince(URLConnection urlConnection) {
+    public void setIfModifiedSince(@NonNull URLConnection urlConnection) {
         long lastModified = optlyStorage.getLong(LAST_MODIFIED_HEADER_KEY, 0);
         if (lastModified > 0) {
             urlConnection.setIfModifiedSince(lastModified);
         }
     }
 
-    public void saveLastModified(URLConnection urlConnection) {
+    public void saveLastModified(@NonNull URLConnection urlConnection) {
         long lastModified = urlConnection.getLastModified();
-        if (lastModified != 0) {
+        if (lastModified > 0) {
             optlyStorage.saveLong(LAST_MODIFIED_HEADER_KEY, urlConnection.getLastModified());
+        } else {
+            logger.warn("CDN response didn't have a last modified header");
         }
     }
 
-    public String readStream(URLConnection urlConnection) throws IOException {
+    public String readStream(@NonNull URLConnection urlConnection) throws IOException {
         InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-        java.util.Scanner s = new java.util.Scanner(in).useDelimiter("\\A");
+        Scanner s = new Scanner(in).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
 }
