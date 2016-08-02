@@ -12,9 +12,12 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Created by jdeffibaugh on 8/1/16 for Optimizely.
- *
+ * <p/>
  * Handles intents and bindings in {@link DataFileService}
  */
 public class DataFileLoader {
@@ -29,7 +32,6 @@ public class DataFileLoader {
 
     public void getDataFile(String projectId, @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
         DataFileClient dataFileClient = new DataFileClient(
-                projectId,
                 new Client(new OptlyStorage(dataFileService), LoggerFactory.getLogger(OptlyStorage.class)),
                 LoggerFactory.getLogger(DataFileClient.class));
         DataFileCache dataFileCache = new DataFileCache(
@@ -37,7 +39,11 @@ public class DataFileLoader {
                 new Cache(dataFileService, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DataFileCache.class));
         RequestDataFileFromClientTask requestDataFileFromClientTask =
-                new RequestDataFileFromClientTask(dataFileService, dataFileCache, dataFileClient, onDataFileLoadedListener);
+                new RequestDataFileFromClientTask(projectId,
+                        dataFileService, dataFileCache,
+                        dataFileClient,
+                        onDataFileLoadedListener,
+                        LoggerFactory.getLogger(RequestDataFileFromClientTask.class));
         LoadDataFileFromCacheTask loadDataFileFromCacheTask =
                 new LoadDataFileFromCacheTask(dataFileCache, requestDataFileFromClientTask, onDataFileLoadedListener);
         loadDataFileFromCacheTask.execute();
@@ -78,30 +84,43 @@ public class DataFileLoader {
 
     static class RequestDataFileFromClientTask extends AsyncTask<Void, Void, String> {
 
+        @NonNull private final String projectId;
         @NonNull private final DataFileService dataFileService;
         @NonNull private final DataFileCache dataFileCache;
         @NonNull private final DataFileClient dataFileClient;
+        @NonNull private final Logger logger;
         @Nullable private final OnDataFileLoadedListener onDataFileLoadedListener;
 
-        RequestDataFileFromClientTask(@NonNull DataFileService dataFileService,
+        static final String FORMAT_CDN_URL = "https://cdn.optimizely.com/json/%s.json";
+
+        RequestDataFileFromClientTask(@NonNull String projectId,
+                                      @NonNull DataFileService dataFileService,
                                       @NonNull DataFileCache dataFileCache,
                                       @NonNull DataFileClient dataFileClient,
-                                      @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
+                                      @Nullable OnDataFileLoadedListener onDataFileLoadedListener,
+                                      @NonNull Logger logger) {
+            this.projectId = projectId;
             this.dataFileService = dataFileService;
             this.dataFileCache = dataFileCache;
             this.dataFileClient = dataFileClient;
             this.onDataFileLoadedListener = onDataFileLoadedListener;
+            this.logger = logger;
         }
 
         @Override
         protected String doInBackground(Void... params) {
-            String dataFile = dataFileClient.request();
-            if (dataFile != null) {
-                dataFileCache.delete(); // Delete the old file first
-                dataFileCache.save(dataFile); // save the new file from the CDN
-            }
+            try {
+                String dataFile = dataFileClient.request(new URL(String.format(FORMAT_CDN_URL, projectId)));
+                if (dataFile != null) {
+                    dataFileCache.delete(); // Delete the old file first
+                    dataFileCache.save(dataFile); // save the new file from the CDN
+                }
 
-            return dataFile;
+                return dataFile;
+            } catch (MalformedURLException e) {
+                logger.error("Unable to make data file cdn URL", e);
+                return null;
+            }
         }
 
         @Override

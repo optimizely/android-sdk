@@ -22,23 +22,19 @@ import java.net.URLConnection;
  */
 public class DataFileClient {
 
-    @NonNull String projectId;
     @NonNull private final Client client;
     @NonNull private final Logger logger;
 
-    DataFileClient(@NonNull String projectId, @NonNull Client client, @NonNull Logger logger) {
+    DataFileClient(@NonNull Client client, @NonNull Logger logger) {
         this.client = client;
-        this.projectId = projectId;
         this.logger = logger;
     }
 
-    String request() {
+    String request(URL url) {
         HttpURLConnection urlConnection = null;
         try {
-            String endPoint = String.format("https://cdn.optimizely.com/json/%s.json", projectId);
-            URL url = new URL(endPoint);
-            logger.info("Requesting data file from {}", endPoint);
-            urlConnection = (HttpURLConnection) url.openConnection();
+            logger.info("Requesting data file from {}", url);
+            urlConnection = client.openConnection(url);
 
             client.setIfModifiedSince(urlConnection);
 
@@ -55,9 +51,6 @@ public class DataFileClient {
                 logger.error("Unexpected response from data file cdn, status: {}", status);
                 return null;
             }
-        } catch (MalformedURLException e) {
-            logger.error("Bad url", e);
-            return null;
         } catch (IOException e) {
             logger.error("Error making request", e);
             return null;

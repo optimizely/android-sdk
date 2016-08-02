@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
 
@@ -25,6 +27,10 @@ public class Client {
     public Client(@NonNull OptlyStorage optlyStorage, @NonNull Logger logger) {
         this.optlyStorage = optlyStorage;
         this.logger = logger;
+    }
+
+    public HttpURLConnection openConnection(URL url) throws IOException {
+        return (HttpURLConnection) url.openConnection();
     }
 
     public void setIfModifiedSince(@NonNull URLConnection urlConnection) {
