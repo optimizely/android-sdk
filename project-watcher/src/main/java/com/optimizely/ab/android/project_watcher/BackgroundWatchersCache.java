@@ -15,11 +15,11 @@ import java.util.List;
 
 /**
  * Created by jdeffibaugh on 7/29/16 for Optimizely.
- *
+ * <p/>
  * Caches a json dict that saves state about which project IDs have background watching enabled.
  */
 public class BackgroundWatchersCache {
-    private static final String BACKGROUND_WATCHERS_FILE_NAME = "optly-background-watchers.json";
+    static final String BACKGROUND_WATCHERS_FILE_NAME = "optly-background-watchers.json";
 
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
@@ -29,63 +29,69 @@ public class BackgroundWatchersCache {
         this.logger = logger;
     }
 
-    boolean setIsWatching(String projectId, boolean watching) {
-        JSONObject backgroundWatchers = load();
-        if (backgroundWatchers != null) {
-            try {
+    public boolean setIsWatching(@NonNull String projectId, boolean watching) {
+        if (projectId.isEmpty()) {
+            logger.error("Passed in an empty string for projectId");
+            return false;
+        }
+
+        try {
+            JSONObject backgroundWatchers = load();
+            if (backgroundWatchers != null) {
                 backgroundWatchers.put(projectId, watching);
                 save(backgroundWatchers.toString());
                 return true;
-            } catch (JSONException e) {
-                logger.error("Unable to parse background watchers file");
             }
+        } catch (JSONException e) {
+            logger.error("Unable to update watching state for project id", e);
         }
 
         return false;
     }
 
-    boolean isWatching(String projectId) {
-        JSONObject backgroundWatchers = load();
-        if (backgroundWatchers != null) {
-            try {
+    public boolean isWatching(String projectId) {
+        try {
+            JSONObject backgroundWatchers = load();
+
+            if (backgroundWatchers != null) {
                 return backgroundWatchers.getBoolean(projectId);
-            } catch (JSONException e) {
-                logger.error("Unable to retrieve value from json");
+
             }
+        } catch (JSONException e) {
+            logger.error("Unable check if project id is being watched", e);
         }
 
         return false;
     }
 
-    List<String> getWatchingProjectIds() {
+    public List<String> getWatchingProjectIds() {
         List<String> projectIds = new ArrayList<>();
-        JSONObject backgroundWatchers = load();
-        if (backgroundWatchers != null) {
-            Iterator<String> iterator = backgroundWatchers.keys();
-            while (iterator.hasNext()) {
-                final String projectId = iterator.next();
-                try {
+        try {
+            JSONObject backgroundWatchers = load();
+            if (backgroundWatchers != null) {
+                Iterator<String> iterator = backgroundWatchers.keys();
+                while (iterator.hasNext()) {
+                    final String projectId = iterator.next();
                     if (backgroundWatchers.getBoolean(projectId)) {
                         projectIds.add(projectId);
                     }
-                } catch (JSONException e) {
-                    logger.error("Unable to retrieve value from json");
                 }
             }
+        } catch (JSONException e) {
+            logger.error("Unable to get watching project ids", e);
         }
 
         return projectIds;
     }
 
     @Nullable
-    private JSONObject load() {
-        try {
-            String backGroundWatchersFile = cache.load(BACKGROUND_WATCHERS_FILE_NAME);
-            return new JSONObject(backGroundWatchersFile);
-        } catch (JSONException e) {
-            logger.error("Unable to parse background watchers file");
-            return null;
+    private JSONObject load() throws JSONException {
+        String backGroundWatchersFile = cache.load(BACKGROUND_WATCHERS_FILE_NAME);
+        if (backGroundWatchersFile == null) {
+            backGroundWatchersFile = "{}";
         }
+
+        return new JSONObject(backGroundWatchersFile);
     }
 
     private boolean delete() {

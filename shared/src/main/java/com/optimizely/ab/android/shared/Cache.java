@@ -36,7 +36,6 @@ public class Cache {
             logger.error("Error loading file", e);
             return null;
         }
-
     }
 
     public boolean delete(String fileName) {
