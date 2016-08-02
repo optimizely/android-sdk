@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,9 +32,6 @@ public class Cache {
                 sb.append(line);
             }
             return sb.toString();
-        } catch (FileNotFoundException e) {
-            logger.error("File does not exist", e);
-            return null;
         } catch (IOException e) {
             logger.error("Error loading file", e);
             return null;
