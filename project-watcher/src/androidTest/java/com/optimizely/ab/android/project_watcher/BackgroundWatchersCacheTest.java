@@ -53,6 +53,12 @@ public class BackgroundWatchersCacheTest {
     }
 
     @Test
+    public void isWatchingEmptyString() {
+        assertFalse(backgroundWatchersCache.isWatching(""));
+        verify(logger).error("Passed in an empty string for projectId");
+    }
+
+    @Test
     public void setIsWatchingPersists() {
         assertTrue(backgroundWatchersCache.setIsWatching("1", true));
         assertTrue(backgroundWatchersCache.setIsWatching("2", true));

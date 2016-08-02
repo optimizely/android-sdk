@@ -33,8 +33,8 @@ public class DataFileLoader {
                 projectId,
                 LoggerFactory.getLogger(DataFileClient.class));
         DataFileCache dataFileCache = new DataFileCache(
-                new Cache(dataFileService, LoggerFactory.getLogger(Cache.class)),
                 projectId,
+                new Cache(dataFileService, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DataFileCache.class));
         RequestDataFileFromClientTask requestDataFileFromClientTask =
                 new RequestDataFileFromClientTask(dataFileService, dataFileCache, dataFileClient, onDataFileLoadedListener);

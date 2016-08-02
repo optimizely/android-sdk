@@ -49,7 +49,12 @@ public class BackgroundWatchersCache {
         return false;
     }
 
-    public boolean isWatching(String projectId) {
+    public boolean isWatching(@NonNull String projectId) {
+        if (projectId.isEmpty()) {
+            logger.error("Passed in an empty string for projectId");
+            return false;
+        }
+
         try {
             JSONObject backgroundWatchers = load();
 

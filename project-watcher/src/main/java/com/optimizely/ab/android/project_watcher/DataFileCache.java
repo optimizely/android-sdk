@@ -16,13 +16,13 @@ import org.slf4j.Logger;
  */
 public class DataFileCache {
 
-    private static final String OPTLY_DATA_FILE_NAME = "optly-data-file-%s.json";
+    static final String OPTLY_DATA_FILE_NAME = "optly-data-file-%s.json";
 
     @NonNull private final Cache cache;
     @NonNull private final String projectId;
     @NonNull private final Logger logger;
 
-    public DataFileCache(@NonNull Cache cache, @NonNull String projectId, @NonNull Logger logger) {
+    public DataFileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
         this.projectId = projectId;
         this.logger = logger;
@@ -31,6 +31,9 @@ public class DataFileCache {
     @Nullable
     JSONObject load() {
         String optlyDataFile = cache.load(getFileName());
+        if (optlyDataFile == null) {
+            return null;
+        }
         try {
             return new JSONObject(optlyDataFile);
         } catch (JSONException e) {
@@ -49,7 +52,7 @@ public class DataFileCache {
     }
 
 
-    private String getFileName() {
+    String getFileName() {
         return String.format(OPTLY_DATA_FILE_NAME, projectId);
     }
 
