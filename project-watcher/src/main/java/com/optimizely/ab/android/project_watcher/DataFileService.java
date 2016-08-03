@@ -63,7 +63,7 @@ public class DataFileService extends Service {
     }
 
     public class LocalBinder extends Binder {
-        DataFileService getService() {
+        public DataFileService getService() {
             // Return this instance of LocalService so clients can call public methods
             return DataFileService.this;
         }
