@@ -30,9 +30,10 @@ public class DataFileClient {
         this.logger = logger;
     }
 
-    String request(URL url) {
+    public String request(String urlString) {
         HttpURLConnection urlConnection = null;
         try {
+            URL url = new URL(urlString);
             logger.info("Requesting data file from {}", url);
             urlConnection = client.openConnection(url);
 

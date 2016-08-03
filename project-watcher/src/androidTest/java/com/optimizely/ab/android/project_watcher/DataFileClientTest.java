@@ -47,7 +47,7 @@ public class DataFileClientTest {
         when(urlConnection.getResponseCode()).thenReturn(200);
         when(client.readStream(urlConnection)).thenReturn("{}");
 
-        String response = dataFileClient.request(url);
+        String response = dataFileClient.request(url.toString());
         assertEquals(response, "{}");
 
         verify(logger).info("Requesting data file from {}", url);
@@ -62,7 +62,7 @@ public class DataFileClientTest {
         when(urlConnection.getResponseCode()).thenReturn(201);
         when(client.readStream(urlConnection)).thenReturn("{}");
 
-        String response = dataFileClient.request(url);
+        String response = dataFileClient.request(url.toString());
         assertEquals(response, "{}");
 
         verify(logger).info("Requesting data file from {}", url);
@@ -77,7 +77,7 @@ public class DataFileClientTest {
         when(urlConnection.getResponseCode()).thenReturn(299);
         when(client.readStream(urlConnection)).thenReturn("{}");
 
-        String response = dataFileClient.request(url);
+        String response = dataFileClient.request(url.toString());
         assertEquals(response, "{}");
 
         verify(logger).info("Requesting data file from {}", url);
@@ -91,7 +91,7 @@ public class DataFileClientTest {
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(300);
 
-        String response = dataFileClient.request(url);
+        String response = dataFileClient.request(url.toString());
         assertNull(response);
 
         verify(logger).error("Unexpected response from data file cdn, status: {}", 300);
@@ -104,7 +104,7 @@ public class DataFileClientTest {
         when(urlConnection.getResponseCode()).thenReturn(200);
         doThrow(new IOException()).when(client).readStream(urlConnection);
 
-        String response = dataFileClient.request(url);
+        String response = dataFileClient.request(url.toString());
         assertNull(response);
 
         verify(logger).error(contains("Error making request"), any(IOException.class));

@@ -12,9 +12,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 /**
  * Created by jdeffibaugh on 8/1/16 for Optimizely.
  * <p/>
@@ -22,38 +19,51 @@ import java.net.URL;
  */
 public class DataFileLoader {
 
-    @NonNull private final DataFileService dataFileService;
+    @NonNull private final TaskChain taskChain;
     @NonNull private final Logger logger;
 
-    public DataFileLoader(@NonNull DataFileService dataFileService, @NonNull Logger logger) {
-        this.dataFileService = dataFileService;
+    public DataFileLoader(@NonNull TaskChain taskChain, @NonNull Logger logger) {
         this.logger = logger;
+        this.taskChain = taskChain;
     }
 
-    public boolean getDataFile(String projectId, @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
-        DataFileClient dataFileClient = new DataFileClient(
-                new Client(new OptlyStorage(dataFileService), LoggerFactory.getLogger(OptlyStorage.class)),
-                LoggerFactory.getLogger(DataFileClient.class));
-        DataFileCache dataFileCache = new DataFileCache(
-                projectId,
-                new Cache(dataFileService, LoggerFactory.getLogger(Cache.class)),
-                LoggerFactory.getLogger(DataFileCache.class));
-        RequestDataFileFromClientTask requestDataFileFromClientTask =
-                new RequestDataFileFromClientTask(projectId,
-                        dataFileService, dataFileCache,
-                        dataFileClient,
-                        onDataFileLoadedListener,
-                        LoggerFactory.getLogger(RequestDataFileFromClientTask.class));
-        LoadDataFileFromCacheTask loadDataFileFromCacheTask =
-                new LoadDataFileFromCacheTask(dataFileCache, requestDataFileFromClientTask, onDataFileLoadedListener);
-        loadDataFileFromCacheTask.execute();
+    public boolean getDataFile(@NonNull String projectId, @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
+        LoadDataFileFromCacheTask task = taskChain.get(projectId, onDataFileLoadedListener);
+        task.start();
 
         logger.info("Refreshing data file");
 
         return true;
     }
 
-    static class LoadDataFileFromCacheTask extends AsyncTask<Void, Void, JSONObject> {
+    public static class TaskChain {
+
+        @NonNull private final DataFileService dataFileService;
+
+        public TaskChain(@NonNull DataFileService dataFileService) {
+            this.dataFileService = dataFileService;
+        }
+
+        @NonNull
+        public LoadDataFileFromCacheTask get(@NonNull String projectId, @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
+            DataFileClient dataFileClient = new DataFileClient(
+                    new Client(new OptlyStorage(dataFileService), LoggerFactory.getLogger(OptlyStorage.class)),
+                    LoggerFactory.getLogger(DataFileClient.class));
+            DataFileCache dataFileCache = new DataFileCache(
+                    projectId,
+                    new Cache(dataFileService, LoggerFactory.getLogger(Cache.class)),
+                    LoggerFactory.getLogger(DataFileCache.class));
+            RequestDataFileFromClientTask requestDataFileFromClientTask =
+                    new RequestDataFileFromClientTask(projectId,
+                            dataFileService, dataFileCache,
+                            dataFileClient,
+                            onDataFileLoadedListener,
+                            LoggerFactory.getLogger(RequestDataFileFromClientTask.class));
+            return new LoadDataFileFromCacheTask(dataFileCache, requestDataFileFromClientTask, onDataFileLoadedListener);
+        }
+    }
+
+    public static class LoadDataFileFromCacheTask extends AsyncTask<Void, Void, JSONObject> {
 
         @NonNull private final DataFileCache dataFileCache;
         @NonNull private final RequestDataFileFromClientTask requestDataFileFromClientTask;
@@ -72,7 +82,9 @@ public class DataFileLoader {
             return dataFileCache.load();
         }
 
-        @Override
+        public void start() {
+            execute();
+        }        @Override
         protected void onPostExecute(JSONObject dataFile) {
             if (dataFile != null) {
                 if (onDataFileLoadedListener != null) {
@@ -80,12 +92,15 @@ public class DataFileLoader {
                 }
             }
 
-            requestDataFileFromClientTask.execute();
+            requestDataFileFromClientTask.start();
         }
+
+
     }
 
-    static class RequestDataFileFromClientTask extends AsyncTask<Void, Void, String> {
+    public static class RequestDataFileFromClientTask extends AsyncTask<Void, Void, String> {
 
+        public static final String FORMAT_CDN_URL = "https://cdn.optimizely.com/json/%s.json";
         @NonNull private final String projectId;
         @NonNull private final DataFileService dataFileService;
         @NonNull private final DataFileCache dataFileCache;
@@ -93,14 +108,12 @@ public class DataFileLoader {
         @NonNull private final Logger logger;
         @Nullable private final OnDataFileLoadedListener onDataFileLoadedListener;
 
-        static final String FORMAT_CDN_URL = "https://cdn.optimizely.com/json/%s.json";
-
-        RequestDataFileFromClientTask(@NonNull String projectId,
-                                      @NonNull DataFileService dataFileService,
-                                      @NonNull DataFileCache dataFileCache,
-                                      @NonNull DataFileClient dataFileClient,
-                                      @Nullable OnDataFileLoadedListener onDataFileLoadedListener,
-                                      @NonNull Logger logger) {
+        public RequestDataFileFromClientTask(@NonNull String projectId,
+                                             @NonNull DataFileService dataFileService,
+                                             @NonNull DataFileCache dataFileCache,
+                                             @NonNull DataFileClient dataFileClient,
+                                             @Nullable OnDataFileLoadedListener onDataFileLoadedListener,
+                                             @NonNull Logger logger) {
             this.projectId = projectId;
             this.dataFileService = dataFileService;
             this.dataFileCache = dataFileCache;
@@ -109,20 +122,19 @@ public class DataFileLoader {
             this.logger = logger;
         }
 
-        @Override
+        // Need this for unit testing
+        public void start() {
+            execute();
+        }        @Override
         protected String doInBackground(Void... params) {
-            try {
-                String dataFile = dataFileClient.request(new URL(String.format(FORMAT_CDN_URL, projectId)));
-                if (dataFile != null) {
-                    dataFileCache.delete(); // Delete the old file first
-                    dataFileCache.save(dataFile); // save the new file from the CDN
-                }
-
-                return dataFile;
-            } catch (MalformedURLException e) {
-                logger.error("Unable to make data file cdn URL", e);
-                return null;
+            String dataFile = dataFileClient.request(String.format(FORMAT_CDN_URL, projectId));
+            if (dataFile != null) {
+                // TODO more robust handling of this
+                dataFileCache.delete(); // Delete the old file first
+                dataFileCache.save(dataFile); // save the new file from the CDN
             }
+
+            return dataFile;
         }
 
         @Override
@@ -137,8 +149,10 @@ public class DataFileLoader {
 
             if (!dataFileService.isBound()) {
                 // We are running in the background so stop the service
-                dataFileService.stopSelf();
+                dataFileService.stop();
             }
         }
+
+
     }
 }

@@ -29,7 +29,7 @@ public class DataFileCache {
     }
 
     @Nullable
-    JSONObject load() {
+    public JSONObject load() {
         String optlyDataFile = cache.load(getFileName());
         if (optlyDataFile == null) {
             return null;
@@ -43,16 +43,16 @@ public class DataFileCache {
 
     }
 
-    boolean delete() {
+    public boolean delete() {
         return cache.delete(getFileName());
     }
 
-    boolean save(String dataFile) {
+    public boolean save(String dataFile) {
         return cache.save(getFileName(), dataFile);
     }
 
 
-    String getFileName() {
+    public String getFileName() {
         return String.format(OPTLY_DATA_FILE_NAME, projectId);
     }
 

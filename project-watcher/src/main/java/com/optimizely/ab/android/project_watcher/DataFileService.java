@@ -37,7 +37,7 @@ public class DataFileService extends Service {
         if (intent != null) {
             if (intent.hasExtra(EXTRA_PROJECT_ID)) {
                 String projectId = intent.getStringExtra(EXTRA_PROJECT_ID);
-                DataFileLoader dataFileLoader = new DataFileLoader(this, LoggerFactory.getLogger(DataFileLoader.class));
+                DataFileLoader dataFileLoader = new DataFileLoader(new DataFileLoader.TaskChain(this), LoggerFactory.getLogger(DataFileLoader.class));
                 dataFileLoader.getDataFile(projectId, null);
                 BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
                         new Cache(this, LoggerFactory.getLogger(Cache.class)),
@@ -54,8 +54,12 @@ public class DataFileService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    boolean isBound() {
+    public boolean isBound() {
         return  isBound;
+    }
+
+    public void stop() {
+        stopSelf();
     }
 
     public void getDataFile(String projectId, DataFileLoader dataFileLoader, OnDataFileLoadedListener loadedListener) {
