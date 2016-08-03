@@ -30,7 +30,7 @@ public class DataFileLoader {
         this.logger = logger;
     }
 
-    public void getDataFile(String projectId, @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
+    public boolean getDataFile(String projectId, @Nullable OnDataFileLoadedListener onDataFileLoadedListener) {
         DataFileClient dataFileClient = new DataFileClient(
                 new Client(new OptlyStorage(dataFileService), LoggerFactory.getLogger(OptlyStorage.class)),
                 LoggerFactory.getLogger(DataFileClient.class));
@@ -49,6 +49,8 @@ public class DataFileLoader {
         loadDataFileFromCacheTask.execute();
 
         logger.info("Refreshing data file");
+
+        return true;
     }
 
     static class LoadDataFileFromCacheTask extends AsyncTask<Void, Void, JSONObject> {

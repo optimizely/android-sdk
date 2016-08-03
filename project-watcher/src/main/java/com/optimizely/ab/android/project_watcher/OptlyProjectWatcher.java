@@ -113,7 +113,8 @@ public class OptlyProjectWatcher implements ProjectWatcher {
             DataFileService.LocalBinder binder = (DataFileService.LocalBinder) service;
             DataFileService dataFileService = binder.getService();
             if (dataFileService != null) {
-                dataFileService.getDataFile(optlyProjectWatcher.getProjectId(), new OnDataFileLoadedListener() {
+                DataFileLoader dataFileLoader = new DataFileLoader(dataFileService, LoggerFactory.getLogger(DataFileLoader.class));
+                dataFileService.getDataFile(optlyProjectWatcher.getProjectId(), dataFileLoader, new OnDataFileLoadedListener() {
                     @Override
                     public void onDataFileLoaded(String dataFile) {
                         if (optlyProjectWatcher.isBound()) {

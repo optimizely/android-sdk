@@ -28,6 +28,7 @@ public class DataFileService extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         isBound = false;
+        logger.info("All clients are unbound from data file service");
         return false;
     }
 
@@ -42,7 +43,13 @@ public class DataFileService extends Service {
                         new Cache(this, LoggerFactory.getLogger(Cache.class)),
                         LoggerFactory.getLogger(BackgroundWatchersCache.class));
                 backgroundWatchersCache.setIsWatching(projectId, true);
+
+                logger.info("Started watching project {} in the background", projectId);
+            } else {
+                logger.warn("Data file service received an intent with no project id extra");
             }
+        } else {
+            logger.warn("Data file service received a null intent");
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -51,8 +58,7 @@ public class DataFileService extends Service {
         return  isBound;
     }
 
-    public void getDataFile(String projectId, OnDataFileLoadedListener loadedListener) {
-        DataFileLoader dataFileLoader = new DataFileLoader(this, LoggerFactory.getLogger(DataFileLoader.class));
+    public void getDataFile(String projectId, DataFileLoader dataFileLoader, OnDataFileLoadedListener loadedListener) {
         dataFileLoader.getDataFile(projectId, loadedListener);
     }
 
