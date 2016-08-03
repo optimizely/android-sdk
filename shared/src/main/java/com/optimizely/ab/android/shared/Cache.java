@@ -42,6 +42,10 @@ public class Cache {
         return context.deleteFile(fileName);
     }
 
+    public boolean exists(String fileName) {
+        return load(fileName) != null;
+    }
+
     public boolean save(String fileName, String data) {
         try {
             FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);

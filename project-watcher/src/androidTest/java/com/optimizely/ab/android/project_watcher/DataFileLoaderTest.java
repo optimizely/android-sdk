@@ -44,11 +44,42 @@ public class DataFileLoaderTest {
 
         String url = String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1");
         when(dataFileClient.request(url)).thenReturn("");
+        when(dataFileCache.exists()).thenReturn(false);
+        when(dataFileCache.save("")).thenReturn(true);
         String dataFile = task.doInBackground(null);
         assertEquals("", dataFile);
         verify(dataFileClient).request(url);
-        verify(dataFileCache).delete();
         verify(dataFileCache).save("");
+    }
+
+    @Test
+    public void existingDataFileWhenRequestingFromClientFailsToDelete() throws MalformedURLException {
+        DataFileLoader.RequestDataFileFromClientTask task =
+                new DataFileLoader.RequestDataFileFromClientTask("1", datafileService, dataFileCache,
+                        dataFileClient, onDataFileLoadedListener, logger);
+
+        String url = String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1");
+        when(dataFileClient.request(url)).thenReturn("");
+        when(dataFileCache.exists()).thenReturn(true);
+        when(dataFileCache.delete()).thenReturn(false);
+        String dataFile = task.doInBackground(null);
+        assertEquals(null, dataFile);
+        verify(logger).warn("Unable to delete old data file");
+    }
+
+    @Test
+    public void existingDataFileWhenRequestingFromClientFailsToSave() throws MalformedURLException {
+        DataFileLoader.RequestDataFileFromClientTask task =
+                new DataFileLoader.RequestDataFileFromClientTask("1", datafileService, dataFileCache,
+                        dataFileClient, onDataFileLoadedListener, logger);
+
+        String url = String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1");
+        when(dataFileClient.request(url)).thenReturn("");
+        when(dataFileCache.exists()).thenReturn(false);
+        when(dataFileCache.save("")).thenReturn(false);
+        String dataFile = task.doInBackground(null);
+        assertEquals(null, dataFile);
+        verify(logger).warn("Unable to save new data file");
     }
 
     @Test

@@ -47,6 +47,10 @@ public class DataFileCache {
         return cache.delete(getFileName());
     }
 
+    public boolean exists() {
+        return cache.exists(getFileName());
+    }
+
     public boolean save(String dataFile) {
         return cache.save(getFileName(), dataFile);
     }

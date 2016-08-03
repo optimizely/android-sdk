@@ -94,8 +94,6 @@ public class DataFileLoader {
 
             requestDataFileFromClientTask.start();
         }
-
-
     }
 
     public static class RequestDataFileFromClientTask extends AsyncTask<Void, Void, String> {
@@ -125,13 +123,22 @@ public class DataFileLoader {
         // Need this for unit testing
         public void start() {
             execute();
-        }        @Override
+        }
+
+        @Override
         protected String doInBackground(Void... params) {
             String dataFile = dataFileClient.request(String.format(FORMAT_CDN_URL, projectId));
             if (dataFile != null) {
-                // TODO more robust handling of this
-                dataFileCache.delete(); // Delete the old file first
-                dataFileCache.save(dataFile); // save the new file from the CDN
+                if (dataFileCache.exists()) {
+                    if (!dataFileCache.delete()) {
+                        logger.warn("Unable to delete old data file");
+                        return null; // Unable to delete
+                    }
+                }
+                if (!dataFileCache.save(dataFile)) {
+                    logger.warn("Unable to save new data file");
+                    return null;
+                }
             }
 
             return dataFile;
