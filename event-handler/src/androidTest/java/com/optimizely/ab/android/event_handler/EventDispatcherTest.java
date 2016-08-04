@@ -73,12 +73,12 @@ public class EventDispatcherTest {
         when(eventDAO.removeEvent(2L)).thenReturn(true);
         when(eventDAO.removeEvent(3L)).thenReturn(true);
 
-        Intent intent = mock(Intent.class);
-        when(intent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1)).thenReturn(-1L);
+        Intent mockIntent = mock(Intent.class);
+        when(mockIntent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1)).thenReturn(-1L);
         when(optlyStorage.getLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR)).thenReturn(AlarmManager.INTERVAL_HOUR);
-        eventDispatcher.dispatch(intent);
+        eventDispatcher.dispatch(mockIntent);
 
-        verify(serviceScheduler).schedule(intent, AlarmManager.INTERVAL_HOUR);
+        verify(serviceScheduler).schedule(mockIntent, AlarmManager.INTERVAL_HOUR);
         verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
         verify(logger).warn("Unable to delete an event from local storage that was sent to successfully");
         verify(logger).info("Scheduled events to be dispatched");
@@ -91,15 +91,15 @@ public class EventDispatcherTest {
 
         when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
 
-        Intent intent = mock(Intent.class);
-        when(intent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
-        when(intent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
-        when(intent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1)).thenReturn(AlarmManager.INTERVAL_HOUR);
+        Intent mockIntent = mock(Intent.class);
+        when(mockIntent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
+        when(mockIntent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
+        when(mockIntent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1)).thenReturn(AlarmManager.INTERVAL_HOUR);
         when(eventClient.sendEvent(event)).thenReturn(false);
         when(eventDAO.storeEvent(event)).thenReturn(true);
 
-        eventDispatcher.dispatch(intent);
-        verify(serviceScheduler).schedule(intent, AlarmManager.INTERVAL_HOUR);
+        eventDispatcher.dispatch(mockIntent);
+        verify(serviceScheduler).schedule(mockIntent, AlarmManager.INTERVAL_HOUR);
         verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
         verify(logger).info("Scheduled events to be dispatched");
     }
@@ -111,9 +111,9 @@ public class EventDispatcherTest {
 
         when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
 
-        Intent intent = mock(Intent.class);
-        when(intent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
-        when(intent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
+        Intent mockIntent = mock(Intent.class);
+        when(mockIntent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
+        when(mockIntent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
 
     }
 
@@ -124,13 +124,13 @@ public class EventDispatcherTest {
 
         when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
 
-        Intent intent = mock(Intent.class);
-        when(intent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
-        when(intent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
+        Intent mockIntent = mock(Intent.class);
+        when(mockIntent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
+        when(mockIntent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
         when(eventClient.sendEvent(event)).thenReturn(false);
         when(eventDAO.storeEvent(event)).thenReturn(false);
 
-        eventDispatcher.dispatch(intent);
+        eventDispatcher.dispatch(mockIntent);
         verify(logger).error("Unable to send or store event {}", event);
         verify(logger, never()).info("Scheduled events to be dispatched");
     }
@@ -138,9 +138,9 @@ public class EventDispatcherTest {
     @Test
     public void unschedulesServiceWhenNoEventsToFlush() {
         when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
-        Intent intent = mock(Intent.class);
-        eventDispatcher.dispatch(intent);
-        verify(serviceScheduler).unschedule(intent);
+        Intent mockIntent = mock(Intent.class);
+        eventDispatcher.dispatch(mockIntent);
+        verify(serviceScheduler).unschedule(mockIntent);
         verify(logger).info("Unscheduled event dispatch");
     }
 
@@ -150,11 +150,11 @@ public class EventDispatcherTest {
 
         when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
 
-        Intent intent = mock(Intent.class);
-        when(intent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
-        when(intent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
+        Intent mockIntent = mock(Intent.class);
+        when(mockIntent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
+        when(mockIntent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
 
-        eventDispatcher.dispatch(intent);
+        eventDispatcher.dispatch(mockIntent);
 
         verify(logger).error(contains("Received a malformed URL in event handler service"), any(MalformedURLException.class));
     }
