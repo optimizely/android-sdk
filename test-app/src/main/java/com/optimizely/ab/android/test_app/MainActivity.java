@@ -24,17 +24,24 @@ public class MainActivity extends AppCompatActivity implements OnDataFileLoadedL
         setContentView(R.layout.activity_main);
 
         // start polling for the dataFile
-        projectWatcher = OptlyProjectWatcher.getInstance("projectId");
-        projectWatcher.startWatching(this, this);
+        projectWatcher = OptlyProjectWatcher.getInstance("projectId", getApplicationContext());
         // sync the data file even when the app isn't open, this method doesn't hit the callback
-        projectWatcher.startWatchingInBackground(this, TimeUnit.DAYS, 1);
+        projectWatcher.startWatching(TimeUnit.DAYS, 1);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStart() {
+        super.onStart();
         if (projectWatcher != null) {
-            projectWatcher.stopWatching(this);
+            projectWatcher.loadDataFile(this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (projectWatcher != null) {
+            projectWatcher.cancelDataFileLoad();
         }
     }
 
