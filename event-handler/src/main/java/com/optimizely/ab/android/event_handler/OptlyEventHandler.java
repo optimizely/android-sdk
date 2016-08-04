@@ -62,6 +62,9 @@ public class OptlyEventHandler implements EventHandler {
             logger.error("Event dispatcher received a null params map");
             return;
         }
+        if (url.isEmpty()) {
+            logger.error("Event dispatcher received an empty url");
+        }
 
         try {
             String event = generateRequest(url, params);
