@@ -27,7 +27,7 @@ ext {
     min_sdk_version = 14
     target_sdk_version = 23
 
-    java_core_ver = "0.1.64"
+    java_core_ver = "0.1.68"
     slf4j_ver = "1.7.21"
     support_annotations_ver = "23.4.0"
     junit_ver = "4.12"
