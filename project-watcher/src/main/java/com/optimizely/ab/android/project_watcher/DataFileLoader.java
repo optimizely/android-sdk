@@ -84,7 +84,9 @@ public class DataFileLoader {
 
         public void start() {
             execute();
-        }        @Override
+        }
+
+        @Override
         protected void onPostExecute(JSONObject dataFile) {
             if (dataFile != null) {
                 if (onDataFileLoadedListener != null) {
@@ -159,7 +161,5 @@ public class DataFileLoader {
                 dataFileService.stop();
             }
         }
-
-
     }
 }
