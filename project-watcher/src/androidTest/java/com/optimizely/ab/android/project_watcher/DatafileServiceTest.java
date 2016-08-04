@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ServiceTestRule;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -21,11 +22,12 @@ import static org.mockito.Mockito.verify;
  *
  * Test for {@link DataFileService}
  */
+// TODO These tests will pass individually but they fail when run as group
+    // Known bug https://code.google.com/p/android/issues/detail?id=180396
 public class DatafileServiceTest {
 
     @Rule
     public final ServiceTestRule mServiceRule = new ServiceTestRule();
-
 
     @Test
     public void testBinding() throws TimeoutException {
