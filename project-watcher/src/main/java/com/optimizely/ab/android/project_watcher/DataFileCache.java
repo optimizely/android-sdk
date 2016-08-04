@@ -9,6 +9,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 /**
  * Created by jdeffibaugh on 7/28/16 for Optimizely.
  *
@@ -30,7 +33,15 @@ public class DataFileCache {
 
     @Nullable
     public JSONObject load() {
-        String optlyDataFile = cache.load(getFileName());
+        String optlyDataFile = null;
+        try {
+            optlyDataFile = cache.load(getFileName());
+        } catch (FileNotFoundException e) {
+            logger.info("No data file found");
+        } catch (IOException e) {
+            logger.error("Unable to load data file", e);
+        }
+
         if (optlyDataFile == null) {
             return null;
         }
@@ -52,7 +63,12 @@ public class DataFileCache {
     }
 
     public boolean save(String dataFile) {
-        return cache.save(getFileName(), dataFile);
+        try {
+            return cache.save(getFileName(), dataFile);
+        } catch (IOException e) {
+            logger.error("Unable to save data file", e);
+            return false;
+        }
     }
 
 

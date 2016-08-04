@@ -12,7 +12,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -58,11 +62,38 @@ public class DataFileCacheTest {
     }
 
     @Test
-    public void loadJsonException() {
+    public void loadJsonException() throws IOException {
         Cache cache = mock(Cache.class);
         DataFileCache dataFileCache = new DataFileCache("1", cache, logger);
         when(cache.load(dataFileCache.getFileName())).thenReturn("{");
         assertNull(dataFileCache.load());
         verify(logger).error(contains("Unable to parse data file"), any(JSONException.class));
+    }
+
+    @Test
+    public void testLoadFileNotFound() throws IOException {
+        Cache cache = mock(Cache.class);
+        DataFileCache dataFileCache = new DataFileCache("1", cache, logger);
+        when(cache.load(dataFileCache.getFileName())).thenThrow(new FileNotFoundException());
+        assertNull(dataFileCache.load());
+        verify(logger).info(contains("No data file found"));
+    }
+
+    @Test
+    public void testLoadIoException() throws IOException {
+        Cache cache = mock(Cache.class);
+        DataFileCache dataFileCache = new DataFileCache("1", cache, logger);
+        when(cache.load(dataFileCache.getFileName())).thenThrow(new IOException());
+        assertNull(dataFileCache.load());
+        verify(logger).error(contains("Unable to load data file"), any(IOException.class));
+    }
+
+    @Test
+    public void testSaveIOException() throws IOException {
+        Cache cache = mock(Cache.class);
+        DataFileCache dataFileCache = new DataFileCache("1", cache, logger);
+        when(cache.save(dataFileCache.getFileName(), "")).thenThrow(new IOException());
+        assertFalse(dataFileCache.save(""));
+        verify(logger).error(contains("Unable to save data file"), any(IOException.class));
     }
 }

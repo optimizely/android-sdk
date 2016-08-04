@@ -12,9 +12,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.contains;
@@ -74,7 +77,7 @@ public class BackgroundWatchersCacheTest {
     }
 
     @Test
-    public void testExceptionHandling() {
+    public void testExceptionHandling() throws IOException {
         Cache cache = mock(Cache.class);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
         // Cause a JSONException to be thrown
@@ -89,5 +92,36 @@ public class BackgroundWatchersCacheTest {
         List<String> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
         assertTrue(watchingProjectIds.isEmpty());
         verify(logger).error(contains("Unable to get watching project ids"), any(JSONException.class));
+    }
+
+    @Test
+    public void testLoadFileNotFound() throws IOException {
+        Cache cache = mock(Cache.class);
+        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
+        // Cause a JSONException to be thrown
+        when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenThrow(new FileNotFoundException());
+        assertFalse(backgroundWatchersCache.setIsWatching("1", true));
+        verify(logger).info("Creating background watchers file");
+    }
+
+    @Test
+    public void testLoadIOException() throws IOException {
+        Cache cache = mock(Cache.class);
+        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
+        // Cause a JSONException to be thrown
+        when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenThrow(new IOException());
+        assertFalse(backgroundWatchersCache.setIsWatching("1", true));
+        verify(logger).error(contains("Unable to load background watchers file"), any(IOException.class));
+    }
+
+    @Test
+    public void testSaveIOException() throws IOException {
+        Cache cache = mock(Cache.class);
+        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
+        // Cause a JSONException to be thrown
+        when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenReturn("{}");
+        when(cache.save(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME, "{\"1\":true}")).thenThrow(new IOException());
+        assertFalse(backgroundWatchersCache.setIsWatching("1", true));
+        verify(logger).error(contains("Unable to save background watchers file"), any(IOException.class));
     }
 }
