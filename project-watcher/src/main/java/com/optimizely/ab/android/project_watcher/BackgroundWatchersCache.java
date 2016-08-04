@@ -9,6 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,8 +41,7 @@ public class BackgroundWatchersCache {
             JSONObject backgroundWatchers = load();
             if (backgroundWatchers != null) {
                 backgroundWatchers.put(projectId, watching);
-                save(backgroundWatchers.toString());
-                return true;
+                return save(backgroundWatchers.toString());
             }
         } catch (JSONException e) {
             logger.error("Unable to update watching state for project id", e);
@@ -91,9 +92,18 @@ public class BackgroundWatchersCache {
 
     @Nullable
     private JSONObject load() throws JSONException {
-        String backGroundWatchersFile = cache.load(BACKGROUND_WATCHERS_FILE_NAME);
-        if (backGroundWatchersFile == null) {
+        String backGroundWatchersFile = null;
+        try {
+            backGroundWatchersFile = cache.load(BACKGROUND_WATCHERS_FILE_NAME);
+        } catch (FileNotFoundException e) {
+            logger.info("Creating background watchers file");
             backGroundWatchersFile = "{}";
+        } catch (IOException e) {
+            logger.error("Unable to load background watchers file", e);
+        }
+
+        if (backGroundWatchersFile == null) {
+            return null;
         }
 
         return new JSONObject(backGroundWatchersFile);
@@ -104,6 +114,11 @@ public class BackgroundWatchersCache {
     }
 
     private boolean save(String backgroundWatchersJson) {
-        return cache.save(BACKGROUND_WATCHERS_FILE_NAME, backgroundWatchersJson);
+        try {
+            return cache.save(BACKGROUND_WATCHERS_FILE_NAME, backgroundWatchersJson);
+        } catch (IOException e) {
+            logger.error("Unable to save background watchers file", e);
+            return false;
+        }
     }
 }

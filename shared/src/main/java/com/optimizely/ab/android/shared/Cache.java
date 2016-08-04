@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,21 +22,16 @@ public class Cache {
         this.logger = logger;
     }
 
-    public String load(String fileName) {
-        try {
-            FileInputStream fis = context.openFileInput(fileName);
-            InputStreamReader inputStreamReader = new InputStreamReader(fis);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-            return sb.toString();
-        } catch (IOException e) {
-            logger.error("Error loading file", e);
-            return null;
+    public String load(String fileName) throws IOException {
+        FileInputStream fis = context.openFileInput(fileName);
+        InputStreamReader inputStreamReader = new InputStreamReader(fis);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            sb.append(line);
         }
+        return sb.toString();
     }
 
     public boolean delete(String fileName) {
@@ -43,18 +39,20 @@ public class Cache {
     }
 
     public boolean exists(String fileName) {
-        return load(fileName) != null;
-    }
-
-    public boolean save(String fileName, String data) {
         try {
-            FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-            fos.write(data.getBytes());
+            load(fileName);
             return true;
+        } catch (FileNotFoundException e) {
+            return false;
         } catch (IOException e) {
-            logger.error("Unable to save optly data file to cache", e);
+            logger.error("Unable to check if file exists", e);
             return false;
         }
     }
 
+    public boolean save(String fileName, String data) throws IOException {
+        FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+        fos.write(data.getBytes());
+        return true;
+    }
 }

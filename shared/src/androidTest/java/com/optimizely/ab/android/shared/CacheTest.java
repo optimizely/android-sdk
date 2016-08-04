@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -43,36 +44,15 @@ public class CacheTest {
     }
 
     @Test
-    public void saveLoadAndDelete() {
+    public void saveLoadAndDelete() throws IOException {
         assertTrue(cache.save(FILE_NAME, "bar"));
         String data = cache.load(FILE_NAME);
         assertEquals("bar", data);
         assertTrue(cache.delete(FILE_NAME));
-        data = cache.load(FILE_NAME);
-        assertNull(data);
-        verify(logger).error(contains("Error loading file"), any(FileNotFoundException.class));
     }
 
     @Test
     public void deleteFileFail() {
         assertFalse(cache.delete(FILE_NAME));
-    }
-
-    @Test
-    public void saveIOException() throws FileNotFoundException {
-        Context context = mock(Context.class);
-        Cache cache = new Cache(context, logger);
-        when(context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE)).thenThrow(new FileNotFoundException());
-        assertFalse(cache.save(FILE_NAME, "bar"));
-        verify(logger).error(contains("Unable to save optly data file to cache"), any(FileNotFoundException.class));
-    }
-
-    @Test
-    public void loadIOException() throws FileNotFoundException {
-        Context context = mock(Context.class);
-        Cache cache = new Cache(context, logger);
-        when(context.openFileInput(FILE_NAME)).thenThrow(new FileNotFoundException());
-        assertNull(cache.load(FILE_NAME));
-        verify(logger).error(contains("Error loading file"), any(FileNotFoundException.class));
     }
 }
