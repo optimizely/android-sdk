@@ -6,7 +6,7 @@ import android.os.IBinder;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ServiceTestRule;
 
-import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -30,6 +30,7 @@ public class DatafileServiceTest {
     public final ServiceTestRule mServiceRule = new ServiceTestRule();
 
     @Test
+    @Ignore
     public void testBinding() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, DataFileService.class);
@@ -44,6 +45,7 @@ public class DatafileServiceTest {
     }
 
     @Test
+    @Ignore
     public void testValidStart() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, DataFileService.class);
@@ -57,6 +59,7 @@ public class DatafileServiceTest {
     }
 
     @Test
+    @Ignore
     public void testNullIntentStart() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, DataFileService.class);
