@@ -43,6 +43,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link Bucketer}.
@@ -440,6 +443,90 @@ public class BucketerTest {
         assertNull(algorithm.bucket(groupExperiment, "blah"));
     }
 
+    @Test public void bucketUserSaveActivationWithPersistentBucketer() throws Exception {
+        final AtomicInteger bucketValue = new AtomicInteger();
+        PersistentBucketer persistentBucketer = mock(PersistentBucketer.class);
+        Bucketer algorithm = mockPersistentBucketAlgorith(bucketValue, persistentBucketer);
+        bucketValue.set(3000);
+
+        ProjectConfig projectConfig = validProjectConfig();
+        List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
+        Experiment groupExperiment = groupExperiments.get(0);
+        final Variation variation = groupExperiment.getVariations().get(0);
+
+        when(persistentBucketer.saveActivation(projectConfig, "blah", groupExperiment, variation)).thenReturn(true);
+
+        assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
+
+        logbackVerifier.expectMessage(Level.INFO,
+                "Persisted variation \"e2_vtag1\" of experiment \"group_etag2\".");
+
+        verify(persistentBucketer).saveActivation(projectConfig, "blah", groupExperiment, variation);
+    }
+
+    @Test public void bucketUserSaveActivationFailWithPersistentBucketer() throws Exception {
+        final AtomicInteger bucketValue = new AtomicInteger();
+        PersistentBucketer persistentBucketer = mock(PersistentBucketer.class);
+        Bucketer algorithm = mockPersistentBucketAlgorith(bucketValue, persistentBucketer);
+        bucketValue.set(3000);
+
+        ProjectConfig projectConfig = validProjectConfig();
+        List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
+        Experiment groupExperiment = groupExperiments.get(0);
+        final Variation variation = groupExperiment.getVariations().get(0);
+
+        when(persistentBucketer.saveActivation(projectConfig, "blah", groupExperiment, variation)).thenReturn(false);
+
+        assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
+
+        logbackVerifier.expectMessage(Level.WARN,
+                "Failed to persist variation \"e2_vtag1\" of experiment \"group_etag2\".");
+
+        verify(persistentBucketer).saveActivation(projectConfig, "blah", groupExperiment, variation);
+    }
+
+    @Test public void bucketUserRestoreActivationWithPersistentBucketer() throws Exception {
+        final AtomicInteger bucketValue = new AtomicInteger();
+        PersistentBucketer persistentBucketer = mock(PersistentBucketer.class);
+        Bucketer algorithm = mockPersistentBucketAlgorith(bucketValue, persistentBucketer);
+        bucketValue.set(3000);
+
+        ProjectConfig projectConfig = validProjectConfig();
+        List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
+        Experiment groupExperiment = groupExperiments.get(0);
+        final Variation variation = groupExperiment.getVariations().get(0);
+
+        when(persistentBucketer.restoreActivation(projectConfig, "blah", groupExperiment)).thenReturn(variation);
+
+        assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
+
+        logbackVerifier.expectMessage(Level.INFO,
+                "Returning previously activated variation \"e2_vtag1\" from persistent bucketer.");
+
+        verify(persistentBucketer).restoreActivation(projectConfig, "blah", groupExperiment);
+    }
+
+    @Test public void bucketUserRestoreActivationNullWithPersistentBucketer() throws Exception {
+        final AtomicInteger bucketValue = new AtomicInteger();
+        PersistentBucketer persistentBucketer = mock(PersistentBucketer.class);
+        Bucketer algorithm = mockPersistentBucketAlgorith(bucketValue, persistentBucketer);
+        bucketValue.set(3000);
+
+        ProjectConfig projectConfig = validProjectConfig();
+        List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
+        Experiment groupExperiment = groupExperiments.get(0);
+        final Variation variation = groupExperiment.getVariations().get(0);
+
+        when(persistentBucketer.restoreActivation(projectConfig, "blah", groupExperiment)).thenReturn(null);
+
+        assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
+
+        logbackVerifier.expectMessage(Level.INFO,
+                "No previously activated variation returned from persistent bucketer.");
+
+        verify(persistentBucketer).restoreActivation(projectConfig, "blah", groupExperiment);
+    }
+
     //======== Helper methods ========//
 
     /**
@@ -449,6 +536,23 @@ public class BucketerTest {
      */
     private Bucketer mockBucketAlgorithm(final AtomicInteger bucketValue) {
         return new Bucketer(validProjectConfig()) {
+            @Override
+            int generateBucketValue(int hashCode) {
+                return bucketValue.get();
+            }
+        };
+    }
+
+    /**
+     * Sets up a mock algorithm that returns an expected bucket value.
+     *
+     * Includes a composed {@link PersistentBucketer} mock instance
+     *
+     * @param bucketValue the expected bucket value holder
+     * @return the mock bucket algorithm
+     */
+    private Bucketer mockPersistentBucketAlgorith(final AtomicInteger bucketValue, final PersistentBucketer persistentBucketer) {
+        return new Bucketer(validProjectConfig(), persistentBucketer) {
             @Override
             int generateBucketValue(int hashCode) {
                 return bucketValue.get();

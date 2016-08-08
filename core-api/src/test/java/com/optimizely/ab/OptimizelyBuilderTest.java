@@ -16,6 +16,7 @@
  */
 package com.optimizely.ab;
 
+import com.optimizely.ab.bucketing.PersistentBucketer;
 import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.error.NoOpErrorHandler;
@@ -35,6 +36,7 @@ import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfig
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link Optimizely#builder(String, EventHandler)}.
@@ -83,5 +85,15 @@ public class OptimizelyBuilderTest {
             .build();
 
         assertThat(optimizelyClient.errorHandler, instanceOf(NoOpErrorHandler.class));
+    }
+
+    @Test
+    public void withPersistentBucketer() throws Exception {
+        PersistentBucketer persistentBucketer = mock(PersistentBucketer.class);
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJson(), mockEventHandler)
+                .withPersistentBucketer(persistentBucketer)
+                .build();
+
+        assertThat(optimizelyClient.bucketer.getPersistentBucketer(), is(persistentBucketer));
     }
 }

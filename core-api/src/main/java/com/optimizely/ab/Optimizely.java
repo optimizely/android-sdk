@@ -18,6 +18,7 @@ package com.optimizely.ab;
 
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
+import com.optimizely.ab.bucketing.PersistentBucketer;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -419,6 +420,7 @@ public class Optimizely {
 
         private String datafile;
         private Bucketer bucketer;
+        private PersistentBucketer persistentBucketer;
         private ErrorHandler errorHandler;
         private EventHandler eventHandler;
         private EventBuilder eventBuilder;
@@ -432,6 +434,11 @@ public class Optimizely {
 
         public Builder withErrorHandler(ErrorHandler errorHandler) {
             this.errorHandler = errorHandler;
+            return this;
+        }
+
+        public Builder withPersistentBucketer(PersistentBucketer persistentBucketer) {
+            this.persistentBucketer = persistentBucketer;
             return this;
         }
 
@@ -460,7 +467,7 @@ public class Optimizely {
 
             // use the default bucketer and event builder, if no overrides were provided
             if (bucketer == null) {
-                bucketer = new Bucketer(projectConfig);
+                bucketer = new Bucketer(projectConfig, persistentBucketer);
             }
 
             if (eventBuilder == null) {

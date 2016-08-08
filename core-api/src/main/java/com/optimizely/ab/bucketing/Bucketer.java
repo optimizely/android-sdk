@@ -47,6 +47,8 @@ public class Bucketer {
 
     private final ProjectConfig projectConfig;
 
+    @Nullable private final PersistentBucketer persistentBucketer;
+
     private static final Logger logger = LoggerFactory.getLogger(Bucketer.class);
 
     private static final int MURMUR_HASH_SEED = 1;
@@ -58,7 +60,12 @@ public class Bucketer {
     static final int MAX_TRAFFIC_VALUE = 10000;
 
     public Bucketer(ProjectConfig projectConfig) {
+        this(projectConfig, null);
+    }
+
+    public Bucketer(ProjectConfig projectConfig, @Nullable PersistentBucketer persistentBucketer) {
         this.projectConfig = projectConfig;
+        this.persistentBucketer = persistentBucketer;
     }
 
     private String bucketToEntity(int bucketValue, List<TrafficAllocation> trafficAllocations) {
@@ -102,6 +109,19 @@ public class Bucketer {
                                         @Nonnull String userId) {
         // "salt" the bucket id using the experiment id
         String combinedBucketId = userId + experiment.getId();
+
+        // If a persistent bucketer instance is present then check it for a persisted variation
+        if (persistentBucketer != null) {
+            Variation variation = persistentBucketer.restoreActivation(projectConfig, userId, experiment);
+            if (variation != null) {
+                logger.info("Returning previously activated variation \"{}\" from persistent bucketer.", variation.getKey());
+                // A variation is stored for this combined bucket id
+                return variation;
+            } else {
+                logger.info("No previously activated variation returned from persistent bucketer.");
+            }
+        }
+
         String experimentKey = experiment.getKey();
 
         List<TrafficAllocation> trafficAllocations = experiment.getTrafficAllocation();
@@ -115,6 +135,17 @@ public class Bucketer {
             Variation bucketedVariation = experiment.getVariationIdToVariationMap().get(bucketedVariationId);
             logger.info("User \"{}\" is in variation \"{}\" of experiment \"{}\".", userId, bucketedVariation.getKey(),
                         experimentKey);
+
+            // If a persistent bucketer instance is present give it a variation to store
+            if (persistentBucketer != null) {
+                boolean saved = persistentBucketer.saveActivation(projectConfig, userId, experiment, bucketedVariation);
+                if (saved) {
+                    logger.info("Persisted variation \"{}\" of experiment \"{}\".", bucketedVariation.getKey(), experimentKey);
+                } else {
+                    logger.warn("Failed to persist variation \"{}\" of experiment \"{}\".", bucketedVariation.getKey(), experimentKey);
+                }
+            }
+
             return bucketedVariation;
         }
 
@@ -179,5 +210,10 @@ public class Bucketer {
         // map the hashCode into the range [0, BucketAlgorithm.MAX_TRAFFIC_VALUE)
         double ratio = (double)(hashCode & 0xFFFFFFFFL) / Math.pow(2, 32);
         return (int)Math.floor(MAX_TRAFFIC_VALUE * ratio);
+    }
+
+    @Nullable
+    public PersistentBucketer getPersistentBucketer() {
+        return persistentBucketer;
     }
 }
