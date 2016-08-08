@@ -28,7 +28,8 @@ android {
 dependencies {
     compile project(':shared')
 
-    compile "com.optimizely.ab:core-api:$java_core_ver"
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+//    compile "com.optimizely.ab:core-api:$java_core_ver"
     compile "org.slf4j:slf4j-api:$slf4j_ver"
     compile "org.slf4j:slf4j-android:$slf4j_ver"
     provided "com.android.support:support-annotations:$support_annotations_ver"
