@@ -39,6 +39,7 @@ public class DataFileClient {
 
             client.setIfModifiedSince(urlConnection);
 
+            urlConnection.setConnectTimeout(5 * 1000);
             urlConnection.connect();
 
             int status = urlConnection.getResponseCode();

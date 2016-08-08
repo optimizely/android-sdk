@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Created by jdeffibaugh on 7/21/16 for Optimizely.
- *
+ * <p/>
  * Handles interactions with the {@link SQLiteDatabase} that store {@link Event} instances.
  */
 public class EventDAO {
@@ -70,25 +70,27 @@ public class EventDAO {
                 null                        // The sort order
         );
 
-        cursor.moveToFirst();
-        do {
-            long itemId = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(EventTable._ID)
-            );
-            String url = cursor.getString(
-                    cursor.getColumnIndexOrThrow(EventTable.Column.URL)
-            );
-            try {
-                events.add(new Pair<>(itemId, new Event(new URL(url))));
-            } catch (MalformedURLException e) {
-                logger.error("Retreived a malformed event from storage", e);
+        if (cursor.moveToFirst()) {
+            do {
+                long itemId = cursor.getLong(
+                        cursor.getColumnIndexOrThrow(EventTable._ID)
+                );
+                String url = cursor.getString(
+                        cursor.getColumnIndexOrThrow(EventTable.Column.URL)
+                );
+                try {
+                    events.add(new Pair<>(itemId, new Event(new URL(url))));
+                } catch (MalformedURLException e) {
+                    logger.error("Retreived a malformed event from storage", e);
 
-            }
-        } while (cursor.moveToNext());
+                }
+            } while (cursor.moveToNext());
 
-        cursor.close();
+            cursor.close();
 
-        logger.info("Got events from db");
+            logger.info("Got events from db");
+        }
+
 
         return events;
     }
@@ -97,7 +99,7 @@ public class EventDAO {
         // Define 'where' part of query.
         String selection = EventTable._ID + " = ?";
         // Specify arguments in placeholder order.
-        String[] selectionArgs = { String.valueOf(eventId) };
+        String[] selectionArgs = {String.valueOf(eventId)};
         // Issue SQL statement.
         int numRowsDeleted = db.delete(EventTable.NAME, selection, selectionArgs);
 

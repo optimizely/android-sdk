@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements OnDataFileLoadedL
         setContentView(R.layout.activity_main);
 
         // start polling for the dataFile
-        projectWatcher = OptlyProjectWatcher.getInstance("projectId", getApplicationContext());
+        projectWatcher = OptlyProjectWatcher.getInstance("6820012714", getApplicationContext());
         // sync the data file even when the app isn't open, this method doesn't hit the callback
         projectWatcher.startWatching(TimeUnit.DAYS, 1);
     }
@@ -50,19 +50,17 @@ public class MainActivity extends AppCompatActivity implements OnDataFileLoadedL
         Optimizely optimizely = OptimizelyAndroid.newInstance(this, dataFile);
 
         // activate user in the experiment
-        Variation variation = optimizely.activate("experiment1", "user1");
+        Variation variation = optimizely.activate("exp1", "user1");
 
         if (variation != null) {
-            if (variation.is("variation_a")) {
-                Toast.makeText(this, "Variation A", Toast.LENGTH_LONG).show();
-            } else if (variation.is("variation_b")) {
-                Toast.makeText(this, "Variation B", Toast.LENGTH_LONG).show();
+            if (variation.is("var1")) {
+                Toast.makeText(this, "Variation 1", Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(this, "Default", Toast.LENGTH_LONG).show();
         }
 
         // track conversion event
-        optimizely.track("event1", "user1");
+        optimizely.track("goal1", "user1");
     }
 }
