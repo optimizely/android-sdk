@@ -1,1 +1,1 @@
-include ':event-handler', ':project-watcher', ':shared', ':test-app', ':android-sdk'
+include ':event-handler', ':project-watcher', ':shared', ':test-app', ':android-sdk', ':persistent-bucketer'

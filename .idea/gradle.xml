@@ -10,6 +10,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/android-sdk" />
             <option value="$PROJECT_DIR$/event-handler" />
+            <option value="$PROJECT_DIR$/persistent-bucketer" />
             <option value="$PROJECT_DIR$/project-watcher" />
             <option value="$PROJECT_DIR$/shared" />
             <option value="$PROJECT_DIR$/test-app" />
@@ -20,6 +21,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/android-sdk" />
             <option value="$PROJECT_DIR$/event-handler" />
+            <option value="$PROJECT_DIR$/persistent-bucketer" />
             <option value="$PROJECT_DIR$/project-watcher" />
             <option value="$PROJECT_DIR$/shared" />
             <option value="$PROJECT_DIR$/test-app" />

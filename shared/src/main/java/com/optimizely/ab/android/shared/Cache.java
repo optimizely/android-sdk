@@ -22,6 +22,7 @@ public class Cache {
         this.logger = logger;
     }
 
+    @NonNull
     public String load(String fileName) throws IOException {
         FileInputStream fis = context.openFileInput(fileName);
         InputStreamReader inputStreamReader = new InputStreamReader(fis);
