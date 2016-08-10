@@ -20,7 +20,7 @@ import com.optimizely.ab.config.Variation;
  *
  * Likewise, when the initial bucketing occurs the default Optimizely {@link Bucketer} will provide
  * the {@link ProjectConfig projectConfig}, userId, {@link Experiment}, and
- * {@link Variation} to {@link this#saveActivation(ProjectConfig, String, Experiment, Variation)}.
+ * {@link Variation} to {@link this#saveActivation(String, Experiment, Variation)}.
  * These parameters should provide enough data to persist the activation and restore an instance of
  * {@link Variation}
  *
@@ -34,13 +34,12 @@ public interface PersistentBucketer {
 
     /**
      * Called after bucketing occurs, providing a chance to persist data about the activation
-     * @param projectConfig an instance of {@link ProjectConfig}
      * @param userId a String representing a user ID
      * @param experiment an {@link Experiment} instance
      * @param variation a {@link Variation} id
      * @return true if saved otherwise false
      */
-    boolean saveActivation(ProjectConfig projectConfig, String userId, Experiment experiment, Variation variation);
+    boolean saveActivation(String userId, Experiment experiment, Variation variation);
 
     /**
      * Called before bucketing occurs, providing a chance to restore a previously bucketed {@link Variation}

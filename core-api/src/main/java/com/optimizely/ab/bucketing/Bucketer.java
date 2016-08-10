@@ -138,7 +138,7 @@ public class Bucketer {
 
             // If a persistent bucketer instance is present give it a variation to store
             if (persistentBucketer != null) {
-                boolean saved = persistentBucketer.saveActivation(projectConfig, userId, experiment, bucketedVariation);
+                boolean saved = persistentBucketer.saveActivation(userId, experiment, bucketedVariation);
                 if (saved) {
                     logger.info("Persisted variation \"{}\" of experiment \"{}\".", bucketedVariation.getKey(), experimentKey);
                 } else {
