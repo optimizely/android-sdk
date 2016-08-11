@@ -38,11 +38,8 @@ public class AndroidPersistentBucketer implements PersistentBucketer {
     }
 
     @Override
-    public boolean saveActivation(ProjectConfig projectConfig, String userId, Experiment experiment, Variation variation) {
-        if (projectConfig == null) {
-            logger.error("Received null projectConfig, unable to save activation");
-            return false;
-        } else if (userId == null) {
+    public boolean saveActivation(String userId, Experiment experiment, Variation variation) {
+        if (userId == null) {
             logger.error("Received null userId, unable to save activation");
             return false;
         } else if (experiment == null) {

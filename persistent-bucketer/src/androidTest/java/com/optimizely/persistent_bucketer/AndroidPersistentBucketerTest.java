@@ -41,7 +41,6 @@ public class AndroidPersistentBucketerTest {
 
     @Test
     public void saveActivation() {
-        ProjectConfig projectConfig = mock(ProjectConfig.class);
         String userId = "foo";
         Experiment experiment = mock(Experiment.class);
         String expId = "exp1";
@@ -49,31 +48,25 @@ public class AndroidPersistentBucketerTest {
         Variation variation = mock(Variation.class);
         String varId = "var1";
         when(variation.getId()).thenReturn(varId);
-        androidPersistentBucketer.saveActivation(projectConfig, userId, experiment, variation);
+        androidPersistentBucketer.saveActivation(userId, experiment, variation);
         verify(persistentBucketerCache).save(userId, expId, varId);
     }
 
     @Test
-    public void saveActivationNullProjectConfig() {
-        androidPersistentBucketer.saveActivation(null, "foo", mock(Experiment.class), mock(Variation.class));
-        verify(logger).error("Received null projectConfig, unable to save activation");
-    }
-
-    @Test
     public void saveActivationNullUserId() {
-        androidPersistentBucketer.saveActivation(mock(ProjectConfig.class), null, mock(Experiment.class), mock(Variation.class));
+        androidPersistentBucketer.saveActivation(null, mock(Experiment.class), mock(Variation.class));
         verify(logger).error("Received null userId, unable to save activation");
     }
 
     @Test
     public void saveActivationNullExperiment() {
-        androidPersistentBucketer.saveActivation(mock(ProjectConfig.class), "foo", null, mock(Variation.class));
+        androidPersistentBucketer.saveActivation("foo", null, mock(Variation.class));
         verify(logger).error("Received null experiment, unable to save activation");
     }
 
     @Test
     public void saveActivationNullVariation() {
-        androidPersistentBucketer.saveActivation(mock(ProjectConfig.class), "foo", mock(Experiment.class), null);
+        androidPersistentBucketer.saveActivation("foo", mock(Experiment.class), null);
         verify(logger).error("Received null variation, unable to save activation");
     }
 
