@@ -1,6 +1,6 @@
 Optimizely Java SDK
 ===================
-[![Build Status](https://travis-ci.com/optimizely/optimizely-ab-java-sdk.svg?token=qN2PbasvLidLamENwDAs&branch=master)](https://travis-ci.com/optimizely/java-sdk)
+[![Build Status](https://travis-ci.org/optimizely/java-sdk.svg?branch=master)](https://travis-ci.org/optimizely/java-sdk)
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 This repository houses the Java SDK for Optimizely's server-side testing product, which is currently in private beta.
