@@ -54,7 +54,7 @@ public class EventBuilder {
     private static final String GOAL_NAME_PARAM = "n";
     private static final String PPID_PARAM = "p";
     private static final String PROJECT_ID_PARAM = "a";
-    private static final String REVENUE_PARAM = "v";
+    private static final String EVENT_VALUE_PARAM = "v";
     private static final String SEGMENT_PARAM_PREFIX = "s";
     private static final String SOURCE_PARAM = "src";
     private static final String TIME_PARAM = "time";
@@ -89,8 +89,8 @@ public class EventBuilder {
                                                       @Nonnull String eventId,
                                                       @Nonnull String eventName,
                                                       @Nonnull Map<String, String> attributes,
-                                                      long revenue) {
-        return createConversionParams(projectConfig, bucketer, userId, eventId, eventName, attributes, (Long)revenue);
+                                                      long eventValue) {
+        return createConversionParams(projectConfig, bucketer, userId, eventId, eventName, attributes, (Long)eventValue);
     }
 
     private Map<String, String> createConversionParams(@Nonnull ProjectConfig projectConfig,
@@ -99,7 +99,7 @@ public class EventBuilder {
                                                        @Nonnull String eventId,
                                                        @Nonnull String eventName,
                                                        @Nonnull Map<String, String> attributes,
-                                                       @CheckForNull Long revenue) {
+                                                       @CheckForNull Long eventValue) {
 
         Map<String, String> requestParams = new HashMap<String, String>();
         List<Experiment> addedExperiments =
@@ -110,7 +110,7 @@ public class EventBuilder {
         }
 
         addCommonRequestParams(requestParams, projectConfig, userId, attributes);
-        addConversionGoal(requestParams, projectConfig, eventId, eventName, revenue);
+        addConversionGoal(requestParams, projectConfig, eventId, eventName, eventValue);
 
         return requestParams;
     }
@@ -256,15 +256,15 @@ public class EventBuilder {
      * @param projectConfig the project config
      * @param eventId the goal being converted on
      * @param eventName the name of the custom event goal
-     * @param revenue the optional revenue for the event
+     * @param eventValue the optional event value for the event
      */
     private void addConversionGoal(Map<String, String> requestParams, ProjectConfig projectConfig, String eventId,
-                                   String eventName, @CheckForNull Long revenue) {
+                                   String eventName, @CheckForNull Long eventValue) {
 
         String eventIds = eventId;
-        if (revenue != null) {
-            requestParams.put(REVENUE_PARAM, revenue.toString());
-            // to ensure that the revenue value is also included in "total revenue", pull in the default revenue goal
+        if (eventValue != null) {
+            // record the event value for the total revenue goal
+            requestParams.put(EVENT_VALUE_PARAM, eventValue.toString());
             EventType revenueGoal = projectConfig.getEventNameMapping().get(EventType.TOTAL_REVENUE_GOAL_KEY);
             if (revenueGoal != null) {
                 eventIds = eventId + "," + revenueGoal.getId();

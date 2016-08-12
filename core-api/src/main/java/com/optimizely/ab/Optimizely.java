@@ -180,21 +180,21 @@ public class Optimizely {
 
     public void track(@Nonnull String eventName,
                       @Nonnull String userId,
-                      long revenue) throws UnknownEventTypeException {
-        track(eventName, userId, Collections.<String, String>emptyMap(), revenue);
+                      long eventValue) throws UnknownEventTypeException {
+        track(eventName, userId, Collections.<String, String>emptyMap(), eventValue);
     }
 
     public void track(@Nonnull String eventName,
                       @Nonnull String userId,
                       @Nonnull Map<String, String> attributes,
-                      long revenue) throws UnknownEventTypeException {
-        track(eventName, userId, attributes, (Long)revenue);
+                      long eventValue) throws UnknownEventTypeException {
+        track(eventName, userId, attributes, (Long)eventValue);
     }
 
     private void track(@Nonnull String eventName,
                        @Nonnull String userId,
                        @Nonnull Map<String, String> attributes,
-                       @CheckForNull Long revenue) throws UnknownEventTypeException {
+                       @CheckForNull Long eventValue) throws UnknownEventTypeException {
 
         ProjectConfig currentConfig = getProjectConfig();
 
@@ -212,14 +212,14 @@ public class Optimizely {
         // create the conversion event request parameters, then dispatch
         String endpointUrl = eventBuilder.getEndpointUrl(currentConfig.getProjectId());
         Map<String, String> conversionParams;
-        if (revenue == null) {
+        if (eventValue == null) {
             conversionParams = eventBuilder.createConversionParams(currentConfig, bucketer, userId,
                                                                    eventType.getId(), eventType.getKey(),
                                                                    attributes);
         } else {
             conversionParams = eventBuilder.createConversionParams(currentConfig, bucketer, userId,
                                                                    eventType.getId(), eventType.getKey(), attributes,
-                                                                   revenue);
+                                                                   eventValue);
         }
 
         if (conversionParams == null) {
