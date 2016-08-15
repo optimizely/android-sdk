@@ -7,7 +7,8 @@ before_script:
     - git config user.email "noreply@travis-ci.org"
     - git checkout $TRAVIS_BRANCH
 script:
-    - "./gradlew release -Prelease.useAutomaticVersion=true"
+    - './gradlew clean build check'
+    - '[ "${TRAVIS_PULL_REQUEST}" != "false" ]  || ./gradlew release -Prelease.useAutomaticVersion=true'
 env:
   global:
   - TERM=dumb
