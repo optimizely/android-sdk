@@ -47,7 +47,7 @@ public class Bucketer {
 
     private final ProjectConfig projectConfig;
 
-    @Nullable private final PersistentBucketer persistentBucketer;
+    @Nullable private final UserExperimentRecord userExperimentRecord;
 
     private static final Logger logger = LoggerFactory.getLogger(Bucketer.class);
 
@@ -63,9 +63,9 @@ public class Bucketer {
         this(projectConfig, null);
     }
 
-    public Bucketer(ProjectConfig projectConfig, @Nullable PersistentBucketer persistentBucketer) {
+    public Bucketer(ProjectConfig projectConfig, @Nullable UserExperimentRecord userExperimentRecord) {
         this.projectConfig = projectConfig;
-        this.persistentBucketer = persistentBucketer;
+        this.userExperimentRecord = userExperimentRecord;
     }
 
     private String bucketToEntity(int bucketValue, List<TrafficAllocation> trafficAllocations) {
@@ -111,12 +111,12 @@ public class Bucketer {
         String combinedBucketId = userId + experiment.getId();
 
         // If a persistent bucketer instance is present then check it for a persisted variation
-        if (persistentBucketer != null) {
-            Variation variation = persistentBucketer.restoreActivation(projectConfig, userId, experiment);
-            if (variation != null) {
-                logger.info("Returning previously activated variation \"{}\" from persistent bucketer.", variation.getKey());
+        if (userExperimentRecord != null) {
+            String variationKey = userExperimentRecord.lookup(userId, experiment.getKey());
+            if (variationKey != null) {
+                logger.info("Returning previously activated variation \"{}\" from user experiment registry.", variationKey);
                 // A variation is stored for this combined bucket id
-                return variation;
+                return projectConfig.getExperimentIdMapping().get(experiment.getId()).getVariationKeyToVariationMap().get(variationKey);
             } else {
                 logger.info("No previously activated variation returned from persistent bucketer.");
             }
@@ -137,8 +137,8 @@ public class Bucketer {
                         experimentKey);
 
             // If a persistent bucketer instance is present give it a variation to store
-            if (persistentBucketer != null) {
-                boolean saved = persistentBucketer.saveActivation(userId, experiment, bucketedVariation);
+            if (userExperimentRecord != null) {
+                boolean saved = userExperimentRecord.save(userId, experiment.getKey(), bucketedVariation.getKey());
                 if (saved) {
                     logger.info("Persisted variation \"{}\" of experiment \"{}\".", bucketedVariation.getKey(), experimentKey);
                 } else {
@@ -213,7 +213,23 @@ public class Bucketer {
     }
 
     @Nullable
-    public PersistentBucketer getPersistentBucketer() {
-        return persistentBucketer;
+    public UserExperimentRecord getUserExperimentRecord() {
+        return userExperimentRecord;
+    }
+
+    public void cleanUserExperimentRecord() {
+        if (userExperimentRecord != null) {
+            Map<String,Map<String,String>> records = userExperimentRecord.records();
+            if (records != null) {
+                for (Map.Entry<String,Map<String,String>> record : records.entrySet()) {
+                    for (String experimentKey : record.getValue().keySet()) {
+                        Experiment experiment = projectConfig.getExperimentKeyMapping().get(experimentKey);
+                        if (experiment == null || !experiment.isRunning()) {
+                            userExperimentRecord.remove(record.getKey(), experimentKey);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

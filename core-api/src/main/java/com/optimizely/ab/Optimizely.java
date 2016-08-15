@@ -18,7 +18,7 @@ package com.optimizely.ab;
 
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
-import com.optimizely.ab.bucketing.PersistentBucketer;
+import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -92,6 +92,13 @@ public class Optimizely {
         this.eventHandler = eventHandler;
         this.eventBuilder = eventBuilder;
         this.errorHandler = errorHandler;
+    }
+
+    // Do work here that should be done once per Optimizely lifecycle
+    @VisibleForTesting void initialize() {
+        // Give users of ExperimentRegistry a chance to clean out old state for experiments
+        // that are no longer in the data file.
+        bucketer.cleanUserExperimentRecord();
     }
 
     //======== activate calls ========//
@@ -420,7 +427,7 @@ public class Optimizely {
 
         private String datafile;
         private Bucketer bucketer;
-        private PersistentBucketer persistentBucketer;
+        private UserExperimentRecord userExperimentRecord;
         private ErrorHandler errorHandler;
         private EventHandler eventHandler;
         private EventBuilder eventBuilder;
@@ -437,8 +444,8 @@ public class Optimizely {
             return this;
         }
 
-        public Builder withPersistentBucketer(PersistentBucketer persistentBucketer) {
-            this.persistentBucketer = persistentBucketer;
+        public Builder withUserExperimentRecord(UserExperimentRecord userExperimentRecord) {
+            this.userExperimentRecord = userExperimentRecord;
             return this;
         }
 
@@ -467,7 +474,7 @@ public class Optimizely {
 
             // use the default bucketer and event builder, if no overrides were provided
             if (bucketer == null) {
-                bucketer = new Bucketer(projectConfig, persistentBucketer);
+                bucketer = new Bucketer(projectConfig, userExperimentRecord);
             }
 
             if (eventBuilder == null) {
@@ -478,7 +485,9 @@ public class Optimizely {
                 errorHandler = new NoOpErrorHandler();
             }
 
-            return new Optimizely(projectConfig, bucketer, eventHandler, eventBuilder, errorHandler);
+            Optimizely optimizely = new Optimizely(projectConfig, bucketer, eventHandler, eventBuilder, errorHandler);
+            optimizely.initialize();
+            return optimizely;
         }
     }
 }

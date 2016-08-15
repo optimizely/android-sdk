@@ -16,7 +16,7 @@
  */
 package com.optimizely.ab;
 
-import com.optimizely.ab.bucketing.PersistentBucketer;
+import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.error.NoOpErrorHandler;
@@ -89,11 +89,11 @@ public class OptimizelyBuilderTest {
 
     @Test
     public void withPersistentBucketer() throws Exception {
-        PersistentBucketer persistentBucketer = mock(PersistentBucketer.class);
+        UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
         Optimizely optimizelyClient = Optimizely.builder(validConfigJson(), mockEventHandler)
-                .withPersistentBucketer(persistentBucketer)
+                .withUserExperimentRecord(userExperimentRecord)
                 .build();
 
-        assertThat(optimizelyClient.bucketer.getPersistentBucketer(), is(persistentBucketer));
+        assertThat(optimizelyClient.bucketer.getUserExperimentRecord(), is(userExperimentRecord));
     }
 }
