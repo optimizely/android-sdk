@@ -96,8 +96,6 @@ public class Optimizely {
 
     // Do work here that should be done once per Optimizely lifecycle
     @VisibleForTesting void initialize() {
-        // Give users of ExperimentRegistry a chance to clean out old state for experiments
-        // that are no longer in the data file.
         bucketer.cleanUserExperimentRecord();
     }
 

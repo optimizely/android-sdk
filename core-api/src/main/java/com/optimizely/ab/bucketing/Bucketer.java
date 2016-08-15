@@ -217,6 +217,10 @@ public class Bucketer {
         return userExperimentRecord;
     }
 
+    /**
+     * Gives implementations of {@link UserExperimentRecord} a chance to remove records
+     * of experiments that are deleted or not running.
+     */
     public void cleanUserExperimentRecord() {
         if (userExperimentRecord != null) {
             Map<String,Map<String,String>> records = userExperimentRecord.records();
