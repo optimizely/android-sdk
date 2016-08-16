@@ -19,14 +19,16 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            testCoverageEnabled true
+        }
     }
 }
 
 dependencies {
     compile project(':event-handler')
-    compile project(':project-watcher')
-    compile project(':persistent-bucketer')
-
+    compile project(':user-experiment-record')
+    compile project(':shared')
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"

@@ -5,11 +5,9 @@
       <module fileurl="file://$PROJECT_DIR$/android-sdk/android-sdk.iml" filepath="$PROJECT_DIR$/android-sdk/android-sdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/event-handler/event-handler.iml" filepath="$PROJECT_DIR$/event-handler/event-handler.iml" />
       <module fileurl="file://$PROJECT_DIR$/optimizely-ab-android-sdk.iml" filepath="$PROJECT_DIR$/optimizely-ab-android-sdk.iml" />
-      <module fileurl="file://$PROJECT_DIR$/persistent-bucketer/persistent-bucketer.iml" filepath="$PROJECT_DIR$/persistent-bucketer/persistent-bucketer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/persistent-bucketer/persistent-buckter.iml" filepath="$PROJECT_DIR$/persistent-bucketer/persistent-buckter.iml" />
-      <module fileurl="file://$PROJECT_DIR$/project-watcher/project-watcher.iml" filepath="$PROJECT_DIR$/project-watcher/project-watcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/test-app/test-app.iml" filepath="$PROJECT_DIR$/test-app/test-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user-experiment-record/user-experiment-record.iml" filepath="$PROJECT_DIR$/user-experiment-record/user-experiment-record.iml" />
     </modules>
   </component>
 </project>

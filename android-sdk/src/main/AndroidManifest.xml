@@ -1,2 +1,25 @@
-<manifest package="com.optimizely.ab.android.sdk">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.optimizely.ab.android.project_watcher"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application>
+        <service
+            android:name=".DataFileService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
+
+        <receiver
+            android:name=".DataFileRescheduler"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
 </manifest>
