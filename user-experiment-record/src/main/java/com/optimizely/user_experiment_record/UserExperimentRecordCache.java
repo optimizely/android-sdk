@@ -18,12 +18,14 @@ import java.io.IOException;
  */
 public class UserExperimentRecordCache {
 
+    @NonNull private final String projectId;
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
 
-    static final String FILE_NAME = "optly-user-experiment-record.json";
+    static final String FILE_NAME = "optly-user-experiment-record-%s.json";
 
-    public UserExperimentRecordCache(@NonNull Cache cache, @NonNull Logger logger) {
+    public UserExperimentRecordCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
+        this.projectId = projectId;
         this.cache = cache;
         this.logger = logger;
     }
@@ -32,7 +34,7 @@ public class UserExperimentRecordCache {
     public JSONObject load() throws JSONException {
         String userExperimentRecord = null;
         try {
-            userExperimentRecord = cache.load(FILE_NAME);
+            userExperimentRecord = cache.load(getFileName());
         } catch (FileNotFoundException e) {
             logger.info("No persistent bucketer cache found");
         } catch (IOException e) {
@@ -51,7 +53,7 @@ public class UserExperimentRecordCache {
             JSONObject userExperimentRecord = load();
             JSONObject expIdToVarId = userExperimentRecord.getJSONObject(userId);
             expIdToVarId.remove(experimentId);
-            return cache.save(FILE_NAME, userExperimentRecord.toString());
+            return cache.save(getFileName(), userExperimentRecord.toString());
         } catch (IOException e) {
             logger.error("Unable to remove experiment for user from user experiment record cache", e);
             return false;
@@ -68,7 +70,7 @@ public class UserExperimentRecordCache {
             JSONObject expIdToVarId = new JSONObject();
             expIdToVarId.put(experimentId, variationId);
             userExperimentRecord.put(userId, expIdToVarId);
-            return cache.save(FILE_NAME, userExperimentRecord.toString());
+            return cache.save(getFileName(), userExperimentRecord.toString());
         } catch (IOException e) {
             logger.error("Unable to save user experiment record cache", e);
             return false;
@@ -76,5 +78,9 @@ public class UserExperimentRecordCache {
             logger.error("Unable to parse user experiment record cache", e);
             return false;
         }
+    }
+
+    String getFileName() {
+        return String.format(FILE_NAME, projectId);
     }
 }

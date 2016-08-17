@@ -39,12 +39,12 @@ public class UserExperimentRecordCacheTest {
     public void setup() {
         logger = mock(Logger.class);
         cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
-        userExperimentRecordCache = new UserExperimentRecordCache(cache, logger);
+        userExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
     }
 
     @After
     public void teardown() {
-        cache.delete(UserExperimentRecordCache.FILE_NAME);
+        cache.delete(userExperimentRecordCache.getFileName());
     }
 
     @Test
@@ -66,12 +66,12 @@ public class UserExperimentRecordCacheTest {
     public void testSaveIOException() throws IOException, JSONException {
         cache = mock(Cache.class);
         final IOException ioException = new IOException();
-        userExperimentRecordCache = new UserExperimentRecordCache(cache, logger);
+        userExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
         JSONObject expectedActivation = new JSONObject();
         JSONObject expectedExpIdToVarId = new JSONObject();
         expectedExpIdToVarId.put("exp1", "var1");
         expectedActivation.put("foo", expectedExpIdToVarId);
-        when(cache.save(UserExperimentRecordCache.FILE_NAME, expectedActivation.toString())).thenThrow(ioException);
+        when(cache.save(userExperimentRecordCache.getFileName(), expectedActivation.toString())).thenThrow(ioException);
         assertFalse(userExperimentRecordCache.save("foo", "exp1", "var1"));
         verify(logger).error("Unable to save user experiment record cache", ioException);
     }
@@ -80,8 +80,8 @@ public class UserExperimentRecordCacheTest {
     public void testRestoreIOException() throws IOException, JSONException {
         cache = mock(Cache.class);
         final IOException ioException = new IOException();
-        userExperimentRecordCache = new UserExperimentRecordCache(cache, logger);
-        when(cache.load(UserExperimentRecordCache.FILE_NAME)).thenThrow(ioException);
+        userExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
+        when(cache.load(userExperimentRecordCache.getFileName())).thenThrow(ioException);
         assertEquals(userExperimentRecordCache.load().toString(), new JSONObject().toString());
         verify(logger).error("Unable to load user experiment record cache", ioException);
     }
@@ -90,8 +90,8 @@ public class UserExperimentRecordCacheTest {
     public void testRestoreFileNotFoundException() throws IOException, JSONException {
         cache = mock(Cache.class);
         final FileNotFoundException fileNotFoundException = new FileNotFoundException();
-        userExperimentRecordCache = new UserExperimentRecordCache(cache, logger);
-        when(cache.load(UserExperimentRecordCache.FILE_NAME)).thenThrow(fileNotFoundException);
+        userExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
+        when(cache.load(userExperimentRecordCache.getFileName())).thenThrow(fileNotFoundException);
         assertEquals(userExperimentRecordCache.load().toString(), new JSONObject().toString());
         verify(logger).info("No user experiment record cache found");
     }

@@ -40,10 +40,11 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
         this.logger = logger;
     }
 
-    public static UserExperimentRecord newInstance(@NonNull Context context) {
+    public static UserExperimentRecord newInstance(@NonNull String projectId, @NonNull Context context) {
         HashMap<String, Map<String, String>> memoryUserExperimentRecordCache = new HashMap<>();
         UserExperimentRecordCache userExperimentRecordCache =
-                new UserExperimentRecordCache(new Cache(context,
+                new UserExperimentRecordCache(projectId,
+                        new Cache(context,
                         LoggerFactory.getLogger(Cache.class)),
                         LoggerFactory.getLogger(UserExperimentRecordCache.class));
         return new AndroidUserExperimentRecord(userExperimentRecordCache,

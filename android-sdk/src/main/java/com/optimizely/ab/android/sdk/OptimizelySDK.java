@@ -227,7 +227,7 @@ public class OptimizelySDK {
                             ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(dataFileService.getApplicationContext());
                             ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory, LoggerFactory.getLogger(ServiceScheduler.class));
                             AndroidUserExperimentRecord userExperimentRecord =
-                                    (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(dataFileService.getApplicationContext());
+                                    (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(optimizelySDK.getProjectId(), dataFileService.getApplicationContext());
                             optimizelySDK.injectOptimizely(dataFileService.getApplicationContext(), userExperimentRecord, serviceScheduler, dataFile);
                         }
                     }
