@@ -6,8 +6,8 @@ import android.widget.Toast;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.config.Variation;
-import com.optimizely.ab.android.project_watcher.OptimizelyStartedListener;
-import com.optimizely.ab.android.project_watcher.OptimizelyAndroid;
+import com.optimizely.ab.android.sdk.OptimizelyStartListener;
+import com.optimizely.ab.android.sdk.OptimizelySDK;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,24 +18,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        OptimizelyAndroid optimizelyAndroid = OptimizelyAndroid.start("6820012714", getApplication(), new OptimizelyStartedListener() {
-            @Override
-            public void onOptimizelyStarted(Optimizely optimizely) {
-                Variation variation = optimizely.activate("exp1", "user1");
+        OptimizelySDK.builder("6820012714")
+                .withEventHandlerDispatchInterval(1, TimeUnit.DAYS)
+                .withDataFileDownloadInterval(1, TimeUnit.DAYS)
+                .build()
+                .start(this, new OptimizelyStartListener() {
+                    @Override
+                    public void onStart(Optimizely optimizely) {
+                        Variation variation = optimizely.activate("experiment_1", "user_1");
 
-                if (variation != null) {
-                    if (variation.is("var1")) {
-                        Toast.makeText(MainActivity.this, "Variation 1", Toast.LENGTH_LONG).show();
+                        if (variation != null) {
+                            if (variation.is("variation_1")) {
+                                Toast.makeText(MainActivity.this, "Variation 1", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_LONG).show();
+                        }
+
+                        // track conversion event
+                        optimizely.track("goal_1", "user_1");
                     }
-                } else {
-                    Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_LONG).show();
-                }
-
-                // track conversion event
-                optimizely.track("goal1", "user1");
-            }
-        });
-
-        optimizelyAndroid.syncDataFile(TimeUnit.DAYS, 1);
+                });
     }
 }
