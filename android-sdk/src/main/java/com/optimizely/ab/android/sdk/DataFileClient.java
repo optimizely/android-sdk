@@ -1,19 +1,14 @@
-package com.optimizely.ab.android.project_watcher;
+package com.optimizely.ab.android.sdk;
 
 import android.support.annotation.NonNull;
 
 import com.optimizely.ab.android.shared.Client;
-import com.optimizely.ab.android.shared.OptlyStorage;
 
 import org.slf4j.Logger;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * Created by jdeffibaugh on 7/28/16 for Optimizely.

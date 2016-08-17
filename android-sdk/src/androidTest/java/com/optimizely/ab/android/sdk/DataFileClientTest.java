@@ -1,4 +1,4 @@
-package com.optimizely.ab.android.project_watcher;
+package com.optimizely.ab.android.sdk;
 
 
 import com.optimizely.ab.android.shared.Client;

@@ -71,7 +71,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                 }
             }
         } catch (JSONException e) {
-            logger.error("Unable to parse persistent data file cache", e);
+            logger.error("Unable to parse user experiment record cache", e);
         }
     }
 

@@ -73,7 +73,7 @@ public class UserExperimentRecordCacheTest {
         expectedActivation.put("foo", expectedExpIdToVarId);
         when(cache.save(UserExperimentRecordCache.FILE_NAME, expectedActivation.toString())).thenThrow(ioException);
         assertFalse(userExperimentRecordCache.save("foo", "exp1", "var1"));
-        verify(logger).error("Unable to save persistent bucketer cache", ioException);
+        verify(logger).error("Unable to save user experiment record cache", ioException);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class UserExperimentRecordCacheTest {
         userExperimentRecordCache = new UserExperimentRecordCache(cache, logger);
         when(cache.load(UserExperimentRecordCache.FILE_NAME)).thenThrow(ioException);
         assertEquals(userExperimentRecordCache.load().toString(), new JSONObject().toString());
-        verify(logger).error("Unable to load persistent bucketer cache", ioException);
+        verify(logger).error("Unable to load user experiment record cache", ioException);
     }
 
     @Test
@@ -93,6 +93,6 @@ public class UserExperimentRecordCacheTest {
         userExperimentRecordCache = new UserExperimentRecordCache(cache, logger);
         when(cache.load(UserExperimentRecordCache.FILE_NAME)).thenThrow(fileNotFoundException);
         assertEquals(userExperimentRecordCache.load().toString(), new JSONObject().toString());
-        verify(logger).info("No persistent bucketer cache found");
+        verify(logger).info("No user experiment record cache found");
     }
 }

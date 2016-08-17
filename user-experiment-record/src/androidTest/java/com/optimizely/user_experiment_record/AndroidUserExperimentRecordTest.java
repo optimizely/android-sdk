@@ -203,7 +203,7 @@ public class AndroidUserExperimentRecordTest {
         when(diskUserExperimentRecordCache.load()).thenThrow(jsonException);
         try {
             androidUserExperimentRecord.start();
-            verify(logger).error("Unable to parse persistent data file cache", jsonException);
+            verify(logger).error("Unable to parse user experiment record cache", jsonException);
         } catch (Exception e) {
             fail();
         }

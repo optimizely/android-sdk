@@ -1,4 +1,4 @@
-package com.optimizely.ab.android.project_watcher;
+package com.optimizely.ab.android.sdk;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

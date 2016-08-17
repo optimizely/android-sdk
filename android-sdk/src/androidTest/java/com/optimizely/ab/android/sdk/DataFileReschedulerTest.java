@@ -1,4 +1,4 @@
-package com.optimizely.ab.android.project_watcher;
+package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +10,6 @@ import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;

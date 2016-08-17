@@ -21,7 +21,7 @@ public class UserExperimentRecordCache {
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
 
-    static final String FILE_NAME = "optly-persistent-bucketer.json";
+    static final String FILE_NAME = "optly-user-experiment-record.json";
 
     public UserExperimentRecordCache(@NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
@@ -30,50 +30,50 @@ public class UserExperimentRecordCache {
 
     @NonNull
     public JSONObject load() throws JSONException {
-        String persistentBucketerCache = null;
+        String userExperimentRecord = null;
         try {
-            persistentBucketerCache = cache.load(FILE_NAME);
+            userExperimentRecord = cache.load(FILE_NAME);
         } catch (FileNotFoundException e) {
             logger.info("No persistent bucketer cache found");
         } catch (IOException e) {
-            logger.error("Unable to load persistent bucketer cache", e);
+            logger.error("Unable to load user experiment record cache", e);
         }
 
-        if (persistentBucketerCache == null) {
+        if (userExperimentRecord == null) {
             return new JSONObject();
         } else {
-            return new JSONObject(persistentBucketerCache);
+            return new JSONObject(userExperimentRecord);
         }
     }
 
     public boolean remove(@NonNull String userId, @NonNull String experimentId) {
         try {
-            JSONObject persistentBucketerCache = load();
-            JSONObject expIdToVarId = persistentBucketerCache.getJSONObject(userId);
+            JSONObject userExperimentRecord = load();
+            JSONObject expIdToVarId = userExperimentRecord.getJSONObject(userId);
             expIdToVarId.remove(experimentId);
-            return cache.save(FILE_NAME, persistentBucketerCache.toString());
+            return cache.save(FILE_NAME, userExperimentRecord.toString());
         } catch (IOException e) {
-            logger.error("Unable to remove experiment for user from persistent bucketer cache", e);
+            logger.error("Unable to remove experiment for user from user experiment record cache", e);
             return false;
         } catch (JSONException e) {
-            logger.error("Unable to remove experiment for user from persistent bucketer cache", e);
+            logger.error("Unable to remove experiment for user from user experiment record cache", e);
             return false;
         }
     }
 
     public boolean save(@NonNull String userId, @NonNull String experimentId, @NonNull String variationId) {
         try {
-            JSONObject persistentBucketerCache = load();
-            persistentBucketerCache.put(userId, null);
+            JSONObject userExperimentRecord = load();
+            userExperimentRecord.put(userId, null);
             JSONObject expIdToVarId = new JSONObject();
             expIdToVarId.put(experimentId, variationId);
-            persistentBucketerCache.put(userId, expIdToVarId);
-            return cache.save(FILE_NAME, persistentBucketerCache.toString());
+            userExperimentRecord.put(userId, expIdToVarId);
+            return cache.save(FILE_NAME, userExperimentRecord.toString());
         } catch (IOException e) {
-            logger.error("Unable to save persistent bucketer cache", e);
+            logger.error("Unable to save user experiment record cache", e);
             return false;
         } catch (JSONException e) {
-            logger.error("Unable to parse persistent bucketer cache", e);
+            logger.error("Unable to parse user experiment record cache", e);
             return false;
         }
     }
