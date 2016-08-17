@@ -139,7 +139,7 @@ public class DataFileLoaderTest {
         DataFileLoader dataFileLoader = new DataFileLoader(taskChain, logger);
         DataFileLoader.LoadDataFileFromCacheTask task = mock(DataFileLoader.LoadDataFileFromCacheTask.class);
         assertTrue(dataFileLoader.getDataFile("1", dataFileLoadedListener));
-        verify(task).start();
+        verify(taskChain).start("1", dataFileLoadedListener);
         verify(logger).info("Refreshing data file");
     }
 }

@@ -86,10 +86,6 @@ public class DataFileLoader {
             return dataFileCache.load();
         }
 
-        public void start() {
-            execute();
-        }
-
         @Override
         protected void onPostExecute(JSONObject dataFile) {
             if (dataFile != null) {
@@ -122,11 +118,6 @@ public class DataFileLoader {
             this.dataFileClient = dataFileClient;
             this.optimizelyStartedListener = dataFileLoadedListener;
             this.logger = logger;
-        }
-
-        // Need this for unit testing
-        public void start() {
-            execute();
         }
 
         @Override
