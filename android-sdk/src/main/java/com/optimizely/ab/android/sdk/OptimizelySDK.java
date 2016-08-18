@@ -126,11 +126,11 @@ public class OptimizelySDK {
     }
 
     public ParcelableOptimizely parcelOptimizely(Optimizely optimizely) {
-        return new ParcelableOptimizely(this, optimizely);
+        return new ParcelableOptimizely(optimizely);
     }
 
     public Optimizely unParcelOptimizely(ParcelableOptimizely parcelableOptimizely) {
-        return parcelableOptimizely.unParcel();
+        return parcelableOptimizely.unParcel(this);
     }
 
     @NonNull
