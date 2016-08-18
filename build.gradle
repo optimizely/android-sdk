@@ -29,7 +29,7 @@ ext {
 
     java_core_ver = "0.1.68"
     slf4j_ver = "1.7.21"
-    support_annotations_ver = "23.4.0"
+    support_annotations_ver = "23.0.1"
     junit_ver = "4.12"
     mockito_ver = "1.10.19"
     support_test_runner_ver = "0.4"

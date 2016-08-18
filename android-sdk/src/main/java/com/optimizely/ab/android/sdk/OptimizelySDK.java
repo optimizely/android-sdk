@@ -122,6 +122,14 @@ public class OptimizelySDK {
         }
     }
 
+    public ParcelableOptimizely parcelOptimizely(Optimizely optimizely) {
+        return new ParcelableOptimizely(optimizely);
+    }
+
+    public Optimizely unParcelOptimizely(ParcelableOptimizely parcelableOptimizely) {
+        return parcelableOptimizely.unparcel();
+    }
+
     @NonNull
     public String getProjectId() {
         return projectId;

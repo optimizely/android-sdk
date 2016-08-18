@@ -27,9 +27,7 @@ dependencies {
     compile project(':android-sdk')
 
     // Needed by SST Java
-    compile 'com.google.code.gson:gson:2.6.2'
 
-    compile "com.android.support:appcompat-v7:23.0.1"
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
@@ -46,4 +44,7 @@ dependencies {
     androidTestCompile "org.slf4j:slf4j-android:$slf4j_ver"
     androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:design:23.0.1'
 }
