@@ -18,6 +18,7 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserExperimentRecord;
+import com.optimizely.ab.event.EventHandler;
 import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
 
 import org.slf4j.Logger;
@@ -42,6 +43,8 @@ public class OptimizelySDK {
     @NonNull private final Logger logger;
     @Nullable private DataFileServiceConnection dataFileServiceConnection;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
+    @Nullable private OptlyEventHandler eventHandler;
+    @Nullable private AndroidUserExperimentRecord androidUserExperimentRecord;
 
     OptimizelySDK(@NonNull String projectId,
                   @NonNull Long eventHandlerDispatchInterval,
@@ -123,16 +126,30 @@ public class OptimizelySDK {
     }
 
     public ParcelableOptimizely parcelOptimizely(Optimizely optimizely) {
-        return new ParcelableOptimizely(optimizely);
+        return new ParcelableOptimizely(this, optimizely);
     }
 
     public Optimizely unParcelOptimizely(ParcelableOptimizely parcelableOptimizely) {
-        return parcelableOptimizely.unparcel();
+        return parcelableOptimizely.unParcel();
     }
 
     @NonNull
     public String getProjectId() {
         return projectId;
+    }
+
+    @Nullable
+    public EventHandler getEventHandler() {
+        return eventHandler;
+    }
+
+    @Nullable
+    public UserExperimentRecord getUserExperimentRecord() {
+        return androidUserExperimentRecord;
+    }
+
+    public void setUserExperimentRecord(AndroidUserExperimentRecord androidUserExperimentRecord) {
+        this.androidUserExperimentRecord = androidUserExperimentRecord;
     }
 
     public void injectOptimizely(@NonNull final Context context, final @NonNull AndroidUserExperimentRecord userExperimentRecord, @NonNull final ServiceScheduler serviceScheduler, @NonNull final String dataFile) {
@@ -150,7 +167,7 @@ public class OptimizelySDK {
                 serviceScheduler.schedule(intent, dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval));
 
                 if (optimizelyStartListener != null) {
-                    OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
+                    eventHandler = OptlyEventHandler.getInstance(context);
                     eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
                     Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
                             .withUserExperimentRecord(userExperimentRecord)
@@ -236,6 +253,7 @@ public class OptimizelySDK {
                             ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory, LoggerFactory.getLogger(ServiceScheduler.class));
                             AndroidUserExperimentRecord userExperimentRecord =
                                     (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(optimizelySDK.getProjectId(), dataFileService.getApplicationContext());
+                            optimizelySDK.setUserExperimentRecord(userExperimentRecord);
                             optimizelySDK.injectOptimizely(dataFileService.getApplicationContext(), userExperimentRecord, serviceScheduler, dataFile);
                         }
                     }

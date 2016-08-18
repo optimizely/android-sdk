@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.android.sdk.DataFileService;
 import com.optimizely.ab.android.sdk.OptimizelySDK;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.config.Variation;
@@ -38,8 +39,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_LONG).show();
                 }
-
-
             }
         });
 
@@ -52,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("optly", optimizelySDK.parcelOptimizely(optimizely));
                 }
                 startActivity(intent);
+
+                intent.setClass(v.getContext(), DataFileService.class);
+                startService(intent);
             }
         });
     }

@@ -3,9 +3,12 @@ package com.optimizely.ab.android.sdk;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.event.EventHandler;
 
 /**
  * Created by jdeffibaugh on 8/18/16 for Optimizely.
@@ -24,8 +27,10 @@ public class ParcelableOptimizely implements Parcelable {
         }
     };
     private Optimizely optimizely;
+    private OptimizelySDK optimizelySDK;
 
-    public ParcelableOptimizely(@NonNull Optimizely optimizely) {
+    public ParcelableOptimizely(@NonNull OptimizelySDK optimizelySDK, @NonNull Optimizely optimizely) {
+        this.optimizelySDK = optimizelySDK;
         this.optimizely = optimizely;
     }
 
@@ -41,9 +46,19 @@ public class ParcelableOptimizely implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
     }
 
-    public Optimizely unparcel() {
+    @Nullable
+    public Optimizely unParcel() {
         ProjectConfig projectConfig = optimizely.getProjectConfig();
         // return Optimizely.restore(projectConfig); // What I want!
-        return optimizely;
+        final EventHandler eventHandler = optimizelySDK.getEventHandler();
+        final UserExperimentRecord userExperimentRecord = optimizelySDK.getUserExperimentRecord();
+        if (eventHandler != null && userExperimentRecord != null) {
+            return new Optimizely.Builder(projectConfig, eventHandler)
+                    .withUserExperimentRecord(userExperimentRecord)
+                    .build();
+        } else {
+            return null;
+        }
+
     }
 }

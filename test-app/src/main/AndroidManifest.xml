@@ -18,6 +18,11 @@
         </activity>
         <activity android:name=".SecondaryActivity">
         </activity>
+
+        <service
+            android:name=".MyIntentService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>
