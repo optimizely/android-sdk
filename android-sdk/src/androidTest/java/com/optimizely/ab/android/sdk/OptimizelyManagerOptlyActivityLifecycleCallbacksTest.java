@@ -13,24 +13,24 @@ import static org.mockito.Mockito.verify;
 /**
  * Created by jdeffibaugh on 8/16/16 for Optimizely.
  *
- * Tests for {@link OptimizelySDK.OptlyActivityLifecycleCallbacks}
+ * Tests for {@link OptimizelyManager.OptlyActivityLifecycleCallbacks}
  */
 @RunWith(AndroidJUnit4.class)
-public class OptimizelySDKOptlyActivityLifecycleCallbacksTest {
+public class OptimizelyManagerOptlyActivityLifecycleCallbacksTest {
 
-    OptimizelySDK.OptlyActivityLifecycleCallbacks optlyActivityLifecycleCallbacks;
-    OptimizelySDK optimizelySDK;
+    OptimizelyManager.OptlyActivityLifecycleCallbacks optlyActivityLifecycleCallbacks;
+    OptimizelyManager optimizelyManager;
 
     @Before
     public void setup() {
-        optimizelySDK = mock(OptimizelySDK.class);
-        optlyActivityLifecycleCallbacks = new OptimizelySDK.OptlyActivityLifecycleCallbacks(optimizelySDK);
+        optimizelyManager = mock(OptimizelyManager.class);
+        optlyActivityLifecycleCallbacks = new OptimizelyManager.OptlyActivityLifecycleCallbacks(optimizelyManager);
     }
 
     @Test
     public void onActivityStopped() {
         Activity activity = mock(Activity.class);
         optlyActivityLifecycleCallbacks.onActivityStopped(activity);
-        verify(optimizelySDK).stop(activity, optlyActivityLifecycleCallbacks);
+        verify(optimizelyManager).stop(activity, optlyActivityLifecycleCallbacks);
     }
 }

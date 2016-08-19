@@ -149,10 +149,8 @@ public class DataFileLoader {
                 }
             }
 
-            if (!dataFileService.isBound()) {
-                // We are running in the background so stop the service
-                dataFileService.stop();
-            }
+            // We are running in the background so stop the service
+            dataFileService.stop();
         }
     }
 }
