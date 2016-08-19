@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
  * Handles loading the Optimizely data file
  */
 public class OptimizelySDK {
+    @Nullable private static Optimizely optimizely;
     @NonNull private final String projectId;
     @NonNull private final Long eventHandlerDispatchInterval;
     @NonNull private final TimeUnit eventHandlerDispatchIntervalTimeUnit;
@@ -45,8 +46,6 @@ public class OptimizelySDK {
     @Nullable private OptimizelyStartListener optimizelyStartListener;
     @Nullable private OptlyEventHandler eventHandler;
     @Nullable private AndroidUserExperimentRecord androidUserExperimentRecord;
-
-    @Nullable private String dataFile;
 
     OptimizelySDK(@NonNull String projectId,
                   @NonNull Long eventHandlerDispatchInterval,
@@ -127,18 +126,8 @@ public class OptimizelySDK {
         }
     }
 
-    @Nullable
-    public ParcelableOptimizely getParcelableOptimizely() {
-        if (dataFile != null) {
-            return new ParcelableOptimizely(dataFile);
-        } else {
-            logger.warn("Tried to get parcelable Optimizely before the datafile has been loaded");
-            return null;
-        }
-    }
-
-    public Optimizely getOptimizely(ParcelableOptimizely parcelableOptimizely) {
-        return parcelableOptimizely.unParcel(this);
+    public Optimizely getOptimizely() {
+        return optimizely;
     }
 
     @NonNull
@@ -161,7 +150,6 @@ public class OptimizelySDK {
     }
 
     public void injectOptimizely(@NonNull final Context context, final @NonNull AndroidUserExperimentRecord userExperimentRecord, @NonNull final ServiceScheduler serviceScheduler, @NonNull final String dataFile) {
-        this.dataFile = dataFile;
         AsyncTask<Void, Void, UserExperimentRecord> initUserExperimentRecordTask = new AsyncTask<Void, Void, UserExperimentRecord>() {
             @Override
             protected UserExperimentRecord doInBackground(Void[] params) {
@@ -183,6 +171,7 @@ public class OptimizelySDK {
                             .build();
                     logger.info("Sending Optimizely instance to listener");
                     optimizelyStartListener.onStart(optimizely);
+                    OptimizelySDK.optimizely = optimizely;
                 } else {
                     logger.info("No listener to send Optimizely to");
                 }

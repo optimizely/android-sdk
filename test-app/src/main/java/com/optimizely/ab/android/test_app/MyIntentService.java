@@ -5,7 +5,6 @@ import android.content.Intent;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.sdk.OptimizelySDK;
-import com.optimizely.ab.android.sdk.ParcelableOptimizely;
 
 public class MyIntentService extends IntentService {
     public MyIntentService() {
@@ -18,10 +17,10 @@ public class MyIntentService extends IntentService {
         if (intent != null) {
             // Get Optimizely from the Intent that started this Service
             final OptimizelySDK optimizelySDK = ((MyApplication) getApplication()).getOptimizelySDK();
-            ParcelableOptimizely parcelableOptimizely = intent.getParcelableExtra("optly");
-            Optimizely optimizely = optimizelySDK.getOptimizely(parcelableOptimizely);
-
-            optimizely.track("goal_3", "user1");
+            Optimizely optimizely = optimizelySDK.getOptimizely();
+            if (optimizely != null) {
+                optimizely.track("goal_3", "user_1");
+            }
         }
     }
 }

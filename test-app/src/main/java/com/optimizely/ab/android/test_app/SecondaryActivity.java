@@ -3,13 +3,11 @@ package com.optimizely.ab.android.test_app;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.sdk.OptimizelySDK;
-import com.optimizely.ab.android.sdk.ParcelableOptimizely;
 
 public class SecondaryActivity extends AppCompatActivity {
 
@@ -20,9 +18,7 @@ public class SecondaryActivity extends AppCompatActivity {
 
         // Get Optimizely from the Intent that started this Activity
         final OptimizelySDK optimizelySDK = ((MyApplication) getApplication()).getOptimizelySDK();
-        Intent intent = getIntent();
-        ParcelableOptimizely parcelableOptimizely = intent.getParcelableExtra("optly");
-        Optimizely optimizely = optimizelySDK.getOptimizely(parcelableOptimizely);
+        Optimizely optimizely = optimizelySDK.getOptimizely();
 
         // track conversion event
         optimizely.track("goal_1", "user_1");
@@ -32,7 +28,6 @@ public class SecondaryActivity extends AppCompatActivity {
 
         SecondaryFragment secondaryFragment = new SecondaryFragment();
         Bundle arguments = new Bundle();
-        arguments.putParcelable("optly", parcelableOptimizely);
         secondaryFragment.setArguments(arguments);
 
         fragmentTransaction.add(secondaryFragment, "frag");
@@ -46,10 +41,11 @@ public class SecondaryActivity extends AppCompatActivity {
         public void onStart() {
             super.onStart();
             final OptimizelySDK optimizelySDK = ((MyApplication) getActivity().getApplication()).getOptimizelySDK();
-            ParcelableOptimizely parcelableOptimizely = getArguments().getParcelable("optly");
-            Optimizely optimizely = optimizelySDK.getOptimizely(parcelableOptimizely);
+            Optimizely optimizely = optimizelySDK.getOptimizely();
 
-            optimizely.track("goal_2", "user_1");
+            if (optimizely != null) {
+                optimizely.track("goal_2", "user_1");
+            }
         }
     }
 }

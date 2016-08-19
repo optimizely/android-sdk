@@ -9,7 +9,6 @@ import android.widget.Toast;
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.sdk.OptimizelySDK;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
-import com.optimizely.ab.android.sdk.ParcelableOptimizely;
 import com.optimizely.ab.config.Variation;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,11 +27,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), SecondaryActivity.class);
-                // Try and pass Optimizely through the Intent system
-                ParcelableOptimizely parcelableOptimizely = optimizelySDK.getParcelableOptimizely();
-                if (parcelableOptimizely != null) { // If null Optimizely didn't load before the click
-                    intent.putExtra("optly", parcelableOptimizely);
-                }
                 startActivity(intent);
 
                 intent.setClass(v.getContext(), MyIntentService.class);
