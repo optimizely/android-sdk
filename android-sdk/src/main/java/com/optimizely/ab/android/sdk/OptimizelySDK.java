@@ -46,6 +46,8 @@ public class OptimizelySDK {
     @Nullable private OptlyEventHandler eventHandler;
     @Nullable private AndroidUserExperimentRecord androidUserExperimentRecord;
 
+    @Nullable private String dataFile;
+
     OptimizelySDK(@NonNull String projectId,
                   @NonNull Long eventHandlerDispatchInterval,
                   @NonNull TimeUnit eventHandlerDispatchIntervalTimeUnit,
@@ -125,11 +127,17 @@ public class OptimizelySDK {
         }
     }
 
-    public ParcelableOptimizely parcelOptimizely(Optimizely optimizely) {
-        return new ParcelableOptimizely(optimizely);
+    @Nullable
+    public ParcelableOptimizely getParcelableOptimizely() {
+        if (dataFile != null) {
+            return new ParcelableOptimizely(dataFile);
+        } else {
+            logger.warn("Tried to get parcelable Optimizely before the datafile has been loaded");
+            return null;
+        }
     }
 
-    public Optimizely unParcelOptimizely(ParcelableOptimizely parcelableOptimizely) {
+    public Optimizely getOptimizely(ParcelableOptimizely parcelableOptimizely) {
         return parcelableOptimizely.unParcel(this);
     }
 
@@ -153,6 +161,7 @@ public class OptimizelySDK {
     }
 
     public void injectOptimizely(@NonNull final Context context, final @NonNull AndroidUserExperimentRecord userExperimentRecord, @NonNull final ServiceScheduler serviceScheduler, @NonNull final String dataFile) {
+        this.dataFile = dataFile;
         AsyncTask<Void, Void, UserExperimentRecord> initUserExperimentRecordTask = new AsyncTask<Void, Void, UserExperimentRecord>() {
             @Override
             protected UserExperimentRecord doInBackground(Void[] params) {

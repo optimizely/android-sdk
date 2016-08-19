@@ -20,9 +20,9 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        optimizelySDK = OptimizelySDK.builder("6820012714")
-                .withEventHandlerDispatchInterval(1, TimeUnit.DAYS)
-                .withDataFileDownloadInterval(1, TimeUnit.DAYS)
+        optimizelySDK = OptimizelySDK.builder("6242822113")
+                .withEventHandlerDispatchInterval(30, TimeUnit.SECONDS)
+                .withDataFileDownloadInterval(30, TimeUnit.SECONDS)
                 .build();
     }
 }

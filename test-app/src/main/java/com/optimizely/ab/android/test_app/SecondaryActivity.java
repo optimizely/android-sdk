@@ -22,7 +22,7 @@ public class SecondaryActivity extends AppCompatActivity {
         final OptimizelySDK optimizelySDK = ((MyApplication) getApplication()).getOptimizelySDK();
         Intent intent = getIntent();
         ParcelableOptimizely parcelableOptimizely = intent.getParcelableExtra("optly");
-        Optimizely optimizely = optimizelySDK.unParcelOptimizely(parcelableOptimizely);
+        Optimizely optimizely = optimizelySDK.getOptimizely(parcelableOptimizely);
 
         // track conversion event
         optimizely.track("goal_1", "user_1");
@@ -47,7 +47,7 @@ public class SecondaryActivity extends AppCompatActivity {
             super.onStart();
             final OptimizelySDK optimizelySDK = ((MyApplication) getActivity().getApplication()).getOptimizelySDK();
             ParcelableOptimizely parcelableOptimizely = getArguments().getParcelable("optly");
-            Optimizely optimizely = optimizelySDK.unParcelOptimizely(parcelableOptimizely);
+            Optimizely optimizely = optimizelySDK.getOptimizely(parcelableOptimizely);
 
             optimizely.track("goal_2", "user_1");
         }

@@ -19,7 +19,7 @@ public class MyIntentService extends IntentService {
             // Get Optimizely from the Intent that started this Service
             final OptimizelySDK optimizelySDK = ((MyApplication) getApplication()).getOptimizelySDK();
             ParcelableOptimizely parcelableOptimizely = intent.getParcelableExtra("optly");
-            Optimizely optimizely = optimizelySDK.unParcelOptimizely(parcelableOptimizely);
+            Optimizely optimizely = optimizelySDK.getOptimizely(parcelableOptimizely);
 
             optimizely.track("goal_3", "user1");
         }
