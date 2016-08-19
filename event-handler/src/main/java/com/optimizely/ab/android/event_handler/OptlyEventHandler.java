@@ -25,7 +25,7 @@ public class OptlyEventHandler implements EventHandler {
     Logger logger = LoggerFactory.getLogger(OptlyEventHandler.class);
 
     @NonNull private final Context context;
-    private long flushInterval = -1;
+    private long dispatchInterval = -1;
 
     public static OptlyEventHandler getInstance(@NonNull Context context) {
         return new OptlyEventHandler(context);
@@ -40,16 +40,16 @@ public class OptlyEventHandler implements EventHandler {
     }
 
     /**
-     * Sets event flushing interval
+     * Sets event dispatch interval
      *
      * Events will only be scheduled to dispatch as long as events remain in storage.
      *
      * Events are put into storage when they fail to send over network.
+     * @param dispatchInterval the interval in the provided {@link TimeUnit}
      * @param timeUnit a {@link TimeUnit}
-     * @param flushInterval the interval in the provided {@link TimeUnit}
      */
-    private void setFlushInterval(TimeUnit timeUnit, long flushInterval) {
-        this.flushInterval = timeUnit.toMillis(flushInterval);
+    public void setDispatchInterval(long dispatchInterval, TimeUnit timeUnit) {
+        this.dispatchInterval = timeUnit.toMillis(dispatchInterval);
     }
 
     @Override
@@ -70,8 +70,8 @@ public class OptlyEventHandler implements EventHandler {
             String event = generateRequest(url, params);
             Intent intent = new Intent(context, EventIntentService.class);
             intent.putExtra(EventIntentService.EXTRA_URL, event);
-            if (flushInterval != -1) {
-                intent.putExtra(EventIntentService.EXTRA_INTERVAL, flushInterval);
+            if (dispatchInterval != -1) {
+                intent.putExtra(EventIntentService.EXTRA_INTERVAL, dispatchInterval);
             }
             context.startService(intent);
             logger.info("Sent url {} to the event handler service", event);

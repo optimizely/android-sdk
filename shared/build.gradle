@@ -26,8 +26,10 @@ android {
 }
 
 dependencies {
-    provided "org.slf4j:slf4j-api:$slf4j_ver"
-    provided "org.slf4j:slf4j-android:$slf4j_ver"
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile "org.slf4j:slf4j-api:$slf4j_ver"
+    compile "org.slf4j:slf4j-android:$slf4j_ver"
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"

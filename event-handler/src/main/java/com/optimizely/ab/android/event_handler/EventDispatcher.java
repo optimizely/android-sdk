@@ -68,6 +68,8 @@ public class EventDispatcher {
             serviceScheduler.unschedule(intent);
             logger.info("Unscheduled event dispatch");
         }
+
+        eventDAO.closeDb();
     }
 
     // Either grab the interval for the first time from Intent or from storage

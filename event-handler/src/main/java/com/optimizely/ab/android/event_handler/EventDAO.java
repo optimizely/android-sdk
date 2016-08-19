@@ -7,33 +7,32 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Created by jdeffibaugh on 7/21/16 for Optimizely.
- *
+ * <p/>
  * Handles interactions with the {@link SQLiteDatabase} that store {@link Event} instances.
  */
 public class EventDAO {
 
-    @NonNull SQLiteDatabase db;
+    @NonNull EventSQLiteOpenHelper dbHelper;
     @NonNull Logger logger;
 
-    private EventDAO(@NonNull SQLiteDatabase db, @NonNull Logger logger) {
-        this.db = db;
+    private EventDAO(@NonNull EventSQLiteOpenHelper dbHelper, @NonNull Logger logger) {
+        this.dbHelper = dbHelper;
         this.logger = logger;
     }
 
     static EventDAO getInstance(@NonNull Context context, @NonNull Logger logger) {
         EventSQLiteOpenHelper sqLiteOpenHelper = new EventSQLiteOpenHelper(context, EventSQLiteOpenHelper.DB_NAME, null, EventSQLiteOpenHelper.VERSION, null, LoggerFactory.getLogger(EventSQLiteOpenHelper.class));
-        SQLiteDatabase sqLiteDatabase = sqLiteOpenHelper.getWritableDatabase();
-        return new EventDAO(sqLiteDatabase, logger);
+        return new EventDAO(sqLiteOpenHelper, logger);
     }
 
     public boolean storeEvent(@NonNull Event event) {
@@ -43,7 +42,7 @@ public class EventDAO {
         // Since we are setting the "null column hack" param to null empty values will not be inserted
         // at all instead of inserting null.
         long newRowId;
-        newRowId = db.insert(EventTable.NAME, null, values);
+        newRowId = dbHelper.getWritableDatabase().insert(EventTable.NAME, null, values);
 
         logger.info("Inserted {} into db", event);
 
@@ -60,7 +59,7 @@ public class EventDAO {
                 EventTable.Column.URL
         };
 
-        Cursor cursor = db.query(
+        Cursor cursor = dbHelper.getReadableDatabase().query(
                 EventTable.NAME,           // The table to query
                 projection,                 // The columns to return
                 null,                       // The columns for the WHERE clause
@@ -70,25 +69,27 @@ public class EventDAO {
                 null                        // The sort order
         );
 
-        cursor.moveToFirst();
-        do {
-            long itemId = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(EventTable._ID)
-            );
-            String url = cursor.getString(
-                    cursor.getColumnIndexOrThrow(EventTable.Column.URL)
-            );
-            try {
-                events.add(new Pair<>(itemId, new Event(new URL(url))));
-            } catch (MalformedURLException e) {
-                logger.error("Retreived a malformed event from storage", e);
+        if (cursor.moveToFirst()) {
+            do {
+                long itemId = cursor.getLong(
+                        cursor.getColumnIndexOrThrow(EventTable._ID)
+                );
+                String url = cursor.getString(
+                        cursor.getColumnIndexOrThrow(EventTable.Column.URL)
+                );
+                try {
+                    events.add(new Pair<>(itemId, new Event(new URL(url))));
+                } catch (MalformedURLException e) {
+                    logger.error("Retrieved a malformed event from storage", e);
 
-            }
-        } while (cursor.moveToNext());
+                }
+            } while (cursor.moveToNext());
 
-        cursor.close();
+            cursor.close();
 
-        logger.info("Got events from db");
+            logger.info("Got events from SQLite");
+        }
+
 
         return events;
     }
@@ -97,9 +98,9 @@ public class EventDAO {
         // Define 'where' part of query.
         String selection = EventTable._ID + " = ?";
         // Specify arguments in placeholder order.
-        String[] selectionArgs = { String.valueOf(eventId) };
+        String[] selectionArgs = {String.valueOf(eventId)};
         // Issue SQL statement.
-        int numRowsDeleted = db.delete(EventTable.NAME, selection, selectionArgs);
+        int numRowsDeleted = dbHelper.getWritableDatabase().delete(EventTable.NAME, selection, selectionArgs);
 
         if (numRowsDeleted > 0) {
             logger.info("Removed event with id {} from db", eventId);
@@ -109,5 +110,9 @@ public class EventDAO {
         }
 
         return numRowsDeleted > 0;
+    }
+
+    public void closeDb() {
+        dbHelper.close();
     }
 }
