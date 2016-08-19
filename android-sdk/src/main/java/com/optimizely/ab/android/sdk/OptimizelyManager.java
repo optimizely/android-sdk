@@ -3,7 +3,6 @@ package com.optimizely.ab.android.sdk;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserExperimentRecord;
-import com.optimizely.ab.event.EventHandler;
 import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
 
 import org.slf4j.Logger;
@@ -44,8 +42,6 @@ public class OptimizelyManager {
     @NonNull private final Logger logger;
     @Nullable private DataFileServiceConnection dataFileServiceConnection;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
-    @Nullable private OptlyEventHandler eventHandler;
-    @Nullable private AndroidUserExperimentRecord androidUserExperimentRecord;
 
     OptimizelyManager(@NonNull String projectId,
                       @NonNull Long eventHandlerDispatchInterval,
@@ -87,43 +83,28 @@ public class OptimizelyManager {
     }
 
     public void start(@NonNull Activity activity, @NonNull OptimizelyStartListener optimizelyStartListener) {
-        start(activity.getApplication(), new OptlyActivityLifecycleCallbacks(this), optimizelyStartListener);
+        activity.getApplication().registerActivityLifecycleCallbacks(new OptlyActivityLifecycleCallbacks(this));
+        start(activity.getApplication(), optimizelyStartListener);
     }
 
-    public void start(@NonNull Service service, @NonNull OptimizelyStartListener optimizelyStartListener) {
-        start(service.getApplication(), null, optimizelyStartListener);
-    }
-
-    public void start(@NonNull Application application, @Nullable OptlyActivityLifecycleCallbacks lifeCycleCallbacks, @NonNull OptimizelyStartListener optimizelyStartListener) {
+    public void start(@NonNull Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
         this.optimizelyStartListener = optimizelyStartListener;
         this.dataFileServiceConnection = new DataFileServiceConnection(this);
-
-        final Intent intent = new Intent(application.getApplicationContext(), DataFileService.class);
-        application.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
-
-        if (lifeCycleCallbacks != null) {
-            application.registerActivityLifecycleCallbacks(lifeCycleCallbacks);
-        }
-    }
-
-    public void stop(@NonNull Service service) {
-        stop(service.getApplication(), null);
+        final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
+        context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     public void stop(@NonNull Activity activity, @NonNull OptlyActivityLifecycleCallbacks optlyActivityLifecycleCallbacks) {
-        stop(activity.getApplication(), optlyActivityLifecycleCallbacks);
+        stop(activity);
+        activity.getApplication().unregisterActivityLifecycleCallbacks(optlyActivityLifecycleCallbacks);
     }
 
-    public void stop(@NonNull Application application, @Nullable OptlyActivityLifecycleCallbacks optlyActivityLifecycleCallbacks) {
-        this.optimizelyStartListener = null;
-
+    public void stop(@NonNull Context context) {
         if (dataFileServiceConnection != null && dataFileServiceConnection.isBound()) {
-            application.getApplicationContext().unbindService(dataFileServiceConnection);
+            context.getApplicationContext().unbindService(dataFileServiceConnection);
         }
 
-        if (optlyActivityLifecycleCallbacks != null) {
-            application.unregisterActivityLifecycleCallbacks(optlyActivityLifecycleCallbacks);
-        }
+        this.optimizelyStartListener = null;
     }
 
     public Optimizely getOptimizely() {
@@ -133,20 +114,6 @@ public class OptimizelyManager {
     @NonNull
     public String getProjectId() {
         return projectId;
-    }
-
-    @Nullable
-    public EventHandler getEventHandler() {
-        return eventHandler;
-    }
-
-    @Nullable
-    public UserExperimentRecord getUserExperimentRecord() {
-        return androidUserExperimentRecord;
-    }
-
-    public void setUserExperimentRecord(AndroidUserExperimentRecord androidUserExperimentRecord) {
-        this.androidUserExperimentRecord = androidUserExperimentRecord;
     }
 
     public void injectOptimizely(@NonNull final Context context, final @NonNull AndroidUserExperimentRecord userExperimentRecord, @NonNull final ServiceScheduler serviceScheduler, @NonNull final String dataFile) {
@@ -164,7 +131,7 @@ public class OptimizelyManager {
                 serviceScheduler.schedule(intent, dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval));
 
                 if (optimizelyStartListener != null) {
-                    eventHandler = OptlyEventHandler.getInstance(context);
+                    OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
                     eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
                     Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
                             .withUserExperimentRecord(userExperimentRecord)
@@ -251,7 +218,6 @@ public class OptimizelyManager {
                             ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory, LoggerFactory.getLogger(ServiceScheduler.class));
                             AndroidUserExperimentRecord userExperimentRecord =
                                     (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(optimizelyManager.getProjectId(), dataFileService.getApplicationContext());
-                            optimizelyManager.setUserExperimentRecord(userExperimentRecord);
                             optimizelyManager.injectOptimizely(dataFileService.getApplicationContext(), userExperimentRecord, serviceScheduler, dataFile);
                         }
                     }
