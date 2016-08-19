@@ -81,7 +81,7 @@ public class EventDAOTest {
         assertEquals("http://www.foo2.com?bar2=baz2", pair2.second.toString());
         assertEquals("http://www.foo3.com?bar3=baz3", pair3.second.toString());
 
-        verify(logger).info("Got events from db");
+        verify(logger).info("Got events from SQLite");
     }
 
     @Test
