@@ -21,17 +21,17 @@ import static org.mockito.Mockito.when;
 /**
  * Created by jdeffibaugh on 8/16/16 for Optimizely.
  *
- * Tests {@link OptimizelySDK.DataFileServiceConnection}
+ * Tests {@link OptimizelyManager.DataFileServiceConnection}
  */
-public class OptimizelySDKDataFileServiceConnectionTest {
+public class OptimizelyManagerDataFileServiceConnectionTest {
 
-    OptimizelySDK.DataFileServiceConnection dataFileServiceConnection;
-    OptimizelySDK optimizelySDK;
+    OptimizelyManager.DataFileServiceConnection dataFileServiceConnection;
+    OptimizelyManager optimizelyManager;
 
     @Before
     public void setup() {
-        optimizelySDK = mock(OptimizelySDK.class);
-        dataFileServiceConnection = new OptimizelySDK.DataFileServiceConnection(optimizelySDK);
+        optimizelyManager = mock(OptimizelyManager.class);
+        dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager);
     }
 
     @Test
@@ -41,13 +41,13 @@ public class OptimizelySDKDataFileServiceConnectionTest {
         Context context = mock(Context.class);
         when(service.getApplicationContext()).thenReturn(context);
         when(binder.getService()).thenReturn(service);
-        when(optimizelySDK.getProjectId()).thenReturn("1");
+        when(optimizelyManager.getProjectId()).thenReturn("1");
         ArgumentCaptor<DataFileLoadedListener> captor = ArgumentCaptor.forClass(DataFileLoadedListener.class);
         dataFileServiceConnection.onServiceConnected(null, binder);
         verify(service).getDataFile(same("1"), any(DataFileLoader.class), captor.capture());
         DataFileLoadedListener listener = captor.getValue();
         listener.onDataFileLoaded("");
-        verify(optimizelySDK).injectOptimizely(any(Context.class), any(AndroidUserExperimentRecord.class), any(ServiceScheduler.class), eq(""));
+        verify(optimizelyManager).injectOptimizely(any(Context.class), any(AndroidUserExperimentRecord.class), any(ServiceScheduler.class), eq(""));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class OptimizelySDKDataFileServiceConnectionTest {
         Context context = mock(Context.class);
         when(service.getApplicationContext()).thenReturn(context);
         when(binder.getService()).thenReturn(service);
-        when(optimizelySDK.getProjectId()).thenReturn("1");
+        when(optimizelyManager.getProjectId()).thenReturn("1");
         ArgumentCaptor<DataFileLoadedListener> captor = ArgumentCaptor.forClass(DataFileLoadedListener.class);
         dataFileServiceConnection.onServiceConnected(null, binder);
         verify(service).getDataFile(same("1"), any(DataFileLoader.class), captor.capture());
@@ -67,7 +67,7 @@ public class OptimizelySDKDataFileServiceConnectionTest {
         DataFileLoadedListener listener = captor.getValue();
         listener.onDataFileLoaded("");
 
-        verify(optimizelySDK, never()).injectOptimizely(any(Context.class), any(AndroidUserExperimentRecord.class), any(ServiceScheduler.class), eq(""));
+        verify(optimizelyManager, never()).injectOptimizely(any(Context.class), any(AndroidUserExperimentRecord.class), any(ServiceScheduler.class), eq(""));
     }
 
     @Test

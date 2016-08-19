@@ -7,13 +7,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.optimizely.ab.Optimizely;
-import com.optimizely.ab.android.sdk.OptimizelySDK;
+import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.config.Variation;
 
 public class MainActivity extends AppCompatActivity {
 
-    private OptimizelySDK optimizelySDK;
+    private OptimizelyManager optimizelyManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // This could also be done via DI framework such as Dagger
-        optimizelySDK = ((MyApplication) getApplication()).getOptimizelySDK();
+        optimizelyManager = ((MyApplication) getApplication()).getOptimizelyManager();
 
         findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        optimizelySDK.start(this, new OptimizelyStartListener() {
+        optimizelyManager.start(this, new OptimizelyStartListener() {
             @Override
             public void onStart(Optimizely optimizely) {
                 Variation variation = optimizely.activate("experiment_1", "user_1");

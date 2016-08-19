@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * Handles loading the Optimizely data file
  */
-public class OptimizelySDK {
+public class OptimizelyManager {
     @Nullable private static Optimizely optimizely;
     @NonNull private final String projectId;
     @NonNull private final Long eventHandlerDispatchInterval;
@@ -47,13 +47,13 @@ public class OptimizelySDK {
     @Nullable private OptlyEventHandler eventHandler;
     @Nullable private AndroidUserExperimentRecord androidUserExperimentRecord;
 
-    OptimizelySDK(@NonNull String projectId,
-                  @NonNull Long eventHandlerDispatchInterval,
-                  @NonNull TimeUnit eventHandlerDispatchIntervalTimeUnit,
-                  @NonNull Long dataFileDownloadInterval,
-                  @NonNull TimeUnit dataFileDownloadIntervalTimeUnit,
-                  @NonNull Executor executor,
-                  @NonNull Logger logger) {
+    OptimizelyManager(@NonNull String projectId,
+                      @NonNull Long eventHandlerDispatchInterval,
+                      @NonNull TimeUnit eventHandlerDispatchIntervalTimeUnit,
+                      @NonNull Long dataFileDownloadInterval,
+                      @NonNull TimeUnit dataFileDownloadIntervalTimeUnit,
+                      @NonNull Executor executor,
+                      @NonNull Logger logger) {
         this.projectId = projectId;
         this.eventHandlerDispatchInterval = eventHandlerDispatchInterval;
         this.eventHandlerDispatchIntervalTimeUnit = eventHandlerDispatchIntervalTimeUnit;
@@ -171,7 +171,7 @@ public class OptimizelySDK {
                             .build();
                     logger.info("Sending Optimizely instance to listener");
                     optimizelyStartListener.onStart(optimizely);
-                    OptimizelySDK.optimizely = optimizely;
+                    OptimizelyManager.optimizely = optimizely;
                 } else {
                     logger.info("No listener to send Optimizely to");
                 }
@@ -182,10 +182,10 @@ public class OptimizelySDK {
 
     public static class OptlyActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
 
-        @NonNull private OptimizelySDK optimizelySDK;
+        @NonNull private OptimizelyManager optimizelyManager;
 
-        public OptlyActivityLifecycleCallbacks(@NonNull OptimizelySDK optimizelySDK) {
-            this.optimizelySDK = optimizelySDK;
+        public OptlyActivityLifecycleCallbacks(@NonNull OptimizelyManager optimizelyManager) {
+            this.optimizelyManager = optimizelyManager;
         }
 
         @Override
@@ -210,7 +210,7 @@ public class OptimizelySDK {
 
         @Override
         public void onActivityStopped(Activity activity) {
-            optimizelySDK.stop(activity, this);
+            optimizelyManager.stop(activity, this);
         }
 
         @Override
@@ -226,11 +226,11 @@ public class OptimizelySDK {
 
     public static class DataFileServiceConnection implements ServiceConnection {
 
-        @NonNull private final OptimizelySDK optimizelySDK;
+        @NonNull private final OptimizelyManager optimizelyManager;
         private boolean bound = false;
 
-        DataFileServiceConnection(@NonNull OptimizelySDK optimizelySDK) {
-            this.optimizelySDK = optimizelySDK;
+        DataFileServiceConnection(@NonNull OptimizelyManager optimizelyManager) {
+            this.optimizelyManager = optimizelyManager;
         }
 
         @Override
@@ -242,7 +242,7 @@ public class OptimizelySDK {
             if (dataFileService != null) {
                 DataFileLoader dataFileLoader = new DataFileLoader(new DataFileLoader.TaskChain(dataFileService),
                         LoggerFactory.getLogger(DataFileLoader.class));
-                dataFileService.getDataFile(optimizelySDK.getProjectId(), dataFileLoader, new DataFileLoadedListener() {
+                dataFileService.getDataFile(optimizelyManager.getProjectId(), dataFileLoader, new DataFileLoadedListener() {
                     @Override
                     public void onDataFileLoaded(String dataFile) {
                         if (bound) {
@@ -250,9 +250,9 @@ public class OptimizelySDK {
                             ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(dataFileService.getApplicationContext());
                             ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory, LoggerFactory.getLogger(ServiceScheduler.class));
                             AndroidUserExperimentRecord userExperimentRecord =
-                                    (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(optimizelySDK.getProjectId(), dataFileService.getApplicationContext());
-                            optimizelySDK.setUserExperimentRecord(userExperimentRecord);
-                            optimizelySDK.injectOptimizely(dataFileService.getApplicationContext(), userExperimentRecord, serviceScheduler, dataFile);
+                                    (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(optimizelyManager.getProjectId(), dataFileService.getApplicationContext());
+                            optimizelyManager.setUserExperimentRecord(userExperimentRecord);
+                            optimizelyManager.injectOptimizely(dataFileService.getApplicationContext(), userExperimentRecord, serviceScheduler, dataFile);
                         }
                     }
                 });
@@ -295,10 +295,10 @@ public class OptimizelySDK {
             return this;
         }
 
-        public OptimizelySDK build() {
-            final Logger logger = LoggerFactory.getLogger(OptimizelySDK.class);
+        public OptimizelyManager build() {
+            final Logger logger = LoggerFactory.getLogger(OptimizelyManager.class);
 
-            return new OptimizelySDK(projectId,
+            return new OptimizelyManager(projectId,
                     eventHandlerDispatchInterval,
                     eventHandlerDispatchIntervalTimeUnit,
                     dataFileDownloadInterval,

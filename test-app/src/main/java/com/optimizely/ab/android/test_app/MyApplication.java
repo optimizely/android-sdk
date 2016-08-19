@@ -2,7 +2,7 @@ package com.optimizely.ab.android.test_app;
 
 import android.app.Application;
 
-import com.optimizely.ab.android.sdk.OptimizelySDK;
+import com.optimizely.ab.android.sdk.OptimizelyManager;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,16 +11,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class MyApplication extends Application {
 
-    private OptimizelySDK optimizelySDK;
+    private OptimizelyManager optimizelyManager;
 
-    public OptimizelySDK getOptimizelySDK() {
-        return optimizelySDK;
+    public OptimizelyManager getOptimizelyManager() {
+        return optimizelyManager;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        optimizelySDK = OptimizelySDK.builder("6242822113")
+        optimizelyManager = OptimizelyManager.builder("6242822113")
                 .withEventHandlerDispatchInterval(30, TimeUnit.SECONDS)
                 .withDataFileDownloadInterval(30, TimeUnit.SECONDS)
                 .build();

@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.optimizely.ab.Optimizely;
-import com.optimizely.ab.android.sdk.OptimizelySDK;
+import com.optimizely.ab.android.sdk.OptimizelyManager;
 
 public class SecondaryActivity extends AppCompatActivity {
 
@@ -17,8 +17,8 @@ public class SecondaryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_secondary);
 
         // Get Optimizely from the Intent that started this Activity
-        final OptimizelySDK optimizelySDK = ((MyApplication) getApplication()).getOptimizelySDK();
-        Optimizely optimizely = optimizelySDK.getOptimizely();
+        final OptimizelyManager optimizelyManager = ((MyApplication) getApplication()).getOptimizelyManager();
+        Optimizely optimizely = optimizelyManager.getOptimizely();
 
         // track conversion event
         optimizely.track("goal_1", "user_1");
@@ -40,8 +40,8 @@ public class SecondaryActivity extends AppCompatActivity {
         @Override
         public void onStart() {
             super.onStart();
-            final OptimizelySDK optimizelySDK = ((MyApplication) getActivity().getApplication()).getOptimizelySDK();
-            Optimizely optimizely = optimizelySDK.getOptimizely();
+            final OptimizelyManager optimizelyManager = ((MyApplication) getActivity().getApplication()).getOptimizelyManager();
+            Optimizely optimizely = optimizelyManager.getOptimizely();
 
             if (optimizely != null) {
                 optimizely.track("goal_2", "user_1");
