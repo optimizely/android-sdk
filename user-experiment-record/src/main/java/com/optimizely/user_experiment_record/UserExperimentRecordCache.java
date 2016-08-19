@@ -18,11 +18,10 @@ import java.io.IOException;
  */
 public class UserExperimentRecordCache {
 
+    static final String FILE_NAME = "optly-user-experiment-record-%s.json";
     @NonNull private final String projectId;
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
-
-    static final String FILE_NAME = "optly-user-experiment-record-%s.json";
 
     public UserExperimentRecordCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
         this.projectId = projectId;
@@ -36,7 +35,7 @@ public class UserExperimentRecordCache {
         try {
             userExperimentRecord = cache.load(getFileName());
         } catch (FileNotFoundException e) {
-            logger.info("No persistent bucketer cache found");
+            logger.info("No user experiment record cache found");
         } catch (IOException e) {
             logger.error("Unable to load user experiment record cache", e);
         }

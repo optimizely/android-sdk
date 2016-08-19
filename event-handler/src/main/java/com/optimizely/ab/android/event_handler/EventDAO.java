@@ -80,14 +80,14 @@ public class EventDAO {
                 try {
                     events.add(new Pair<>(itemId, new Event(new URL(url))));
                 } catch (MalformedURLException e) {
-                    logger.error("Retreived a malformed event from storage", e);
+                    logger.error("Retrieved a malformed event from storage", e);
 
                 }
             } while (cursor.moveToNext());
 
             cursor.close();
 
-            logger.info("Got events from db");
+            logger.info("Got events from SQLite");
         }
 
 
