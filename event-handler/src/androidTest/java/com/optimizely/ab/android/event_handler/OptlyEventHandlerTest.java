@@ -2,6 +2,7 @@ package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,8 +14,10 @@ import org.slf4j.Logger;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -22,11 +25,11 @@ import static org.mockito.Mockito.verify;
  *
  * Tests for {@link OptlyEventHandler}
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class OptlyEventHandlerTest {
 
-    @Mock Context context;
-    @Mock Logger logger;
+    Context context;
+    Logger logger;
 
     OptlyEventHandler optlyEventHandler;
     String url = "http://www.foo.com";
@@ -34,10 +37,12 @@ public class OptlyEventHandlerTest {
 
     @Before
     public void setupEventHandler() {
+        context = mock(Context.class);
+        logger = mock(Logger.class);
         optlyEventHandler = OptlyEventHandler.getInstance(context);
         optlyEventHandler.logger = logger;
 
-        params = new HashMap<>();
+        params = new TreeMap<>();
         params.put("key1", "val1");
         params.put("key2", "val2");
         params.put("key3", "val3");
