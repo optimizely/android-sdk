@@ -32,7 +32,6 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV1;
-import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 
 import org.slf4j.Logger;
