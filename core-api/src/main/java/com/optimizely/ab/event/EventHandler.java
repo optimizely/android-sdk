@@ -23,5 +23,5 @@ import java.util.Map;
  */
 public interface EventHandler {
 
-    void dispatchEvent(String url, Map<String, String> params);
+    void dispatchEvent(LogEvent logEvent);
 }

@@ -40,8 +40,6 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.CheckForNull;
 
-import static com.optimizely.ab.event.LogEvent.RequestMethod;
-
 /**
  * {@link EventHandler} implementation that queues events and has a separate pool of threads responsible
  * for the dispatch.
@@ -77,9 +75,7 @@ public class AsyncEventHandler implements EventHandler, Closeable {
     }
 
     @Override
-    public void dispatchEvent(String url, Map<String, String> params) {
-        LogEvent logEvent = new LogEvent(RequestMethod.GET, url, params, "");
-
+    public void dispatchEvent(LogEvent logEvent) {
         // attempt to enqueue the log event for processing
         boolean submitted = logEventQueue.offer(logEvent);
         if (!submitted) {
@@ -158,5 +154,4 @@ public class AsyncEventHandler implements EventHandler, Closeable {
             }
         }
     }
-
 }

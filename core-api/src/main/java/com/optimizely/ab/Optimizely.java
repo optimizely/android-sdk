@@ -29,7 +29,10 @@ import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.error.NoOpErrorHandler;
 import com.optimizely.ab.error.RaiseExceptionErrorHandler;
 import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.EventBuilder;
+import com.optimizely.ab.event.internal.EventBuilderV1;
+import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 
 import org.slf4j.Logger;
@@ -161,12 +164,12 @@ public class Optimizely {
             return null;
         }
 
-        String endpointUrl = eventBuilder.getEndpointUrl(projectConfig.getProjectId());
-        Map<String, String> impressionParams = eventBuilder.createImpressionParams(projectConfig, experiment,
-                                                                                   variation, userId, attributes);
+        LogEvent impressionEvent =
+                eventBuilder.createImpressionEvent(projectConfig, experiment, variation, userId, attributes);
         logger.info("Activating user \"{}\" in experiment \"{}\".", userId, experiment.getKey());
-        logger.debug("Dispatching impression event to URL {} with params {}.", endpointUrl, impressionParams);
-        eventHandler.dispatchEvent(endpointUrl, impressionParams);
+        logger.debug("Dispatching impression event to URL {} with params {}.", impressionEvent.getEndpointUrl(),
+                     impressionEvent.getRequestParams());
+        eventHandler.dispatchEvent(impressionEvent);
 
         return variation;
     }
@@ -216,27 +219,27 @@ public class Optimizely {
         attributes = filterAttributes(currentConfig, attributes);
 
         // create the conversion event request parameters, then dispatch
-        String endpointUrl = eventBuilder.getEndpointUrl(currentConfig.getProjectId());
-        Map<String, String> conversionParams;
+        LogEvent conversionEvent;
         if (eventValue == null) {
-            conversionParams = eventBuilder.createConversionParams(currentConfig, bucketer, userId,
-                                                                   eventType.getId(), eventType.getKey(),
-                                                                   attributes);
+            conversionEvent = eventBuilder.createConversionEvent(currentConfig, bucketer, userId,
+                                                                 eventType.getId(), eventType.getKey(),
+                                                                 attributes);
         } else {
-            conversionParams = eventBuilder.createConversionParams(currentConfig, bucketer, userId,
-                                                                   eventType.getId(), eventType.getKey(), attributes,
-                                                                   eventValue);
+            conversionEvent = eventBuilder.createConversionEvent(currentConfig, bucketer, userId,
+                                                                 eventType.getId(), eventType.getKey(), attributes,
+                                                                 eventValue);
         }
 
-        if (conversionParams == null) {
+        if (conversionEvent == null) {
             logger.info("There are no valid experiments for event \"{}\" to track.", eventName);
             logger.info("Not tracking event \"{}\" for user \"{}\".", eventName, userId);
             return;
         }
 
         logger.info("Tracking event \"{}\" for user \"{}\".", eventName, userId);
-        logger.debug("Dispatching conversion event to URL {} with params {}.", endpointUrl, conversionParams);
-        eventHandler.dispatchEvent(endpointUrl, conversionParams);
+        logger.debug("Dispatching conversion event to URL {} with params {}.", conversionEvent.getEndpointUrl(),
+                     conversionEvent.getRequestParams());
+        eventHandler.dispatchEvent(conversionEvent);
     }
 
     //======== getVariation calls ========//
@@ -474,7 +477,7 @@ public class Optimizely {
             }
 
             if (eventBuilder == null) {
-                eventBuilder = new EventBuilder();
+                eventBuilder = new EventBuilderV1();
             }
 
             if (errorHandler == null) {

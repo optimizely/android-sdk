@@ -29,7 +29,8 @@ public class NoopEventHandler implements EventHandler {
     private static final Logger logger = LoggerFactory.getLogger(NoopEventHandler.class);
 
     @Override
-    public void dispatchEvent(String url, Map<String, String> params) {
-        logger.debug("Called dispatchEvent with URL: {} and params: {}", url, params);
+    public void dispatchEvent(LogEvent logEvent) {
+        logger.debug("Called dispatchEvent with URL: {} and params: {}", logEvent.getEndpointUrl(),
+                     logEvent.getRequestParams());
     }
 }

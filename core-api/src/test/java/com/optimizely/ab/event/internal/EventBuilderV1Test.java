@@ -16,7 +16,7 @@
  */
 package com.optimizely.ab.event.internal;
 
-import com.optimizely.ab.internal.ProjectValidationUtils;
+import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
@@ -24,6 +24,7 @@ import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.internal.ProjectValidationUtils;
 
 import org.junit.Test;
 
@@ -47,16 +48,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link EventBuilder}.
+ * Test for {@link EventBuilderV1}.
  */
-public class EventBuilderTest {
+public class EventBuilderV1Test {
 
     /**
      * Verify the positive case of creating an impression event.
      */
     @Test
     public void createImpressionParams() throws Exception {
-        EventBuilder builder = new EventBuilder();
+        EventBuilderV1 builder = new EventBuilderV1();
 
         // use the "valid" project config and its associated experiment, variation, and attributes
         ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfig();
@@ -66,9 +67,9 @@ public class EventBuilderTest {
         String userId = "userId";
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
-        Map<String, String> requestParams = builder.createImpressionParams(projectConfig, activatedExperiment,
-                                                                           bucketedVariation, userId,
-                                                                           attributeMap);
+        LogEvent impressionEvent = builder.createImpressionEvent(projectConfig, activatedExperiment, bucketedVariation,
+                                                                 userId, attributeMap);
+        Map<String, String> requestParams = impressionEvent.getRequestParams();
 
         assertThat(requestParams.size(), is(9));
 
@@ -90,7 +91,7 @@ public class EventBuilderTest {
      */
     @Test
     public void createConversionParams() throws Exception {
-        EventBuilder builder = new EventBuilder();
+        EventBuilderV1 builder = new EventBuilderV1();
 
         // use the "valid" project config and its associated experiment, variation, and attributes
         ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfig();
@@ -111,9 +112,10 @@ public class EventBuilderTest {
         }
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
-        Map<String, String> requestParams = builder.createConversionParams(projectConfig, mockBucketAlgorithm,
-                                                                           userId, eventType.getId(),
-                                                                           eventType.getKey(), attributeMap);
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm,
+                                                                 userId, eventType.getId(),
+                                                                 eventType.getKey(), attributeMap);
+        Map<String, String> requestParams = conversionEvent.getRequestParams();
 
         for (Experiment experiment : allExperiments) {
             if (experimentIds.contains(experiment.getId()) &&
@@ -143,7 +145,7 @@ public class EventBuilderTest {
 
     @Test
     public void createConversionParamsWithRevenue() throws Exception {
-        EventBuilder builder = new EventBuilder();
+        EventBuilderV1 builder = new EventBuilderV1();
         long revenue = 1234L;
 
         // use the "valid" project config and its associated experiment, variation, and attributes
@@ -160,10 +162,10 @@ public class EventBuilderTest {
         }
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
-        Map<String, String> requestParams = builder.createConversionParams(projectConfig, mockBucketAlgorithm,
-                                                                           "userId", eventType.getId(),
-                                                                           eventType.getKey(), attributeMap,
-                                                                           revenue);
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, "userId",
+                                                                 eventType.getId(), eventType.getKey(), attributeMap,
+                                                                 revenue);
+        Map<String, String> requestParams = conversionEvent.getRequestParams();
 
         // we're not going to verify everything, just revenue and the associated goals
         assertThat(requestParams, hasEntry("v", Long.toString(revenue)));
@@ -180,7 +182,7 @@ public class EventBuilderTest {
      */
     @Test
     public void createConversionParamsUserNotInAudience() throws Exception {
-        EventBuilder builder = new EventBuilder();
+        EventBuilderV1 builder = new EventBuilderV1();
 
         ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfig();
         Attribute attribute = projectConfig.getAttributes().get(0);
@@ -197,11 +199,10 @@ public class EventBuilderTest {
 
         // the audience for the experiments is "NOT firefox" so this user shouldn't satisfy audience conditions
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "firefox");
-        Map<String, String> requestParams = builder.createConversionParams(projectConfig, mockBucketAlgorithm,
-                                                                           userId, eventType.getId(),
-                                                                           eventType.getKey(), attributeMap);
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
+                                                                 eventType.getId(), eventType.getKey(), attributeMap);
 
-        assertNull(requestParams);
+        assertNull(conversionEvent);
     }
 
     /**
@@ -210,30 +211,19 @@ public class EventBuilderTest {
      */
     @Test
     public void createImpressionParamsIgnoresUnknownAttributes() throws Exception {
-        EventBuilder builder = new EventBuilder();
+        EventBuilderV1 builder = new EventBuilderV1();
 
         // use the "valid" project config and its associated experiment, variation, and attributes
         ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfig();
         Experiment activatedExperiment = projectConfig.getExperiments().get(0);
         Variation bucketedVariation = activatedExperiment.getVariations().get(0);
 
-        Map<String, String> requestParams =
-            builder.createImpressionParams(projectConfig, activatedExperiment, bucketedVariation, "userId",
-                                           Collections.singletonMap("unknownAttribute", "blahValue"));
+        LogEvent impressionEvent =
+            builder.createImpressionEvent(projectConfig, activatedExperiment, bucketedVariation, "userId",
+                                          Collections.singletonMap("unknownAttribute", "blahValue"));
 
         // verify that no request param has the value, "blahValue"
-        assertThat(requestParams, not(hasValue("blahValue")));
-    }
-
-    /**
-     * Verify that a proper endpoint is generated by getEndpointUrl given a project id
-     */
-    @Test
-    public void getEndpoint() throws Exception {
-        EventBuilder builder = new EventBuilder();
-        String projectId = "1234";
-
-        assertThat(builder.getEndpointUrl(projectId), is("https://1234.log.optimizely.com/event"));
+        assertThat(impressionEvent.getRequestParams(), not(hasValue("blahValue")));
     }
 
     //======== Helper methods ========//
