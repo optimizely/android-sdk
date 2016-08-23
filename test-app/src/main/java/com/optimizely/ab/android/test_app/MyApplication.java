@@ -21,7 +21,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // If the project doesn't compile because you are missing R.string.optly_project_id you neeed
+        // If the project doesn't compile because you are missing R.string.optly_project_id you need
         // to put `git_ignored_strings.xml` in test-app/src/main/res/values.  This file is git ignored.
         // It contains values that are unique for each developer.
         optimizelyManager = OptimizelyManager.builder(getResources().getString(R.string.optly_project_id))
