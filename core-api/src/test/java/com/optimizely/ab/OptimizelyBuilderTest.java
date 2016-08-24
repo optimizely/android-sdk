@@ -88,7 +88,7 @@ public class OptimizelyBuilderTest {
     }
 
     @Test
-    public void withPersistentBucketer() throws Exception {
+    public void withUserExperimentRecord() throws Exception {
         UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
         Optimizely optimizelyClient = Optimizely.builder(validConfigJson(), mockEventHandler)
                 .withUserExperimentRecord(userExperimentRecord)

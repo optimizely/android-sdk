@@ -155,7 +155,7 @@ public class OptimizelyTest {
             .withErrorHandler(mockErrorHandler)
             .build();
 
-        verify(mockBucketer).cleanUserExperimentRecord();
+        verify(mockBucketer).cleanUserExperimentRecords();
     }
 
     /**

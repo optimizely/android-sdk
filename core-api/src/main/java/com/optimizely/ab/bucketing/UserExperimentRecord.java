@@ -1,3 +1,19 @@
+/**
+ *
+ *    Copyright 2016, Optimizely
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package com.optimizely.ab.bucketing;
 
 import java.util.Map;
@@ -23,6 +39,7 @@ public interface UserExperimentRecord {
 
     /**
      * Called by the bucketer to check for a record of the previous activation
+     *
      * @param userId the user is id of the next activation
      * @param experimentKey the experiment id of the next activation
      * @return the variation key of the next activation, or null if no record exists
@@ -44,10 +61,10 @@ public interface UserExperimentRecord {
     /**
      * Called by bucketer to get a mapping of all stored records
      *
-     * This mapping is needed so that the bucketer can {@link this#remove(String, String)} outdated
+     * This mapping is needed so that the bucketer can {@link #remove(String, String)} outdated
      * records.
      * @return a map of userIds to a map of experiment keys to variation keys
      */
-    Map<String,Map<String,String>> records();
+    Map<String, Map<String,String>> getAllRecords();
 
 }

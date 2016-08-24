@@ -108,21 +108,29 @@ public class Bucketer {
     private Variation bucketToVariation(@Nonnull Experiment experiment,
                                         @Nonnull String userId) {
         // "salt" the bucket id using the experiment id
-        String combinedBucketId = userId + experiment.getId();
+        String experimentId = experiment.getId();
+        String experimentKey = experiment.getKey();
+        String combinedBucketId = userId + experimentId;
 
-        // If a persistent bucketer instance is present then check it for a persisted variation
+        // If a user experiment record instance is present then check it for a saved variation
         if (userExperimentRecord != null) {
-            String variationKey = userExperimentRecord.lookup(userId, experiment.getKey());
+            String variationKey = userExperimentRecord.lookup(userId, experimentKey);
             if (variationKey != null) {
-                logger.info("Returning previously activated variation \"{}\" from user experiment registry.", variationKey);
+                logger.info("Returning previously activated variation \"{}\" of experiment \"{}\" "
+                            + "for user \"{}\" from user experiment record.",
+                            variationKey, experimentKey, userId);
                 // A variation is stored for this combined bucket id
-                return projectConfig.getExperimentIdMapping().get(experiment.getId()).getVariationKeyToVariationMap().get(variationKey);
+                return projectConfig
+                    .getExperimentIdMapping()
+                    .get(experimentId)
+                    .getVariationKeyToVariationMap()
+                    .get(variationKey);
             } else {
-                logger.info("No previously activated variation returned from persistent bucketer.");
+                logger.info("No previously activated variation of experiment \"{}\" "
+                            + "for user \"{}\" found in user experiment record.",
+                            experimentKey, userId);
             }
         }
-
-        String experimentKey = experiment.getKey();
 
         List<TrafficAllocation> trafficAllocations = experiment.getTrafficAllocation();
 
@@ -133,16 +141,19 @@ public class Bucketer {
         String bucketedVariationId = bucketToEntity(bucketValue, trafficAllocations);
         if (bucketedVariationId != null) {
             Variation bucketedVariation = experiment.getVariationIdToVariationMap().get(bucketedVariationId);
-            logger.info("User \"{}\" is in variation \"{}\" of experiment \"{}\".", userId, bucketedVariation.getKey(),
+            String variationKey = bucketedVariation.getKey();
+                logger.info("User \"{}\" is in variation \"{}\" of experiment \"{}\".", userId, variationKey,
                         experimentKey);
 
-            // If a persistent bucketer instance is present give it a variation to store
+            // If a user experiment record is present give it a variation to store
             if (userExperimentRecord != null) {
-                boolean saved = userExperimentRecord.save(userId, experiment.getKey(), bucketedVariation.getKey());
+                boolean saved = userExperimentRecord.save(userId, experiment.getKey(), variationKey);
                 if (saved) {
-                    logger.info("Persisted variation \"{}\" of experiment \"{}\".", bucketedVariation.getKey(), experimentKey);
+                    logger.info("Saved variation \"{}\" of experiment \"{}\" for user \"{}\".",
+                                variationKey, experimentKey, userId);
                 } else {
-                    logger.warn("Failed to persist variation \"{}\" of experiment \"{}\".", bucketedVariation.getKey(), experimentKey);
+                    logger.warn("Failed to save variation \"{}\" of experiment \"{}\" for user \"{}\".",
+                                variationKey, experimentKey, userId);
                 }
             }
 
@@ -221,9 +232,9 @@ public class Bucketer {
      * Gives implementations of {@link UserExperimentRecord} a chance to remove records
      * of experiments that are deleted or not running.
      */
-    public void cleanUserExperimentRecord() {
+    public void cleanUserExperimentRecords() {
         if (userExperimentRecord != null) {
-            Map<String,Map<String,String>> records = userExperimentRecord.records();
+            Map<String, Map<String,String>> records = userExperimentRecord.getAllRecords();
             if (records != null) {
                 for (Map.Entry<String,Map<String,String>> record : records.entrySet()) {
                     for (String experimentKey : record.getValue().keySet()) {

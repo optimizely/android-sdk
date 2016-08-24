@@ -96,7 +96,7 @@ public class Optimizely {
 
     // Do work here that should be done once per Optimizely lifecycle
     @VisibleForTesting void initialize() {
-        bucketer.cleanUserExperimentRecord();
+        bucketer.cleanUserExperimentRecords();
     }
 
     //======== activate calls ========//
@@ -457,9 +457,7 @@ public class Optimizely {
             return this;
         }
 
-        /**
-         * Helper function for making testing easier
-         */
+        // Helper function for making testing easier
         protected Builder withConfig(ProjectConfig projectConfig) {
             this.projectConfig = projectConfig;
             return this;
