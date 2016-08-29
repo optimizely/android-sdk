@@ -16,18 +16,30 @@
  */
 package com.optimizely.ab.event;
 
+import ch.qos.logback.classic.Level;
+
+import com.optimizely.ab.internal.LogbackVerifier;
+
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Collections;
+
+import static com.optimizely.ab.event.LogEvent.RequestMethod;
 
 /**
  * Tests for {@link NoopEventHandler} -- mostly for coverage...
  */
 public class NoopEventHandlerTest {
 
+    @Rule
+    public LogbackVerifier logbackVerifier = new LogbackVerifier();
+
     @Test
     public void dispatchEvent() throws Exception {
         NoopEventHandler noopEventHandler = new NoopEventHandler();
-        noopEventHandler.dispatchEvent("blah", Collections.<String, String>emptyMap());
+        noopEventHandler.dispatchEvent(
+            new LogEvent(RequestMethod.GET, "blah", Collections.<String, String>emptyMap(), ""));
+        logbackVerifier.expectMessage(Level.DEBUG, "Called dispatchEvent with URL: blah and params: {}");
     }
 }
