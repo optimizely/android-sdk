@@ -139,6 +139,26 @@ public class OptimizelyTest {
     }
 
     /**
+     * Verify that bucketer initialization happens after building the Optimizely object
+     * @throws Exception
+     */
+    @Test
+    public void initializationOccursForBucketerWhenBuildingOptly() throws Exception {
+        String datafile = validConfigJson();
+        ProjectConfig projectConfig = validProjectConfig();
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely.builder(datafile, mockEventHandler)
+            .withBucketing(mockBucketer)
+            .withEventBuilder(mockEventBuilder)
+            .withConfig(projectConfig)
+            .withErrorHandler(mockErrorHandler)
+            .build();
+
+        verify(mockBucketer).cleanUserExperimentRecords();
+    }
+
+    /**
      * Verify that the {@link Optimizely#activate(Experiment, String, Map)} DOES NOT dispatch an impression event
      * when the user isn't bucketed to a variation.
      */

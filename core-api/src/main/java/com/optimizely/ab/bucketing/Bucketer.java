@@ -47,6 +47,8 @@ public class Bucketer {
 
     private final ProjectConfig projectConfig;
 
+    @Nullable private final UserExperimentRecord userExperimentRecord;
+
     private static final Logger logger = LoggerFactory.getLogger(Bucketer.class);
 
     private static final int MURMUR_HASH_SEED = 1;
@@ -58,7 +60,12 @@ public class Bucketer {
     static final int MAX_TRAFFIC_VALUE = 10000;
 
     public Bucketer(ProjectConfig projectConfig) {
+        this(projectConfig, null);
+    }
+
+    public Bucketer(ProjectConfig projectConfig, @Nullable UserExperimentRecord userExperimentRecord) {
         this.projectConfig = projectConfig;
+        this.userExperimentRecord = userExperimentRecord;
     }
 
     private String bucketToEntity(int bucketValue, List<TrafficAllocation> trafficAllocations) {
@@ -101,8 +108,29 @@ public class Bucketer {
     private Variation bucketToVariation(@Nonnull Experiment experiment,
                                         @Nonnull String userId) {
         // "salt" the bucket id using the experiment id
-        String combinedBucketId = userId + experiment.getId();
+        String experimentId = experiment.getId();
         String experimentKey = experiment.getKey();
+        String combinedBucketId = userId + experimentId;
+
+        // If a user experiment record instance is present then check it for a saved variation
+        if (userExperimentRecord != null) {
+            String variationKey = userExperimentRecord.lookup(userId, experimentKey);
+            if (variationKey != null) {
+                logger.info("Returning previously activated variation \"{}\" of experiment \"{}\" "
+                            + "for user \"{}\" from user experiment record.",
+                            variationKey, experimentKey, userId);
+                // A variation is stored for this combined bucket id
+                return projectConfig
+                    .getExperimentIdMapping()
+                    .get(experimentId)
+                    .getVariationKeyToVariationMap()
+                    .get(variationKey);
+            } else {
+                logger.info("No previously activated variation of experiment \"{}\" "
+                            + "for user \"{}\" found in user experiment record.",
+                            experimentKey, userId);
+            }
+        }
 
         List<TrafficAllocation> trafficAllocations = experiment.getTrafficAllocation();
 
@@ -113,8 +141,22 @@ public class Bucketer {
         String bucketedVariationId = bucketToEntity(bucketValue, trafficAllocations);
         if (bucketedVariationId != null) {
             Variation bucketedVariation = experiment.getVariationIdToVariationMap().get(bucketedVariationId);
-            logger.info("User \"{}\" is in variation \"{}\" of experiment \"{}\".", userId, bucketedVariation.getKey(),
+            String variationKey = bucketedVariation.getKey();
+                logger.info("User \"{}\" is in variation \"{}\" of experiment \"{}\".", userId, variationKey,
                         experimentKey);
+
+            // If a user experiment record is present give it a variation to store
+            if (userExperimentRecord != null) {
+                boolean saved = userExperimentRecord.save(userId, experiment.getKey(), variationKey);
+                if (saved) {
+                    logger.info("Saved variation \"{}\" of experiment \"{}\" for user \"{}\".",
+                                variationKey, experimentKey, userId);
+                } else {
+                    logger.warn("Failed to save variation \"{}\" of experiment \"{}\" for user \"{}\".",
+                                variationKey, experimentKey, userId);
+                }
+            }
+
             return bucketedVariation;
         }
 
@@ -179,5 +221,30 @@ public class Bucketer {
         // map the hashCode into the range [0, BucketAlgorithm.MAX_TRAFFIC_VALUE)
         double ratio = (double)(hashCode & 0xFFFFFFFFL) / Math.pow(2, 32);
         return (int)Math.floor(MAX_TRAFFIC_VALUE * ratio);
+    }
+
+    @Nullable
+    public UserExperimentRecord getUserExperimentRecord() {
+        return userExperimentRecord;
+    }
+
+    /**
+     * Gives implementations of {@link UserExperimentRecord} a chance to remove records
+     * of experiments that are deleted or not running.
+     */
+    public void cleanUserExperimentRecords() {
+        if (userExperimentRecord != null) {
+            Map<String, Map<String,String>> records = userExperimentRecord.getAllRecords();
+            if (records != null) {
+                for (Map.Entry<String,Map<String,String>> record : records.entrySet()) {
+                    for (String experimentKey : record.getValue().keySet()) {
+                        Experiment experiment = projectConfig.getExperimentKeyMapping().get(experimentKey);
+                        if (experiment == null || !experiment.isRunning()) {
+                            userExperimentRecord.remove(record.getKey(), experimentKey);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

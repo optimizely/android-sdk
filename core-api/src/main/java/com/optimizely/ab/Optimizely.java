@@ -18,6 +18,7 @@ package com.optimizely.ab;
 
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
+import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -91,6 +92,11 @@ public class Optimizely {
         this.eventHandler = eventHandler;
         this.eventBuilder = eventBuilder;
         this.errorHandler = errorHandler;
+    }
+
+    // Do work here that should be done once per Optimizely lifecycle
+    @VisibleForTesting void initialize() {
+        bucketer.cleanUserExperimentRecords();
     }
 
     //======== activate calls ========//
@@ -419,6 +425,7 @@ public class Optimizely {
 
         private String datafile;
         private Bucketer bucketer;
+        private UserExperimentRecord userExperimentRecord;
         private ErrorHandler errorHandler;
         private EventHandler eventHandler;
         private EventBuilder eventBuilder;
@@ -435,6 +442,11 @@ public class Optimizely {
             return this;
         }
 
+        public Builder withUserExperimentRecord(UserExperimentRecord userExperimentRecord) {
+            this.userExperimentRecord = userExperimentRecord;
+            return this;
+        }
+
         protected Builder withBucketing(Bucketer bucketer) {
             this.bucketer = bucketer;
             return this;
@@ -445,9 +457,7 @@ public class Optimizely {
             return this;
         }
 
-        /**
-         * Helper function for making testing easier
-         */
+        // Helper function for making testing easier
         protected Builder withConfig(ProjectConfig projectConfig) {
             this.projectConfig = projectConfig;
             return this;
@@ -460,7 +470,7 @@ public class Optimizely {
 
             // use the default bucketer and event builder, if no overrides were provided
             if (bucketer == null) {
-                bucketer = new Bucketer(projectConfig);
+                bucketer = new Bucketer(projectConfig, userExperimentRecord);
             }
 
             if (eventBuilder == null) {
@@ -471,7 +481,9 @@ public class Optimizely {
                 errorHandler = new NoOpErrorHandler();
             }
 
-            return new Optimizely(projectConfig, bucketer, eventHandler, eventBuilder, errorHandler);
+            Optimizely optimizely = new Optimizely(projectConfig, bucketer, eventHandler, eventBuilder, errorHandler);
+            optimizely.initialize();
+            return optimizely;
         }
     }
 }

@@ -19,7 +19,7 @@ package com.optimizely.ab.event;
 import java.util.Map;
 
 /**
- * Implementations are responsible for dispatching {@link LogEvent}s to the Optimizely event end-point.
+ * Implementations are responsible for dispatching event's to the Optimizely event end-point.
  */
 public interface EventHandler {
 
