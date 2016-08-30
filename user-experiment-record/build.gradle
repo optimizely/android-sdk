@@ -25,14 +25,18 @@ android {
     }
 }
 
+task testAllModules << {
+    logger.info("Running android tests for all modules")
+}
+testAllModules.dependsOn(':android-sdk:connectedAndroidTest', ':event-handler:connectedAndroidTest', ':user-experiment-record:connectedAndroidTest', ':shared:connectedAndroidTest')
+
 dependencies {
     compile project(':shared')
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
-    testCompile "org.slf4j:slf4j-api:$slf4j_ver"
-    testCompile "org.slf4j:slf4j-android:$slf4j_ver"
+    testCompile "com.noveogroup.android:android-logger:$android_logger_ver"
 
     androidTestCompile "com.android.support.test:runner:$support_test_runner_ver"
     // Set this dependency to use JUnit 4 rules
@@ -40,8 +44,7 @@ dependencies {
     // Set this dependency to build and run Espresso tests
     androidTestCompile "com.android.support.test.espresso:espresso-core:$espresso_ver"
     androidTestCompile "org.mockito:mockito-core:$mockito_ver"
-    androidTestCompile "org.slf4j:slf4j-api:$slf4j_ver"
-    androidTestCompile "org.slf4j:slf4j-android:$slf4j_ver"
     androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
+    androidTestCompile "com.noveogroup.android:android-logger:$android_logger_ver"
 }

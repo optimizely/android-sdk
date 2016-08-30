@@ -107,17 +107,6 @@ public class DataFileLoaderTest {
     }
 
     @Test
-    public void noStopIfBound() {
-        DataFileLoader.RequestDataFileFromClientTask task =
-                new DataFileLoader.RequestDataFileFromClientTask("1", datafileService, dataFileCache,
-                        dataFileClient, dataFileLoadedListener, logger);
-
-        when(datafileService.isBound()).thenReturn(true);
-        task.onPostExecute("");
-        verify(datafileService, never()).stop();
-    }
-
-    @Test
     public void loadFromCache() {
         DataFileLoader.LoadDataFileFromCacheTask task = new DataFileLoader.LoadDataFileFromCacheTask(dataFileCache, dataFileLoadedListener);
 

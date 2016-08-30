@@ -1,6 +1,8 @@
 package com.optimizely.ab.android.event_handler;
 
 
+import android.support.test.runner.AndroidJUnit4;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,17 +25,21 @@ import static org.mockito.Mockito.when;
  *
  * Tests {@link EventClient}
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class EventClientTest {
 
-    @Mock Logger logger;
-    @Mock Event event;
-    @Mock HttpURLConnection urlConnection;
+    Logger logger;
+    Event event;
+    HttpURLConnection urlConnection;
 
     EventClient eventClient;
 
     @Before
     public void setupEventClient() throws IOException {
+        logger = mock(Logger.class);
+        event = mock(Event.class);
+        urlConnection = mock(HttpURLConnection.class);
+
         this.eventClient = new EventClient(logger);
         when(event.toString()).thenReturn("http://www.foo.com");
     }
