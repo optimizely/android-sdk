@@ -28,6 +28,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.noveogroup.android:android-logger:$android_logger_ver"
+    compile 'com.optimizely.ab:core-api:0.1.70'
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"

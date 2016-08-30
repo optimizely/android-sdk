@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.util.Pair;
 
 import com.optimizely.ab.android.shared.Cache;
@@ -158,22 +157,15 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
     }
 
     @Override
-    public Map<String, Map<String, String>> records() {
+    public Map<String, Map<String, String>> getAllRecords() {
         return writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache();
     }
 
     public static class WriteThroughCacheTaskFactory {
         @NonNull private final UserExperimentRecordCache diskUserExperimentRecordCache;
-
-        @NonNull
-        public Map<String, Map<String, String>> getMemoryUserExperimentRecordCache() {
-            return memoryUserExperimentRecordCache;
-        }
-
         @NonNull private final Map<String, Map<String, String>> memoryUserExperimentRecordCache;
         @NonNull private final Executor executor;
         @NonNull private final Logger logger;
-
         public WriteThroughCacheTaskFactory(@NonNull UserExperimentRecordCache diskUserExperimentRecordCache, @NonNull Map<String, Map<String, String>> memoryUserExperimentRecordCache, @NonNull Executor executor, @NonNull Logger logger) {
             this.diskUserExperimentRecordCache = diskUserExperimentRecordCache;
             this.memoryUserExperimentRecordCache = memoryUserExperimentRecordCache;
@@ -181,8 +173,18 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
             this.logger = logger;
         }
 
+        @NonNull
+        public Map<String, Map<String, String>> getMemoryUserExperimentRecordCache() {
+            return memoryUserExperimentRecordCache;
+        }
+
         public void startWriteCacheTask(final String userId, final String experimentKey, final String variationKey) {
             AsyncTask<Void,Void,Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void[] params) {
+                    return diskUserExperimentRecordCache.save(userId, experimentKey, variationKey);
+                }
+
                 @Override
                 protected void onPreExecute() {
                     Map<String, String> expIdToVarIdMap = memoryUserExperimentRecordCache.get(userId);
@@ -194,10 +196,6 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                     logger.info("Updated in memory user experiment record");
                 }
 
-                @Override
-                protected Boolean doInBackground(Void[] params) {
-                    return diskUserExperimentRecordCache.save(userId, experimentKey, variationKey);
-                }
 
                 @Override
                 protected void onPostExecute(Boolean success) {
