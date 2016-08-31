@@ -22,9 +22,14 @@ android {
     }
 }
 
+repositories {
+    maven { url 'http://dl.bintray.com/optimizely/optimizely' }
+}
+
 dependencies {
     // Includes SST Java core, event handler, and user experiment record
-    compile project(':android-sdk')
+//    compile project(':android-sdk')
+    compile 'com.optimizely.ab:android-sdk:0.0.1'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:design:23.0.1'
@@ -32,6 +37,7 @@ dependencies {
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
     testCompile "com.noveogroup.android:android-logger:$android_logger_ver"
+    testCompile project(':android-sdk')
 
     androidTestCompile "com.android.support.test:runner:$support_test_runner_ver"
     // Set this dependency to use JUnit 4 rules
@@ -41,5 +47,5 @@ dependencies {
     androidTestCompile "org.mockito:mockito-core:$mockito_ver"
     androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
-    androidTestCompile "com.noveogroup.android:android-logger:$android_logger_ver"
+    androidTestCompile project(':android-sdk')
 }
