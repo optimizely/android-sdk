@@ -35,8 +35,15 @@ ext {
     support_test_runner_ver = "0.4"
     dexmaker_ver = "1.2"
     espresso_ver = "2.2.1"
+    version_name = "0.0.1"
+    group_id = "com.optimizely.ab"
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+task ship() {
+    dependsOn(':android-sdk:uploadArchives', ':shared:uploadArchives',
+            'event-handler:uploadArchives', 'user-experiment-record:uploadArchives')
 }

@@ -1,4 +1,9 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+version = version_name
+group = group_id
 
 android {
     compileSdkVersion compile_sdk_version
@@ -42,4 +47,16 @@ dependencies {
     androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestCompile "com.noveogroup.android:android-logger:$android_logger_ver"
+}
+
+uploadArchives {
+    shouldRunAfter = [':shared:uploadArchives']
+    repositories {
+        mavenDeployer {
+            repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android-event-handler") {
+                authentication(userName: project.property('bintrayUser'), password: project.property('bintrayApiKey'))
+            }
+            pom.artifactId = "android-sdk-event-handler"
+        }
+    }
 }
