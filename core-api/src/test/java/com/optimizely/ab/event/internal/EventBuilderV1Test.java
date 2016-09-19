@@ -60,7 +60,7 @@ public class EventBuilderV1Test {
         EventBuilderV1 builder = new EventBuilderV1();
 
         // use the "valid" project config and its associated experiment, variation, and attributes
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfig();
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV1();
         Experiment activatedExperiment = projectConfig.getExperiments().get(0);
         Variation bucketedVariation = activatedExperiment.getVariations().get(0);
         Attribute attribute = projectConfig.getAttributes().get(0);
@@ -94,7 +94,7 @@ public class EventBuilderV1Test {
         EventBuilderV1 builder = new EventBuilderV1();
 
         // use the "valid" project config and its associated experiment, variation, and attributes
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfig();
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV1();
         Attribute attribute = projectConfig.getAttributes().get(0);
         EventType eventType = projectConfig.getEventTypes().get(0);
         String userId = "userId";
@@ -149,7 +149,7 @@ public class EventBuilderV1Test {
         long revenue = 1234L;
 
         // use the "valid" project config and its associated experiment, variation, and attributes
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfig();
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV1();
         Attribute attribute = projectConfig.getAttributes().get(0);
         EventType eventType = projectConfig.getEventTypes().get(0);
 
@@ -184,7 +184,7 @@ public class EventBuilderV1Test {
     public void createConversionParamsUserNotInAudience() throws Exception {
         EventBuilderV1 builder = new EventBuilderV1();
 
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfig();
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV1();
         Attribute attribute = projectConfig.getAttributes().get(0);
         EventType eventType = projectConfig.getEventTypes().get(2);
         String userId = "userId";
@@ -214,7 +214,7 @@ public class EventBuilderV1Test {
         EventBuilderV1 builder = new EventBuilderV1();
 
         // use the "valid" project config and its associated experiment, variation, and attributes
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfig();
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV1();
         Experiment activatedExperiment = projectConfig.getExperiments().get(0);
         Variation bucketedVariation = activatedExperiment.getVariations().get(0);
 

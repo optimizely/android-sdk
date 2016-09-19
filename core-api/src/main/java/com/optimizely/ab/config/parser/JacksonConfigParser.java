@@ -19,8 +19,6 @@ package com.optimizely.ab.config.parser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import com.optimizely.ab.config.Group;
-import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.ProjectConfig;
 
 import java.io.IOException;
@@ -36,8 +34,7 @@ final class JacksonConfigParser implements ConfigParser {
     public ProjectConfig parseProjectConfig(@Nonnull String json) throws ConfigParseException {
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(Audience.class, new AudienceJacksonDeserializer());
-        module.addDeserializer(Group.class, new GroupJacksonDeserializer());
+        module.addDeserializer(ProjectConfig.class, new ProjectConfigJacksonDeserializer());
         mapper.registerModule(module);
 
         try {

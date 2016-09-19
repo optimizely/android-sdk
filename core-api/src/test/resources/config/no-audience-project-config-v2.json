@@ -1,13 +1,14 @@
 {
   "accountId": "789",
   "projectId": "1234",
-  "version": "4",
+  "version": "2",
   "revision": "42",
   "experiments": [
     {
       "id": "223",
       "key": "etag1",
       "status": "Running",
+      "layerId": "1",
       "percentageIncluded": 9000,
       "audienceIds": [],
       "variations": [{
@@ -33,6 +34,7 @@
       "id": "118",
       "key": "etag2",
       "status": "Not started",
+      "layerId": "2",
       "audienceIds": [],
       "variations": [{
         "id": "278",
@@ -53,11 +55,10 @@
   ],
   "groups": [],
   "audiences": [],
-  "dimensions": [
+  "attributes": [
     {
       "id": "134",
-      "key": "browser_type",
-      "segmentId": "185"
+      "key": "browser_type"
     }
   ],
   "events": [

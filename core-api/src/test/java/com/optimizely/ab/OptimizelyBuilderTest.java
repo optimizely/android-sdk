@@ -31,8 +31,10 @@ import org.mockito.junit.MockitoRule;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJson;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfig;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV1;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV1;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -56,23 +58,31 @@ public class OptimizelyBuilderTest {
 
     @Test
     public void withEventHandler() throws Exception {
-        Optimizely optimizelyClient = Optimizely.builder(validConfigJson(), mockEventHandler)
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
             .build();
 
         assertThat(optimizelyClient.eventHandler, is(mockEventHandler));
     }
 
     @Test
-    public void projectConfig() throws Exception {
-        Optimizely optimizelyClient = Optimizely.builder(validConfigJson(), mockEventHandler)
+    public void projectConfigV1() throws Exception {
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV1(), mockEventHandler)
+                .build();
+
+        ProjectConfigTestUtils.verifyProjectConfig(optimizelyClient.getProjectConfig(), validProjectConfigV1());
+    }
+
+    @Test
+    public void projectConfigV2() throws Exception {
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
             .build();
 
-        ProjectConfigTestUtils.verifyProjectConfig(optimizelyClient.getProjectConfig(), validProjectConfig());
+        ProjectConfigTestUtils.verifyProjectConfig(optimizelyClient.getProjectConfig(), validProjectConfigV2());
     }
 
     @Test
     public void withErrorHandler() throws Exception {
-        Optimizely optimizelyClient = Optimizely.builder(validConfigJson(), mockEventHandler)
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
             .withErrorHandler(mockErrorHandler)
             .build();
 
@@ -81,7 +91,7 @@ public class OptimizelyBuilderTest {
 
     @Test
     public void withDefaultErrorHandler() throws Exception {
-        Optimizely optimizelyClient = Optimizely.builder(validConfigJson(), mockEventHandler)
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
             .build();
 
         assertThat(optimizelyClient.errorHandler, instanceOf(NoOpErrorHandler.class));
@@ -90,7 +100,7 @@ public class OptimizelyBuilderTest {
     @Test
     public void withUserExperimentRecord() throws Exception {
         UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
-        Optimizely optimizelyClient = Optimizely.builder(validConfigJson(), mockEventHandler)
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
                 .withUserExperimentRecord(userExperimentRecord)
                 .build();
 

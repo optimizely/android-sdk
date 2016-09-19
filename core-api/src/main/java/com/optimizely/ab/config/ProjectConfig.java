@@ -16,9 +16,7 @@
  */
 package com.optimizely.ab.config;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.audience.Condition;
@@ -39,6 +37,9 @@ import javax.annotation.concurrent.Immutable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProjectConfig {
 
+    public static final String V1 = "1";
+    public static final String V2 = "2";
+
     private final String accountId;
     private final String projectId;
     private final String revision;
@@ -57,16 +58,9 @@ public class ProjectConfig {
     private final Map<String, Experiment> experimentIdMapping;
     private final Map<String, Group> groupIdMapping;
 
-    @JsonCreator
-    public ProjectConfig(@JsonProperty("accountId") String accountId,
-                         @JsonProperty("projectId") String projectId,
-                         @JsonProperty("version") String version,
-                         @JsonProperty("revision") String revision,
-                         @JsonProperty("groups") List<Group> groups,
-                         @JsonProperty("experiments") List<Experiment> experiments,
-                         @JsonProperty("dimensions") List<Attribute> attributes,
-                         @JsonProperty("events") List<EventType> eventType,
-                         @JsonProperty("audiences") List<Audience> audiences) {
+    public ProjectConfig(String accountId, String projectId, String version, String revision, List<Group> groups,
+                         List<Experiment> experiments, List<Attribute> attributes, List<EventType> eventType,
+                         List<Audience> audiences) {
 
         this.accountId = accountId;
         this.projectId = projectId;

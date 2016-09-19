@@ -74,6 +74,8 @@ final class GsonHelpers {
         String id = experimentJson.get("id").getAsString();
         String key = experimentJson.get("key").getAsString();
         String status = experimentJson.get("status").getAsString();
+        JsonElement layerIdJson = experimentJson.get("layerId");
+        String layerId = layerIdJson == null ? null : layerIdJson.getAsString();
 
         JsonArray audienceIdsJson = experimentJson.getAsJsonArray("audienceIds");
         List<String> audienceIds = new ArrayList<String>(audienceIdsJson.size());
@@ -88,8 +90,8 @@ final class GsonHelpers {
         List<TrafficAllocation> trafficAllocations =
                 parseTrafficAllocation(experimentJson.getAsJsonArray("trafficAllocation"));
 
-        return new Experiment(id, key, status, audienceIds, variations, userIdToVariationKeyMap, trafficAllocations,
-                              groupId);
+        return new Experiment(id, key, status, layerId, audienceIds, variations, userIdToVariationKeyMap,
+                              trafficAllocations, groupId);
     }
 
     static Experiment parseExperiment(JsonObject experimentJson) {

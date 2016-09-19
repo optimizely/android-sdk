@@ -59,7 +59,14 @@ final class JsonConfigParser implements ConfigParser {
             String version = rootObject.getString("version");
 
             List<Experiment> experiments = parseExperiments(rootObject.getJSONArray("experiments"));
-            List<Attribute> attributes = parseAttributes(rootObject.getJSONArray("dimensions"));
+
+            List<Attribute> attributes;
+            if (version.equals(ProjectConfig.V1)) {
+                attributes = parseAttributes(rootObject.getJSONArray("dimensions"));
+            } else {
+                attributes = parseAttributes(rootObject.getJSONArray("attributes"));
+            }
+
             List<EventType> events = parseEvents(rootObject.getJSONArray("events"));
             List<Audience> audiences = parseAudiences(rootObject.getJSONArray("audiences"));
             List<Group> groups = parseGroups(rootObject.getJSONArray("groups"));
@@ -85,6 +92,7 @@ final class JsonConfigParser implements ConfigParser {
             String id = experimentObject.getString("id");
             String key = experimentObject.getString("key");
             String status = experimentObject.getString("status");
+            String layerId = experimentObject.has("layerId") ? experimentObject.getString("layerId") : null;
 
             JSONArray audienceIdsJson = experimentObject.getJSONArray("audienceIds");
             List<String> audienceIds = new ArrayList<String>(audienceIdsJson.length());
@@ -100,7 +108,7 @@ final class JsonConfigParser implements ConfigParser {
             List<TrafficAllocation> trafficAllocations =
                 parseTrafficAllocation(experimentObject.getJSONArray("trafficAllocation"));
 
-            experiments.add(new Experiment(id, key, status, audienceIds, variations, userIdToVariationKeyMap,
+            experiments.add(new Experiment(id, key, status, layerId, audienceIds, variations, userIdToVariationKeyMap,
                                            trafficAllocations, groupId));
         }
 
@@ -153,9 +161,8 @@ final class JsonConfigParser implements ConfigParser {
             JSONObject attributeObject = (JSONObject)obj;
             String id = attributeObject.getString("id");
             String key = attributeObject.getString("key");
-            String segmentId = attributeObject.getString("segmentId");
 
-            attributes.add(new Attribute(id, key, segmentId));
+            attributes.add(new Attribute(id, key, attributeObject.optString("segmentId", null)));
         }
 
         return attributes;

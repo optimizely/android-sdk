@@ -32,6 +32,7 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV1;
+import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 
 import org.slf4j.Logger;
@@ -166,8 +167,8 @@ public class Optimizely {
         LogEvent impressionEvent =
                 eventBuilder.createImpressionEvent(projectConfig, experiment, variation, userId, attributes);
         logger.info("Activating user \"{}\" in experiment \"{}\".", userId, experiment.getKey());
-        logger.debug("Dispatching impression event to URL {} with params {}.", impressionEvent.getEndpointUrl(),
-                     impressionEvent.getRequestParams());
+        logger.debug("Dispatching impression event to URL {} with params {} and payload \"{}\".",
+                     impressionEvent.getEndpointUrl(), impressionEvent.getRequestParams(), impressionEvent.getBody());
         eventHandler.dispatchEvent(impressionEvent);
 
         return variation;
@@ -236,8 +237,8 @@ public class Optimizely {
         }
 
         logger.info("Tracking event \"{}\" for user \"{}\".", eventName, userId);
-        logger.debug("Dispatching conversion event to URL {} with params {}.", conversionEvent.getEndpointUrl(),
-                     conversionEvent.getRequestParams());
+        logger.debug("Dispatching conversion event to URL {} with params {} and payload \"{}\".",
+                     conversionEvent.getEndpointUrl(), conversionEvent.getRequestParams(), conversionEvent.getBody());
         eventHandler.dispatchEvent(conversionEvent);
     }
 
@@ -476,7 +477,11 @@ public class Optimizely {
             }
 
             if (eventBuilder == null) {
-                eventBuilder = new EventBuilderV1();
+                if (projectConfig.getVersion().equals(ProjectConfig.V1)) {
+                    eventBuilder = new EventBuilderV1();
+                } else {
+                    eventBuilder = new EventBuilderV2();
+                }
             }
 
             if (errorHandler == null) {

@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import ch.qos.logback.classic.Level;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfig;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
@@ -66,7 +66,7 @@ public class BucketerTest {
      */
     @Test
     public void generateBucketValueForNegativeHashCodes() throws Exception {
-        Bucketer algorithm = new Bucketer(validProjectConfig());
+        Bucketer algorithm = new Bucketer(validProjectConfigV2());
         int actual = algorithm.generateBucketValue(-1);
         assertTrue("generated bucket value is not in range: " + actual,
                    actual > 0 && actual < Bucketer.MAX_TRAFFIC_VALUE);
@@ -83,7 +83,7 @@ public class BucketerTest {
         long totalCount = 0;
         int outOfRangeCount = 0;
 
-        Bucketer algorithm = new Bucketer(validProjectConfig());
+        Bucketer algorithm = new Bucketer(validProjectConfigV2());
         for (int i = Integer.MIN_VALUE; i < Integer.MAX_VALUE; i++) {
             int bucketValue = algorithm.generateBucketValue(i);
 
@@ -110,7 +110,7 @@ public class BucketerTest {
         int experimentId = 1886780721;
         int hashCode;
 
-        Bucketer algorithm = new Bucketer(validProjectConfig());
+        Bucketer algorithm = new Bucketer(validProjectConfigV2());
 
         String combinedBucketId;
 
@@ -158,7 +158,7 @@ public class BucketerTest {
             new TrafficAllocation("4", 10000)
         );
 
-        Experiment experiment = new Experiment("1234", "exp_key", "Running", audienceIds, variations,
+        Experiment experiment = new Experiment("1234", "exp_key", "Running", "1", audienceIds, variations,
                                                Collections.<String, String>emptyMap(), trafficAllocations, "");
 
         final AtomicInteger bucketValue = new AtomicInteger();
@@ -202,7 +202,7 @@ public class BucketerTest {
             new TrafficAllocation("1", 999)
         );
 
-        Experiment experiment = new Experiment("1234", "exp_key", "Running", audienceIds, variations,
+        Experiment experiment = new Experiment("1234", "exp_key", "Running", "1", audienceIds, variations,
                                                Collections.<String, String>emptyMap(), trafficAllocations, "");
 
         final AtomicInteger bucketValue = new AtomicInteger();
@@ -241,7 +241,7 @@ public class BucketerTest {
 
         Map<String, String> userIdToVariationKeyMap = Collections.singletonMap("testUser1", "var1");
 
-        Experiment experiment = new Experiment("1234", "exp_key", "Running", Collections.<String>emptyList(),
+        Experiment experiment = new Experiment("1234", "exp_key", "Running", "1", Collections.<String>emptyList(),
                                                variations, userIdToVariationKeyMap, trafficAllocations, "");
 
         logbackVerifier.expectMessage(Level.INFO, "User \"testUser1\" is forced in variation \"var1\".");
@@ -275,7 +275,7 @@ public class BucketerTest {
 
         Map<String, String> userIdToVariationKeyMap = Collections.singletonMap("testUser1", "var1");
 
-        Experiment experiment = new Experiment("1234", "exp_key", "Running", audienceIds, variations,
+        Experiment experiment = new Experiment("1234", "exp_key", "Running", "1", audienceIds, variations,
                                                userIdToVariationKeyMap, trafficAllocations, "");
         bucketValue.set(1500);
         assertThat(algorithm.bucket(experiment, "testUser2").getKey(), is("var2"));
@@ -300,7 +300,7 @@ public class BucketerTest {
 
         Map<String, String> userIdToVariationKeyMap = Collections.singletonMap("testUser1", "invalidVarKey");
 
-        Experiment experiment = new Experiment("1234", "exp_key", "Running", Collections.<String>emptyList(),
+        Experiment experiment = new Experiment("1234", "exp_key", "Running", "1", Collections.<String>emptyList(),
                                                variations, userIdToVariationKeyMap, trafficAllocations);
 
         logbackVerifier.expectMessage(
@@ -316,7 +316,7 @@ public class BucketerTest {
      */
     @Test
     public void checkPreconditionsForValidUserId() throws Exception {
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         Bucketer algorithm = new Bucketer(projectConfig);
         Experiment experiment = projectConfig.getExperiments().get(0);
         algorithm.bucket(experiment, "1234");
@@ -332,7 +332,7 @@ public class BucketerTest {
         Bucketer algorithm = mockBucketAlgorithm(bucketValue);
         bucketValue.set(3000);
 
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
         Experiment groupExperiment = groupExperiments.get(0);
         logbackVerifier.expectMessage(Level.DEBUG,
@@ -354,7 +354,7 @@ public class BucketerTest {
         Bucketer algorithm = mockBucketAlgorithm(bucketValue);
         bucketValue.set(3000);
 
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
         Experiment groupExperiment = groupExperiments.get(1);
         // the user should be bucketed to a different experiment than the one provided, resulting in no variation being
@@ -376,7 +376,7 @@ public class BucketerTest {
         Bucketer algorithm = mockBucketAlgorithm(bucketValue);
         bucketValue.set(2000);
 
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
         Experiment groupExperiment = groupExperiments.get(1);
 
@@ -396,7 +396,7 @@ public class BucketerTest {
         Bucketer algorithm = mockBucketAlgorithm(bucketValue);
         bucketValue.set(9000);
 
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
         Experiment groupExperiment = groupExperiments.get(1);
 
@@ -414,7 +414,7 @@ public class BucketerTest {
         Bucketer algorithm = mockBucketAlgorithm(bucketValue);
         bucketValue.set(0);
 
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         List<Experiment> groupExperiments = projectConfig.getGroups().get(1).getExperiments();
         Experiment groupExperiment = groupExperiments.get(0);
         Variation expectedVariation = groupExperiment.getVariations().get(0);
@@ -435,7 +435,7 @@ public class BucketerTest {
         Bucketer algorithm = mockBucketAlgorithm(bucketValue);
         bucketValue.set(3000);
 
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         List<Experiment> groupExperiments = projectConfig.getGroups().get(1).getExperiments();
         Experiment groupExperiment = groupExperiments.get(0);
 
@@ -446,7 +446,7 @@ public class BucketerTest {
     }
 
     /**
-     * Verify that {@link Bucketer#bucket(Experiment,String} saves a variation of an experiment for a user
+     * Verify that {@link Bucketer#bucket(Experiment,String)} saves a variation of an experiment for a user
      * when a {@link UserExperimentRecord} is present.
      */
     @Test public void bucketUserSaveActivationWithUserExperimentRecord() throws Exception {
@@ -455,7 +455,7 @@ public class BucketerTest {
         Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
         bucketValue.set(3000);
 
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
@@ -471,7 +471,7 @@ public class BucketerTest {
     }
 
     /**
-     * Verify that {@link Bucketer#bucket(Experiment,String} logs correctly
+     * Verify that {@link Bucketer#bucket(Experiment,String)} logs correctly
      * when a {@link UserExperimentRecord} is present and fails to save an activation.
      */
     @Test public void bucketUserSaveActivationFailWithUserExperimentRecord() throws Exception {
@@ -480,7 +480,7 @@ public class BucketerTest {
         Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
         bucketValue.set(3000);
 
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
@@ -497,7 +497,7 @@ public class BucketerTest {
 
     /**
      * Verify that {@link Bucketer#bucket(Experiment,String)} returns a variation that is
-     * stored in the provided {@link userExperimentRecord}.
+     * stored in the provided {@link UserExperimentRecord}.
      */
     @Test public void bucketUserRestoreActivationWithUserExperimentRecord() throws Exception {
         final AtomicInteger bucketValue = new AtomicInteger();
@@ -505,7 +505,7 @@ public class BucketerTest {
         Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
         bucketValue.set(3000);
 
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
@@ -531,7 +531,7 @@ public class BucketerTest {
         Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
         bucketValue.set(3000);
 
-        ProjectConfig projectConfig = validProjectConfig();
+        ProjectConfig projectConfig = validProjectConfigV2();
         List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
@@ -631,7 +631,7 @@ public class BucketerTest {
      * @return the mock bucket algorithm
      */
     private Bucketer mockBucketAlgorithm(final AtomicInteger bucketValue) {
-        return new Bucketer(validProjectConfig()) {
+        return new Bucketer(validProjectConfigV2()) {
             @Override
             int generateBucketValue(int hashCode) {
                 return bucketValue.get();
@@ -648,7 +648,7 @@ public class BucketerTest {
      * @return the mock bucket algorithm
      */
     private Bucketer mockUserExperimentRecordAlgorithm(final AtomicInteger bucketValue, final UserExperimentRecord userExperimentRecord) {
-        return new Bucketer(validProjectConfig(), userExperimentRecord) {
+        return new Bucketer(validProjectConfigV2(), userExperimentRecord) {
             @Override
             int generateBucketValue(int hashCode) {
                 return bucketValue.get();

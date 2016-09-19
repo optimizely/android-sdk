@@ -45,7 +45,7 @@ public class ProjectConfigTest {
 
     @Before
     public void initialize() {
-        projectConfig = ProjectConfigTestUtils.validProjectConfig();
+        projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
     }
 
     /**

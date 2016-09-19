@@ -1,0 +1,38 @@
+{
+  "visitorId": "testvisitor",
+  "timestamp": 12345,
+  "projectId": "1",
+  "accountId": "3",
+  "userFeatures": [
+    {
+      "id": "6",
+      "name": "testfeature",
+      "type": "custom",
+      "value": "testfeaturevalue",
+      "shouldIndex": true
+    }
+  ],
+  "layerStates": [
+    {
+      "layerId": "2",
+      "decision": {
+        "variationId": "4",
+        "isLayerHoldback": false,
+        "experimentId": "5"
+      },
+      "actionTriggered": true
+    }
+  ],
+  "eventEntityId": "7",
+  "eventName": "testevent",
+  "eventMetrics": [
+    {
+      "name": "revenue",
+      "value": 5000
+    }
+  ],
+  "eventFeatures": [],
+  "isGlobalHoldback": false,
+  "clientEngine": "java-sdk",
+  "clientVersion": "0.1.1"
+}

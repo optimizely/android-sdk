@@ -22,8 +22,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJson;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfig;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV1;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV1;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.verifyProjectConfig;
 
 /**
@@ -35,10 +37,19 @@ public class JacksonConfigParserTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void parseProjectConfig() throws Exception {
+    public void parseProjectConfigV1() throws Exception {
         JacksonConfigParser parser = new JacksonConfigParser();
-        ProjectConfig actual = parser.parseProjectConfig(validConfigJson());
-        ProjectConfig expected = validProjectConfig();
+        ProjectConfig actual = parser.parseProjectConfig(validConfigJsonV1());
+        ProjectConfig expected = validProjectConfigV1();
+
+        verifyProjectConfig(actual, expected);
+    }
+
+    @Test
+    public void parseProjectConfigV2() throws Exception {
+        JacksonConfigParser parser = new JacksonConfigParser();
+        ProjectConfig actual = parser.parseProjectConfig(validConfigJsonV2());
+        ProjectConfig expected = validProjectConfigV2();
 
         verifyProjectConfig(actual, expected);
     }

@@ -23,7 +23,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
@@ -31,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -111,7 +115,13 @@ public class AsyncEventHandler implements EventHandler, Closeable {
             while (!terminate) {
                 try {
                     LogEvent event = logEventQueue.take();
-                    HttpGet request = generateRequest(event);
+                    HttpRequestBase request;
+                    if (event.getRequestMethod() == LogEvent.RequestMethod.GET) {
+                        request = generateGetRequest(event);
+                    } else {
+                        request = generatePostRequest(event);
+                    }
+                    logger.info("dispatching event: {}", request.toString());
                     httpClient.execute(request, EVENT_RESPONSE_HANDLER);
                 } catch (InterruptedException e) {
                     logger.info("terminating event dispatcher event loop");
@@ -125,7 +135,7 @@ public class AsyncEventHandler implements EventHandler, Closeable {
         /**
          * Helper method that generates the event request for the given {@link LogEvent}.
          */
-        private HttpGet generateRequest(LogEvent event) throws URISyntaxException {
+        private HttpGet generateGetRequest(LogEvent event) throws URISyntaxException {
 
             URIBuilder builder = new URIBuilder(event.getEndpointUrl());
             for (Map.Entry<String, String> param : event.getRequestParams().entrySet()) {
@@ -133,6 +143,13 @@ public class AsyncEventHandler implements EventHandler, Closeable {
             }
 
             return new HttpGet(builder.build());
+        }
+
+        private HttpPost generatePostRequest(LogEvent event) throws UnsupportedEncodingException {
+            HttpPost post = new HttpPost(event.getEndpointUrl());
+            post.setEntity(new StringEntity(event.getBody()));
+            post.addHeader("Content-Type", "application/json");
+            return post;
         }
     }
 

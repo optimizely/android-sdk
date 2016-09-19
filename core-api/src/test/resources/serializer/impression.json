@@ -1,0 +1,24 @@
+{
+  "visitorId": "testvisitor",
+  "timestamp": 12345,
+  "isGlobalHoldback": false,
+  "projectId": "1",
+  "decision": {
+    "variationId": "4",
+    "isLayerHoldback": false,
+    "experimentId": "5"
+  },
+  "layerId": "2",
+  "accountId": "3",
+  "userFeatures": [
+    {
+      "id": "6",
+      "name": "testfeature",
+      "type": "custom",
+      "value": "testfeaturevalue",
+      "shouldIndex": true
+    }
+  ],
+  "clientEngine": "java-sdk",
+  "clientVersion": "0.1.1"
+}

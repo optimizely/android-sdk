@@ -214,7 +214,7 @@ public class EventBuilderV1 extends EventBuilder {
             Attribute attribute = attributeKeyMapping.get(attributeKey);
 
             if (attribute == null) {
-                logger.warn("attempting to use unknown attribute key: {}. Attribute will be ignored", attributeKey);
+                logger.warn("Attempting to use unknown attribute key: {}. Attribute will be ignored", attributeKey);
                 continue;
             }
 
