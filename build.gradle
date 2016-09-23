@@ -47,3 +47,8 @@ task ship() {
     dependsOn(':android-sdk:uploadArchives', ':shared:uploadArchives',
             'event-handler:uploadArchives', 'user-experiment-record:uploadArchives')
 }
+
+task testAllModules << {
+    logger.info("Running android tests for all modules")
+}
+testAllModules.dependsOn(':android-sdk:connectedAndroidTest', ':event-handler:connectedAndroidTest', ':user-experiment-record:connectedAndroidTest', ':shared:connectedAndroidTest')

@@ -30,11 +30,6 @@ android {
     }
 }
 
-task testAllModules << {
-    logger.info("Running android tests for all modules")
-}
-testAllModules.dependsOn(':android-sdk:connectedAndroidTest', ':event-handler:connectedAndroidTest', ':user-experiment-record:connectedAndroidTest', ':shared:connectedAndroidTest')
-
 dependencies {
     compile project(':shared')
     provided "com.android.support:support-annotations:$support_annotations_ver"
