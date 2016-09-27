@@ -7,7 +7,6 @@ import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningEx
 import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
 
@@ -118,7 +117,7 @@ public class OptimizelyManagerTest {
         verify(userExperimentRecord).start();
         verify(serviceScheduler).schedule(captor.capture(), TimeUnit.HOURS.toMillis(1L));
         verify(logger).info("Sending Optimizely instance to listener");
-        verify(startListener).onStart(any(Optimizely.class));
+        verify(startListener).onStart(any(AndroidOptimizely.class));
     }
 
     @Test
@@ -140,7 +139,7 @@ public class OptimizelyManagerTest {
         verify(userExperimentRecord).start();
         verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
         verify(logger).info("No listener to send Optimizely to");
-        verify(startListener, never()).onStart(any(Optimizely.class));
+        verify(startListener, never()).onStart(any(AndroidOptimizely.class));
 
         Intent intent = captor.getValue();
         assertTrue(intent.getComponent().getShortClassName().contains("DataFileService"));

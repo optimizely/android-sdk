@@ -28,8 +28,8 @@ repositories {
 
 dependencies {
     // Includes SST Java core, event handler, and user experiment record
-//    compile project(':android-sdk')
-    compile 'com.optimizely.ab:android-sdk:0.0.1'
+    compile project(':android-sdk')
+//    compile 'com.optimizely.ab:android-sdk:0.0.1'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:design:23.0.1'

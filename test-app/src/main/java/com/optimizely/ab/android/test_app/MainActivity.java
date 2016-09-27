@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.android.sdk.AndroidOptimizely;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.config.Variation;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         optimizelyManager.start(this, new OptimizelyStartListener() {
             @Override
-            public void onStart(Optimizely optimizely) {
+            public void onStart(AndroidOptimizely optimizely) {
                 Variation variation = optimizely.activate("experiment_1", "user_1");
 
                 if (variation != null) {
