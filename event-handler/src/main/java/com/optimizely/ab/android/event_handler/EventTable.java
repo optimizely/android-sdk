@@ -13,6 +13,7 @@ public final class EventTable implements BaseColumns {
     class Column {
         public static final String _ID = BaseColumns._ID;
         public static final String URL = "url";
+        public static final String REQUEST_BODY = "requestBody";
     }
 
     private EventTable() {}

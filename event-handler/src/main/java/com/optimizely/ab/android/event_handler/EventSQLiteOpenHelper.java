@@ -21,7 +21,8 @@ public class EventSQLiteOpenHelper extends SQLiteOpenHelper {
     static final String SQL_CREATE_EVENT_TABLE =
             "CREATE TABLE " + EventTable.NAME + " (" +
                     EventTable._ID + " INTEGER PRIMARY KEY, " +
-                    EventTable.Column.URL + " TEXT NOT NULL" +
+                    EventTable.Column.URL + " TEXT NOT NULL," +
+                    EventTable.Column.REQUEST_BODY + " TEXT NOT NULL" +
             ")";
 
     private static final String SQL_DELETE_EVENT_TABLE =

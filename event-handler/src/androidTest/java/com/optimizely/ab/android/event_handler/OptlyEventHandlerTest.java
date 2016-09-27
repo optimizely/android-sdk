@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.optimizely.ab.event.LogEvent;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +35,7 @@ public class OptlyEventHandlerTest {
 
     OptlyEventHandler optlyEventHandler;
     String url = "http://www.foo.com";
-    Map<String,String> params;
+    String requestBody = "key1=val1&key2=val2&key3=val3";
 
     @Before
     public void setupEventHandler() {
@@ -41,37 +43,32 @@ public class OptlyEventHandlerTest {
         logger = mock(Logger.class);
         optlyEventHandler = OptlyEventHandler.getInstance(context);
         optlyEventHandler.logger = logger;
-
-        params = new TreeMap<>();
-        params.put("key1", "val1");
-        params.put("key2", "val2");
-        params.put("key3", "val3");
     }
 
     @Test
     public void dispatchEventSuccess() throws MalformedURLException {
-        optlyEventHandler.dispatchEvent(url, params);
+        optlyEventHandler.dispatchEvent(new LogEvent(null, url, null, requestBody));
         verify(context).startService(any(Intent.class));
-        verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com?key1=val1&key2=val2&key3=val3");
+        verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }
 
     @Test public void dispatchEventNullURL() {
-       optlyEventHandler.dispatchEvent(null, params);
+       optlyEventHandler.dispatchEvent(new LogEvent(null, null, null, requestBody));
        verify(logger).error("Event dispatcher received a null url");
     }
 
     @Test public void dispatchEventNullParams() {
-        optlyEventHandler.dispatchEvent(url, null);
-        verify(logger).error("Event dispatcher received a null params map");
+        optlyEventHandler.dispatchEvent(new LogEvent(null, url, null, null));
+        verify(logger).error("Event dispatcher received a null request body");
     }
 
     @Test public void dispatchEmptyUrlString() {
-        optlyEventHandler.dispatchEvent("", params);
+        optlyEventHandler.dispatchEvent(new LogEvent(null, "", null, requestBody));
         verify(logger).error("Event dispatcher received an empty url");
     }
 
     @Test public void dispatchEmptyParams() {
-        optlyEventHandler.dispatchEvent(url, new HashMap<String, String>());
+        optlyEventHandler.dispatchEvent(new LogEvent(null, url, null, ""));
         verify(context).startService(any(Intent.class));
         verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }

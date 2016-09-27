@@ -19,9 +19,9 @@
   * The test app depends on all of the other project modules
   * The modules are built from source
   * Changes in any modules source will be applied to the test app on the next build
-7.  Disocver more gradle tasks
+7.  Discover more gradle tasks
   * `./gradlew tasks`
-  * To see the task of an inidvidual module
+  * To see the task of an individual module
     * `/./gradlew user-experiment-record:tasks`
 
 ### Android Studio

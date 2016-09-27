@@ -38,6 +38,7 @@ public class EventDAO {
     public boolean storeEvent(@NonNull Event event) {
         ContentValues values = new ContentValues();
         values.put(EventTable.Column.URL, event.toString());
+        values.put(EventTable.Column.REQUEST_BODY, event.getRequestBody());
 
         // Since we are setting the "null column hack" param to null empty values will not be inserted
         // at all instead of inserting null.
@@ -56,7 +57,8 @@ public class EventDAO {
         // you will actually use after this query.
         String[] projection = {
                 EventTable.Column._ID,
-                EventTable.Column.URL
+                EventTable.Column.URL,
+                EventTable.Column.REQUEST_BODY,
         };
 
         Cursor cursor = dbHelper.getReadableDatabase().query(
@@ -77,8 +79,11 @@ public class EventDAO {
                 String url = cursor.getString(
                         cursor.getColumnIndexOrThrow(EventTable.Column.URL)
                 );
+                String requestBody = cursor.getString(
+                        cursor.getColumnIndexOrThrow(EventTable.Column.REQUEST_BODY)
+                );
                 try {
-                    events.add(new Pair<>(itemId, new Event(new URL(url))));
+                    events.add(new Pair<>(itemId, new Event(new URL(url), requestBody)));
                 } catch (MalformedURLException e) {
                     logger.error("Retrieved a malformed event from storage", e);
 

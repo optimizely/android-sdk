@@ -1,6 +1,8 @@
 package com.optimizely.ab.android.event_handler;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -13,13 +15,29 @@ import java.net.URLConnection;
  */
 public class Event {
     private URL url;
+    private String requestBody;
 
-    public Event(URL url) {
+    public Event(URL url, String requestBody) {
         this.url = url;
+        this.requestBody = requestBody;
     }
 
     public URLConnection send() throws IOException {
-        return this.url.openConnection();
+        HttpURLConnection urlConnection = (HttpURLConnection) this.url.openConnection();
+
+        urlConnection.setRequestMethod("POST");
+        urlConnection.setRequestProperty("Content-Type", "application/json");
+        urlConnection.setDoOutput(true);
+        OutputStream outputStream = urlConnection.getOutputStream();
+        outputStream.write(this.requestBody.getBytes());
+        outputStream.flush();
+        outputStream.close();
+
+        return urlConnection;
+    }
+
+    public String getRequestBody() {
+        return this.requestBody;
     }
 
     @Override

@@ -15,6 +15,7 @@ public class EventIntentService extends IntentService {
     Logger logger = LoggerFactory.getLogger(EventIntentService.class);
 
     static final String EXTRA_URL = "com.optimizely.ab.android.EXTRA_URL";
+    static final String EXTRA_REQUEST_BODY = "com.optimizely.ab.andrdoid.EXTRA_REQUEST_BODY";
     static final String EXTRA_INTERVAL = "com.optimizely.ab.android.EXTRA_INTERVAL";
 
     @Nullable EventDispatcher eventDispatcher;

@@ -57,9 +57,9 @@ public class EventDispatcherTest {
 
     @Test
     public void handleIntentSchedulesWhenEventsLeftInStorage() throws MalformedURLException {
-        Event event1 = new Event(new URL("http://www.foo1.com"));
-        Event event2 = new Event(new URL("http://www.foo2.com"));
-        Event event3= new Event(new URL("http://www.foo3.com"));
+        Event event1 = new Event(new URL("http://www.foo1.com"), "");
+        Event event2 = new Event(new URL("http://www.foo2.com"), "");
+        Event event3= new Event(new URL("http://www.foo3.com"), "");
         when(eventDAO.getEvents()).thenReturn(new LinkedList<>(Arrays.asList(
                 new Pair<>(1L, event1),
                 new Pair<>(2L, event2),
@@ -87,7 +87,7 @@ public class EventDispatcherTest {
     @Test
     public void handleIntentSchedulesWhenNewEventFailsToSend() throws MalformedURLException {
         String url= "http://www.foo.com";
-        Event event = new Event(new URL(url));
+        Event event = new Event(new URL(url), "");
 
         when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
 
@@ -107,7 +107,7 @@ public class EventDispatcherTest {
     @Test
     public void getIntervalFromIntent() throws MalformedURLException {
         String url= "http://www.foo.com";
-        Event event = new Event(new URL(url));
+        Event event = new Event(new URL(url), "");
 
         when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
 
@@ -120,13 +120,16 @@ public class EventDispatcherTest {
     @Test
     public void handleIntentLogsWhenUnableToSendOrStoreEvent() throws MalformedURLException {
         String url= "http://www.foo.com";
-        Event event = new Event(new URL(url));
+        String requestBody = "param1=123";
+        Event event = new Event(new URL(url), requestBody);
 
         when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
 
         Intent mockIntent = mock(Intent.class);
         when(mockIntent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
+        when(mockIntent.hasExtra(EventIntentService.EXTRA_REQUEST_BODY)).thenReturn(true);
         when(mockIntent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
+        when(mockIntent.getStringExtra(EventIntentService.EXTRA_REQUEST_BODY)).thenReturn(requestBody);
         when(eventClient.sendEvent(event)).thenReturn(false);
         when(eventDAO.storeEvent(event)).thenReturn(false);
 
