@@ -47,7 +47,8 @@ public class EventDAOTest {
     @Test
     public void storeEvent() {
         Event event = mock(Event.class);
-        when(event.toString()).thenReturn("http://www.foo.com?bar=baz");
+        when(event.toString()).thenReturn("http://www.foo.com");
+        when(event.getRequestBody()).thenReturn("bar1=baz1");
         assertTrue(eventDAO.storeEvent(event));
         verify(logger).info("Inserted {} into db", event);
     }
@@ -58,9 +59,12 @@ public class EventDAOTest {
         Event event2 = mock(Event.class);
         Event event3 = mock(Event.class);
 
-        when(event1.toString()).thenReturn("http://www.foo1.com?bar1=baz1");
-        when(event2.toString()).thenReturn("http://www.foo2.com?bar2=baz2");
-        when(event3.toString()).thenReturn("http://www.foo3.com?bar3=baz3");
+        when(event1.toString()).thenReturn("http://www.foo1.com");
+        when(event1.getRequestBody()).thenReturn("bar1=baz1");
+        when(event2.toString()).thenReturn("http://www.foo2.com");
+        when(event2.getRequestBody()).thenReturn("bar2=baz2");
+        when(event3.toString()).thenReturn("http://www.foo3.com");
+        when(event3.getRequestBody()).thenReturn("bar3=baz3");
 
         assertTrue(eventDAO.storeEvent(event1));
         assertTrue(eventDAO.storeEvent(event2));
@@ -77,9 +81,12 @@ public class EventDAOTest {
         assertEquals(2, pair2.first.longValue());
         assertEquals(3, pair3.first.longValue());
 
-        assertEquals("http://www.foo1.com?bar1=baz1", pair1.second.toString());
-        assertEquals("http://www.foo2.com?bar2=baz2", pair2.second.toString());
-        assertEquals("http://www.foo3.com?bar3=baz3", pair3.second.toString());
+        assertEquals("http://www.foo1.com", pair1.second.toString());
+        assertEquals("bar1=baz1", pair1.second.getRequestBody());
+        assertEquals("http://www.foo2.com", pair2.second.toString());
+        assertEquals("bar2=baz2", pair2.second.getRequestBody());
+        assertEquals("http://www.foo3.com", pair3.second.toString());
+        assertEquals("bar3=baz3", pair3.second.getRequestBody());
 
         verify(logger).info("Got events from SQLite");
     }
@@ -87,7 +94,8 @@ public class EventDAOTest {
     @Test
     public void removeEventSuccess() {
         Event event = mock(Event.class);
-        when(event.toString()).thenReturn("http://www.foo.com?bar=baz");
+        when(event.toString()).thenReturn("http://www.foo.com");
+        when(event.getRequestBody()).thenReturn("bar=baz");
         assertTrue(eventDAO.storeEvent(event));
         assertTrue(eventDAO.removeEvent(1));
         verify(logger).info("Removed event with id {} from db", 1L);
@@ -96,7 +104,8 @@ public class EventDAOTest {
     @Test
     public void removeEventInvalid() {
         Event event = mock(Event.class);
-        when(event.toString()).thenReturn("http://www.foo.com?bar=baz");
+        when(event.toString()).thenReturn("http://www.foo.com");
+        when(event.getRequestBody()).thenReturn("bar=baz");
         assertTrue(eventDAO.storeEvent(event));
         assertFalse(eventDAO.removeEvent(2));
         verify(logger).error("Tried to remove an event id {} that does not exist", 2L);

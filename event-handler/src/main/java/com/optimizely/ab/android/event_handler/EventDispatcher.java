@@ -50,7 +50,8 @@ public class EventDispatcher {
         if (intent.hasExtra(EventIntentService.EXTRA_URL)) {
             try {
                 String urlExtra = intent.getStringExtra(EventIntentService.EXTRA_URL);
-                Event event = new Event(new URL(urlExtra));
+                String requestBody = intent.getStringExtra(EventIntentService.EXTRA_REQUEST_BODY);
+                Event event = new Event(new URL(urlExtra), requestBody);
                 // Send the event that triggered this run of the service for store it if sending fails
                 dispatched = dispatch(event);
             } catch (MalformedURLException e) {

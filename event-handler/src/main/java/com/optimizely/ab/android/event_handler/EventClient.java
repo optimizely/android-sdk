@@ -25,9 +25,9 @@ public class EventClient {
             logger.info("Dispatching event: {}", event);
             HttpURLConnection urlConnection = (HttpURLConnection) event.send();
             int status = urlConnection.getResponseCode();
-            if (status >= 200 && status < 300) {
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                in.close();
+                if (status >= 200 && status < 300) {
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    in.close();
                 return true;
             } else {
                 logger.error("Unexpected response from event endpoint, status: " + status);

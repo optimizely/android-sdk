@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.event.LogEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,43 +54,27 @@ public class OptlyEventHandler implements EventHandler {
     }
 
     @Override
-    public void dispatchEvent(String url, Map<String, String> params) {
-        if (url == null) {
+    public void dispatchEvent(LogEvent logEvent) {
+        if (logEvent.getEndpointUrl() == null) {
             logger.error("Event dispatcher received a null url");
             return;
         }
-        if (params == null) {
-            logger.error("Event dispatcher received a null params map");
+        if (logEvent.getBody() == null) {
+            logger.error("Event dispatcher received a null request body");
             return;
         }
-        if (url.isEmpty()) {
+        if (logEvent.getEndpointUrl().isEmpty()) {
             logger.error("Event dispatcher received an empty url");
         }
 
-        try {
-            String event = generateRequest(url, params);
-            Intent intent = new Intent(context, EventIntentService.class);
-            intent.putExtra(EventIntentService.EXTRA_URL, event);
-            if (dispatchInterval != -1) {
-                intent.putExtra(EventIntentService.EXTRA_INTERVAL, dispatchInterval);
-            }
-            context.startService(intent);
-            logger.info("Sent url {} to the event handler service", event);
-        } catch (MalformedURLException e) {
-            logger.error("Received a malformed url from optly core", e);
+        Intent intent = new Intent(context, EventIntentService.class);
+        intent.putExtra(EventIntentService.EXTRA_URL, logEvent.getEndpointUrl());
+        intent.putExtra(EventIntentService.EXTRA_REQUEST_BODY, logEvent.getBody());
+        if (dispatchInterval != -1) {
+            intent.putExtra(EventIntentService.EXTRA_INTERVAL, dispatchInterval);
         }
-    }
+        context.startService(intent);
+        logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
 
-    private String generateRequest(@NonNull String url, @NonNull Map<String,String> params) throws MalformedURLException {
-        url = url + "?";
-        StringBuilder urlSb = new StringBuilder(url);
-        for (Map.Entry<String, String> param : params.entrySet()) {
-            urlSb.append(param.getKey());
-            urlSb.append("=");
-            urlSb.append(param.getValue());
-            urlSb.append("&");
-        }
-        urlSb.deleteCharAt(urlSb.length() - 1);
-        return urlSb.toString();
     }
 }
