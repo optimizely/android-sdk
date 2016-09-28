@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * Handles loading the Optimizely data file
  */
 public class OptimizelyManager {
-    @Nullable private static AndroidOptimizely androidOptimizely;
+    @NonNull private static AndroidOptimizely androidOptimizely = new AndroidOptimizely(null);
     @NonNull private final String projectId;
     @NonNull private final Long eventHandlerDispatchInterval;
     @NonNull private final TimeUnit eventHandlerDispatchIntervalTimeUnit;
@@ -107,6 +107,7 @@ public class OptimizelyManager {
         this.optimizelyStartListener = null;
     }
 
+    @NonNull
     public AndroidOptimizely getOptimizely() {
         return androidOptimizely;
     }
