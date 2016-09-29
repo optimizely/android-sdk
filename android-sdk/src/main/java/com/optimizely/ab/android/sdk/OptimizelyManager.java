@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * Handles loading the Optimizely data file
  */
 public class OptimizelyManager {
-    @Nullable private static Optimizely optimizely;
+    @NonNull private static AndroidOptimizely androidOptimizely = new AndroidOptimizely(null);
     @NonNull private final String projectId;
     @NonNull private final Long eventHandlerDispatchInterval;
     @NonNull private final TimeUnit eventHandlerDispatchIntervalTimeUnit;
@@ -107,8 +107,9 @@ public class OptimizelyManager {
         this.optimizelyStartListener = null;
     }
 
-    public Optimizely getOptimizely() {
-        return optimizely;
+    @NonNull
+    public AndroidOptimizely getOptimizely() {
+        return androidOptimizely;
     }
 
     @NonNull
@@ -137,8 +138,9 @@ public class OptimizelyManager {
                             .withUserExperimentRecord(userExperimentRecord)
                             .build();
                     logger.info("Sending Optimizely instance to listener");
-                    optimizelyStartListener.onStart(optimizely);
-                    OptimizelyManager.optimizely = optimizely;
+                    AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely);
+                    optimizelyStartListener.onStart(androidOptimizely);
+                    OptimizelyManager.androidOptimizely = androidOptimizely;
                 } else {
                     logger.info("No listener to send Optimizely to");
                 }

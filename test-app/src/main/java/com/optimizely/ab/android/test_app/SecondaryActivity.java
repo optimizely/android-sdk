@@ -6,7 +6,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.android.sdk.AndroidOptimizely;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 
 public class SecondaryActivity extends AppCompatActivity {
@@ -18,7 +18,7 @@ public class SecondaryActivity extends AppCompatActivity {
 
         // Get Optimizely from the Intent that started this Activity
         final OptimizelyManager optimizelyManager = ((MyApplication) getApplication()).getOptimizelyManager();
-        Optimizely optimizely = optimizelyManager.getOptimizely();
+        AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
 
         // track conversion event
         optimizely.track("goal_1", "user_1");
@@ -41,7 +41,7 @@ public class SecondaryActivity extends AppCompatActivity {
         public void onStart() {
             super.onStart();
             final OptimizelyManager optimizelyManager = ((MyApplication) getActivity().getApplication()).getOptimizelyManager();
-            Optimizely optimizely = optimizelyManager.getOptimizely();
+            AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
 
             if (optimizely != null) {
                 optimizely.track("goal_2", "user_1");

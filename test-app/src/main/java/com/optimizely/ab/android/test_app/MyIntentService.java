@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.android.sdk.AndroidOptimizely;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 
 public class MyIntentService extends IntentService {
@@ -17,7 +18,7 @@ public class MyIntentService extends IntentService {
         if (intent != null) {
             // Get Optimizely from the Intent that started this Service
             final OptimizelyManager optimizelyManager = ((MyApplication) getApplication()).getOptimizelyManager();
-            Optimizely optimizely = optimizelyManager.getOptimizely();
+            AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
             if (optimizely != null) {
                 optimizely.track("goal_3", "user_1");
             }
