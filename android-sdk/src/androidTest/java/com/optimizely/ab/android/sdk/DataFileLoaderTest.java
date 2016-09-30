@@ -61,7 +61,7 @@ public class DataFileLoaderTest {
         when(dataFileClient.request(url)).thenReturn("");
         when(dataFileCache.exists()).thenReturn(false);
         when(dataFileCache.save("")).thenReturn(true);
-        String dataFile = task.doInBackground(null);
+        String dataFile = task.doInBackground();
         assertEquals("", dataFile);
         verify(dataFileClient).request(url);
         verify(dataFileCache).save("");
@@ -77,7 +77,7 @@ public class DataFileLoaderTest {
         when(dataFileClient.request(url)).thenReturn("");
         when(dataFileCache.exists()).thenReturn(true);
         when(dataFileCache.delete()).thenReturn(false);
-        String dataFile = task.doInBackground(null);
+        String dataFile = task.doInBackground();
         assertEquals(null, dataFile);
         verify(logger).warn("Unable to delete old data file");
     }
@@ -92,7 +92,7 @@ public class DataFileLoaderTest {
         when(dataFileClient.request(url)).thenReturn("");
         when(dataFileCache.exists()).thenReturn(false);
         when(dataFileCache.save("")).thenReturn(false);
-        String dataFile = task.doInBackground(null);
+        String dataFile = task.doInBackground();
         assertEquals(null, dataFile);
         verify(logger).warn("Unable to save new data file");
     }
@@ -125,7 +125,7 @@ public class DataFileLoaderTest {
     public void loadFromCache() {
         DataFileLoader.LoadDataFileFromCacheTask task = new DataFileLoader.LoadDataFileFromCacheTask(dataFileCache, dataFileLoadedListener);
 
-        task.doInBackground(null);
+        task.doInBackground();
         verify(dataFileCache).load();
     }
 
@@ -141,7 +141,6 @@ public class DataFileLoaderTest {
     public void getDataFile() {
         DataFileLoader.TaskChain taskChain = mock(DataFileLoader.TaskChain.class);
         DataFileLoader dataFileLoader = new DataFileLoader(taskChain, logger);
-        DataFileLoader.LoadDataFileFromCacheTask task = mock(DataFileLoader.LoadDataFileFromCacheTask.class);
         assertTrue(dataFileLoader.getDataFile("1", dataFileLoadedListener));
         verify(taskChain).start("1", dataFileLoadedListener);
         verify(logger).info("Refreshing data file");

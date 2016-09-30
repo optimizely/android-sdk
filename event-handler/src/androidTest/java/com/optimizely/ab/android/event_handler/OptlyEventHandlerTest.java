@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
 import java.net.MalformedURLException;
+import java.util.HashMap;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -57,28 +58,18 @@ public class OptlyEventHandlerTest {
 
     @Test
     public void dispatchEventSuccess() throws MalformedURLException {
-        optlyEventHandler.dispatchEvent(new LogEvent(null, url, null, requestBody));
+        optlyEventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), requestBody));
         verify(context).startService(any(Intent.class));
         verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }
 
-    @Test public void dispatchEventNullURL() {
-       optlyEventHandler.dispatchEvent(new LogEvent(null, null, null, requestBody));
-       verify(logger).error("Event dispatcher received a null url");
-    }
-
-    @Test public void dispatchEventNullParams() {
-        optlyEventHandler.dispatchEvent(new LogEvent(null, url, null, null));
-        verify(logger).error("Event dispatcher received a null request body");
-    }
-
     @Test public void dispatchEmptyUrlString() {
-        optlyEventHandler.dispatchEvent(new LogEvent(null, "", null, requestBody));
+        optlyEventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, "", new HashMap<String, String>(), requestBody));
         verify(logger).error("Event dispatcher received an empty url");
     }
 
     @Test public void dispatchEmptyParams() {
-        optlyEventHandler.dispatchEvent(new LogEvent(null, url, null, ""));
+        optlyEventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), requestBody));
         verify(context).startService(any(Intent.class));
         verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }

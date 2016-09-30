@@ -33,9 +33,7 @@ public class MyIntentService extends IntentService {
             // Get Optimizely from the Intent that started this Service
             final OptimizelyManager optimizelyManager = ((MyApplication) getApplication()).getOptimizelyManager();
             AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
-            if (optimizely != null) {
-                optimizely.track("goal_3", "user_1");
-            }
+            optimizely.track("goal_3", "user_1");
         }
     }
 }

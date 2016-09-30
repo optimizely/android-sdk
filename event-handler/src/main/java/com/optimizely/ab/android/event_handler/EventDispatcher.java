@@ -24,7 +24,6 @@ import android.util.Pair;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
-import org.json.JSONArray;
 import org.slf4j.Logger;
 
 import java.net.MalformedURLException;
@@ -115,7 +114,6 @@ public class EventDispatcher {
         Iterator<Pair<Long,Event>> iterator = events.iterator();
         while (iterator.hasNext()) {
             Pair<Long, Event> event = iterator.next();
-            JSONArray jsonArray = new JSONArray();
             boolean eventWasSent = eventClient.sendEvent(event.second);
             if (eventWasSent) {
                 iterator.remove();

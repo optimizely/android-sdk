@@ -122,7 +122,6 @@ public class EventDispatcherTest {
     @Test
     public void getIntervalFromIntent() throws MalformedURLException {
         String url= "http://www.foo.com";
-        Event event = new Event(new URL(url), "");
 
         when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
 

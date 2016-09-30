@@ -57,10 +57,7 @@ public class SecondaryActivity extends AppCompatActivity {
             super.onStart();
             final OptimizelyManager optimizelyManager = ((MyApplication) getActivity().getApplication()).getOptimizelyManager();
             AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
-
-            if (optimizely != null) {
-                optimizely.track("goal_2", "user_1");
-            }
+            optimizely.track("goal_2", "user_1");
         }
     }
 }

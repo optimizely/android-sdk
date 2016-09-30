@@ -34,7 +34,7 @@ import java.util.Scanner;
  */
 public class Client {
 
-    static String LAST_MODIFIED_HEADER_KEY = "com.optimizely.ab.android.LAST_MODIFIED_HEADER";
+    static final String LAST_MODIFIED_HEADER_KEY = "com.optimizely.ab.android.LAST_MODIFIED_HEADER";
 
     @NonNull private final OptlyStorage optlyStorage;
     @NonNull private final Logger logger;

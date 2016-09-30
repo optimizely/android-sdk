@@ -34,7 +34,7 @@ import java.io.IOException;
  */
 public class DataFileCache {
 
-    static final String OPTLY_DATA_FILE_NAME = "optly-data-file-%s.json";
+    private static final String OPTLY_DATA_FILE_NAME = "optly-data-file-%s.json";
 
     @NonNull private final Cache cache;
     @NonNull private final String projectId;

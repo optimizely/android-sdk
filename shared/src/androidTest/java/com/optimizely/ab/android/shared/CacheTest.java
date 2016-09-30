@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 @RunWith(AndroidJUnit4.class)
 public class CacheTest {
 
-    public static final String FILE_NAME = "foo.txt";
+    private static final String FILE_NAME = "foo.txt";
 
     Cache cache;
     Logger logger;

@@ -31,15 +31,16 @@ dependencies {
     compile project(':android-sdk')
 //    compile 'com.optimizely.ab:android-sdk:0.0.1'
     compile 'com.google.code.gson:gson:2.6.2'
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.android.support:design:23.0.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
     testCompile "com.noveogroup.android:android-logger:$android_logger_ver"
     testCompile project(':android-sdk')
 
-    androidTestCompile "com.android.support.test:runner:$support_test_runner_ver"
+    androidTestCompile("com.android.support.test:runner:$support_test_runner_ver")
+    androidTestCompile "com.android.support:support-annotations:24.2.1"
     // Set this dependency to use JUnit 4 rules
     androidTestCompile "com.android.support.test:rules:$support_test_runner_ver"
     // Set this dependency to build and run Espresso tests
