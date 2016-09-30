@@ -1,5 +1,33 @@
 # optimizely-ab-android-sdk
 
+## Architecture
+
+This project has 5 modules. Each module has source in `<module>/src/main/java`
+and test source in `<module>src/main/androidTest`. The build is configured
+in the `build.gradle` for each module.  The `settings.gradle` in the project
+root declares modules.  The `build.gradle` in the project root has build
+config common for all modules.
+
+1. Android SDK
+  - Users who want all modules should just declare a dependency on this module
+  - This is the outer module that depends on all other modules
+  - Handles downloading the Optimizely Data File and building Optimizely objects
+  - Delivers the built Optimizely object to listeners and caches it in memory
+2. Event Handler
+  - Handles dispatching events to the Optimizely Backend
+  - Uses a Service so events can be sent without the app being reopened
+  - Persists events in a SQLite3 database
+  - Required to be implemented by the Optimizely Java core
+3. User Experiment Record
+  - Optional implementation for Optimizely Java core
+  - Makes bucketing persistent
+    - Once a user is bucketed in an variation they will remain in that variation
+4. Shared
+  - Common utils for all modules
+5. Test App
+  - Built against the source of all modules
+  - Simple app showing how to use Android Optimizely
+
 ## Developing
 
 ### Command Line
