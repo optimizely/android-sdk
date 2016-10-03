@@ -47,6 +47,10 @@ public final class ProjectValidationUtils {
             return false;
         }
 
+        if (experiment.getUserIdToVariationKeyMap().containsKey(userId)) {
+            return true;
+        }
+
         if (!isUserInExperiment(projectConfig, experiment, attributes)) {
             logger.info("User \"{}\" does not meet conditions to be in experiment \"{}\".", userId, experiment.getKey());
             return false;

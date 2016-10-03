@@ -3,7 +3,7 @@ Optimizely Java SDK
 [![Build Status](https://travis-ci.org/optimizely/java-sdk.svg?branch=master)](https://travis-ci.org/optimizely/java-sdk)
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-This repository houses the Java SDK for Optimizely's server-side testing product, which is currently in private beta.
+This repository houses the Java SDK for Optimizely's Full Stack product.
 
 ## Getting Started
 
@@ -18,14 +18,19 @@ following in your `build.gradle` and substitute `VERSION` for the latest SDK ver
 ```
 repositories {
   maven {
+    mavenCentral()
     url  "http://optimizely.bintray.com/optimizely"
   }
 }
 
 dependencies {
   compile 'com.optimizely.ab:core-api:{VERSION}'
-  // optional event dispatcher implementation
   compile 'com.optimizely.ab:core-httpclient-impl:{VERSION}'
+  // The SDK integrates with multiple JSON parsers, here we use
+  // Jackson.
+  compile 'com.fasterxml.jackson.core:jackson-core:2.7.1'
+  compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.1'
+  compile 'com.fasterxml.jackson.core:jackson-databind:2.7.1'
 }
 ```  
 
@@ -40,9 +45,8 @@ The supplied `pom` files on Bintray define module dependencies.
 
 ### Using the SDK
 
-See the Optimizely server-side testing [developer documentation](http://developers.optimizely.com/server/reference/index.html) to learn how to set
-up your first custom project and use the SDK. **Please note that you must be a member of the private server-side testing beta to create custom
-projects and use this SDK.**
+See the Optimizely Full Stack [developer documentation](http://developers.optimizely.com/server/reference/index.html) to learn how to set
+up your first Java project and use the SDK.
 
 ## Development
 

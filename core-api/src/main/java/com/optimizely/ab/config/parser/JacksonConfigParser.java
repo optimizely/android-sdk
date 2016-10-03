@@ -40,7 +40,7 @@ final class JacksonConfigParser implements ConfigParser {
         try {
             return mapper.readValue(json, ProjectConfig.class);
         } catch (IOException e) {
-            throw new ConfigParseException("unable to parse project config: " + json, e);
+            throw new ConfigParseException("Unable to parse datafile: " + json, e);
         }
     }
 }

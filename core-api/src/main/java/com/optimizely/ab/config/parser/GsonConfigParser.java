@@ -44,7 +44,7 @@ final class GsonConfigParser implements ConfigParser {
         try {
             return gson.fromJson(json, ProjectConfig.class);
         } catch (JsonParseException e) {
-            throw new ConfigParseException("unable to parse project config: " + json, e);
+            throw new ConfigParseException("Unable to parse datafile: " + json, e);
         }
     }
 }

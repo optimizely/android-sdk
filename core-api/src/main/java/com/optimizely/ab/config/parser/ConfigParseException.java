@@ -16,13 +16,10 @@
  */
 package com.optimizely.ab.config.parser;
 
-import com.optimizely.ab.OptimizelyRuntimeException;
-
 /**
  * Wrapper around all types of JSON parser exceptions.
  */
-public final class ConfigParseException extends OptimizelyRuntimeException {
-
+public final class ConfigParseException extends Exception {
     public ConfigParseException(String message) {
         super(message);
     }

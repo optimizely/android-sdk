@@ -24,6 +24,7 @@ import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.config.parser.DefaultConfigParser;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.error.NoOpErrorHandler;
@@ -169,7 +170,11 @@ public class Optimizely {
         logger.info("Activating user \"{}\" in experiment \"{}\".", userId, experiment.getKey());
         logger.debug("Dispatching impression event to URL {} with params {} and payload \"{}\".",
                      impressionEvent.getEndpointUrl(), impressionEvent.getRequestParams(), impressionEvent.getBody());
-        eventHandler.dispatchEvent(impressionEvent);
+        try {
+            eventHandler.dispatchEvent(impressionEvent);
+        } catch (Exception e) {
+            logger.error("Unexpected exception in event dispatcher", e);
+        }
 
         return variation;
     }
@@ -239,14 +244,19 @@ public class Optimizely {
         logger.info("Tracking event \"{}\" for user \"{}\".", eventName, userId);
         logger.debug("Dispatching conversion event to URL {} with params {} and payload \"{}\".",
                      conversionEvent.getEndpointUrl(), conversionEvent.getRequestParams(), conversionEvent.getBody());
-        eventHandler.dispatchEvent(conversionEvent);
+        try {
+            eventHandler.dispatchEvent(conversionEvent);
+        } catch (Exception e) {
+            logger.error("Unexpected exception in event dispatcher", e);
+        }
     }
 
     //======== getVariation calls ========//
 
     public @Nullable Variation getVariation(@Nonnull Experiment experiment,
                                             @Nonnull String userId) throws UnknownExperimentException {
-        return bucketer.bucket(experiment, userId);
+
+        return getVariation(getProjectConfig(), experiment, Collections.<String, String>emptyMap(), userId);
     }
 
     public @Nullable Variation getVariation(@Nonnull String experimentKey,
@@ -296,8 +306,7 @@ public class Optimizely {
     /**
      * @return a {@link ProjectConfig} instance given a json string
      */
-    private static ProjectConfig getProjectConfig(String datafile) {
-        //TODO(vignesh): add validation logic here
+    private static ProjectConfig getProjectConfig(String datafile) throws ConfigParseException {
         return DefaultConfigParser.getInstance().parseProjectConfig(datafile);
     }
 
@@ -466,7 +475,7 @@ public class Optimizely {
             return this;
         }
 
-        public Optimizely build() {
+        public Optimizely build() throws ConfigParseException {
             if (projectConfig == null) {
                 projectConfig = Optimizely.getProjectConfig(datafile);
             }

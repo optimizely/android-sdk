@@ -17,6 +17,7 @@
 package com.optimizely.ab;
 
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.NoopEventHandler;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -65,7 +66,7 @@ public class OptimizelyBenchmark {
 
     @Setup
     @SuppressFBWarnings(value="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE", justification="stream is safely closed")
-    public void setup() throws IOException {
+    public void setup() throws IOException, ConfigParseException {
         Properties properties = new Properties();
         InputStream propertiesStream = getClass().getResourceAsStream("/benchmark.properties");
         properties.load(propertiesStream);

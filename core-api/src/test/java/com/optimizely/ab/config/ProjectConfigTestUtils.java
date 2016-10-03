@@ -54,7 +54,7 @@ public final class ProjectConfigTestUtils {
                            singletonList("100"),
                            asList(new Variation("276", "vtag1"),
                                   new Variation("277", "vtag2")),
-                           Collections.<String, String>emptyMap(),
+                           Collections.singletonMap("testUser1", "vtag1"),
                            asList(new TrafficAllocation("276", 3500),
                                   new TrafficAllocation("277", 9000)),
                            ""),
@@ -62,7 +62,7 @@ public final class ProjectConfigTestUtils {
                            singletonList("100"),
                            asList(new Variation("278", "vtag3"),
                                   new Variation("279", "vtag4")),
-                           Collections.<String, String>emptyMap(),
+                           Collections.singletonMap("testUser3", "vtag3"),
                            asList(new TrafficAllocation("278", 4500),
                                   new TrafficAllocation("279", 9000)),
                            "")
@@ -74,7 +74,8 @@ public final class ProjectConfigTestUtils {
         List<String> multipleExperimentIds = asList("118", "223");
         List<EventType> events = asList(new EventType("971", "clicked_cart", singleExperimentId),
                 new EventType("098", "Total Revenue", singleExperimentId),
-                new EventType("099", "clicked_purchase", multipleExperimentIds));
+                new EventType("099", "clicked_purchase", multipleExperimentIds),
+                new EventType("100", "no_running_experiments", singletonList("118")));
 
         List<Condition> userAttributes = new ArrayList<Condition>();
         userAttributes.add(new UserAttribute("browser_type", "custom_dimension", "firefox"));
@@ -184,7 +185,7 @@ public final class ProjectConfigTestUtils {
                            singletonList("100"),
                            asList(new Variation("276", "vtag1"),
                                   new Variation("277", "vtag2")),
-                           Collections.<String, String>emptyMap(),
+                           Collections.singletonMap("testUser1", "vtag1"),
                            asList(new TrafficAllocation("276", 3500),
                                   new TrafficAllocation("277", 9000)),
                            ""),
@@ -192,7 +193,7 @@ public final class ProjectConfigTestUtils {
                            singletonList("100"),
                            asList(new Variation("278", "vtag3"),
                                   new Variation("279", "vtag4")),
-                           Collections.<String, String>emptyMap(),
+                           Collections.singletonMap("testUser3", "vtag3"),
                            asList(new TrafficAllocation("278", 4500),
                                   new TrafficAllocation("279", 9000)),
                            "")
@@ -204,7 +205,8 @@ public final class ProjectConfigTestUtils {
         List<String> multipleExperimentIds = asList("118", "223");
         List<EventType> events = asList(new EventType("971", "clicked_cart", singleExperimentId),
                                         new EventType("098", "Total Revenue", singleExperimentId),
-                                        new EventType("099", "clicked_purchase", multipleExperimentIds));
+                                        new EventType("099", "clicked_purchase", multipleExperimentIds),
+                                        new EventType("100", "no_running_experiments", singletonList("118")));
 
         List<Condition> userAttributes = new ArrayList<Condition>();
         userAttributes.add(new UserAttribute("browser_type", "custom_dimension", "firefox"));

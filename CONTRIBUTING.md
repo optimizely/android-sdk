@@ -1,16 +1,15 @@
 # Contributing to the Optimizely Java SDK
 
-We welcome contributions and feedback! Please read the [README](README.md) to set up your development environment,
-then read the guidelines below for information on submitting your code.
+We welcome contributions and feedback! All contributors must sign our [Contributor License Agreement (CLA)](https://docs.google.com/a/optimizely.com/forms/d/e/1FAIpQLSf9cbouWptIpMgukAKZZOIAhafvjFCV8hS00XJLWQnWDFtwtA/viewform) to be eligible to contribute. Please read the [README](README.md) to set up your development environment, then read the guidelines below for information on submitting your code.
 
 ## Development process
 
-1. Create a branch off of `master`: `git checkout -b YOUR_NAME/branch_name`.
+1. Create a branch off of `devel`: `git checkout -b YOUR_NAME/branch_name`.
 2. Commit your changes. Make sure to add tests!
 3. Run `./gradlew clean check` to make sure there are no possible bugs.
 4. `git push` your changes to GitHub.
-5. Make sure that all unit tests are passing and that there are no merge conflicts between your branch and `master`.
-6. Open a pull request from `YOUR_NAME/branch_name` to `master`.
+5. Make sure that all unit tests are passing and that there are no merge conflicts between your branch and `devel`.
+6. Open a pull request from `YOUR_NAME/branch_name` to `devel`.
 7. A repository maintainer will review your pull request and, if all goes well, merge it!
 
 ## Pull request acceptance criteria

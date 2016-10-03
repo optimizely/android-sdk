@@ -19,7 +19,9 @@
         "id": "277",
         "key": "vtag2"
       }],
-      "forcedVariations": {},
+      "forcedVariations": {
+        "testUser1": "vtag1"
+      },
       "trafficAllocation": [{
         "entityId": "276",
         "endOfRange": 3500
@@ -42,7 +44,9 @@
         "id": "279",
         "key": "vtag4"
       }],
-      "forcedVariations": {},
+      "forcedVariations": {
+        "testUser3": "vtag3"
+      },
       "trafficAllocation": [{
         "entityId": "278",
         "endOfRange": 4500
@@ -182,6 +186,13 @@
       "experimentIds": [
         "118",
         "223"
+      ]
+    },
+    {
+      "id": "100",
+      "key": "no_running_experiments",
+      "experimentIds": [
+        "118"
       ]
     }
   ]

@@ -74,7 +74,7 @@ final class JsonConfigParser implements ConfigParser {
             return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
                                      audiences);
         } catch (JSONException e) {
-            throw new ConfigParseException("unable to parse project config: " + json, e);
+            throw new ConfigParseException("Unable to parse datafile: " + json, e);
         }
     }
 

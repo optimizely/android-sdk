@@ -68,6 +68,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -608,6 +609,66 @@ public class OptimizelyTestV1 {
                    Collections.singletonMap("browser_type", "firefox")));
     }
 
+    /**
+     * Verify that {@link Optimizely#activate(String, String, Map)} gives precedence to forced variation bucketing
+     * over audience evaluation.
+     */
+    @Test
+    public void activateForcedVariationPrecedesAudienceEval() throws Exception {
+        String datafile = validConfigJsonV1();
+        ProjectConfig projectConfig = validProjectConfigV1();
+        Experiment experiment = projectConfig.getExperiments().get(0);
+        Variation expectedVariation = experiment.getVariations().get(0);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withConfig(projectConfig)
+            .build();
+
+        logbackVerifier.expectMessage(Level.INFO, "User \"testUser1\" is forced in variation \"vtag1\".");
+        // no attributes provided for a experiment that has an audience
+        assertThat(optimizely.activate(experiment.getKey(), "testUser1"), is(expectedVariation));
+    }
+
+    /**
+     * Verify that {@link Optimizely#activate(String, String)} gives precedence to experiment status over forced
+     * variation bucketing.
+     */
+    @Test
+    public void activateExperimentStatusPrecedesForcedVariation() throws Exception {
+        String datafile = validConfigJsonV1();
+        ProjectConfig projectConfig = validProjectConfigV1();
+        Experiment experiment = projectConfig.getExperiments().get(1);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withConfig(projectConfig)
+            .build();
+
+        logbackVerifier.expectMessage(Level.INFO, "Experiment \"etag2\" is not running.");
+        logbackVerifier.expectMessage(Level.INFO, "Not activating user \"testUser3\" for experiment \"etag2\".");
+        // testUser3 has a corresponding forced variation, but experiment status should be checked first
+        assertNull(optimizely.activate(experiment.getKey(), "testUser3"));
+    }
+
+    /**
+     * Verify that {@link Optimizely#activate(String, String)} handles exceptions thrown by
+     * {@link EventHandler#dispatchEvent(LogEvent)} gracefully.
+     */
+    @Test
+    public void activateDispatchEventThrowsException() throws Exception {
+        String datafile = noAudienceProjectConfigJsonV1();
+        ProjectConfig projectConfig = noAudienceProjectConfigV1();
+        Experiment experiment = projectConfig.getExperiments().get(0);
+
+        doThrow(new Exception("Test Exception")).when(mockEventHandler).dispatchEvent(any(LogEvent.class));
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withConfig(projectConfig)
+            .build();
+
+        logbackVerifier.expectMessage(Level.ERROR, "Unexpected exception in event dispatcher");
+        optimizely.activate(experiment.getKey(), "userId");
+    }
+
     //======== track tests ========//
 
     /**
@@ -842,8 +903,8 @@ public class OptimizelyTestV1 {
         // verify that the event builder was called with the expected revenue
         verify(mockEventBuilder).createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
                                                        eq(eventType.getId()), eq(eventType.getKey()),
-                                                        eq(Collections.<String, String>emptyMap()),
-                                                        revenueCaptor.capture());
+                                                       eq(Collections.<String, String>emptyMap()),
+                                                       revenueCaptor.capture());
 
         Long actualValue = revenueCaptor.getValue();
         assertThat(actualValue, is(revenue));
@@ -870,6 +931,26 @@ public class OptimizelyTestV1 {
         optimizely.track("clicked_purchase", "userId", attributes);
 
         verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
+    }
+
+    /**
+     * Verify that {@link Optimizely#track(String, String)} handles exceptions thrown by
+     * {@link EventHandler#dispatchEvent(LogEvent)} gracefully.
+     */
+    @Test
+    public void trackDispatchEventThrowsException() throws Exception {
+        String datafile = noAudienceProjectConfigJsonV1();
+        ProjectConfig projectConfig = noAudienceProjectConfigV1();
+        EventType eventType = projectConfig.getEventTypes().get(0);
+
+        doThrow(new Exception("Test Exception")).when(mockEventHandler).dispatchEvent(any(LogEvent.class));
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withConfig(projectConfig)
+            .build();
+
+        logbackVerifier.expectMessage(Level.ERROR, "Unexpected exception in event dispatcher");
+        optimizely.track(eventType.getKey(), "userId");
     }
 
     //======== getVariation tests ========//
@@ -1118,6 +1199,45 @@ public class OptimizelyTestV1 {
 
         assertNull(optimizely.getVariation(experiment.getKey(), "user",
                                            Collections.singletonMap("browser_type", "firefox")));
+    }
+
+    /**
+     * Verify that {@link Optimizely#getVariation(String, String, Map)} gives precedence to forced variation bucketing
+     * over audience evaluation.
+     */
+    @Test
+    public void getVariationForcedVariationPrecedesAudienceEval() throws Exception {
+        String datafile = validConfigJsonV1();
+        ProjectConfig projectConfig = validProjectConfigV1();
+        Experiment experiment = projectConfig.getExperiments().get(0);
+        Variation expectedVariation = experiment.getVariations().get(0);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withConfig(projectConfig)
+            .build();
+
+        logbackVerifier.expectMessage(Level.INFO, "User \"testUser1\" is forced in variation \"vtag1\".");
+        // no attributes provided for a experiment that has an audience
+        assertThat(optimizely.getVariation(experiment.getKey(), "testUser1"), is(expectedVariation));
+    }
+
+    /**
+     * Verify that {@link Optimizely#getVariation(String, String)} gives precedence to experiment status over forced
+     * variation bucketing.
+     */
+    @Test
+    public void getVariationExperimentStatusPrecedesForcedVariation() throws Exception {
+        String datafile = validConfigJsonV1();
+        ProjectConfig projectConfig = validProjectConfigV1();
+        Experiment experiment = projectConfig.getExperiments().get(1);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withConfig(projectConfig)
+            .build();
+
+        logbackVerifier.expectMessage(Level.INFO, "Experiment \"etag2\" is not running.");
+        // testUser3 has a corresponding forced variation, but experiment status should be checked first
+        assertNull(optimizely.getVariation(experiment.getKey(), "testUser3"));
     }
 
     //======== Helper methods ========//

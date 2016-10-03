@@ -245,4 +245,74 @@ public class EventBuilderV2Test {
 
         assertNull(conversionEvent);
     }
+
+    /**
+     * Verify that precedence is given to forced variation bucketing over audience evaluation when constructing a
+     * conversion event.
+     */
+    @Test
+    public void createConversionEventForcedVariationBucketingPrecedesAudienceEval() {
+        EventBuilderV2 builder = new EventBuilderV2();
+
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        EventType eventType = projectConfig.getEventTypes().get(0);
+        String userId = "testUser1";
+
+        List<String> experimentIds = projectConfig.getExperimentIdsForGoal(eventType.getKey());
+
+        Bucketer mockBucketAlgorithm = mock(Bucketer.class);
+        for (Experiment experiment : projectConfig.getExperiments()) {
+            when(mockBucketAlgorithm.bucket(experiment, userId))
+                .thenReturn(experiment.getVariations().get(0));
+        }
+
+        // attributes are empty so user won't be in the audience for experiment using the event, but bucketing
+        // will still take place
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
+                                                                 eventType.getId(), eventType.getKey(),
+                                                                 Collections.<String, String>emptyMap());
+
+        for (Experiment experiment : projectConfig.getExperiments()) {
+            if (experimentIds.contains(experiment.getId()) &&
+                    ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId,
+                                                                 Collections.<String, String>emptyMap())) {
+                verify(mockBucketAlgorithm).bucket(experiment, userId);
+            } else {
+                verify(mockBucketAlgorithm, never()).bucket(experiment, userId);
+            }
+        }
+
+        Conversion conversion = gson.fromJson(conversionEvent.getBody(), Conversion.class);
+        // 1 experiment uses the event
+        assertThat(conversion.getLayerStates().size(), is(1));
+    }
+
+    /**
+     * Verify that precedence is given to experiment status over forced variation bucketing when constructing a
+     * conversion event.
+     */
+    @Test
+    public void createConversionEventExperimentStatusPrecedesForcedVariation() {
+        EventBuilderV2 builder = new EventBuilderV2();
+
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        EventType eventType = projectConfig.getEventTypes().get(3);
+        String userId = "userId";
+
+        Bucketer mockBucketAlgorithm = mock(Bucketer.class);
+        for (Experiment experiment : projectConfig.getExperiments()) {
+            when(mockBucketAlgorithm.bucket(experiment, userId))
+                .thenReturn(experiment.getVariations().get(0));
+        }
+
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
+                                                                 eventType.getId(), eventType.getKey(),
+                                                                 Collections.<String, String>emptyMap());
+
+        for (Experiment experiment : projectConfig.getExperiments()) {
+            verify(mockBucketAlgorithm, never()).bucket(experiment, userId);
+        }
+
+        assertNull(conversionEvent);
+    }
 }
