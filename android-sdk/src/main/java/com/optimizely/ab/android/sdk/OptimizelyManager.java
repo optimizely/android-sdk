@@ -32,6 +32,7 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserExperimentRecord;
+import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
 
 import org.slf4j.Logger;
@@ -146,7 +147,7 @@ public class OptimizelyManager {
                 intent.putExtra(DataFileService.EXTRA_PROJECT_ID, projectId);
                 serviceScheduler.schedule(intent, dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval));
 
-                if (optimizelyStartListener != null) {
+                try {
                     OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
                     eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
                     Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
@@ -154,10 +155,19 @@ public class OptimizelyManager {
                             .build();
                     logger.info("Sending Optimizely instance to listener");
                     AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely);
-                    optimizelyStartListener.onStart(androidOptimizely);
                     OptimizelyManager.androidOptimizely = androidOptimizely;
-                } else {
-                    logger.info("No listener to send Optimizely to");
+
+                    if (optimizelyStartListener != null) {
+                        optimizelyStartListener.onStart(androidOptimizely);
+                        // Prevent the onOptimizelyStarted(AndroidOptimizely) callback from being hit twice
+                        // This could happen if the local data file is not null and is different
+                        // from the remote data file.  Setting the listener to null handles this case.
+                        optimizelyStartListener = null;
+                    } else {
+                        logger.info("No listener to send Optimizely to");
+                    }
+                } catch (Exception e) {
+                    logger.error("Unable to build optimizely instance", e);
                 }
             }
         };
