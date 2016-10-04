@@ -48,6 +48,7 @@ dependencies {
     androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestCompile "com.noveogroup.android:android-logger:$android_logger_ver"
+    androidTestCompile "com.google.code.gson:gson:$gson_ver"
 }
 
 uploadArchives {
