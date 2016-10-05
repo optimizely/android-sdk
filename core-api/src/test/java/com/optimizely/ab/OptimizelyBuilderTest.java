@@ -16,15 +16,15 @@
  */
 package com.optimizely.ab;
 
-import ch.qos.logback.classic.Level;
-
 import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.error.NoOpErrorHandler;
 import com.optimizely.ab.event.EventHandler;
-import com.optimizely.ab.internal.LogbackVerifier;
+import com.optimizely.ab.event.internal.BuildVersionInfo;
+import com.optimizely.ab.event.internal.EventBuilderV2;
+import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,7 +41,6 @@ import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -56,9 +55,6 @@ public class OptimizelyBuilderTest {
 
     @Rule
     public MockitoRule rule = MockitoJUnit.rule();
-
-    @Rule
-    public LogbackVerifier logbackVerifier = new LogbackVerifier();
 
     @Mock private EventHandler mockEventHandler;
 
@@ -113,6 +109,40 @@ public class OptimizelyBuilderTest {
             .build();
 
         assertThat(optimizelyClient.bucketer.getUserExperimentRecord(), is(userExperimentRecord));
+    }
+
+    @Test
+    public void withDefaultClientEngine() throws Exception {
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
+            .build();
+
+        assertThat(((EventBuilderV2)optimizelyClient.eventBuilder).clientEngine, is(ClientEngine.JAVA_SDK));
+    }
+
+    @Test
+    public void withCustomClientEngine() throws Exception {
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
+            .withClientEngine(ClientEngine.ANDROID_SDK)
+            .build();
+
+        assertThat(((EventBuilderV2)optimizelyClient.eventBuilder).clientEngine, is(ClientEngine.ANDROID_SDK));
+    }
+
+    @Test
+    public void withDefaultClientVersion() throws Exception {
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
+            .build();
+
+        assertThat(((EventBuilderV2)optimizelyClient.eventBuilder).clientVersion, is(BuildVersionInfo.VERSION));
+    }
+
+    @Test
+    public void withCustomClientVersion() throws Exception {
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
+            .withClientVersion("0.0.0")
+            .build();
+
+        assertThat(((EventBuilderV2)optimizelyClient.eventBuilder).clientVersion, is("0.0.0"));
     }
 
     @Test

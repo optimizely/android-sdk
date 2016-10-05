@@ -1,3 +1,9 @@
+## 1.0.1
+
+- Allow for configurability of `clientEngine` and `clientVersion` through `Optimizely.Builder`
+- Remove ppid query string from V1 events
+
+
 ## 1.0.0
 
 - Introduce support for Full Stack projects in Optimizely X with no breaking changes from previous version

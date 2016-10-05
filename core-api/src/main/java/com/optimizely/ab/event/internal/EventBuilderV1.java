@@ -56,7 +56,6 @@ public class EventBuilderV1 extends EventBuilder {
     private static final String EXPERIMENT_PARAM_PREFIX = "x";
     private static final String GOAL_ID_PARAM = "g";
     private static final String GOAL_NAME_PARAM = "n";
-    private static final String PPID_PARAM = "p";
     private static final String PROJECT_ID_PARAM = "a";
     private static final String EVENT_VALUE_PARAM = "v";
     private static final String SEGMENT_PARAM_PREFIX = "s";
@@ -112,7 +111,6 @@ public class EventBuilderV1 extends EventBuilder {
 
         addProjectId(requestParams, projectConfig.getProjectId());
         addAccountId(requestParams, projectConfig.getAccountId());
-        addPpid(requestParams, userId);
         addUserId(requestParams, userId);
         addSegments(requestParams, attributes, projectConfig);
         addTime(requestParams);
@@ -135,16 +133,6 @@ public class EventBuilderV1 extends EventBuilder {
      */
     private void addProjectId(Map<String, String> requestParams, String projectId) {
         requestParams.put(PROJECT_ID_PARAM, projectId);
-    }
-
-    /**
-     * Helper method to populate the {@code PPID} param.
-     *
-     * @param requestParams the request params
-     * @param userId the user id for the impression event
-     */
-    private void addPpid(Map<String, String> requestParams, String userId) {
-        requestParams.put(PPID_PARAM, userId);
     }
 
     /**

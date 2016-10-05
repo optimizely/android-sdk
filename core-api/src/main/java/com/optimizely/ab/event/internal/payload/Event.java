@@ -16,24 +16,43 @@
  */
 package com.optimizely.ab.event.internal.payload;
 
-import com.optimizely.ab.annotations.VisibleForTesting;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import com.optimizely.ab.event.internal.BuildVersionInfo;
 
 public class Event {
 
-    String clientEngine = "java-sdk";
+    public enum ClientEngine {
+        JAVA_SDK ("java-sdk"),
+        ANDROID_SDK ("android-sdk");
+
+        private final String clientEngineValue;
+
+        ClientEngine(String clientEngineValue) {
+            this.clientEngineValue = clientEngineValue;
+        }
+
+        @JsonValue
+        public String getClientEngineValue() {
+            return clientEngineValue;
+        }
+    }
+
+    String clientEngine = ClientEngine.JAVA_SDK.getClientEngineValue();
     String clientVersion = BuildVersionInfo.VERSION;
 
     public String getClientEngine() {
         return clientEngine;
     }
 
+    public void setClientEngine(ClientEngine clientEngine) {
+        this.clientEngine = clientEngine.getClientEngineValue();
+    }
+
     public String getClientVersion() {
         return clientVersion;
     }
 
-    @VisibleForTesting
     public void setClientVersion(String clientVersion) {
         this.clientVersion = clientVersion;
     }

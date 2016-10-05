@@ -71,7 +71,7 @@ public class EventBuilderV1Test {
                                                                  userId, attributeMap);
         Map<String, String> requestParams = impressionEvent.getRequestParams();
 
-        assertThat(requestParams.size(), is(9));
+        assertThat(requestParams.size(), is(8));
 
         verifyCommonRequestParams(projectConfig, requestParams, userId, attribute);
 
@@ -126,7 +126,7 @@ public class EventBuilderV1Test {
             }
         }
 
-        assertThat(requestParams.size(), is(10));
+        assertThat(requestParams.size(), is(9));
 
         verifyCommonRequestParams(projectConfig, requestParams, userId, attribute);
 
@@ -262,7 +262,7 @@ public class EventBuilderV1Test {
             }
         }
 
-        assertThat(conversionEvent.getRequestParams().size(), is(9));
+        assertThat(conversionEvent.getRequestParams().size(), is(8));
     }
 
     /**
@@ -309,9 +309,6 @@ public class EventBuilderV1Test {
 
         // verify segments
         assertThat(requestParams, hasEntry("s" + attribute.getSegmentId(), "value"));
-
-        // verify ppid
-        assertThat(requestParams, hasEntry("p", "userId"));
 
         // verify source
         String sourceValue = requestParams.get("src");

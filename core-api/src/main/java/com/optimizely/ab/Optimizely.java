@@ -31,9 +31,11 @@ import com.optimizely.ab.error.NoOpErrorHandler;
 import com.optimizely.ab.error.RaiseExceptionErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV1;
 import com.optimizely.ab.event.internal.EventBuilderV2;
+import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 
 import org.slf4j.Logger;
@@ -441,6 +443,8 @@ public class Optimizely {
         private ErrorHandler errorHandler;
         private EventHandler eventHandler;
         private EventBuilder eventBuilder;
+        private ClientEngine clientEngine;
+        private String clientVersion;
         private ProjectConfig projectConfig;
 
         public Builder(@Nonnull String datafile,
@@ -456,6 +460,16 @@ public class Optimizely {
 
         public Builder withUserExperimentRecord(UserExperimentRecord userExperimentRecord) {
             this.userExperimentRecord = userExperimentRecord;
+            return this;
+        }
+
+        public Builder withClientEngine(ClientEngine clientEngine) {
+            this.clientEngine = clientEngine;
+            return this;
+        }
+
+        public Builder withClientVersion(String clientVersion) {
+            this.clientVersion = clientVersion;
             return this;
         }
 
@@ -485,11 +499,19 @@ public class Optimizely {
                 bucketer = new Bucketer(projectConfig, userExperimentRecord);
             }
 
+            if (clientEngine == null) {
+                clientEngine = ClientEngine.JAVA_SDK;
+            }
+
+            if (clientVersion == null) {
+                clientVersion = BuildVersionInfo.VERSION;
+            }
+
             if (eventBuilder == null) {
                 if (projectConfig.getVersion().equals(ProjectConfig.V1)) {
                     eventBuilder = new EventBuilderV1();
                 } else {
-                    eventBuilder = new EventBuilderV2();
+                    eventBuilder = new EventBuilderV2(clientEngine, clientVersion);
                 }
             }
 

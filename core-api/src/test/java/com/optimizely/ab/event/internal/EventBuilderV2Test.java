@@ -28,6 +28,7 @@ import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.internal.payload.Conversion;
 import com.optimizely.ab.event.internal.payload.Decision;
+import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 import com.optimizely.ab.event.internal.payload.EventMetric;
 import com.optimizely.ab.event.internal.payload.Feature;
 import com.optimizely.ab.event.internal.payload.Impression;
@@ -94,7 +95,7 @@ public class EventBuilderV2Test {
         assertThat(impression.getLayerId(), is(activatedExperiment.getLayerId()));
         assertThat(impression.getAccountId(), is(projectConfig.getAccountId()));
         assertThat(impression.getUserFeatures(), is(expectedUserFeatures));
-        assertThat(impression.getClientEngine(), is("java-sdk"));
+        assertThat(impression.getClientEngine(), is(ClientEngine.JAVA_SDK.getClientEngineValue()));
         assertThat(impression.getClientVersion(), is(BuildVersionInfo.VERSION));
     }
 
@@ -120,6 +121,28 @@ public class EventBuilderV2Test {
             assertNotEquals(feature.getName(), "unknownAttribute");
             assertNotEquals(feature.getValue(), "blahValue");
         }
+    }
+
+    /**
+     * Verify that supplying {@link EventBuilderV2} with a custom client engine and client version results in impression
+     * events being sent with the overriden values.
+     */
+    @Test
+    public void createImpressionEventCustomClientEngineClientVersion() throws Exception {
+        EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_SDK, "0.0.0");
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        Experiment activatedExperiment = projectConfig.getExperiments().get(0);
+        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        Attribute attribute = projectConfig.getAttributes().get(0);
+        String userId = "userId";
+        Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
+
+        LogEvent impressionEvent = builder.createImpressionEvent(projectConfig, activatedExperiment, bucketedVariation,
+                                                                 userId, attributeMap);
+        Impression impression = gson.fromJson(impressionEvent.getBody(), Impression.class);
+
+        assertThat(impression.getClientEngine(), is(ClientEngine.ANDROID_SDK.getClientEngineValue()));
+        assertThat(impression.getClientVersion(), is("0.0.0"));
     }
 
     /**
@@ -184,7 +207,7 @@ public class EventBuilderV2Test {
         assertThat(conversion.getEventMetrics(), is(Collections.<EventMetric>emptyList()));
         assertThat(conversion.getEventFeatures(), is(Collections.<Feature>emptyList()));
         assertFalse(conversion.getIsGlobalHoldback());
-        assertThat(conversion.getClientEngine(), is("java-sdk"));
+        assertThat(conversion.getClientEngine(), is(ClientEngine.JAVA_SDK.getClientEngineValue()));
         assertThat(conversion.getClientVersion(), is(BuildVersionInfo.VERSION));
     }
 
@@ -252,8 +275,6 @@ public class EventBuilderV2Test {
      */
     @Test
     public void createConversionEventForcedVariationBucketingPrecedesAudienceEval() {
-        EventBuilderV2 builder = new EventBuilderV2();
-
         ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
         EventType eventType = projectConfig.getEventTypes().get(0);
         String userId = "testUser1";
@@ -293,8 +314,6 @@ public class EventBuilderV2Test {
      */
     @Test
     public void createConversionEventExperimentStatusPrecedesForcedVariation() {
-        EventBuilderV2 builder = new EventBuilderV2();
-
         ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
         EventType eventType = projectConfig.getEventTypes().get(3);
         String userId = "userId";
@@ -314,5 +333,33 @@ public class EventBuilderV2Test {
         }
 
         assertNull(conversionEvent);
+    }
+
+    /**
+     * Verify that supplying {@link EventBuilderV2} with a custom client engine and client version results in conversion
+     * events being sent with the overriden values.
+     */
+    @Test
+    public void createConversionEventCustomClientEngineClientVersion() throws Exception {
+        EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_SDK, "0.0.0");
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        Attribute attribute = projectConfig.getAttributes().get(0);
+        EventType eventType = projectConfig.getEventTypes().get(0);
+        String userId = "userId";
+
+        Bucketer mockBucketAlgorithm = mock(Bucketer.class);
+        for (Experiment experiment : projectConfig.getExperiments()) {
+            when(mockBucketAlgorithm.bucket(experiment, userId))
+                    .thenReturn(experiment.getVariations().get(0));
+        }
+
+        Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
+                                                                 eventType.getId(), eventType.getKey(), attributeMap);
+
+        Conversion conversion = gson.fromJson(conversionEvent.getBody(), Conversion.class);
+
+        assertThat(conversion.getClientEngine(), is(ClientEngine.ANDROID_SDK.getClientEngineValue()));
+        assertThat(conversion.getClientVersion(), is("0.0.0"));
     }
 }
