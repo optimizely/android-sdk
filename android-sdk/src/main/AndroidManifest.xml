@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.optimizely.ab.android.project_watcher"
+<manifest package="com.optimizely.ab.android.sdk"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application>
         <service
-            android:name="com.optimizely.ab.android.sdk.DataFileService"
+            android:name=".DataFileService"
             android:enabled="true"
             android:exported="false">
         </service>
 
         <receiver
-            android:name="com.optimizely.ab.android.sdk.DataFileRescheduler"
+            android:name=".DataFileRescheduler"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
