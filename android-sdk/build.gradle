@@ -13,8 +13,9 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
         versionCode 1
-        versionName "1.0"
+        versionName version_name
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
     }
     testOptions {
         unitTests.returnDefaultValues = true

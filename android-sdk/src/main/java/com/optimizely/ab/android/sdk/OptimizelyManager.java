@@ -32,7 +32,7 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserExperimentRecord;
-import com.optimizely.ab.config.parser.ConfigParseException;
+import com.optimizely.ab.event.internal.payload.Event;
 import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
 
 import org.slf4j.Logger;
@@ -152,6 +152,8 @@ public class OptimizelyManager {
                     eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
                     Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
                             .withUserExperimentRecord(userExperimentRecord)
+                            .withClientEngine(Event.ClientEngine.ANDROID_SDK)
+                            .withClientVersion(BuildConfig.CLIENT_VERSION)
                             .build();
                     logger.info("Sending Optimizely instance to listener");
                     AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely);
