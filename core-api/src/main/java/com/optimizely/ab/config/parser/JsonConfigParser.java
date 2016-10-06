@@ -32,7 +32,6 @@ import com.optimizely.ab.config.TrafficAllocation;
 import com.optimizely.ab.config.Variation;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -73,7 +72,7 @@ final class JsonConfigParser implements ConfigParser {
 
             return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
                                      audiences);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             throw new ConfigParseException("Unable to parse datafile: " + json, e);
         }
     }

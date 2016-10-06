@@ -55,13 +55,24 @@ public class GsonConfigParserTest {
     }
 
     /**
-     * Verify that internal parser exceptions are wrapped and rethrown as a {@link ConfigParseException}.
+     * Verify that invalid JSON results in a {@link ConfigParseException} being thrown.
      */
     @Test
-    public void exceptionWrapping() throws Exception {
+    public void invalidJsonExceptionWrapping() throws Exception {
         thrown.expect(ConfigParseException.class);
 
         GsonConfigParser parser = new GsonConfigParser();
         parser.parseProjectConfig("invalid config");
+    }
+
+    /**
+     * Verify that valid JSON without a required field results in a {@link ConfigParseException} being thrown.
+     */
+    @Test
+    public void validJsonRequiredFieldMissingExceptionWrapping() throws Exception {
+        thrown.expect(ConfigParseException.class);
+
+        GsonConfigParser parser = new GsonConfigParser();
+        parser.parseProjectConfig("{\"valid\": \"json\"}");
     }
 }

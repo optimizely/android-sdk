@@ -18,7 +18,6 @@ package com.optimizely.ab.config.parser;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
 
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Group;
@@ -43,7 +42,7 @@ final class GsonConfigParser implements ConfigParser {
 
         try {
             return gson.fromJson(json, ProjectConfig.class);
-        } catch (JsonParseException e) {
+        } catch (Exception e) {
             throw new ConfigParseException("Unable to parse datafile: " + json, e);
         }
     }

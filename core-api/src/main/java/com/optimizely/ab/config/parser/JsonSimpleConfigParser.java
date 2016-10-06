@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -75,7 +74,7 @@ final class JsonSimpleConfigParser implements ConfigParser {
 
             return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
                                      audiences);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             throw new ConfigParseException("Unable to parse datafile: " + json, e);
         }
     }

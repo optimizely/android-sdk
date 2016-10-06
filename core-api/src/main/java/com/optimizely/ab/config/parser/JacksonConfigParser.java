@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import com.optimizely.ab.config.ProjectConfig;
 
-import java.io.IOException;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -39,7 +37,7 @@ final class JacksonConfigParser implements ConfigParser {
 
         try {
             return mapper.readValue(json, ProjectConfig.class);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ConfigParseException("Unable to parse datafile: " + json, e);
         }
     }

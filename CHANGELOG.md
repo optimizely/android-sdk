@@ -1,3 +1,7 @@
+## 1.0.2
+
+- Gracefully handle datafile that doesn't contain required fields
+
 ## 1.0.1
 
 - Allow for configurability of `clientEngine` and `clientVersion` through `Optimizely.Builder`
