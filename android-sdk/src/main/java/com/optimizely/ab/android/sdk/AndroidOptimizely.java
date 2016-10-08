@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,7 @@ public class AndroidOptimizely {
 
     @Nullable private Optimizely optimizely;
 
-    public AndroidOptimizely(@Nullable Optimizely optimizely) {
+    AndroidOptimizely(@Nullable Optimizely optimizely) {
         this.optimizely = optimizely;
     }
 

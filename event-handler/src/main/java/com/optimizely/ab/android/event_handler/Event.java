@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,7 @@
  */
 package com.optimizely.ab.android.event_handler;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * Created by jdeffibaugh on 7/25/16 for Optimizely.
@@ -28,7 +24,7 @@ import java.net.URLConnection;
  *
  * Proxies {@link URL} because this class is final and not easily mockable when testing.
  */
-public class Event {
+class Event {
     private URL url;
     private String requestBody;
 
@@ -37,22 +33,12 @@ public class Event {
         this.requestBody = requestBody;
     }
 
-    public URLConnection send() throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) this.url.openConnection();
-
-        urlConnection.setRequestMethod("POST");
-        urlConnection.setRequestProperty("Content-Type", "application/json");
-        urlConnection.setDoOutput(true);
-        OutputStream outputStream = urlConnection.getOutputStream();
-        outputStream.write(this.requestBody.getBytes());
-        outputStream.flush();
-        outputStream.close();
-
-        return urlConnection;
+    String getRequestBody() {
+        return this.requestBody;
     }
 
-    public String getRequestBody() {
-        return this.requestBody;
+    URL getURL() {
+        return this.url;
     }
 
     @Override

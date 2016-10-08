@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,22 +31,20 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by jdeffibaugh on 7/29/16 for Optimizely.
- * <p/>
  * Caches a json dict that saves state about which project IDs have background watching enabled.
  */
-public class BackgroundWatchersCache {
+class BackgroundWatchersCache {
     static final String BACKGROUND_WATCHERS_FILE_NAME = "optly-background-watchers.json";
 
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
 
-    public BackgroundWatchersCache(@NonNull Cache cache, @NonNull Logger logger) {
+    BackgroundWatchersCache(@NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
         this.logger = logger;
     }
 
-    public boolean setIsWatching(@NonNull String projectId, boolean watching) {
+    boolean setIsWatching(@NonNull String projectId, boolean watching) {
         if (projectId.isEmpty()) {
             logger.error("Passed in an empty string for projectId");
             return false;
@@ -65,7 +63,7 @@ public class BackgroundWatchersCache {
         return false;
     }
 
-    public boolean isWatching(@NonNull String projectId) {
+    boolean isWatching(@NonNull String projectId) {
         if (projectId.isEmpty()) {
             logger.error("Passed in an empty string for projectId");
             return false;
@@ -85,7 +83,7 @@ public class BackgroundWatchersCache {
         return false;
     }
 
-    public List<String> getWatchingProjectIds() {
+    List<String> getWatchingProjectIds() {
         List<String> projectIds = new ArrayList<>();
         try {
             JSONObject backgroundWatchers = load();

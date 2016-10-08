@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,10 @@ import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -34,18 +37,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/16/16 for Optimizely.
- *
  * Tests {@link OptimizelyManager.DataFileServiceConnection}
  */
+@RunWith(MockitoJUnitRunner.class)
 public class OptimizelyManagerDataFileServiceConnectionTest {
 
-    OptimizelyManager.DataFileServiceConnection dataFileServiceConnection;
-    OptimizelyManager optimizelyManager;
+    private OptimizelyManager.DataFileServiceConnection dataFileServiceConnection;
+    @Mock private OptimizelyManager optimizelyManager;
 
     @Before
     public void setup() {
-        optimizelyManager = mock(OptimizelyManager.class);
         dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager);
     }
 

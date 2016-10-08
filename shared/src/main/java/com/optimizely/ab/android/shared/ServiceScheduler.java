@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,10 +24,9 @@ import android.support.annotation.NonNull;
 import org.slf4j.Logger;
 
 /**
- * Created by jdeffibaugh on 7/26/16 for Optimizely.
- * <p/>
  * Schedules {@link android.app.Service}es to run.
  */
+// TODO Unit test coverage
 public class ServiceScheduler {
 
     @NonNull private final AlarmManager alarmManager;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,19 +67,19 @@ public class DataFileService extends Service {
         return false;
     }
 
-    public boolean isBound() {
+    boolean isBound() {
         return  isBound;
     }
 
-    public void stop() {
+    void stop() {
         stopSelf();
     }
 
-    public void getDataFile(String projectId, DataFileLoader dataFileLoader, DataFileLoadedListener loadedListener) {
+    void getDataFile(String projectId, DataFileLoader dataFileLoader, DataFileLoadedListener loadedListener) {
         dataFileLoader.getDataFile(projectId, loadedListener);
     }
 
-    public class LocalBinder extends Binder {
+    class LocalBinder extends Binder {
         public DataFileService getService() {
             // Return this instance of LocalService so clients can call public methods
             return DataFileService.this;

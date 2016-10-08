@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,73 +20,77 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Pair;
 
+import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 7/25/16 for Optimizely.
- *
  * Tests {@link EventDispatcher}
  */
 @RunWith(AndroidJUnit4.class)
 public class EventDispatcherTest {
 
-    EventDispatcher eventDispatcher;
-    OptlyStorage optlyStorage;
-    EventDAO eventDAO;
-    EventClient eventClient;
-    ServiceScheduler serviceScheduler;
-    Logger logger;
-    Context context;
+    private EventDispatcher eventDispatcher;
+    private OptlyStorage optlyStorage;
+    private EventDAO eventDAO;
+    private EventClient eventClient;
+    private ServiceScheduler serviceScheduler;
+    private Logger logger;
+    private Context context;
+    private Client client;
 
     @Before
     public void setup() {
         context = InstrumentationRegistry.getTargetContext();
-        eventDAO = mock(EventDAO.class);
-        eventClient = mock(EventClient.class);
         logger = mock(Logger.class);
+        client = mock(Client.class);
+        eventDAO = EventDAO.getInstance(context, logger);
+        eventClient = new EventClient(client, logger);
         serviceScheduler = mock(ServiceScheduler.class);
         optlyStorage = mock(OptlyStorage.class);
 
         eventDispatcher = new EventDispatcher(context, optlyStorage, eventDAO, eventClient, serviceScheduler, logger);
     }
 
+    @After
+    public void tearDown() {
+        context.deleteDatabase(EventSQLiteOpenHelper.DB_NAME);
+    }
+
     @Test
-    public void handleIntentSchedulesWhenEventsLeftInStorage() throws MalformedURLException {
+    public void handleIntentSchedulesWhenEventsLeftInStorage() throws IOException {
         Event event1 = new Event(new URL("http://www.foo1.com"), "");
         Event event2 = new Event(new URL("http://www.foo2.com"), "");
         Event event3= new Event(new URL("http://www.foo3.com"), "");
-        when(eventDAO.getEvents()).thenReturn(new LinkedList<>(Arrays.asList(
-                new Pair<>(1L, event1),
-                new Pair<>(2L, event2),
-                new Pair<>(3L, event3))));
+        eventDAO.storeEvent(event1);
+        eventDAO.storeEvent(event2);
+        eventDAO.storeEvent(event3);
 
-        when(eventClient.sendEvent(event1)).thenReturn(true);
-        when(eventClient.sendEvent(event2)).thenReturn(true);
-        when(eventClient.sendEvent(event3)).thenReturn(false);
-
-        when(eventDAO.removeEvent(1L)).thenReturn(false);
-        when(eventDAO.removeEvent(2L)).thenReturn(true);
-        when(eventDAO.removeEvent(3L)).thenReturn(true);
+        final HttpURLConnection goodConnection = getGoodConnection();
+        when(client.openConnection(event1.getURL())).thenReturn(goodConnection);
+        when(client.openConnection(event2.getURL())).thenReturn(goodConnection);
+        final HttpURLConnection badConnection = getBadConnection();
+        when(client.openConnection(event3.getURL())).thenReturn(badConnection);
 
         Intent mockIntent = mock(Intent.class);
         when(mockIntent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1)).thenReturn(-1L);
@@ -95,66 +99,32 @@ public class EventDispatcherTest {
 
         verify(serviceScheduler).schedule(mockIntent, AlarmManager.INTERVAL_HOUR);
         verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
-        verify(logger).warn("Unable to delete an event from local storage that was sent to successfully");
+
+        verify(logger).error("Unexpected response from event endpoint, status: " + 400);
         verify(logger).info("Scheduled events to be dispatched");
     }
 
     @Test
-    public void handleIntentSchedulesWhenNewEventFailsToSend() throws MalformedURLException {
-        String url= "http://www.foo.com";
-        Event event = new Event(new URL(url), "");
+    public void handleIntentSchedulesWhenNewEventFailsToSend() throws IOException {
+        Event event = new Event(new URL("http://www.foo.com"), "");
 
-        when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
+        Intent intent = new Intent(context, EventIntentService.class);
+        intent.putExtra(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
+        intent.putExtra(EventIntentService.EXTRA_URL, event.getURL().toString());
+        intent.putExtra(EventIntentService.EXTRA_REQUEST_BODY, event.getRequestBody());
 
-        Intent mockIntent = mock(Intent.class);
-        when(mockIntent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
-        when(mockIntent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
-        when(mockIntent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1)).thenReturn(AlarmManager.INTERVAL_HOUR);
-        when(eventClient.sendEvent(event)).thenReturn(false);
-        when(eventDAO.storeEvent(event)).thenReturn(true);
+        final HttpURLConnection badConnection = getBadConnection();
+        when(client.openConnection(event.getURL())).thenReturn(badConnection);
 
-        eventDispatcher.dispatch(mockIntent);
-        verify(serviceScheduler).schedule(mockIntent, AlarmManager.INTERVAL_HOUR);
+        eventDispatcher.dispatch(intent);
+        verify(serviceScheduler).schedule(intent, AlarmManager.INTERVAL_HOUR);
         verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
+
         verify(logger).info("Scheduled events to be dispatched");
-    }
-
-    @Test
-    public void getIntervalFromIntent() throws MalformedURLException {
-        String url= "http://www.foo.com";
-
-        when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
-
-        Intent mockIntent = mock(Intent.class);
-        when(mockIntent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
-        when(mockIntent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
-
-    }
-
-    @Test
-    public void handleIntentLogsWhenUnableToSendOrStoreEvent() throws MalformedURLException {
-        String url= "http://www.foo.com";
-        String requestBody = "param1=123";
-        Event event = new Event(new URL(url), requestBody);
-
-        when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
-
-        Intent mockIntent = mock(Intent.class);
-        when(mockIntent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
-        when(mockIntent.hasExtra(EventIntentService.EXTRA_REQUEST_BODY)).thenReturn(true);
-        when(mockIntent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
-        when(mockIntent.getStringExtra(EventIntentService.EXTRA_REQUEST_BODY)).thenReturn(requestBody);
-        when(eventClient.sendEvent(event)).thenReturn(false);
-        when(eventDAO.storeEvent(event)).thenReturn(false);
-
-        eventDispatcher.dispatch(mockIntent);
-        verify(logger).error("Unable to send or store event {}", event);
-        verify(logger, never()).info("Scheduled events to be dispatched");
     }
 
     @Test
     public void unschedulesServiceWhenNoEventsToFlush() {
-        when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
         Intent mockIntent = mock(Intent.class);
         eventDispatcher.dispatch(mockIntent);
         verify(serviceScheduler).unschedule(mockIntent);
@@ -165,8 +135,6 @@ public class EventDispatcherTest {
     public void handleMalformedURL() throws MalformedURLException {
         String url= "foo";
 
-        when(eventDAO.getEvents()).thenReturn(new LinkedList<Pair<Long, Event>>());
-
         Intent mockIntent = mock(Intent.class);
         when(mockIntent.hasExtra(EventIntentService.EXTRA_URL)).thenReturn(true);
         when(mockIntent.getStringExtra(EventIntentService.EXTRA_URL)).thenReturn(url);
@@ -174,5 +142,28 @@ public class EventDispatcherTest {
         eventDispatcher.dispatch(mockIntent);
 
         verify(logger).error(contains("Received a malformed URL in event handler service"), any(MalformedURLException.class));
+    }
+
+    private HttpURLConnection getGoodConnection() throws IOException {
+        HttpURLConnection httpURLConnection = getConnection();
+        when(httpURLConnection.getResponseCode()).thenReturn(200);
+
+        return httpURLConnection;
+    }
+
+    private HttpURLConnection getBadConnection() throws IOException {
+        HttpURLConnection httpURLConnection = getConnection();
+        when(httpURLConnection.getResponseCode()).thenReturn(400);
+        return httpURLConnection;
+    }
+
+    private HttpURLConnection getConnection() throws IOException {
+        HttpURLConnection httpURLConnection = mock(HttpURLConnection.class);
+        OutputStream outputStream = mock(OutputStream.class);
+        when(httpURLConnection.getOutputStream()).thenReturn(outputStream);
+        InputStream inputStream = mock(InputStream.class);
+        when(httpURLConnection.getInputStream()).thenReturn(inputStream);
+
+        return httpURLConnection;
     }
 }

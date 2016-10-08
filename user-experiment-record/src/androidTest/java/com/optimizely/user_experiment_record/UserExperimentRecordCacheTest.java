@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,16 +39,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/8/16 for Optimizely.
- *
  * Tests for {@link UserExperimentRecordCache}
  */
 @RunWith(AndroidJUnit4.class)
 public class UserExperimentRecordCacheTest {
 
-    UserExperimentRecordCache userExperimentRecordCache;
-    Cache cache;
-    Logger logger;
+    private UserExperimentRecordCache userExperimentRecordCache;
+    private Cache cache;
+    private Logger logger;
 
     @Before
     public void setup() {

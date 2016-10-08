@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,19 +44,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/3/16 for Optimizely.
- *
  * Tests for {@link OptimizelyManager}
  */
 @RunWith(AndroidJUnit4.class)
 public class OptimizelyManagerTest {
 
-    BackgroundWatchersCache backgroundWatchersCache;
-    ListeningExecutorService executor;
-    Logger logger;
-    OptimizelyManager optimizelyManager;
+    private ListeningExecutorService executor;
+    private Logger logger;
+    private OptimizelyManager optimizelyManager;
 
-    String minDataFile = "{\n" +
+    private String minDataFile = "{\n" +
             "experiments: [ ],\n" +
             "version: \"2\",\n" +
             "audiences: [ ],\n" +
@@ -71,9 +68,7 @@ public class OptimizelyManagerTest {
     @Before
     public void setup() {
         logger = mock(Logger.class);
-        backgroundWatchersCache = mock(BackgroundWatchersCache.class);
         executor = MoreExecutors.newDirectExecutorService();
-
         optimizelyManager = new OptimizelyManager("1", 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger);
     }
 
@@ -104,9 +99,9 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
 
-        OptimizelyManager.DataFileServiceConnection dataFileServiceConnection = mock(OptimizelyManager.DataFileServiceConnection.class);
+        OptimizelyManager.DataFileServiceConnection dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager);
+        dataFileServiceConnection.setBound(true);
         optimizelyManager.setDataFileServiceConnection(dataFileServiceConnection);
-        when(dataFileServiceConnection.isBound()).thenReturn(true);
 
         optimizelyManager.stop(context);
 
@@ -214,4 +209,9 @@ public class OptimizelyManagerTest {
 
         verify(logger).info("No listener to send Optimizely to");
     }
+
+//    @Test
+//    public void getOptimizelyFromCompiledDataFile() {
+//
+//    }
 }

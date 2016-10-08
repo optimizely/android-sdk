@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -33,19 +35,16 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 7/25/16 for Optimizely.
- *
  * Tests {@link EventDAO}
  */
 @RunWith(AndroidJUnit4.class)
 public class EventDAOTest {
 
-    EventDAO eventDAO;
-    Logger logger;
-    Context context;
+    private EventDAO eventDAO;
+    private Logger logger;
+    private Context context;
 
     @Before
     public void setupEventDAO() {
@@ -60,26 +59,17 @@ public class EventDAOTest {
     }
 
     @Test
-    public void storeEvent() {
-        Event event = mock(Event.class);
-        when(event.toString()).thenReturn("http://www.foo.com");
-        when(event.getRequestBody()).thenReturn("bar1=baz1");
+    public void storeEvent() throws MalformedURLException {
+        Event event = new Event(new URL("http://www.foo.com"), "bar1=baz1");
         assertTrue(eventDAO.storeEvent(event));
         verify(logger).info("Inserted {} into db", event);
     }
 
     @Test
-    public void getEvents() {
-        Event event1 = mock(Event.class);
-        Event event2 = mock(Event.class);
-        Event event3 = mock(Event.class);
-
-        when(event1.toString()).thenReturn("http://www.foo1.com");
-        when(event1.getRequestBody()).thenReturn("bar1=baz1");
-        when(event2.toString()).thenReturn("http://www.foo2.com");
-        when(event2.getRequestBody()).thenReturn("bar2=baz2");
-        when(event3.toString()).thenReturn("http://www.foo3.com");
-        when(event3.getRequestBody()).thenReturn("bar3=baz3");
+    public void getEvents() throws MalformedURLException {
+        Event event1 = new Event(new URL("http://www.foo1.com"), "bar1=baz1");
+        Event event2 = new Event(new URL("http://www.foo2.com"), "bar2=baz2");
+        Event event3 = new Event(new URL("http://www.foo3.com"), "bar3=baz3");
 
         assertTrue(eventDAO.storeEvent(event1));
         assertTrue(eventDAO.storeEvent(event2));
@@ -107,20 +97,16 @@ public class EventDAOTest {
     }
 
     @Test
-    public void removeEventSuccess() {
-        Event event = mock(Event.class);
-        when(event.toString()).thenReturn("http://www.foo.com");
-        when(event.getRequestBody()).thenReturn("bar=baz");
+    public void removeEventSuccess() throws MalformedURLException {
+        Event event = new Event(new URL("http://www.foo.com"), "baz=baz");
         assertTrue(eventDAO.storeEvent(event));
         assertTrue(eventDAO.removeEvent(1));
         verify(logger).info("Removed event with id {} from db", 1L);
     }
 
     @Test
-    public void removeEventInvalid() {
-        Event event = mock(Event.class);
-        when(event.toString()).thenReturn("http://www.foo.com");
-        when(event.getRequestBody()).thenReturn("bar=baz");
+    public void removeEventInvalid() throws MalformedURLException {
+        Event event = new Event(new URL("http://www.foo.com"), "baz=baz");
         assertTrue(eventDAO.storeEvent(event));
         assertFalse(eventDAO.removeEvent(2));
         verify(logger).error("Tried to remove an event id {} that does not exist", 2L);

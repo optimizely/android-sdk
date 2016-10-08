@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,10 @@
  */
 package com.optimizely.ab.android.sdk;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import java.net.MalformedURLException;
@@ -30,26 +32,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/3/16 for Optimizely.
- *
  * Tests for {@link DataFileLoader}
  */
+@RunWith(MockitoJUnitRunner.class)
 public class DataFileLoaderTest {
 
-    DataFileService datafileService;
-    DataFileCache dataFileCache;
-    DataFileClient dataFileClient;
-    DataFileLoadedListener dataFileLoadedListener;
-    Logger logger;
-
-    @Before
-    public void setup() {
-        datafileService = mock(DataFileService.class);
-        dataFileCache = mock(DataFileCache.class);
-        dataFileClient = mock(DataFileClient.class);
-        dataFileLoadedListener = mock(DataFileLoadedListener.class);
-        logger = mock(Logger.class);
-    }
+    @Mock private DataFileService datafileService;
+    @Mock private DataFileCache dataFileCache;
+    @Mock private DataFileClient dataFileClient;
+    @Mock private DataFileLoadedListener dataFileLoadedListener;
+    @Mock private Logger logger;
 
     @Test
     public void existingDataFileWhenRequestingFromClient() throws MalformedURLException {

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,11 +28,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * Created by jdeffibaugh on 7/28/16 for Optimizely.
- *
  * Abstracts the actual data "file" {@link java.io.File}
  */
-public class DataFileCache {
+class DataFileCache {
 
     private static final String OPTLY_DATA_FILE_NAME = "optly-data-file-%s.json";
 
@@ -40,14 +38,14 @@ public class DataFileCache {
     @NonNull private final String projectId;
     @NonNull private final Logger logger;
 
-    public DataFileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
+    DataFileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
         this.projectId = projectId;
         this.logger = logger;
     }
 
     @Nullable
-    public JSONObject load() {
+    JSONObject load() {
         String optlyDataFile = null;
         try {
             optlyDataFile = cache.load(getFileName());
@@ -69,15 +67,15 @@ public class DataFileCache {
 
     }
 
-    public boolean delete() {
+    boolean delete() {
         return cache.delete(getFileName());
     }
 
-    public boolean exists() {
+    boolean exists() {
         return cache.exists(getFileName());
     }
 
-    public boolean save(String dataFile) {
+    boolean save(String dataFile) {
         try {
             return cache.save(getFileName(), dataFile);
         } catch (IOException e) {
@@ -87,8 +85,7 @@ public class DataFileCache {
     }
 
 
-    public String getFileName() {
+    String getFileName() {
         return String.format(OPTLY_DATA_FILE_NAME, projectId);
     }
-
 }

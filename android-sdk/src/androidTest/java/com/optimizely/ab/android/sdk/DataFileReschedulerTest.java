@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +19,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 
+import com.optimizely.ab.android.shared.Cache;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
-
-import java.util.Arrays;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -34,14 +36,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/2/16 for Optimizely.
- *
  * Tests for {@link DataFileRescheduler}
  */
+@RunWith(JUnit4.class)
 public class DataFileReschedulerTest {
 
-    DataFileRescheduler dataFileRescheduler;
-    Logger logger;
+    private DataFileRescheduler dataFileRescheduler;
+    private Logger logger;
 
     @Before
     public void setup() {
@@ -83,30 +84,34 @@ public class DataFileReschedulerTest {
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     @Test
     public void dispatchingOne() {
-        Context context = InstrumentationRegistry.getTargetContext();
         Context mockContext = mock(Context.class);
-        BackgroundWatchersCache backgroundWatchersCache = mock(BackgroundWatchersCache.class);
-        when(backgroundWatchersCache.getWatchingProjectIds()).thenReturn(Arrays.asList("1"));
+        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
+        backgroundWatchersCache.setIsWatching("1", true);
         Logger logger = mock(Logger.class);
         DataFileRescheduler.Dispatcher dispatcher = new DataFileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
-        Intent intent = new Intent(context, DataFileService.class);
+        Intent intent = new Intent(mockContext, DataFileService.class);
         dispatcher.dispatch(intent);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(mockContext).startService(captor.capture());
         assertEquals("1", captor.getValue().getStringExtra(DataFileService.EXTRA_PROJECT_ID));
         verify(logger).info("Rescheduled data file watching for project {}", "1");
+        cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }
 
     @Test
     public void dispatchingMany() {
-        Context context = InstrumentationRegistry.getTargetContext();
         Context mockContext = mock(Context.class);
-        BackgroundWatchersCache backgroundWatchersCache = mock(BackgroundWatchersCache.class);
-        when(backgroundWatchersCache.getWatchingProjectIds()).thenReturn(Arrays.asList("1", "2", "3"));
+        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
+        backgroundWatchersCache.setIsWatching("1", true);
+        backgroundWatchersCache.setIsWatching("2", true);
+        backgroundWatchersCache.setIsWatching("3", true);
         Logger logger = mock(Logger.class);
         DataFileRescheduler.Dispatcher dispatcher = new DataFileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
-        Intent intent = new Intent(context, DataFileService.class);
+        Intent intent = new Intent(mockContext, DataFileService.class);
         dispatcher.dispatch(intent);
         verify(mockContext, times(3)).startService(any(Intent.class));
+        cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }
 }

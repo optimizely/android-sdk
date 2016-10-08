@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
  */
 package com.optimizely.ab.android.sdk;
 
-public interface DataFileLoadedListener {
+interface DataFileLoadedListener {
 
     void onDataFileLoaded(String dataFile);
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,11 @@ package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import static org.mockito.Mockito.mock;
@@ -29,17 +29,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 7/26/16 for Optimizely.
- *
  * Unit tests for {@link EventRescheduler}
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(MockitoJUnitRunner.class)
 public class EventReschedulerTest {
 
-    Context context;
-    Intent intent;
-    Logger logger;
-    EventRescheduler rescheduler;
+    private Context context;
+    private Intent intent;
+    private Logger logger;
+    private EventRescheduler rescheduler;
 
     @Before
     public void setupEventRescheduler() {

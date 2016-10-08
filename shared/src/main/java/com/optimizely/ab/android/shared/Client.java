@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,8 +28,6 @@ import java.net.URLConnection;
 import java.util.Scanner;
 
 /**
- * Created by jdeffibaugh on 8/1/16 for Optimizely.
- *
  * Functionality common to all clients
  */
 public class Client {
