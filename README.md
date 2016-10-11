@@ -50,7 +50,7 @@ config common for all modules.
 7.  Discover more gradle tasks
   * `./gradlew tasks`
   * To see the task of an individual module
-    * `/./gradlew user-experiment-record:tasks`
+    * `./gradlew user-experiment-record:tasks`
 
 ### Android Studio
 
