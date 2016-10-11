@@ -38,6 +38,17 @@ public class MainActivity extends AppCompatActivity {
         // This could also be done via DI framework such as Dagger
         optimizelyManager = ((MyApplication) getApplication()).getOptimizelyManager();
 
+        // Load Optimizely from a compiled in data file
+        AndroidOptimizely optimizely = optimizelyManager.getOptimizely(this, R.raw.data_file);
+        Variation variation = optimizely.activate("experiment_0", "user_1");
+        if (variation != null) {
+            if (variation.is("variation_1")) {
+                Toast.makeText(MainActivity.this, "Variation 1", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_LONG).show();
+            }
+        }
+
         findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

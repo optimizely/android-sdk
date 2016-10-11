@@ -22,22 +22,27 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserExperimentRecord;
+import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.internal.payload.Event;
 import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -129,6 +134,38 @@ public class OptimizelyManager {
     }
 
     @NonNull
+    public AndroidOptimizely getOptimizely(@NonNull Context context, @RawRes int dataFileRes) {
+        AndroidUserExperimentRecord userExperimentRecord =
+                (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(getProjectId(), context);
+        // Blocking File I/O is necessary here in order to provide a synchronous API
+        // The User Experiment Record is started off the of the main thread when starting
+        // asynchronously.  Starting simply creates the file if it doesn't exist so it's not
+        // terribly expensive. Blocking the UI the thread prevents touch input...
+        userExperimentRecord.start();
+        try {
+            androidOptimizely = buildOptimizely(context, loadRawResource(context, dataFileRes), userExperimentRecord);
+        } catch (ConfigParseException e) {
+            logger.error("Unable to parse compiled data file", e);
+        } catch (IOException e) {
+            logger.error("Unable to load compiled data file", e);
+        }
+
+        return androidOptimizely;
+    }
+
+    private String loadRawResource(Context context, @RawRes int rawRes) throws IOException {
+        Resources res = context.getResources();
+        InputStream in = res.openRawResource(rawRes);
+        byte[] b = new byte[in.available()];
+        int read = in.read(b);
+        if (read > -1) {
+            return new String(b);
+        } else {
+            throw new IOException("Couldn't parse raw res fixture, no bytes");
+        }
+    }
+
+    @NonNull
     public String getProjectId() {
         return projectId;
     }
@@ -148,16 +185,8 @@ public class OptimizelyManager {
                 serviceScheduler.schedule(intent, dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval));
 
                 try {
-                    OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
-                    eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
-                    Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
-                            .withUserExperimentRecord(userExperimentRecord)
-                            .withClientEngine(Event.ClientEngine.ANDROID_SDK)
-                            .withClientVersion(BuildConfig.CLIENT_VERSION)
-                            .build();
+                    OptimizelyManager.androidOptimizely = buildOptimizely(context, dataFile, userExperimentRecord);
                     logger.info("Sending Optimizely instance to listener");
-                    AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely);
-                    OptimizelyManager.androidOptimizely = androidOptimizely;
 
                     if (optimizelyStartListener != null) {
                         optimizelyStartListener.onStart(androidOptimizely);
@@ -174,6 +203,17 @@ public class OptimizelyManager {
             }
         };
         initUserExperimentRecordTask.executeOnExecutor(executor);
+    }
+
+    private AndroidOptimizely buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserExperimentRecord userExperimentRecord) throws ConfigParseException {
+        OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
+        eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+        Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
+                .withUserExperimentRecord(userExperimentRecord)
+                .withClientEngine(Event.ClientEngine.ANDROID_SDK)
+                .withClientVersion(BuildConfig.CLIENT_VERSION)
+                .build();
+        return new AndroidOptimizely(optimizely);
     }
 
     public static class OptlyActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
