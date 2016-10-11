@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,20 +18,18 @@ package com.optimizely.ab.android.event_handler;
 import android.provider.BaseColumns;
 
 /**
- * Created by jdeffibaugh on 7/21/16 for Optimizely.
- *
  * Constants for Event SQL table
  */
-public final class EventTable implements BaseColumns {
-    public static final String NAME = "event";
+final class EventTable implements BaseColumns {
+    static final String NAME = "event";
 
     private EventTable() {
     }
 
     class Column {
-        public static final String _ID = BaseColumns._ID;
-        public static final String URL = "url";
-        public static final String REQUEST_BODY = "requestBody";
+        static final String _ID = BaseColumns._ID;
+        static final String URL = "url";
+        static final String REQUEST_BODY = "requestBody";
     }
 }
 

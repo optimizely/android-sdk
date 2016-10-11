@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,8 +36,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * Created by jdeffibaugh on 8/8/16 for Optimizely.
- * <p/>
  * Android implemenation of {@link UserExperimentRecord}
  */
 public class AndroidUserExperimentRecord implements UserExperimentRecord {
@@ -164,6 +162,9 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
         }
 
         Map<String, String> expKeyToVarKeyMap = writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get(userId);
+        if (expKeyToVarKeyMap == null) {
+            return false;
+        }
         if (expKeyToVarKeyMap.containsKey(experimentKey)) { // Don't do anything if the mapping doesn't exist
             writeThroughCacheTaskFactory.startRemoveCacheTask(userId, experimentKey, expKeyToVarKeyMap.get(experimentKey));
         }
@@ -176,12 +177,13 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
         return writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache();
     }
 
-    public static class WriteThroughCacheTaskFactory {
+    static class WriteThroughCacheTaskFactory {
         @NonNull private final UserExperimentRecordCache diskUserExperimentRecordCache;
         @NonNull private final Map<String, Map<String, String>> memoryUserExperimentRecordCache;
         @NonNull private final Executor executor;
         @NonNull private final Logger logger;
-        public WriteThroughCacheTaskFactory(@NonNull UserExperimentRecordCache diskUserExperimentRecordCache, @NonNull Map<String, Map<String, String>> memoryUserExperimentRecordCache, @NonNull Executor executor, @NonNull Logger logger) {
+
+        WriteThroughCacheTaskFactory(@NonNull UserExperimentRecordCache diskUserExperimentRecordCache, @NonNull Map<String, Map<String, String>> memoryUserExperimentRecordCache, @NonNull Executor executor, @NonNull Logger logger) {
             this.diskUserExperimentRecordCache = diskUserExperimentRecordCache;
             this.memoryUserExperimentRecordCache = memoryUserExperimentRecordCache;
             this.executor = executor;
@@ -189,11 +191,11 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
         }
 
         @NonNull
-        public Map<String, Map<String, String>> getMemoryUserExperimentRecordCache() {
+        Map<String, Map<String, String>> getMemoryUserExperimentRecordCache() {
             return memoryUserExperimentRecordCache;
         }
 
-        public void startWriteCacheTask(final String userId, final String experimentKey, final String variationKey) {
+        void startWriteCacheTask(final String userId, final String experimentKey, final String variationKey) {
             AsyncTask<Void,Void,Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void[] params) {
@@ -226,7 +228,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
             task.executeOnExecutor(executor);
         }
 
-        public void startRemoveCacheTask(final String userId, final String experimentKey, final String variationKey) {
+        void startRemoveCacheTask(final String userId, final String experimentKey, final String variationKey) {
             AsyncTask<String, Void, Pair<String, Boolean>> task =  new AsyncTask<String, Void, Pair<String, Boolean>>() {
 
                 @Override

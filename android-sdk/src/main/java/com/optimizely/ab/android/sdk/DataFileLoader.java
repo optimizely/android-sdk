@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,21 +31,19 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * Created by jdeffibaugh on 8/1/16 for Optimizely.
- * <p/>
  * Handles intents and bindings in {@link DataFileService}
  */
-public class DataFileLoader {
+class DataFileLoader {
 
     @NonNull private final TaskChain taskChain;
     @NonNull private final Logger logger;
 
-    public DataFileLoader(@NonNull TaskChain taskChain, @NonNull Logger logger) {
+    DataFileLoader(@NonNull TaskChain taskChain, @NonNull Logger logger) {
         this.logger = logger;
         this.taskChain = taskChain;
     }
 
-    public boolean getDataFile(@NonNull String projectId, @Nullable DataFileLoadedListener dataFileLoadedListener) {
+    boolean getDataFile(@NonNull String projectId, @Nullable DataFileLoadedListener dataFileLoadedListener) {
         taskChain.start(projectId, dataFileLoadedListener);
 
         logger.info("Refreshing data file");
@@ -53,17 +51,17 @@ public class DataFileLoader {
         return true;
     }
 
-    public static class TaskChain {
+    static class TaskChain {
 
         @NonNull private final DataFileService dataFileService;
         @NonNull private final Executor executor;
 
-        public TaskChain(@NonNull DataFileService dataFileService) {
+        TaskChain(@NonNull DataFileService dataFileService) {
             this.dataFileService = dataFileService;
             this.executor = Executors.newSingleThreadExecutor();
         }
 
-        public void start(@NonNull String projectId, @Nullable DataFileLoadedListener dataFileLoadedListener) {
+        void start(@NonNull String projectId, @Nullable DataFileLoadedListener dataFileLoadedListener) {
             DataFileClient dataFileClient = new DataFileClient(
                     new Client(new OptlyStorage(dataFileService), LoggerFactory.getLogger(OptlyStorage.class)),
                     LoggerFactory.getLogger(DataFileClient.class));
@@ -85,7 +83,7 @@ public class DataFileLoader {
         }
     }
 
-    public static class LoadDataFileFromCacheTask extends AsyncTask<Void, Void, JSONObject> {
+    static class LoadDataFileFromCacheTask extends AsyncTask<Void, Void, JSONObject> {
 
         @NonNull private final DataFileCache dataFileCache;
         @Nullable private final DataFileLoadedListener dataFileLoadedListener;
@@ -111,9 +109,9 @@ public class DataFileLoader {
         }
     }
 
-    public static class RequestDataFileFromClientTask extends AsyncTask<Void, Void, String> {
+    static class RequestDataFileFromClientTask extends AsyncTask<Void, Void, String> {
 
-        public static final String FORMAT_CDN_URL = "https://cdn.optimizely.com/json/%s.json";
+        static final String FORMAT_CDN_URL = "https://cdn.optimizely.com/json/%s.json";
         @NonNull private final String projectId;
         @NonNull private final DataFileService dataFileService;
         @NonNull private final DataFileCache dataFileCache;
@@ -121,12 +119,12 @@ public class DataFileLoader {
         @NonNull private final Logger logger;
         @Nullable private final DataFileLoadedListener optimizelyStartedListener;
 
-        public RequestDataFileFromClientTask(@NonNull String projectId,
-                                             @NonNull DataFileService dataFileService,
-                                             @NonNull DataFileCache dataFileCache,
-                                             @NonNull DataFileClient dataFileClient,
-                                             @Nullable DataFileLoadedListener dataFileLoadedListener,
-                                             @NonNull Logger logger) {
+        RequestDataFileFromClientTask(@NonNull String projectId,
+                                      @NonNull DataFileService dataFileService,
+                                      @NonNull DataFileCache dataFileCache,
+                                      @NonNull DataFileClient dataFileClient,
+                                      @Nullable DataFileLoadedListener dataFileLoadedListener,
+                                      @NonNull Logger logger) {
             this.projectId = projectId;
             this.dataFileService = dataFileService;
             this.dataFileCache = dataFileCache;

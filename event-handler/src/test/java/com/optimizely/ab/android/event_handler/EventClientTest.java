@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,20 @@
  */
 package com.optimizely.ab.android.event_handler;
 
-
-import android.support.test.runner.AndroidJUnit4;
+import com.optimizely.ab.android.shared.Client;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.assertTrue;
@@ -38,28 +41,28 @@ import static org.mockito.Mockito.when;
  *
  * Tests {@link EventClient}
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(MockitoJUnitRunner.class)
 public class EventClientTest {
 
-    Logger logger;
-    Event event;
-    HttpURLConnection urlConnection;
-
-    EventClient eventClient;
+    @Mock Logger logger;
+    @Mock Client client;
+    private HttpURLConnection urlConnection;
+    private EventClient eventClient;
+    private Event event;
 
     @Before
     public void setupEventClient() throws IOException {
-        logger = mock(Logger.class);
-        event = mock(Event.class);
         urlConnection = mock(HttpURLConnection.class);
-
-        this.eventClient = new EventClient(logger);
-        when(event.toString()).thenReturn("http://www.foo.com");
+        when(urlConnection.getOutputStream()).thenReturn(mock(OutputStream.class));
+        when(urlConnection.getInputStream()).thenReturn(mock(InputStream.class));
+        this.eventClient = new EventClient(client, logger);
+        URL url = new URL("http://www.foo.com");
+        event = new Event(url, "");
     }
 
     @Test
     public void sendEvents200() throws IOException {
-        when(event.send()).thenReturn(urlConnection);
+        when(client.openConnection(event.getURL())).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(200);
         InputStream inputStream = mock(InputStream.class);
         when(urlConnection.getInputStream()).thenReturn(inputStream);
@@ -70,7 +73,7 @@ public class EventClientTest {
 
     @Test
     public void sendEvents201() throws IOException {
-        when(event.send()).thenReturn(urlConnection);
+        when(client.openConnection(event.getURL())).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(201);
         InputStream inputStream = mock(InputStream.class);
         when(urlConnection.getInputStream()).thenReturn(inputStream);
@@ -81,7 +84,7 @@ public class EventClientTest {
 
     @Test
     public void sendEvents300() throws IOException {
-        when(event.send()).thenReturn(urlConnection);
+        when(client.openConnection(event.getURL())).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(300);
         InputStream inputStream = mock(InputStream.class);
         when(urlConnection.getInputStream()).thenReturn(inputStream);
@@ -94,7 +97,7 @@ public class EventClientTest {
     @SuppressWarnings("unchecked")
     @Test()
     public void sendEventsIoExceptionGetInputStream() throws IOException {
-        when(event.send()).thenReturn(urlConnection);
+        when(client.openConnection(event.getURL())).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(200);
         when(urlConnection.getInputStream()).thenThrow(IOException.class);
 
@@ -106,7 +109,7 @@ public class EventClientTest {
     @SuppressWarnings("unchecked")
     @Test()
     public void sendEventsIoExceptionOpenConnection() throws IOException {
-        when(event.send()).thenThrow(IOException.class);
+        when(client.openConnection(event.getURL())).thenThrow(IOException.class);
 
         assertFalse(eventClient.sendEvent(event));
         verify(logger).info("Dispatching event: {}", event);

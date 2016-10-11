@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,16 +40,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/2/16 for Optimizely.
- *
  * Tests for {@link BackgroundWatchersCache}
  */
 @RunWith(JUnit4.class)
 public class BackgroundWatchersCacheTest {
 
-    BackgroundWatchersCache backgroundWatchersCache;
-    Cache cache;
-    Logger logger;
+    private BackgroundWatchersCache backgroundWatchersCache;
+    private Cache cache;
+    private Logger logger;
 
     @Before
     public void setup() {

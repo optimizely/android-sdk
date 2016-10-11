@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,13 +20,11 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 /**
- * Created by jdeffibaugh on 7/26/16 for Optimizely.
- *
  * Wrapper for {@link SharedPreferences}
  */
 public class OptlyStorage {
 
-    static final String PREFS_NAME = "optly";
+    private static final String PREFS_NAME = "optly";
 
     @NonNull private Context context;
 

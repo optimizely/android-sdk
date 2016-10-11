@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,26 +16,24 @@
 package com.optimizely.ab.android.event_handler;
 
 import android.content.Intent;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Created by jdeffibaugh on 7/25/16 for Optimizely.
- *
  * Unit tests for {@link EventIntentService}
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(MockitoJUnitRunner.class)
 public class EventIntentServiceTest {
 
-    EventIntentService service;
-    Logger logger;
+    private EventIntentService service;
+    private Logger logger;
 
     @Before
     public void setup() {

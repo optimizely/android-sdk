@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,13 +17,13 @@ package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.event.LogEvent;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import java.net.MalformedURLException;
@@ -34,19 +34,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Created by jdeffibaugh on 7/25/16 for Optimizely.
- *
  * Tests for {@link OptlyEventHandler}
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(MockitoJUnitRunner.class)
 public class OptlyEventHandlerTest {
 
-    Context context;
-    Logger logger;
+    private Context context;
+    private Logger logger;
 
-    OptlyEventHandler optlyEventHandler;
-    String url = "http://www.foo.com";
-    String requestBody = "key1=val1&key2=val2&key3=val3";
+    private OptlyEventHandler optlyEventHandler;
+    private String url = "http://www.foo.com";
+    private String requestBody = "key1=val1&key2=val2&key3=val3";
 
     @Before
     public void setupEventHandler() {

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,14 +31,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by jdeffibaugh on 7/21/16 for Optimizely.
- * <p/>
  * Handles interactions with the {@link SQLiteDatabase} that store {@link Event} instances.
  */
-public class EventDAO {
+class EventDAO {
 
-    @NonNull EventSQLiteOpenHelper dbHelper;
     @NonNull Logger logger;
+    @NonNull private EventSQLiteOpenHelper dbHelper;
 
     private EventDAO(@NonNull EventSQLiteOpenHelper dbHelper, @NonNull Logger logger) {
         this.dbHelper = dbHelper;
@@ -50,7 +48,7 @@ public class EventDAO {
         return new EventDAO(sqLiteOpenHelper, logger);
     }
 
-    public boolean storeEvent(@NonNull Event event) {
+    boolean storeEvent(@NonNull Event event) {
         ContentValues values = new ContentValues();
         values.put(EventTable.Column.URL, event.toString());
         values.put(EventTable.Column.REQUEST_BODY, event.getRequestBody());
@@ -65,7 +63,7 @@ public class EventDAO {
         return newRowId != -1;
     }
 
-    public List<Pair<Long, Event>> getEvents() {
+    List<Pair<Long, Event>> getEvents() {
         List<Pair<Long, Event>> events = new LinkedList<>();
 
         // Define a projection that specifies which columns from the database
@@ -114,7 +112,7 @@ public class EventDAO {
         return events;
     }
 
-    public boolean removeEvent(long eventId) {
+    boolean removeEvent(long eventId) {
         // Define 'where' part of query.
         String selection = EventTable._ID + " = ?";
         // Specify arguments in placeholder order.
@@ -132,7 +130,7 @@ public class EventDAO {
         return numRowsDeleted > 0;
     }
 
-    public void closeDb() {
+    void closeDb() {
         dbHelper.close();
     }
 }

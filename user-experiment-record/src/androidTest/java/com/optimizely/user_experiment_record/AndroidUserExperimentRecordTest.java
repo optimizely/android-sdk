@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,61 +15,77 @@
  */
 package com.optimizely.user_experiment_record;
 
+import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
+import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.optimizely.ab.android.shared.Cache;
+
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/8/16 for Optimizely.
- *
  * Tests for {@link AndroidUserExperimentRecord}
  */
 @RunWith(AndroidJUnit4.class)
 public class AndroidUserExperimentRecordTest {
 
-    AndroidUserExperimentRecord androidUserExperimentRecord;
-    UserExperimentRecordCache diskUserExperimentRecordCache;
-    Map<String, Map<String, String>> memoryUserExperimentRecordCache = new HashMap<>();
-    AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheFactory;
-    Logger logger;
+    private AndroidUserExperimentRecord androidUserExperimentRecord;
+    private UserExperimentRecordCache diskUserExperimentRecordCache;
+    private Map<String, Map<String, String>> memoryUserExperimentRecordCache = new HashMap<>();
+    private AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheFactory;
+    private Logger logger;
+    private ListeningExecutorService executor;
+    private Cache cache;
 
-    @SuppressWarnings("unchecked")
     @Before
     public void setup() {
-        diskUserExperimentRecordCache = mock(UserExperimentRecordCache.class);
         logger = mock(Logger.class);
-        writeThroughCacheFactory = mock(AndroidUserExperimentRecord.WriteThroughCacheTaskFactory.class);
+        cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        diskUserExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
+        executor = MoreExecutors.newDirectExecutorService();
+        writeThroughCacheFactory = new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache, memoryUserExperimentRecordCache, executor, logger);
         androidUserExperimentRecord = new AndroidUserExperimentRecord(diskUserExperimentRecordCache,
                 writeThroughCacheFactory, logger);
-        when(writeThroughCacheFactory.getMemoryUserExperimentRecordCache()).thenReturn(memoryUserExperimentRecordCache);
     }
 
-    @SuppressWarnings("unchecked")
+    @After
+    public void teardown() {
+        cache.delete(diskUserExperimentRecordCache.getFileName());
+    }
+
     @Test
     public void saveActivation() {
-        String userId = "foo";
+        String userId = "user1";
         String expKey = "exp1";
         String varKey = "var1";
         assertTrue(androidUserExperimentRecord.save(userId, expKey, varKey));
-        verify(writeThroughCacheFactory).startWriteCacheTask(userId, expKey, varKey);
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail("Time out");
+        }
+        assertEquals(varKey, androidUserExperimentRecord.lookup(userId, expKey));
     }
 
     @Test
@@ -133,57 +149,15 @@ public class AndroidUserExperimentRecordTest {
     }
 
     @Test
-    public void lookupActivation() throws JSONException {
-        Map<String,String> activation = new HashMap<>();
-        activation.put("exp1", "var1");
-        memoryUserExperimentRecordCache.put("foo", activation);
-
-        assertEquals("var1", androidUserExperimentRecord.lookup("foo", "exp1"));
-    }
-
-    @Test
-    public void lookupActivationNoExp() throws JSONException {
-        String expKey = "exp1";
-        JSONObject activation = new JSONObject();
-        JSONObject expIdToVarIdDict = new JSONObject();
-        activation.put("foo", expIdToVarIdDict);
-        when(diskUserExperimentRecordCache.load()).thenReturn(activation);
-
-        assertNull(androidUserExperimentRecord.lookup("foo", expKey));
-        verify(logger).error("Project config did not contain matching experiment and variation ids");
-    }
-
-    @Test
-    public void lookupActivationNoVar() throws JSONException {
-        String expKey = "exp1";
-        JSONObject activation = new JSONObject();
-        JSONObject expIdToVarIdDict = new JSONObject();
-        expIdToVarIdDict.put("exp1", null);
-        activation.put("foo", expIdToVarIdDict);
-        when(diskUserExperimentRecordCache.load()).thenReturn(activation);
-
-        assertNull(androidUserExperimentRecord.lookup("foo", expKey));
-        verify(logger).error("Project config did not contain matching experiment and variation ids");
-    }
-
-    @Test
     public void removeExistingActivation() {
-        Map<String,String> activation = new HashMap<>();
-        activation.put("exp1", "var1");
-        memoryUserExperimentRecordCache.put("foo", activation);
-
-        assertTrue(androidUserExperimentRecord.remove("foo", "exp1"));
-        verify(writeThroughCacheFactory).startRemoveCacheTask("foo", "exp1", "var1");
+        androidUserExperimentRecord.save("user1", "exp1", "var1");
+        assertTrue(androidUserExperimentRecord.remove("user1", "exp1"));
+        assertNull(androidUserExperimentRecord.lookup("user1", "exp1"));
     }
 
     @Test
     public void removeNonExistingActivation() {
-        Map<String,String> activation = new HashMap<>();
-        activation.put("exp2", "var1");
-        memoryUserExperimentRecordCache.put("foo", activation);
-
-        assertTrue(androidUserExperimentRecord.remove("foo", "exp1"));
-        verify(writeThroughCacheFactory, never()).startRemoveCacheTask("foo", "exp1", "var1");
+        assertFalse(androidUserExperimentRecord.remove("user1", "exp1"));
     }
 
     @Test
@@ -211,31 +185,21 @@ public class AndroidUserExperimentRecordTest {
     }
 
     @Test
-    public void startHandlesJSONException() throws JSONException {
-        final JSONException jsonException = new JSONException("");
-        when(diskUserExperimentRecordCache.load()).thenThrow(jsonException);
-        try {
-            androidUserExperimentRecord.start();
-            verify(logger).error("Unable to parse user experiment record cache", jsonException);
-        } catch (Exception e) {
-            fail();
-        }
+    public void startHandlesJSONException() throws IOException {
+        assertTrue(cache.save(diskUserExperimentRecordCache.getFileName(), "{"));
+        androidUserExperimentRecord.start();
+        verify(logger).error(eq("Unable to parse user experiment record cache"), any(JSONException.class));
     }
 
     @Test
     public void start() throws JSONException {
-        JSONObject expKeyToVarKeyDict = new JSONObject();
-        expKeyToVarKeyDict.put("exp1", "var1");
-        JSONObject recordDict = new JSONObject();
-        recordDict.put("user1", expKeyToVarKeyDict);
-
-        when(diskUserExperimentRecordCache.load()).thenReturn(recordDict);
+        androidUserExperimentRecord.start();
+        androidUserExperimentRecord.save("user1", "exp1", "var1");
 
         Map<String, String> expKeyToVarKeyMap = new HashMap<>();
         expKeyToVarKeyMap.put("exp1", "var1");
         Map<String, Map<String, String>> recordMap = new HashMap<>();
         recordMap.put("user1", expKeyToVarKeyMap);
-        androidUserExperimentRecord.start();
 
         assertEquals(recordMap, memoryUserExperimentRecordCache);
     }

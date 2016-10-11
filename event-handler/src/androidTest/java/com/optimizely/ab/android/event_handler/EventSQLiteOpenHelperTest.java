@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,15 +32,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Created by jdeffibaugh on 7/25/16 for Optimizely.
- *
  * Tests for {@link EventSQLiteOpenHelper}
  */
 @RunWith(AndroidJUnit4.class)
 public class EventSQLiteOpenHelperTest {
 
-    Context context;
-    Logger logger;
+    private Context context;
+    private Logger logger;
 
     @Before
     public void setup() {

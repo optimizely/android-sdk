@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,22 @@
  */
 package com.optimizely.user_experiment_record;
 
+import android.support.annotation.NonNull;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
 import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.optimizely.ab.android.shared.Cache;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -37,31 +44,27 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/15/16 for Optimizely.
- *
  * Tests for {@link com.optimizely.user_experiment_record.AndroidUserExperimentRecord.WriteThroughCacheTaskFactory}
  */
 @RunWith(AndroidJUnit4.class)
 public class WriteThroughCacheFactoryTest {
 
-    AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory;
-    UserExperimentRecordCache diskUserExperimentRecordCache;
     // Runs tasks serially on the calling thread
-    ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
-    Logger logger;
+    private ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+    private Logger logger;
 
     @Before
     public void setup() {
-        diskUserExperimentRecordCache = mock(UserExperimentRecordCache.class);
         logger = mock(Logger.class);
-        writeThroughCacheTaskFactory =
-                new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache,
-                        new HashMap<String, Map<String, String>>(), executor, logger);
     }
 
     @Test
-    public void startWriteCacheTask() {
-        when(diskUserExperimentRecordCache.save("user1", "exp1", "var1")).thenReturn(true);
+    public void startWriteCacheTask() throws JSONException {
+        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        UserExperimentRecordCache diskUserExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
+        AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
+                new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache,
+                        new HashMap<String, Map<String, String>>(), executor, logger);
 
         writeThroughCacheTaskFactory.startWriteCacheTask("user1", "exp1", "var1");
         try {
@@ -76,13 +79,27 @@ public class WriteThroughCacheFactoryTest {
         assertTrue(activation.containsKey("exp1"));
         assertEquals("var1", activation.get("exp1"));
 
-        verify(diskUserExperimentRecordCache).save("user1", "exp1", "var1");
+        final JSONObject json = diskUserExperimentRecordCache.load();
+        assertTrue(json.has("user1"));
+        final JSONObject user1 = json.getJSONObject("user1");
+        assertTrue(user1.has("exp1"));
+        assertEquals("var1", user1.getString("exp1"));
         verify(logger).info("Persisted user in variation {} for experiment {}.", "var1", "exp1");
+
+        cache.delete(diskUserExperimentRecordCache.getFileName());
     }
 
     @Test
-    public void startWriteCacheTaskFail() {
-        when(diskUserExperimentRecordCache.save("user1", "exp1", "var1")).thenReturn(false);
+    public void startWriteCacheTaskFail() throws JSONException, IOException {
+        Cache cache = mock(Cache.class);
+        UserExperimentRecordCache diskUserExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
+        AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
+                new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache,
+                        new HashMap<String, Map<String, String>>(), executor, logger);
+
+        JSONObject json = getJsonObject();
+
+        when(cache.save(diskUserExperimentRecordCache.getFileName(), json.toString())).thenThrow(new IOException());
 
         writeThroughCacheTaskFactory.startWriteCacheTask("user1", "exp1", "var1");
         try {
@@ -96,17 +113,23 @@ public class WriteThroughCacheFactoryTest {
         Map<String, String> activation = writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get("user1");
         assertFalse(activation.containsKey("exp1"));
 
-        verify(diskUserExperimentRecordCache).save("user1", "exp1", "var1");
         verify(logger).error("Failed to persist user in variation {} for experiment {}.", "var1", "exp1");
     }
 
     @Test
-    public void startRemoveCacheTask() {
-        when(diskUserExperimentRecordCache.remove("user1", "exp1")).thenReturn(true);
+    public void startRemoveCacheTask() throws JSONException, IOException {
+        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        UserExperimentRecordCache diskUserExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
+        AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
+                new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache,
+                        new HashMap<String, Map<String, String>>(), executor, logger);
+
+        diskUserExperimentRecordCache.save("user1", "exp1", "var1");
 
         Map<String, String> activation = new HashMap<>();
         activation.put("exp1", "var1");
         writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().put("user1", activation);
+
         writeThroughCacheTaskFactory.startRemoveCacheTask("user1", "exp1", "var1");
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
@@ -115,14 +138,23 @@ public class WriteThroughCacheFactoryTest {
         }
 
         verify(logger).info("Removed experimentKey: {} variationKey: {} record for user: {} from memory", "exp1", "var1", "user1");
-        verify(diskUserExperimentRecordCache).remove("user1", "exp1");
+        JSONObject json = diskUserExperimentRecordCache.load();
+        assertTrue(json.has("user1"));
+        json = json.getJSONObject("user1");
+        assertFalse(json.has("exp1"));
         assertFalse(writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get("user1").containsKey("exp1"));
         verify(logger).info("Removed experimentKey: {} variationKey: {} record for user: {} from disk", "exp1", "var1", "user1");
     }
 
     @Test
-    public void startRemoveCacheTaskFail() {
-        when(diskUserExperimentRecordCache.remove("user1", "exp1")).thenReturn(false);
+    public void startRemoveCacheTaskFail() throws JSONException, IOException {
+        Cache cache = mock(Cache.class);
+        UserExperimentRecordCache diskUserExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
+        AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
+                new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache,
+                        new HashMap<String, Map<String, String>>(), executor, logger);
+
+        when(cache.save(diskUserExperimentRecordCache.getFileName(), getJsonObject().toString())).thenReturn(false);
 
         Map<String, String> activation = new HashMap<>();
         activation.put("exp1", "var1");
@@ -135,8 +167,16 @@ public class WriteThroughCacheFactoryTest {
         }
 
         verify(logger).info("Removed experimentKey: {} variationKey: {} record for user: {} from memory", "exp1", "var1", "user1");
-        verify(diskUserExperimentRecordCache).remove("user1", "exp1");
         verify(logger).error("Restored experimentKey: {} variationKey: {} record for user: {} to memory", "exp1", "var1","user1");
         assertTrue(writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get("user1").containsKey("exp1"));
+    }
+
+    @NonNull
+    private JSONObject getJsonObject() throws JSONException {
+        JSONObject json = new JSONObject();
+        JSONObject user1 = new JSONObject();
+        user1.put("exp1", "var1");
+        json.put("user1", user1);
+        return json;
     }
 }

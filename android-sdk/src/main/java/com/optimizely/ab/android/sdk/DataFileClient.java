@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,11 +26,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Created by jdeffibaugh on 7/28/16 for Optimizely.
- * <p/>
  * Makes requests to the Optly CDN to get the data file
  */
-public class DataFileClient {
+class DataFileClient {
 
     @NonNull private final Client client;
     @NonNull private final Logger logger;
@@ -40,7 +38,7 @@ public class DataFileClient {
         this.logger = logger;
     }
 
-    public String request(String urlString) {
+    String request(String urlString) {
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(urlString);

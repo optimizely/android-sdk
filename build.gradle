@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.3'
+        classpath 'com.android.tools.build:gradle:2.2.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -27,7 +27,7 @@ ext {
     min_sdk_version = 14
     target_sdk_version = 24
 
-    java_core_ver = "1.0.1"
+    java_core_ver = "1.0.2"
     android_logger_ver = "1.3.1"
     support_annotations_ver = "24.2.1"
     junit_ver = "4.12"
@@ -52,4 +52,6 @@ task ship() {
 task testAllModules << {
     logger.info("Running android tests for all modules")
 }
-testAllModules.dependsOn(':android-sdk:connectedAndroidTest', ':event-handler:connectedAndroidTest', ':user-experiment-record:connectedAndroidTest', ':shared:connectedAndroidTest')
+testAllModules.dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
+        ':event-handler:connectedAndroidTest', ':event-handler:test',
+        ':user-experiment-record:connectedAndroidTest', ':shared:connectedAndroidTest')

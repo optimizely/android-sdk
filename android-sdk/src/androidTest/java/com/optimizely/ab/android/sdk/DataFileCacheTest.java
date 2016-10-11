@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,21 +42,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/2/16 for Optimizely.
- *
  * Tests for {@link DataFileCache}
  */
 @RunWith(AndroidJUnit4.class)
 public class DataFileCacheTest {
 
-    DataFileCache dataFileCache;
-    Cache cache;
-    Logger logger;
+    private DataFileCache dataFileCache;
+    private Logger logger;
 
     @Before
     public void setup() {
         logger = mock(Logger.class);
-        cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
         dataFileCache = new DataFileCache("1", cache, logger);
     }
 

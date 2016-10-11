@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                v.getContext().getResources().getString(R.string.app_name);
                 Intent intent = new Intent(v.getContext(), SecondaryActivity.class);
                 startActivity(intent);
 

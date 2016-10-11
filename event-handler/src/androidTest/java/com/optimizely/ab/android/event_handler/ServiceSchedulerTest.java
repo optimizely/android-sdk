@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,19 +39,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 7/27/16 for Optimizely.
- *
  * Tests for {@link ServiceScheduler}
  */
 @RunWith(AndroidJUnit4.class)
 public class ServiceSchedulerTest {
 
-    OptlyStorage optlyStorage;
-    ServiceScheduler.PendingIntentFactory pendingIntentFactory;
-    AlarmManager alarmManager;
-    Logger logger;
-    ServiceScheduler serviceScheduler;
-    Context context;
+    private OptlyStorage optlyStorage;
+    private ServiceScheduler.PendingIntentFactory pendingIntentFactory;
+    private AlarmManager alarmManager;
+    private Logger logger;
+    private ServiceScheduler serviceScheduler;
+    private Context context;
 
     @Before
     public void setup() {
@@ -159,7 +157,7 @@ public class ServiceSchedulerTest {
 
 
     // Mockito can't mock PendingIntent because it's final
-    PendingIntent getPendingIntent() {
+    private PendingIntent getPendingIntent() {
         final Context context = InstrumentationRegistry.getTargetContext();
         return PendingIntent.getService(context, 0, new Intent(context, EventIntentService.class), PendingIntent.FLAG_UPDATE_CURRENT);
     }

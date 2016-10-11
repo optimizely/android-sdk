@@ -36,7 +36,7 @@ config common for all modules.
   * `git clone git@github.com:optimizely/optimizely-ab-android-sdk.git`
 3. Create, or use an existing, Optimizely Custom Project 
   * put a file in `test-app/src/main/res/values/git_ignored_strings.xml`
-  * Give it this contents `<resources><string name="optly_project_id">{CUSTOM_RPOJECT_ID}</string></resources>`
+  * Give it this contents `<resources><string name="optly_project_id">{CUSTOM_PROJECT_ID}</string></resources>`
 4. Build the project (from the project root)
   * `./gradlew assemble`
 5. Run tests for all modules

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,16 +33,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/1/16 for Optimizely.
- *
  * Tests for {@link com.optimizely.ab.android.shared.Client}
  */
 @RunWith(AndroidJUnit4.class)
 public class ClientTest {
 
-    Client client;
-    OptlyStorage optlyStorage;
-    Logger logger;
+    private Client client;
+    private OptlyStorage optlyStorage;
+    private Logger logger;
 
     @Before
     public void setup() {

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,8 +32,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 /**
- * Created by jdeffibaugh on 8/1/16 for Optimizely.
- *
  * Tests for {@link CacheTest}
  */
 @RunWith(AndroidJUnit4.class)
@@ -41,14 +39,12 @@ public class CacheTest {
 
     private static final String FILE_NAME = "foo.txt";
 
-    Cache cache;
-    Logger logger;
-    Context context;
+    private Cache cache;
 
     @Before
     public void setup() {
-        context = InstrumentationRegistry.getTargetContext();
-        logger = mock(Logger.class);
+        Context context = InstrumentationRegistry.getTargetContext();
+        Logger logger = mock(Logger.class);
         cache = new Cache(context, logger);
     }
 

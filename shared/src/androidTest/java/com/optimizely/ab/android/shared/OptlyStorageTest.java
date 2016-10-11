@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class OptlyStorageTest {
 
-    OptlyStorage optlyStorage;
+    private OptlyStorage optlyStorage;
 
     @Before
     public void setup() {

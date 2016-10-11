@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,34 +15,46 @@
  */
 package com.optimizely.ab.android.event_handler;
 
+import com.optimizely.ab.android.shared.Client;
+
 import org.slf4j.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 
 /**
  * Created by jdeffibaugh on 7/21/16 for Optimizely.
- *
+ * <p>
  * Makes network requests related to events
  */
-public class EventClient {
+class EventClient {
+    private Client client;
     // Package private and non final so it can easily be mocked for tests
     private Logger logger;
 
-    EventClient(Logger logger) {
+    EventClient(Client client, Logger logger) {
+        this.client = client;
         this.logger = logger;
     }
 
-    public boolean sendEvent(Event event) {
+    boolean sendEvent(Event event) {
         try {
             logger.info("Dispatching event: {}", event);
-            HttpURLConnection urlConnection = (HttpURLConnection) event.send();
+            HttpURLConnection urlConnection = client.openConnection(event.getURL());
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setDoOutput(true);
+            OutputStream outputStream = urlConnection.getOutputStream();
+            outputStream.write(event.getRequestBody().getBytes());
+            outputStream.flush();
+            outputStream.close();
             int status = urlConnection.getResponseCode();
-                if (status >= 200 && status < 300) {
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                    in.close();
+            if (status >= 200 && status < 300) {
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                in.close();
                 return true;
             } else {
                 logger.error("Unexpected response from event endpoint, status: " + status);

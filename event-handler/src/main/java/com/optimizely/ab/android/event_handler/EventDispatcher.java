@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,15 +32,13 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by jdeffibaugh on 7/25/16 for Optimizely.
- *
  * Dispatches {@link Event} instances sent to {@link EventIntentService}
  *
  * If sending events to the network fails they will be stored and dispatched again.
  *
  * This abstraction makes unit testing much simpler
  */
-public class EventDispatcher {
+class EventDispatcher {
 
     @NonNull private final Context context;
     @NonNull private final ServiceScheduler serviceScheduler;
@@ -49,7 +47,7 @@ public class EventDispatcher {
     @NonNull private final Logger logger;
     @NonNull private final OptlyStorage optlyStorage;
 
-    public EventDispatcher(@NonNull Context context, @NonNull OptlyStorage optlyStorage, @NonNull EventDAO eventDAO, @NonNull EventClient eventClient, @NonNull ServiceScheduler serviceScheduler, @NonNull Logger logger) {
+    EventDispatcher(@NonNull Context context, @NonNull OptlyStorage optlyStorage, @NonNull EventDAO eventDAO, @NonNull EventClient eventClient, @NonNull ServiceScheduler serviceScheduler, @NonNull Logger logger) {
         this.context = context;
         this.optlyStorage = optlyStorage;
         this.eventDAO = eventDAO;
@@ -58,7 +56,7 @@ public class EventDispatcher {
         this.logger = logger;
     }
 
-    public void dispatch(@NonNull Intent intent) {
+    void dispatch(@NonNull Intent intent) {
         // Dispatch events still in storage
         boolean dispatched = dispatch();
 

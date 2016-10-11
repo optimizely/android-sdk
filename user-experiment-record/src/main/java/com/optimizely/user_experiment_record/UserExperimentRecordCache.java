@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,25 +27,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * Created by jdeffibaugh on 8/8/16 for Optimizely.
- *
  * Stores a map of userIds to a map of expIds to variationIds in a file.
  */
-public class UserExperimentRecordCache {
+class UserExperimentRecordCache {
 
-    static final String FILE_NAME = "optly-user-experiment-record-%s.json";
+    private static final String FILE_NAME = "optly-user-experiment-record-%s.json";
     @NonNull private final String projectId;
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
 
-    public UserExperimentRecordCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
+    UserExperimentRecordCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
         this.projectId = projectId;
         this.cache = cache;
         this.logger = logger;
     }
 
     @NonNull
-    public JSONObject load() throws JSONException {
+    JSONObject load() throws JSONException {
         String userExperimentRecord = null;
         try {
             userExperimentRecord = cache.load(getFileName());
@@ -62,7 +60,7 @@ public class UserExperimentRecordCache {
         }
     }
 
-    public boolean remove(@NonNull String userId, @NonNull String experimentId) {
+    boolean remove(@NonNull String userId, @NonNull String experimentId) {
         try {
             JSONObject userExperimentRecord = load();
             JSONObject expIdToVarId = userExperimentRecord.getJSONObject(userId);
@@ -77,7 +75,7 @@ public class UserExperimentRecordCache {
         }
     }
 
-    public boolean save(@NonNull String userId, @NonNull String experimentId, @NonNull String variationId) {
+    boolean save(@NonNull String userId, @NonNull String experimentId, @NonNull String variationId) {
         try {
             JSONObject userExperimentRecord = load();
             userExperimentRecord.put(userId, null);

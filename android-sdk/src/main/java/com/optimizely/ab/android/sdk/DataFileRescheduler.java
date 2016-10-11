@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,19 +54,19 @@ public class DataFileRescheduler extends BroadcastReceiver {
      *
      * This abstraction mostly makes unit testing easier
      */
-    public static class Dispatcher {
+    static class Dispatcher {
 
         @NonNull private final Context context;
         @NonNull private final BackgroundWatchersCache backgroundWatchersCache;
         @NonNull private final Logger logger;
 
-        public Dispatcher(@NonNull Context context, @NonNull BackgroundWatchersCache backgroundWatchersCache, @NonNull Logger logger) {
+        Dispatcher(@NonNull Context context, @NonNull BackgroundWatchersCache backgroundWatchersCache, @NonNull Logger logger) {
             this.context = context;
             this.backgroundWatchersCache = backgroundWatchersCache;
             this.logger = logger;
         }
 
-        public void dispatch(Intent intent) {
+        void dispatch(Intent intent) {
             List<String> projectIds = backgroundWatchersCache.getWatchingProjectIds();
             for (String projectId : projectIds) {
                 intent.putExtra(DataFileService.EXTRA_PROJECT_ID, projectId);

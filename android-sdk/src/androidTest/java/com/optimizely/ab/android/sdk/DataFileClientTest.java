@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,8 @@ import com.optimizely.ab.android.shared.Client;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -36,16 +38,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by jdeffibaugh on 8/2/16 for Optimizely.
- * <p/>
  * Tests for {@link DataFileClient}
  */
+@RunWith(JUnit4.class)
 public class DataFileClientTest {
 
-    DataFileClient dataFileClient;
-    Logger logger;
-    Client client;
-    HttpURLConnection urlConnection;
+    private DataFileClient dataFileClient;
+    private Logger logger;
+    private Client client;
+    private HttpURLConnection urlConnection;
 
     @Before
     public void setup() {

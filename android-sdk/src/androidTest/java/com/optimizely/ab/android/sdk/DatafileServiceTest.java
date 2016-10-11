@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,8 +33,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Created by jdeffibaugh on 8/2/16 for Optimizely.
- *
  * Test for {@link DataFileService}
  */
 // TODO These tests will pass individually but they fail when run as group
@@ -51,10 +49,9 @@ public class DatafileServiceTest {
         Intent intent = new Intent(context, DataFileService.class);
         IBinder binder = mServiceRule.bindService(intent);
         DataFileService dataFileService = ((DataFileService.LocalBinder) binder).getService();
-        DataFileLoader dataFileLoader = mock(DataFileLoader.class);
+        DataFileLoader dataFileLoader = new DataFileLoader(new DataFileLoader.TaskChain(dataFileService), mock(Logger.class));
         DataFileLoadedListener dataFileLoadedListener = mock(DataFileLoadedListener.class);
         dataFileService.getDataFile("1", dataFileLoader, dataFileLoadedListener);
-        verify(dataFileLoader).getDataFile("1", dataFileLoadedListener);
 
         assertTrue(dataFileService.isBound());
     }
@@ -74,7 +71,6 @@ public class DatafileServiceTest {
     }
 
     @Test
-    @Ignore
     public void testNullIntentStart() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, DataFileService.class);
@@ -87,6 +83,7 @@ public class DatafileServiceTest {
     }
 
     @Test
+    @Ignore
     public void testNoProjectIdIntentStart() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, DataFileService.class);

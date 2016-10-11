@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 
+import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
@@ -41,13 +42,14 @@ public class EventIntentService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
-        EventClient eventClient = new EventClient(LoggerFactory.getLogger(EventClient.class));
+        OptlyStorage optlyStorage = new OptlyStorage(this);
+        EventClient eventClient = new EventClient(new Client(optlyStorage,
+                LoggerFactory.getLogger(Client.class)), LoggerFactory.getLogger(EventClient.class));
         EventDAO eventDAO = EventDAO.getInstance(this, LoggerFactory.getLogger(EventDAO.class));
         ServiceScheduler serviceScheduler = new ServiceScheduler(
                 (AlarmManager) getSystemService(ALARM_SERVICE),
                 new ServiceScheduler.PendingIntentFactory(this),
                 LoggerFactory.getLogger(ServiceScheduler.class));
-        OptlyStorage optlyStorage = new OptlyStorage(this);
         eventDispatcher = new EventDispatcher(this, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
     }
 

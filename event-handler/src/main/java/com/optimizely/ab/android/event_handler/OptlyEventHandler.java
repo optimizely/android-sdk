@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,8 +28,6 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by jdeffibaugh on 7/21/16 for Optimizely.
- *
  * Reference implementation of {@link EventHandler} for Android.
  *
  * This is the main entry point to the Android Module
