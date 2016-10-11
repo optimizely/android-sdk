@@ -51,7 +51,8 @@ import java.util.concurrent.TimeUnit;
  * Handles loading the Optimizely data file
  */
 public class OptimizelyManager {
-    @NonNull private static AndroidOptimizely androidOptimizely = new AndroidOptimizely(null);
+    @NonNull private static AndroidOptimizely androidOptimizely = new AndroidOptimizely(null,
+            LoggerFactory.getLogger(AndroidOptimizely.class));
     @NonNull private final String projectId;
     @NonNull private final Long eventHandlerDispatchInterval;
     @NonNull private final TimeUnit eventHandlerDispatchIntervalTimeUnit;
@@ -211,7 +212,7 @@ public class OptimizelyManager {
                 .withClientEngine(Event.ClientEngine.ANDROID_SDK)
                 .withClientVersion(BuildConfig.CLIENT_VERSION)
                 .build();
-        return new AndroidOptimizely(optimizely);
+        return new AndroidOptimizely(optimizely, LoggerFactory.getLogger(AndroidOptimizely.class));
     }
 
     static class OptlyActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
