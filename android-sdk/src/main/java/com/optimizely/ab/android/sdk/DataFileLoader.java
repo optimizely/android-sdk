@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.sdk;
 
 import android.os.AsyncTask;
@@ -30,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-/**
+/*
  * Handles intents and bindings in {@link DataFileService}
  */
 class DataFileLoader {

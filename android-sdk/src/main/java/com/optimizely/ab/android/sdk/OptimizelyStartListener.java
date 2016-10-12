@@ -13,8 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.sdk;
 
+import android.app.Activity;
+import android.content.Context;
+
+/**
+ * Listens for new instances of {@link AndroidOptimizely} that are built after calling
+ * {@link OptimizelyManager#start(Activity, OptimizelyStartListener)} or {@link OptimizelyManager#start(Context, OptimizelyStartListener)}
+ */
 public interface OptimizelyStartListener {
+    /**
+     * Receives a started {@link AndroidOptimizely} instances
+     *
+     * @param optimizely an {@link AndroidOptimizely} that is started
+     */
     void onStart(AndroidOptimizely optimizely);
 }

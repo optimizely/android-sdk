@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.sdk;
 
 import android.app.Service;
@@ -26,12 +27,21 @@ import com.optimizely.ab.android.shared.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Service that handles loading the datafile from cache or downloads it from the CDN
+ *
+ * @hide
+ */
 public class DataFileService extends Service {
-    public static final String EXTRA_PROJECT_ID = "com.optimizely.ab.android.EXTRA_PROJECT_ID";
+    static final String EXTRA_PROJECT_ID = "com.optimizely.ab.android.EXTRA_PROJECT_ID";
     @NonNull private final IBinder binder = new LocalBinder();
     Logger logger = LoggerFactory.getLogger(getClass());
     private boolean isBound;
 
+    /**
+     * @hide
+     * @see Service#onStartCommand(Intent, int, int)
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
@@ -54,12 +64,20 @@ public class DataFileService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    /**
+     * @hide
+     * @see Service#onBind(Intent)
+     */
     @Override
     public IBinder onBind(Intent intent) {
         isBound = true;
         return binder;
     }
 
+    /**
+     * @hide
+     * @see Service#onUnbind(Intent)
+     */
     @Override
     public boolean onUnbind(Intent intent) {
         isBound = false;
@@ -80,7 +98,7 @@ public class DataFileService extends Service {
     }
 
     class LocalBinder extends Binder {
-        public DataFileService getService() {
+        DataFileService getService() {
             // Return this instance of LocalService so clients can call public methods
             return DataFileService.this;
         }

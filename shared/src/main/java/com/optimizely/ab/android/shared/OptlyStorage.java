@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.shared;
 
 import android.content.Context;
@@ -21,6 +22,7 @@ import android.support.annotation.NonNull;
 
 /**
  * Wrapper for {@link SharedPreferences}
+ * @hide
  */
 public class OptlyStorage {
 
@@ -28,14 +30,34 @@ public class OptlyStorage {
 
     @NonNull private Context context;
 
+    /**
+     * Creates a new instance of {@link OptlyStorage}
+     *
+     * @param context any instance of {@link Context}
+     * @hide
+     */
     public OptlyStorage(@NonNull Context context) {
         this.context = context;
     }
 
+    /**
+     * Save a long value
+     *
+     * @param key   a String key
+     * @param value a long value
+     * @hide
+     */
     public void saveLong(String key, long value) {
         getWritablePrefs().putLong(key, value ).apply();
     }
 
+    /**
+     * Get a long value
+     * @param key a String key
+     * @param defaultValue the value to return if the key isn't storedj
+     * @return the long value
+     * @hide
+     */
     public long getLong(String key, long defaultValue) {
         return getReadablePrefs().getLong(key, defaultValue);
     }

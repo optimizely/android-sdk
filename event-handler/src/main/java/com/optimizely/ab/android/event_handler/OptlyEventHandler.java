@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
@@ -38,14 +39,16 @@ public class OptlyEventHandler implements EventHandler {
     Logger logger = LoggerFactory.getLogger(OptlyEventHandler.class);
     private long dispatchInterval = -1;
 
-    /**
-     * Constructs a new instance
-     * @param context any valid Android {@link Context}
-     */
+
     private OptlyEventHandler(@NonNull Context context) {
         this.context = context;
     }
 
+    /**
+     * Gets a new instance
+     *
+     * @param context any valid Android {@link Context}
+     */
     public static OptlyEventHandler getInstance(@NonNull Context context) {
         return new OptlyEventHandler(context);
     }
@@ -63,6 +66,9 @@ public class OptlyEventHandler implements EventHandler {
         this.dispatchInterval = timeUnit.toMillis(dispatchInterval);
     }
 
+    /**
+     * @see EventHandler#dispatchEvent(LogEvent)
+     */
     @Override
     public void dispatchEvent(LogEvent logEvent) {
         if (logEvent.getEndpointUrl() == null) {

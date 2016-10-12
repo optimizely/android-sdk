@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
@@ -86,11 +87,11 @@ public class EventDAOTest {
         assertEquals(2, pair2.first.longValue());
         assertEquals(3, pair3.first.longValue());
 
-        assertEquals("http://www.foo1.com", pair1.second.toString());
+        assertEquals("http://www.foo1.com", pair1.second.getURL().toString());
         assertEquals("bar1=baz1", pair1.second.getRequestBody());
-        assertEquals("http://www.foo2.com", pair2.second.toString());
+        assertEquals("http://www.foo2.com", pair2.second.getURL().toString());
         assertEquals("bar2=baz2", pair2.second.getRequestBody());
-        assertEquals("http://www.foo3.com", pair3.second.toString());
+        assertEquals("http://www.foo3.com", pair3.second.getURL().toString());
         assertEquals("bar3=baz3", pair3.second.getRequestBody());
 
         verify(logger).info("Got events from SQLite");

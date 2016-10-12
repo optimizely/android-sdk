@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.shared;
 
 import android.content.Context;
@@ -29,17 +30,33 @@ import java.io.InputStreamReader;
 
 /**
  * Functionality common to all caches
+ * @hide
  */
 public class Cache {
 
     @NonNull private final Context context;
     @NonNull private final Logger logger;
 
+    /**
+     * Create new instances of {@link Cache}
+     *
+     * @param context any {@link Context instance}
+     * @param logger  a {@link Logger} instances
+     * @hide
+     */
     public Cache(@NonNull Context context, @NonNull Logger logger) {
         this.context = context;
         this.logger = logger;
     }
 
+    /**
+     * Load the cache file
+     *
+     * @param fileName the path to the file
+     * @return the loaded cache file as String
+     * @throws IOException
+     * @hide
+     */
     @NonNull
     public String load(String fileName) throws IOException {
         FileInputStream fis = context.openFileInput(fileName);
@@ -53,10 +70,22 @@ public class Cache {
         return sb.toString();
     }
 
+    /**
+     * Delete the cache file
+     * @param fileName the path to the file
+     * @return true if the file was deleted or false otherwise
+     * @hide
+     */
     public boolean delete(String fileName) {
         return context.deleteFile(fileName);
     }
 
+    /**
+     * Check if the cache file exists
+     * @param fileName the path to the file
+     * @return true if the file exists or false otherwise
+     * @hide
+     */
     public boolean exists(String fileName) {
         try {
             load(fileName);
@@ -69,6 +98,16 @@ public class Cache {
         }
     }
 
+    /**
+     * Save the existing cache file with new data
+     *
+     * The original file will be overwritten.
+     * @param fileName the path to the file
+     * @param data the String data to write to the file
+     * @return true if the file was saved
+     * @throws IOException
+     * @hide
+     */
     public boolean save(String fileName, String data) throws IOException {
         FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
         fos.write(data.getBytes());

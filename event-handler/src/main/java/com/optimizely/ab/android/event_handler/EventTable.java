@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.event_handler;
 
 import android.provider.BaseColumns;
 
-/**
+/*
  * Constants for Event SQL table
  */
 final class EventTable implements BaseColumns {

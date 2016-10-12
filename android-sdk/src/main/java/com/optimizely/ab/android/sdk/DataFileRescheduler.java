@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.sdk;
 
 import android.content.BroadcastReceiver;
@@ -27,6 +28,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * Broadcast Receiver that handles app upgrade and phone restart broadcasts in order
+ * to reschedule {@link DataFileService}
+ *
+ * @hide
+ */
 public class DataFileRescheduler extends BroadcastReceiver {
     Logger logger = LoggerFactory.getLogger(DataFileRescheduler.class);
 
@@ -49,7 +56,7 @@ public class DataFileRescheduler extends BroadcastReceiver {
         }
     }
 
-    /**
+    /*
      * Handles building sending Intents to {@link DataFileService}
      *
      * This abstraction mostly makes unit testing easier
