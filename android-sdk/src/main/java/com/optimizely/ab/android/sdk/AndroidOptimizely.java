@@ -42,12 +42,13 @@ import java.util.Map;
  */
 public class AndroidOptimizely {
 
-    Logger logger = LoggerFactory.getLogger(AndroidOptimizely.class);
+    private final Logger logger;
 
     @Nullable private Optimizely optimizely;
 
-    AndroidOptimizely(@Nullable Optimizely optimizely) {
+    AndroidOptimizely(@Nullable Optimizely optimizely, @NonNull Logger logger) {
         this.optimizely = optimizely;
+        this.logger = logger;
     }
 
     /**
@@ -58,7 +59,7 @@ public class AndroidOptimizely {
         if (optimizely != null) {
             return optimizely.activate(experimentKey, userId);
         } else {
-            logger.warn("Optimizely is not initialized, can't activate experiment {} for {}",
+            logger.warn("Optimizely is not initialized, can't activate experiment {} for user {}",
                     experimentKey, userId);
             return null;
         }
@@ -99,7 +100,7 @@ public class AndroidOptimizely {
         if (optimizely != null) {
             return optimizely.activate(experiment, userId, attributes);
         } else {
-            logger.warn("Optimizely is not initialized, can't activate experiment {} for user {}, " +
+            logger.warn("Optimizely is not initialized, can't activate experiment {} for user {} " +
                     "with attributes", experiment.getKey(), userId);
             return null;
         }
@@ -182,7 +183,7 @@ public class AndroidOptimizely {
     public @Nullable Variation getVariation(@NonNull String experimentKey,
                                             @NonNull String userId) throws UnknownExperimentException{
         if (optimizely != null) {
-            return getVariation(experimentKey, userId);
+            return optimizely.getVariation(experimentKey, userId);
         } else {
             logger.warn("Optimizely is not initialized, could not get variation for experiment {} " +
                     "for user {}", experimentKey, userId);
@@ -201,22 +202,6 @@ public class AndroidOptimizely {
         } else {
             logger.warn("Optimizely is not initialized, could not get variation for experiment {} " +
                     "for user {} with attributes", experimentKey, userId);
-            return null;
-        }
-    }
-
-    /**
-     * @see Optimizely#getVariation(ProjectConfig, Experiment, Map, String)
-     */
-    public @Nullable Variation getVariation(@NonNull ProjectConfig projectConfig,
-                                            @NonNull Experiment experiment,
-                                            @NonNull Map<String, String> attributes,
-                                            @NonNull String userId) {
-        if (optimizely != null) {
-            return optimizely.getVariation(projectConfig, experiment, attributes, userId);
-        } else {
-            logger.warn("Optimizely is not initialized, could not get variation for experiment {} " +
-                    "for user {} with attributes and project config", experiment.getKey(), userId);
             return null;
         }
     }
