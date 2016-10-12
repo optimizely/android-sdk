@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.sdk;
 
 import android.support.annotation.NonNull;
@@ -25,7 +26,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
+/*
  * Makes requests to the Optly CDN to get the data file
  */
 class DataFileClient {

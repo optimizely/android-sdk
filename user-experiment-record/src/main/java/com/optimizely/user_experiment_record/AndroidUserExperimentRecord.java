@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.user_experiment_record;
 
 import android.content.Context;
@@ -37,6 +38,11 @@ import java.util.concurrent.Executors;
 
 /**
  * Android implemenation of {@link UserExperimentRecord}
+ *
+ * Makes bucketing sticky.  This module is what allows the core
+ * to know if a user has already been bucketed for an experiment.
+ * Once a user is bucketed they will stay bucketed unless the device's
+ * storage is cleared. Bucketting information is stored in a simple file.
  */
 public class AndroidUserExperimentRecord implements UserExperimentRecord {
 
@@ -52,6 +58,13 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
         this.logger = logger;
     }
 
+    /**
+     * Gets a new instance of {@link AndroidUserExperimentRecord}
+     *
+     * @param projectId your project's id
+     * @param context   an instance of {@link Context}
+     * @return the instance as {@link UserExperimentRecord}
+     */
     public static UserExperimentRecord newInstance(@NonNull String projectId, @NonNull Context context) {
         HashMap<String, Map<String, String>> memoryUserExperimentRecordCache = new HashMap<>();
         UserExperimentRecordCache userExperimentRecordCache =
@@ -67,6 +80,9 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                 LoggerFactory.getLogger(AndroidUserExperimentRecord.class));
     }
 
+    /**
+     * Creates the file that backs {@link AndroidUserExperimentRecord}
+     */
     public void start() {
         try {
             JSONObject userIdToActivationJson = diskUserExperimentRecordCache.load();
@@ -88,6 +104,9 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
         }
     }
 
+    /**
+     * @see UserExperimentRecord#save(String, String, String)
+     */
     @Override
     public boolean save(final String userId, final String experimentKey, final String variationKey) {
         if (userId == null) {
@@ -115,6 +134,9 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
         return true;
     }
 
+    /**
+     * @see UserExperimentRecord#lookup(String, String)
+     */
     @Override
     @Nullable
     public String lookup(String userId, String experimentKey) {
@@ -145,6 +167,9 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
         return variationKey;
     }
 
+    /**
+     * @see UserExperimentRecord#remove(String, String)
+     */
     @Override
     public boolean remove(final String userId, final String experimentKey) {
         if (userId == null) {
@@ -172,6 +197,9 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
         return true;
     }
 
+    /**
+     * @see UserExperimentRecord#getAllRecords()
+     */
     @Override
     public Map<String, Map<String, String>> getAllRecords() {
         return writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache();

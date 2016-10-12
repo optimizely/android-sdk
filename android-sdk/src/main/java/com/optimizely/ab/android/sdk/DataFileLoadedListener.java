@@ -13,9 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.sdk;
 
+/**
+ * Listens for new Optimizely datafiles
+ *
+ * @hide
+ */
 interface DataFileLoadedListener {
 
+    /**
+     * Called with new datafile
+     *
+     * @param dataFile the datafile json
+     * @hide
+     */
     void onDataFileLoaded(String dataFile);
 }

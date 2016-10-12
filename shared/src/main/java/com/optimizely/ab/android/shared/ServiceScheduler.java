@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.shared;
 
 import android.app.AlarmManager;
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
 
 /**
  * Schedules {@link android.app.Service}es to run.
+ * @hide
  */
 // TODO Unit test coverage
 public class ServiceScheduler {
@@ -33,12 +35,25 @@ public class ServiceScheduler {
     @NonNull private final PendingIntentFactory pendingIntentFactory;
     @NonNull private final Logger logger;
 
+    /**
+     * @param alarmManager         an instance of {@link AlarmManager}
+     * @param pendingIntentFactory an instance of {@link PendingIntentFactory}
+     * @param logger               an instance of {@link Logger}
+     * @hide
+     */
     public ServiceScheduler(@NonNull AlarmManager alarmManager, @NonNull PendingIntentFactory pendingIntentFactory, @NonNull Logger logger) {
         this.alarmManager = alarmManager;
         this.pendingIntentFactory = pendingIntentFactory;
         this.logger = logger;
     }
 
+    /**
+     * Schedule a service starting {@link Intent} that starts on an interval
+     *
+     * @param intent   an {@link Intent}
+     * @param interval the interval in MS
+     * @hide
+     */
     public void schedule(Intent intent, long interval) {
         if (interval < 1) {
             logger.error("Tried to schedule an interval less than 1");
@@ -56,6 +71,13 @@ public class ServiceScheduler {
         }
     }
 
+    /**
+     * Unschedule a scheduled {@link Intent}
+     *
+     * The {@link Intent} must equal the intent that was originally sent to {@link #schedule(Intent, long)}
+     * @param intent an service starting {@link Intent} instance
+     * @hide
+     */
     public void unschedule(Intent intent) {
         PendingIntent pendingIntent = pendingIntentFactory.getPendingIntent(intent);
         alarmManager.cancel(pendingIntent);
@@ -70,6 +92,7 @@ public class ServiceScheduler {
      * the alarm back after the last event.
      *
      * Putting this in it's class makes mocking much easier when testing out {@link ServiceScheduler#schedule(Intent, long)}
+     * @hide
      */
     public static class PendingIntentFactory {
 
@@ -79,6 +102,12 @@ public class ServiceScheduler {
             this.context = context;
         }
 
+        /**
+         * Has a {@link PendingIntent} already been created for the provided {@link Intent}
+         * @param intent an instance of {@link Intent}
+         * @return true if a {@link PendingIntent} was already created
+         * @hide
+         */
         public boolean hasPendingIntent(Intent intent) {
             // FLAG_NO_CREATE will cause null to be returned if this Intent hasn't been created yet.
             // It does matter if you send a new instance or not the equality check is done via
@@ -86,6 +115,12 @@ public class ServiceScheduler {
             return getPendingIntent(intent, PendingIntent.FLAG_NO_CREATE) != null;
         }
 
+        /**
+         * Gets a {@link PendingIntent} for an {@link Intent}
+         * @param intent an instance of {@link Intent}
+         * @return a {@link PendingIntent}
+         * @hide
+         */
         public PendingIntent getPendingIntent(Intent intent) {
             return getPendingIntent(intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }

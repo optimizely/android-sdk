@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.event_handler;
 
 import android.app.AlarmManager;
@@ -27,6 +28,16 @@ import com.optimizely.ab.android.shared.ServiceScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Android {@link IntentService} that handles dispatching events to the Optimizely results servers.
+ * <p>
+ * Can be scheduled to run on interval.
+ * <p>
+ * Intents sent to this service are handled in order and on a background thread.  Think of it as a
+ * worker queue.
+ *
+ * @hide
+ */
 public class EventIntentService extends IntentService {
     static final String EXTRA_URL = "com.optimizely.ab.android.EXTRA_URL";
     static final String EXTRA_REQUEST_BODY = "com.optimizely.ab.android.EXTRA_REQUEST_BODY";
@@ -38,6 +49,10 @@ public class EventIntentService extends IntentService {
         super("EventHandlerService");
     }
 
+    /**
+     * @hide
+     * @see IntentService#onCreate()
+     */
     @Override
     public void onCreate() {
         super.onCreate();
@@ -52,6 +67,11 @@ public class EventIntentService extends IntentService {
                 LoggerFactory.getLogger(ServiceScheduler.class));
         eventDispatcher = new EventDispatcher(this, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
     }
+
+    /**
+     * @hide
+     * @see IntentService#onHandleIntent(Intent)
+     */
 
     @Override
     protected void onHandleIntent(Intent intent) {

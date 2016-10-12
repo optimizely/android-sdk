@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.event_handler;
 
 import android.content.BroadcastReceiver;
@@ -32,11 +33,17 @@ import org.slf4j.LoggerFactory;
  *
  * This code is called by the Android Framework.  The Intent Filters are registered
  * AndroidManifest.xml.
+ *
+ * @hide
  */
 public class EventRescheduler extends BroadcastReceiver {
 
     Logger logger = LoggerFactory.getLogger(EventRescheduler.class);
 
+    /**
+     * @hide
+     * @see BroadcastReceiver#onReceive(Context, Intent)
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         if ((context != null && intent != null) && (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||

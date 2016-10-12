@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.shared;
 
 import android.support.annotation.NonNull;
@@ -29,6 +30,7 @@ import java.util.Scanner;
 
 /**
  * Functionality common to all clients
+ * @hide
  */
 public class Client {
 
@@ -37,15 +39,36 @@ public class Client {
     @NonNull private final OptlyStorage optlyStorage;
     @NonNull private final Logger logger;
 
+    /**
+     * Constructs a new Client instance
+     *
+     * @param optlyStorage an instance of {@link OptlyStorage}
+     * @param logger       an instance of {@link Logger}
+     * @hide
+     */
     public Client(@NonNull OptlyStorage optlyStorage, @NonNull Logger logger) {
         this.optlyStorage = optlyStorage;
         this.logger = logger;
     }
 
+    /**
+     * Opens {@link HttpURLConnection} from a {@link URL}
+     *
+     * @param url a {@link URL} instance
+     * @return an open {@link HttpURLConnection}
+     * @throws IOException if connection can't be opened
+     * @hide
+     */
     public HttpURLConnection openConnection(URL url) throws IOException {
         return (HttpURLConnection) url.openConnection();
     }
 
+    /**
+     * Adds a if-modfied-since header to the open {@link URLConnection} if this value is
+     * stored in {@link OptlyStorage}.
+     * @param urlConnection an open {@link URLConnection}
+     * @hide
+     */
     public void setIfModifiedSince(@NonNull URLConnection urlConnection) {
         long lastModified = optlyStorage.getLong(LAST_MODIFIED_HEADER_KEY, 0);
         if (lastModified > 0) {
@@ -53,6 +76,12 @@ public class Client {
         }
     }
 
+    /**
+     * Retrieves the last-modfied head from a {@link URLConnection} and saves it
+     * in {@link OptlyStorage}.
+     * @param urlConnection a {@link URLConnection} instance
+     * @hide
+     */
     public void saveLastModified(@NonNull URLConnection urlConnection) {
         long lastModified = urlConnection.getLastModified();
         if (lastModified > 0) {

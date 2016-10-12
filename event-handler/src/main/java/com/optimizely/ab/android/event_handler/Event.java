@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.event_handler;
 
 import java.net.URL;
 
-/**
- * Created by jdeffibaugh on 7/25/16 for Optimizely.
- *
+/*
  * Event model
  *
- * Proxies {@link URL} because this class is final and not easily mockable when testing.
  */
 class Event {
     private URL url;
     private String requestBody;
 
-    public Event(URL url, String requestBody) {
+    Event(URL url, String requestBody) {
         this.url = url;
         this.requestBody = requestBody;
     }
@@ -41,15 +39,13 @@ class Event {
         return this.url;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj != null
-                && getClass().isInstance(obj)
-                && (url.equals(((Event) obj).url));
-    }
-
+    /**
+     * Returns the String representation of an event
+     *
+     * @hide
+     */
     @Override
     public String toString() {
-        return this.url.toString();
+        return String.format("Sending %s to %s", requestBody, url);
     }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.event_handler;
 
 import com.optimizely.ab.android.shared.Client;
@@ -25,7 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 
-/**
+/*
  * Created by jdeffibaugh on 7/21/16 for Optimizely.
  * <p>
  * Makes network requests related to events

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.event_handler;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
@@ -30,7 +30,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
+/*
  * Handles interactions with the {@link SQLiteDatabase} that store {@link Event} instances.
  */
 class EventDAO {
@@ -50,7 +50,7 @@ class EventDAO {
 
     boolean storeEvent(@NonNull Event event) {
         ContentValues values = new ContentValues();
-        values.put(EventTable.Column.URL, event.toString());
+        values.put(EventTable.Column.URL, event.getURL().toString());
         values.put(EventTable.Column.REQUEST_BODY, event.getRequestBody());
 
         // Since we are setting the "null column hack" param to null empty values will not be inserted

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.sdk;
 
 import android.app.Activity;
@@ -21,13 +22,10 @@ import android.support.annotation.Nullable;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.UnknownEventTypeException;
-import com.optimizely.ab.UnknownExperimentException;
 import com.optimizely.ab.config.Experiment;
-import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -52,10 +50,14 @@ public class AndroidOptimizely {
     }
 
     /**
+     * Activate an experiment for a user
      * @see Optimizely#activate(String, String)
+     * @param experimentKey the experiment key
+     * @param userId the user id
+     * @return the {@link Variation} the user bucketed into
      */
     public @Nullable Variation activate(@NonNull String experimentKey,
-                       @NonNull String userId) throws UnknownExperimentException {
+                                        @NonNull String userId) {
         if (optimizely != null) {
             return optimizely.activate(experimentKey, userId);
         } else {
@@ -66,11 +68,17 @@ public class AndroidOptimizely {
     }
 
     /**
-     * @see Optimizely#activate(String, String, Map)
+     * Activate an experiment for a user
+     * @see Optimizely#activate(String, String)
+     * @param experimentKey the experiment key
+     * @param userId the user id
+     * @param attributes a map of attributes about the user
+     * @return the {@link Variation} the user bucketed into
      */
+    @SuppressWarnings("WeakerAccess")
     public @Nullable Variation activate(@NonNull String experimentKey,
                                         @NonNull String userId,
-                                        @NonNull Map<String, String> attributes) throws UnknownExperimentException {
+                                        @NonNull Map<String, String> attributes) {
         if (optimizely != null) {
             return optimizely.activate(experimentKey, userId, attributes);
         } else {
@@ -81,37 +89,12 @@ public class AndroidOptimizely {
     }
 
     /**
-     * @see Optimizely#activate(Experiment, String)
-     */
-    public @Nullable Variation activate(@NonNull Experiment experiment,
-                                        @NonNull String userId) {
-        if (optimizely != null) {
-            return optimizely.activate(experiment, userId);
-        } else {
-            logger.warn("Optimizely is not initialized, can't activate experiment {} for user {}",
-                    experiment.getKey(), userId);
-            return null;
-        }
-    }
-
-    public @Nullable Variation activate(@NonNull Experiment experiment,
-                                        @NonNull String userId,
-                                        @NonNull Map<String, String> attributes) {
-        if (optimizely != null) {
-            return optimizely.activate(experiment, userId, attributes);
-        } else {
-            logger.warn("Optimizely is not initialized, can't activate experiment {} for user {} " +
-                    "with attributes", experiment.getKey(), userId);
-            return null;
-        }
-    }
-
-
-    /**
-     * @see Optimizely#track(String, String)
+     * Track an event for a user
+     * @param eventName the name of the event
+     * @param userId the user id
      */
     public void track(@NonNull String eventName,
-                      @NonNull String userId) throws UnknownEventTypeException {
+                      @NonNull String userId) {
         if (optimizely != null) {
             optimizely.track(eventName, userId);
         } else {
@@ -120,7 +103,10 @@ public class AndroidOptimizely {
     }
 
     /**
-     * @see Optimizely#track(String, String, Map)
+     * Track an event for a user
+     * @param eventName the name of the event
+     * @param userId the user id
+     * @param attributes a map of attributes about the user
      */
     public void track(@NonNull String eventName,
                       @NonNull String userId,
@@ -134,7 +120,10 @@ public class AndroidOptimizely {
     }
 
     /**
-     * @see Optimizely#track(String, String, long)
+     * Track an event for a user
+     * @param eventName the name of the event
+     * @param userId the user id
+     * @param eventValue a value to tie to the event
      */
     public void track(@NonNull String eventName,
                       @NonNull String userId,
@@ -148,12 +137,17 @@ public class AndroidOptimizely {
     }
 
     /**
-     * @see Optimizely#track(String, String, Map, long)
+     * Track an event for a user with attributes and a value
+     * @see Optimizely#track(String, String, Map, Long)
+     * @param eventName the String name of the event
+     * @param userId the String user id
+     * @param attributes the attributes of the event
+     * @param eventValue the value of the event
      */
     public void track(@NonNull String eventName,
                       @NonNull String userId,
                       @NonNull Map<String, String> attributes,
-                      long eventValue) throws UnknownEventTypeException {
+                      long eventValue) {
         if (optimizely != null) {
             optimizely.track(eventName, userId, attributes, eventValue);
         } else {
@@ -162,26 +156,16 @@ public class AndroidOptimizely {
         }
     }
 
-
     /**
+     * Get the variation the user is bucketed into
      * @see Optimizely#getVariation(Experiment, String)
+     * @param experimentKey a String experiment key
+     * @param userId a String user id
+     * @return a variation for the provided experiment key and user id
      */
-    public @Nullable Variation getVariation(@NonNull Experiment experiment,
-                                            @NonNull String userId) throws UnknownExperimentException {
-        if (optimizely != null) {
-            return optimizely.getVariation(experiment, userId);
-        } else {
-            logger.warn("Optimizely is not initialized, could not get variation for experiment {} " +
-                    "for user {}", experiment.getKey(), userId);
-            return null;
-        }
-    }
-
-    /**
-     * @see Optimizely#getVariation(String, String)
-     */
+    @SuppressWarnings("WeakerAccess")
     public @Nullable Variation getVariation(@NonNull String experimentKey,
-                                            @NonNull String userId) throws UnknownExperimentException{
+                                            @NonNull String userId) {
         if (optimizely != null) {
             return optimizely.getVariation(experimentKey, userId);
         } else {
@@ -192,8 +176,14 @@ public class AndroidOptimizely {
     }
 
     /**
-     * @see Optimizely#getVariation(String, String, Map)
+     * Get the variation the user is bucketed into
+     * @see Optimizely#getVariation(Experiment, String)
+     * @param experimentKey a String experiment key
+     * @param userId a String userId
+     * @param attributes a map of attributes
+     * @return the variation for the provided experiment key, user id, and attributes
      */
+    @SuppressWarnings("WeakerAccess")
     public @Nullable Variation getVariation(@NonNull String experimentKey,
                                             @NonNull String userId,
                                             @NonNull Map<String, String> attributes) {

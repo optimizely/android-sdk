@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
@@ -22,7 +23,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import org.slf4j.Logger;
 
-/**
+/*
  * Handles transactions for the events db
  */
 class EventSQLiteOpenHelper extends SQLiteOpenHelper {
@@ -52,11 +53,20 @@ class EventSQLiteOpenHelper extends SQLiteOpenHelper {
         this.logger = logger;
     }
 
+    /**
+     * @hide
+     * @see SQLiteOpenHelper#onCreate(SQLiteDatabase)
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_EVENT_TABLE);
         logger.info("Created event table with SQL: {}", SQL_CREATE_EVENT_TABLE);
     }
+
+    /**
+     * @hide
+     * @see SQLiteOpenHelper#onUpgrade(SQLiteDatabase, int, int)
+     */
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

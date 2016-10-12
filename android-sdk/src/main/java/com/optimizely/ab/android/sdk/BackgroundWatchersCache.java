@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.optimizely.ab.android.sdk;
 
 import android.support.annotation.NonNull;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
+/*
  * Caches a json dict that saves state about which project IDs have background watching enabled.
  */
 class BackgroundWatchersCache {
