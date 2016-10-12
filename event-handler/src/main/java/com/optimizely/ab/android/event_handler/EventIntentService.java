@@ -51,7 +51,7 @@ public class EventIntentService extends IntentService {
 
     /**
      * @hide
-     * @see @link IntentService#onCreate()
+     * @see IntentService#onCreate()
      */
     @Override
     public void onCreate() {

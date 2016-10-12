@@ -56,7 +56,7 @@ public class Client {
      *
      * @param url a {@link URL} instance
      * @return an open {@link HttpURLConnection}
-     * @throws IOException
+     * @throws IOException if connection can't be opened
      * @hide
      */
     public HttpURLConnection openConnection(URL url) throws IOException {

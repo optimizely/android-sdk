@@ -54,7 +54,7 @@ public class Cache {
      *
      * @param fileName the path to the file
      * @return the loaded cache file as String
-     * @throws IOException
+     * @throws IOException if file can't be loaded
      * @hide
      */
     @NonNull
@@ -105,7 +105,7 @@ public class Cache {
      * @param fileName the path to the file
      * @param data the String data to write to the file
      * @return true if the file was saved
-     * @throws IOException
+     * @throws IOException if file can't be saved
      * @hide
      */
     public boolean save(String fileName, String data) throws IOException {

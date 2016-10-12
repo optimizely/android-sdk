@@ -48,6 +48,7 @@ public class OptlyEventHandler implements EventHandler {
      * Gets a new instance
      *
      * @param context any valid Android {@link Context}
+     * @return a new instance of {@link OptlyEventHandler}
      */
     public static OptlyEventHandler getInstance(@NonNull Context context) {
         return new OptlyEventHandler(context);
