@@ -17,7 +17,6 @@
 package com.optimizely.ab.android.sdk;
 
 import com.optimizely.ab.Optimizely;
-import com.optimizely.ab.config.Experiment;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,9 +26,7 @@ import org.slf4j.Logger;
 
 import java.util.HashMap;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link AndroidOptimizely}
@@ -71,44 +68,6 @@ public class AndroidOptimizelyTest {
                 "for user {} with attributes", "1", "1");
     }
 
-    @Test
-    public void testGoodActivation3() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
-        final Experiment experiment = mock(Experiment.class);
-        when(experiment.getKey()).thenReturn("1");
-        androidOptimizely.activate(experiment, "1");
-        verify(optimizely).activate(experiment, "1");
-    }
-
-    @Test
-    public void testBadActivation3() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
-        final Experiment experiment = mock(Experiment.class);
-        when(experiment.getKey()).thenReturn("1");
-        androidOptimizely.activate(experiment, "1");
-        verify(logger).warn("Optimizely is not initialized, can't activate experiment {} " +
-                "for user {}", "1", "1");
-    }
-
-    @Test
-    public void testGoodActivation4() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
-        final Experiment experiment = mock(Experiment.class);
-        when(experiment.getKey()).thenReturn("1");
-        final HashMap<String, String> attributes = new HashMap<>();
-        androidOptimizely.activate(experiment, "1", attributes);
-        verify(optimizely).activate(experiment, "1", attributes);
-    }
-
-    @Test
-    public void testBadActivation4() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
-        final Experiment experiment = mock(Experiment.class);
-        when(experiment.getKey()).thenReturn("1");
-        androidOptimizely.activate(experiment, "1", new HashMap<String, String>());
-        verify(logger).warn("Optimizely is not initialized, can't activate experiment {} " +
-                "for user {} with attributes", "1", "1");
-    }
 
     @Test
     public void testGoodTrack1() {
@@ -186,25 +145,6 @@ public class AndroidOptimizelyTest {
         androidOptimizely.getVariation("1", "1");
         verify(logger).warn("Optimizely is not initialized, could not get variation for experiment {} " +
                     "for user {}", "1", "1");
-    }
-
-    @Test
-    public void testGoodGetVariation2() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
-        Experiment experiment = mock(Experiment.class);
-        when(experiment.getKey()).thenReturn("1");
-        androidOptimizely.getVariation(experiment, "1");
-        verify(optimizely).getVariation(experiment, "1");
-    }
-
-    @Test
-    public void testBadGetVariation2() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
-        Experiment experiment = mock(Experiment.class);
-        when(experiment.getKey()).thenReturn("1");
-        androidOptimizely.getVariation(experiment, "1");
-        verify(logger).warn("Optimizely is not initialized, could not get variation for experiment {} " +
-                "for user {}", experiment.getKey(), "1");
     }
 
     @Test
