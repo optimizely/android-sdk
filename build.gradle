@@ -17,6 +17,12 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    if (file('values.gradle').exists()) {
+        apply from: 'values.gradle'
+    } else {
+        rootProject.ext.bintray_user = ''
+        rootProject.ext.bintray_api_key = ''
+    }
     repositories {
         jcenter()
     }

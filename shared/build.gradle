@@ -68,11 +68,11 @@ dependencies {
 }
 
 uploadArchives {
-    dependsOn = [':shared:clean', 'shared:releaseJavadoc']
+    dependsOn = [':shared:clean', ':shared:releaseJavadocJar']
     repositories {
         mavenDeployer {
             repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android-shared") {
-                authentication(userName: project.property('bintrayUser'), password: project.property('bintrayApiKey'))
+                authentication(userName: bintray_user, password: bintray_api_key)
             }
             pom.artifactId = "android-sdk-shared"
         }

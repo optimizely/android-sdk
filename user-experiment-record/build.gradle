@@ -66,12 +66,12 @@ dependencies {
 }
 
 uploadArchives {
-    dependsOn = [':user-experiment-record:clean', ':user-experiment-record:releaseJavadoc']
+    dependsOn = [':user-experiment-record:clean', ':user-experiment-record:releaseJavadocJar']
     shouldRunAfter = [':shared:uploadArchives']
     repositories {
         mavenDeployer {
             repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android-user-experiment-record") {
-                authentication(userName: project.property('bintrayUser'), password: project.property('bintrayApiKey'))
+                authentication(userName: bintray_user, password: bintray_api_key)
             }
             pom.artifactId = "android-sdk-user-experiment-record"
         }
