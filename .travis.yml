@@ -2,9 +2,9 @@ language: android
 android:
   components:
     - android-24
-    - build-tools-24.0.4
+    - build-tools-24.0.3
     - sys-img-x86-android-24
-java:
+jdk:
   - oraclejdk8
 before_script:
   - echo no | android create avd --force -n test -t android-24 --abi default/x86
