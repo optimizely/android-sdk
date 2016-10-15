@@ -46,7 +46,7 @@ allprojects {
 ext {
     compile_sdk_version = 24
     build_tools_version = "24.0.3"
-    min_sdk_version = 14
+    min_sdk_version = 10
     target_sdk_version = 24
 
     java_core_ver = "1.0.2"
