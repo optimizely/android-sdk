@@ -36,3 +36,7 @@ before_cache:
       - $HOME/.gradle/wrapper/
       
 script: ./gradlew testAllModules
+
+branches:
+  only:
+  - master
