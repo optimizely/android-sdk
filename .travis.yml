@@ -1,4 +1,6 @@
 language: android
+  components:
+    - build-tools-24.0.3
 env:
   matrix:
     - ANDROID_SDKS=android-19,sysimg-19  ANDROID_TARGET=android-19  ANDROID_ABI=armeabi-v7a
