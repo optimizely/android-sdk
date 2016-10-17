@@ -1,5 +1,5 @@
 # optimizely-ab-android-sdk
-[![Build Status](https://travis-ci.com/optimizely/optimizely-ab-android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=master)
+[![Build Status](https://travis-ci.com/optimizely/optimizely-ab-android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=master)](https://travis-ci.com/optimizely/optimizely-ab-android-sdk)
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 ## Architecture
