@@ -6,6 +6,12 @@ android:
     - sys-img-x86-android-24
 jdk:
   - oraclejdk8
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 before_script:
   - echo no | android create avd --force -n test -t android-24 --abi default/x86
   - emulator -avd test -no-audio -no-window &
