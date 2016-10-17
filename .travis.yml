@@ -22,4 +22,4 @@ before_script:
   - adb shell input keyevent 82 &
 script:
   - ./gradlew testAllModules
-  - if [ "$TRAVIS_BRANCH" == "beta" ] || [ "$TRAVIS_BRANCH" == "master" ]; ./gradlew ship; fi
+  - if [ "$TRAVIS_BRANCH" == "beta" ] || [ "$TRAVIS_BRANCH" == "master" ]; then ./gradlew ship; fi
