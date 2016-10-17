@@ -164,7 +164,7 @@ public class OptimizelyManager {
     }
 
     /**
-     * Gets a chanced Optimizely instance
+     * Gets a cached Optimizely instance
      *
      * If {@link #start(Activity, OptimizelyStartListener)} or {@link #start(Context, OptimizelyStartListener)}
      * has not been called yet the returned {@link AndroidOptimizely} instance will be a dummy instance
@@ -172,7 +172,7 @@ public class OptimizelyManager {
      *
      * If {@link #getOptimizely(Context, int)} was used the built {@link AndroidOptimizely} instance
      * will be updated.  Using {@link #start(Activity, OptimizelyStartListener)} or {@link #start(Context, OptimizelyStartListener)}
-     * will update the cache instance with new {@link AndroidOptimizely} built from a cached local
+     * will update the cached instance with a new {@link AndroidOptimizely} built from a cached local
      * datafile on disk or a remote datafile on the CDN.
      * @return the cached instance of {@link AndroidOptimizely}
      */
