@@ -17,8 +17,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    if (file('values.gradle').exists()) {
-        apply from: 'values.gradle'
+    def bintrayUser = System.getenv('BINTRAY_USER')
+    def bintrayApiKey = System.getenv('BINTRAY_API_KEY')
+    if (bintrayUser != null && bintrayApiKey != null) {
+        rootProject.ext.bintray_user = bintrayUser
+        rootProject.ext.bintray_api_key = bintrayApiKey
     } else {
         rootProject.ext.bintray_user = ''
         rootProject.ext.bintray_api_key = ''
@@ -58,7 +61,7 @@ ext {
     dexmaker_ver = "1.2"
     espresso_ver = "2.2.2"
     gson_ver = "2.6.2"
-    version_name = "0.1.0"
+    version_name = "0.1.1-SNAPSHOT"
     group_id = "com.optimizely.ab"
 }
 
