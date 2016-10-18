@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Test App</string>
     <string name="start_next_activity">Start Next Activity</string>
-    <string name="next_activity">Next Activity</string>
+    <string name="button_1_text_default">Next Activity</string>
+    <string name="button_1_text_var_1">Start Next Activity!</string>
+    <string name="button_1_text_var_2">Start Second Activity!</string>
 </resources>

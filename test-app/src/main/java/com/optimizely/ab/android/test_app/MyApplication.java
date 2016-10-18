@@ -16,9 +16,17 @@
 package com.optimizely.ab.android.test_app;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class MyApplication extends Application {
@@ -27,6 +35,25 @@ public class MyApplication extends Application {
 
     public OptimizelyManager getOptimizelyManager() {
         return optimizelyManager;
+    }
+    public Map<String,String> getAttributes() {
+        Map<String,String> attributes = new HashMap<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            attributes.put("locale", getResources().getConfiguration().getLocales().get(0).toString());
+        } else {
+            attributes.put("locale", getResources().getConfiguration().locale.toString());
+        }
+        return attributes;
+    }
+    @NonNull
+    public String getAnonUserId() {
+        SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
+        String id = sharedPreferences.getString("userId", null);
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+            sharedPreferences.edit().putString("userId", id).apply();
+        }
+        return id;
     }
 
     @Override

@@ -32,11 +32,12 @@ public class SecondaryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_secondary);
 
         // Get Optimizely from the Intent that started this Activity
-        final OptimizelyManager optimizelyManager = ((MyApplication) getApplication()).getOptimizelyManager();
+        final MyApplication myApplication = (MyApplication) getApplication();
+        final OptimizelyManager optimizelyManager = myApplication.getOptimizelyManager();
         AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
 
         // track conversion event
-        optimizely.track("goal_1", "user_1");
+        optimizely.track("experiment_1", myApplication.getAnonUserId());
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -57,7 +58,7 @@ public class SecondaryActivity extends AppCompatActivity {
             super.onStart();
             final OptimizelyManager optimizelyManager = ((MyApplication) getActivity().getApplication()).getOptimizelyManager();
             AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
-            optimizely.track("goal_2", "user_1");
+//            optimizely.track("goal_2", "user_1");
         }
     }
 }

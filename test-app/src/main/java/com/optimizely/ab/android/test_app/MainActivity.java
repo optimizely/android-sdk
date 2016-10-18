@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.optimizely.ab.android.sdk.AndroidOptimizely;
@@ -29,29 +30,36 @@ import com.optimizely.ab.config.Variation;
 public class MainActivity extends AppCompatActivity {
 
     private OptimizelyManager optimizelyManager;
+    private MyApplication myApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button button = (Button) findViewById(R.id.button1);
 
         // This could also be done via DI framework such as Dagger
-        optimizelyManager = ((MyApplication) getApplication()).getOptimizelyManager();
+        myApplication = (MyApplication) getApplication();
+        optimizelyManager = myApplication.getOptimizelyManager();
 
         // Load Optimizely from a compiled in data file
-        AndroidOptimizely optimizely = optimizelyManager.getOptimizely(this, R.raw.data_file);
-        Variation variation = optimizely.activate("experiment_0", "user_1");
+        final AndroidOptimizely optimizely = optimizelyManager.getOptimizely(this, R.raw.data_file);
+        Variation variation = optimizely.activate("experiment_0", myApplication.getAnonUserId(), myApplication.getAttributes());
         if (variation != null) {
             if (variation.is("variation_1")) {
-                Toast.makeText(MainActivity.this, "Variation 1", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_LONG).show();
+                button.setText(R.string.button_1_text_var_1);
+            } else if (variation.is("variation_2")) {
+                button.setText(R.string.button_1_text_var_2);
             }
+        } else {
+            button.setText(R.string.button_1_text_default);
         }
 
-        findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                optimizely.track("experiment_0", myApplication.getAnonUserId(), myApplication.getAttributes());
+
                 v.getContext().getResources().getString(R.string.app_name);
                 Intent intent = new Intent(v.getContext(), SecondaryActivity.class);
                 startActivity(intent);
@@ -69,11 +77,12 @@ public class MainActivity extends AppCompatActivity {
         optimizelyManager.start(this, new OptimizelyStartListener() {
             @Override
             public void onStart(AndroidOptimizely optimizely) {
-                Variation variation = optimizely.activate("experiment_1", "user_1");
-
+                Variation variation = optimizely.activate("experiment_1", myApplication.getAnonUserId());
                 if (variation != null) {
                     if (variation.is("variation_1")) {
                         Toast.makeText(MainActivity.this, "Variation 1", Toast.LENGTH_LONG).show();
+                    } else if (variation.is("variation_2")) {
+                        Toast.makeText(MainActivity.this, "Variation 2", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_LONG).show();
