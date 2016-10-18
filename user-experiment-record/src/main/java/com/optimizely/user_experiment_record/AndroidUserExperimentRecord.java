@@ -94,7 +94,10 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                 while (iterator2.hasNext()) {
                     String expId = iterator2.next();
                     String varId = expIdToVarIdJson.getString(expId);
-                    Map<String, String> expIdToVarIdMap = new HashMap<>();
+                    Map<String, String> expIdToVarIdMap = writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get(userId);
+                    if (expIdToVarIdMap == null) {
+                        expIdToVarIdMap = new HashMap<>();
+                    }
                     expIdToVarIdMap.put(expId, varId);
                     writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().put(userId, expIdToVarIdMap);
                 }

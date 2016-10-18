@@ -79,8 +79,10 @@ class UserExperimentRecordCache {
     boolean save(@NonNull String userId, @NonNull String experimentId, @NonNull String variationId) {
         try {
             JSONObject userExperimentRecord = load();
-            userExperimentRecord.put(userId, null);
-            JSONObject expIdToVarId = new JSONObject();
+            JSONObject expIdToVarId = userExperimentRecord.optJSONObject(userId);
+            if (expIdToVarId == null) {
+                expIdToVarId = new JSONObject();
+            }
             expIdToVarId.put(experimentId, variationId);
             userExperimentRecord.put(userId, expIdToVarId);
             return cache.save(getFileName(), userExperimentRecord.toString());
