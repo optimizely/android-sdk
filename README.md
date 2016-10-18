@@ -1,5 +1,14 @@
 # optimizely-ab-android-sdk
-[![Build Status](https://travis-ci.com/optimizely/optimizely-ab-android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=master)](https://travis-ci.com/optimizely/optimizely-ab-android-sdk)
+Master<br/> 
+[![Master Status](https://travis-ci.com/optimizely/optimizely-ab-android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=master)](https://travis-ci.com/optimizely/optimizely-ab-android-sdk)
+<br/>
+Beta<br/>
+[![Beta Status](https://travis-ci.com/optimizely/optimizely-ab-android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=beta)](https://travis-ci.com/optimizely/optimizely-ab-android-sdk)
+<br/>
+Devel<br/> 
+[![Devel Status](https://travis-ci.com/optimizely/optimizely-ab-android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=devel)](https://travis-ci.com/optimizely/optimizely-ab-android-sdk)
+<br/>
+<br/>
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 ## Architecture
@@ -61,3 +70,15 @@ Android Studio is an IDE that wraps gradle (and `adb`).  Everything you can do i
 You can import this project into Android Studio by opening Android Studio and selecting `Import Project` from the first dialog or from the `File` menu.  Simply select the project's root `build.gradle` file and Android Studio will do the rest.
 
 Tests can be run by right clicking the file in the project pane or by clicking the method name in source and selecting run.  You will be prompted to create an AVD or connect a device if one isn't connected.  
+
+## Releasing
+
+The default branch is devel.  Feature branch PRs are automatically made against it. When PRs are reviewed and pass checks they should be squased and merged into devel.  The version of the SDK in devel should always be the version of the next release plus `-SNAPSHOT`.  
+
+If a beta, or snapshot, build needs to be published simply checkout beta and merge devel.  The beta branch should fast forward.  Push devel and Travis will start.  If the tests pass the build will be sent to our Maven repos on Bintray.  
+
+When a release version needs to be published checkout the master branch and merge devel.  The master branch should be fast forwared.  Remove the `-SNAPSHOT` from the version in `build.gradle` and commit directly onto master. Push master and if the tests pass Travis will publish the version to our Maven repos on Bintray.  if the version already exists on Bintray the upload will be rejected.  The commit that updates the version should also be tagged with the version number.
+
+Once the next release has been published from the master branch the snapshot version in devel should be bumped to the next targeted version.
+
+*Note* only Optimizely employees can push to master, beta, and devel branches.
