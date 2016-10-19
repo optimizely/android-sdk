@@ -19,8 +19,10 @@ package com.optimizely.ab.android.sdk;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 
@@ -42,6 +44,7 @@ public class DataFileService extends Service {
      * @hide
      * @see Service#onStartCommand(Intent, int, int)
      */
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
@@ -93,6 +96,7 @@ public class DataFileService extends Service {
         stopSelf();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void getDataFile(String projectId, DataFileLoader dataFileLoader, DataFileLoadedListener loadedListener) {
         dataFileLoader.getDataFile(projectId, loadedListener);
     }

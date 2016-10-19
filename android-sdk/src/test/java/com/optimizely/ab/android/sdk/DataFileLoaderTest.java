@@ -15,6 +15,9 @@
  */
 package com.optimizely.ab.android.sdk;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -129,6 +132,7 @@ public class DataFileLoaderTest {
         verify(dataFileLoadedListener, never()).onDataFileLoaded(any(String.class));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void getDataFile() {
         DataFileLoader.TaskChain taskChain = mock(DataFileLoader.TaskChain.class);

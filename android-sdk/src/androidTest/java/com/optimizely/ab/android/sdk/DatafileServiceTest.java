@@ -17,7 +17,9 @@ package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
+import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ServiceTestRule;
 
@@ -42,6 +44,7 @@ public class DatafileServiceTest {
     @Rule
     public final ServiceTestRule mServiceRule = new ServiceTestRule();
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     @Ignore
     public void testBinding() throws TimeoutException {
@@ -56,6 +59,7 @@ public class DatafileServiceTest {
         assertTrue(dataFileService.isBound());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     @Ignore
     public void testValidStart() throws TimeoutException {
@@ -70,6 +74,7 @@ public class DatafileServiceTest {
         verify(logger).info("Started watching project {} in the background", "1");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void testNullIntentStart() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
@@ -82,6 +87,7 @@ public class DatafileServiceTest {
         verify(logger).warn("Data file service received a null intent");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     @Ignore
     public void testNoProjectIdIntentStart() throws TimeoutException {

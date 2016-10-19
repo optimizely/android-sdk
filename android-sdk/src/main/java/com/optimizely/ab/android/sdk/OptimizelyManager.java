@@ -16,6 +16,7 @@
 
 package com.optimizely.ab.android.sdk;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -25,11 +26,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
+import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
@@ -121,7 +124,11 @@ public class OptimizelyManager {
      * @param activity                an Activity, used to automatically unbind {@link DataFileService}
      * @param optimizelyStartListener callback that {@link AndroidOptimizely} instances are sent to.
      */
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public void start(@NonNull Activity activity, @NonNull OptimizelyStartListener optimizelyStartListener) {
+        if (!isAndroidVersionSupported()) {
+            return;
+        }
         activity.getApplication().registerActivityLifecycleCallbacks(new OptlyActivityLifecycleCallbacks(this));
         start(activity.getApplication(), optimizelyStartListener);
     }
@@ -135,12 +142,16 @@ public class OptimizelyManager {
      * @param optimizelyStartListener callback that {@link AndroidOptimizely} instances are sent to.
      */
     public void start(@NonNull Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
+        if (!isAndroidVersionSupported()) {
+            return;
+        }
         this.optimizelyStartListener = optimizelyStartListener;
         this.dataFileServiceConnection = new DataFileServiceConnection(this);
         final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
         context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     void stop(@NonNull Activity activity, @NonNull OptlyActivityLifecycleCallbacks optlyActivityLifecycleCallbacks) {
         stop(activity);
         activity.getApplication().unregisterActivityLifecycleCallbacks(optlyActivityLifecycleCallbacks);
@@ -156,6 +167,9 @@ public class OptimizelyManager {
      */
     @SuppressWarnings("WeakerAccess")
     public void stop(@NonNull Context context) {
+        if (!isAndroidVersionSupported()) {
+            return;
+        }
         if (dataFileServiceConnection != null && dataFileServiceConnection.isBound()) {
             context.getApplicationContext().unbindService(dataFileServiceConnection);
         }
@@ -178,6 +192,7 @@ public class OptimizelyManager {
      */
     @NonNull
     public AndroidOptimizely getOptimizely() {
+        isAndroidVersionSupported();
         return androidOptimizely;
     }
 
@@ -194,6 +209,10 @@ public class OptimizelyManager {
      */
     @NonNull
     public AndroidOptimizely getOptimizely(@NonNull Context context, @RawRes int dataFileRes) {
+        if (!isAndroidVersionSupported()) {
+            return androidOptimizely;
+        }
+
         AndroidUserExperimentRecord userExperimentRecord =
                 (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(getProjectId(), context);
         // Blocking File I/O is necessary here in order to provide a synchronous API
@@ -229,6 +248,7 @@ public class OptimizelyManager {
         return projectId;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void injectOptimizely(@NonNull final Context context, final @NonNull AndroidUserExperimentRecord userExperimentRecord, @NonNull final ServiceScheduler serviceScheduler, @NonNull final String dataFile) {
         AsyncTask<Void, Void, UserExperimentRecord> initUserExperimentRecordTask = new AsyncTask<Void, Void, UserExperimentRecord>() {
             @Override
@@ -275,6 +295,7 @@ public class OptimizelyManager {
         return new AndroidOptimizely(optimizely, LoggerFactory.getLogger(AndroidOptimizely.class));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     static class OptlyActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
 
         @NonNull private OptimizelyManager optimizelyManager;
@@ -360,6 +381,7 @@ public class OptimizelyManager {
          * @see ServiceConnection#onServiceConnected(ComponentName, IBinder)
          * @hide
          */
+        @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
@@ -462,6 +484,16 @@ public class OptimizelyManager {
                     Executors.newSingleThreadExecutor(),
                     logger);
 
+        }
+    }
+
+    private boolean isAndroidVersionSupported() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            return true;
+        } else {
+            logger.warn("Optimizely will not work on this phone.  It's Android version {} is less the minimum supported" +
+                    "version {}", Build.VERSION.SDK_INT, Build.VERSION_CODES.ICE_CREAM_SANDWICH);
+            return false;
         }
     }
 }

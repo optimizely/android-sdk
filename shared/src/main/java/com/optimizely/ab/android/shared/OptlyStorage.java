@@ -54,7 +54,7 @@ public class OptlyStorage {
     /**
      * Get a long value
      * @param key a String key
-     * @param defaultValue the value to return if the key isn't storedj
+     * @param defaultValue the value to return if the key isn't stored
      * @return the long value
      * @hide
      */
