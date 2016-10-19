@@ -18,13 +18,13 @@
         android:text="@string/button_1_text_default"/>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:contentDescription="@string/main_activity_heading_cd"
-        android:text="TextView"
+        android:contentDescription="@string/main_activity_heading_1_cd"
+        android:text="@string/main_activity_heading_1"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        tools:text="@string/main_activity_heading"/>
+        tools:text="@string/main_activity_heading_1"/>
 </RelativeLayout>

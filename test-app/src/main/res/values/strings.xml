@@ -4,6 +4,6 @@
     <string name="button_1_text_default">Next Activity</string>
     <string name="button_1_text_var_1">Start Next Activity!</string>
     <string name="button_1_text_var_2">Start Second Activity!</string>
-    <string name="main_activity_heading">Optimizely X Test App</string>
-    <string name="main_activity_heading_cd">Main heading</string>
+    <string name="main_activity_heading_1">Optimizely X Test App</string>
+    <string name="main_activity_heading_1_cd">Main heading</string>
 </resources>
