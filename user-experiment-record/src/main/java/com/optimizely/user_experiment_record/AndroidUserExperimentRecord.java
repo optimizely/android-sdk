@@ -163,10 +163,6 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
             variationKey = expIdToVarIdMap.get(experimentKey);
         }
 
-        if (variationKey == null) {
-            logger.error("Project config did not contain matching experiment and variation ids");
-        }
-
         return variationKey;
     }
 
