@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Optimized</string>
-    <string name="start_next_activity">Start Next Activity</string>
     <string name="button_1_text_default">Next Activity</string>
     <string name="button_1_text_var_1">Start Next Activity!</string>
     <string name="button_1_text_var_2">Start Second Activity!</string>
-    <string name="main_activity_heading_1">Optimizely X Test App</string>
-    <string name="main_activity_heading_1_cd">Main heading</string>
+    <string name="text_view_1_default">Optimizely X Test App</string>
+    <string name="text_view_1_var_1">Optimizely X</string>
+    <string name="text_view_1_var_2">Optimizely Test App</string>
+    <string name="text_view_1_cd">Text View 1</string>
 </resources>

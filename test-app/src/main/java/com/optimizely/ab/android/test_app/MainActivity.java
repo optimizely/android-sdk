@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.optimizely.ab.android.sdk.AndroidOptimizely;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button button = (Button) findViewById(R.id.button1);
+        Button button = (Button) findViewById(R.id.button_1);
 
         // This could also be done via DI framework such as Dagger
         myApplication = (MyApplication) getApplication();
@@ -77,15 +77,17 @@ public class MainActivity extends AppCompatActivity {
         optimizelyManager.start(this, new OptimizelyStartListener() {
             @Override
             public void onStart(AndroidOptimizely optimizely) {
+                TextView textView1 = (TextView) findViewById(R.id.text_view_1);
+                textView1.setVisibility(View.VISIBLE);
                 Variation variation = optimizely.activate("experiment_1", myApplication.getAnonUserId());
                 if (variation != null) {
                     if (variation.is("variation_1")) {
-                        Toast.makeText(MainActivity.this, "Variation 1", Toast.LENGTH_LONG).show();
+                        textView1.setText(R.string.text_view_1_var_1);
                     } else if (variation.is("variation_2")) {
-                        Toast.makeText(MainActivity.this, "Variation 2", Toast.LENGTH_LONG).show();
+                        textView1.setText(R.string.text_view_1_var_2);
                     }
                 } else {
-                    Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_LONG).show();
+                    textView1.setText(R.string.text_view_1_default);
                 }
             }
         });

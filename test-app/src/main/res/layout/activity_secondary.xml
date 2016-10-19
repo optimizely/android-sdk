@@ -11,7 +11,7 @@
     tools:dataFileService="com.optimizely.ab.android.test_app.MainActivity">
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/text_view_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_1_text_default"/>
