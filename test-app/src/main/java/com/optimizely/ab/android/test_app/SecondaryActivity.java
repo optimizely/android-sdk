@@ -15,10 +15,10 @@
  */
 package com.optimizely.ab.android.test_app;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.optimizely.ab.android.sdk.AndroidOptimizely;
@@ -38,7 +38,7 @@ public class SecondaryActivity extends AppCompatActivity {
         // track conversion event
         optimizely.track("goal_1", "user_1");
 
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         SecondaryFragment secondaryFragment = new SecondaryFragment();

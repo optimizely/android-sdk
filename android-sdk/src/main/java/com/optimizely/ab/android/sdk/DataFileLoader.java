@@ -17,8 +17,10 @@
 package com.optimizely.ab.android.sdk;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
@@ -44,6 +46,7 @@ class DataFileLoader {
         this.taskChain = taskChain;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     boolean getDataFile(@NonNull String projectId, @Nullable DataFileLoadedListener dataFileLoadedListener) {
         taskChain.start(projectId, dataFileLoadedListener);
 
@@ -62,6 +65,7 @@ class DataFileLoader {
             this.executor = Executors.newSingleThreadExecutor();
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
         void start(@NonNull String projectId, @Nullable DataFileLoadedListener dataFileLoadedListener) {
             DataFileClient dataFileClient = new DataFileClient(
                     new Client(new OptlyStorage(dataFileService), LoggerFactory.getLogger(OptlyStorage.class)),

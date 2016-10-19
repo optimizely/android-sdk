@@ -15,7 +15,9 @@
  */
 package com.optimizely.user_experiment_record;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
 import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
@@ -58,6 +60,7 @@ public class WriteThroughCacheFactoryTest {
         logger = mock(Logger.class);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void startWriteCacheTask() throws JSONException {
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
@@ -89,6 +92,7 @@ public class WriteThroughCacheFactoryTest {
         cache.delete(diskUserExperimentRecordCache.getFileName());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void startWriteCacheTaskFail() throws JSONException, IOException {
         Cache cache = mock(Cache.class);
@@ -116,6 +120,7 @@ public class WriteThroughCacheFactoryTest {
         verify(logger).error("Failed to persist user in variation {} for experiment {}.", "var1", "exp1");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void startRemoveCacheTask() throws JSONException, IOException {
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
@@ -146,6 +151,7 @@ public class WriteThroughCacheFactoryTest {
         verify(logger).info("Removed experimentKey: {} variationKey: {} record for user: {} from disk", "exp1", "var1", "user1");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void startRemoveCacheTaskFail() throws JSONException, IOException {
         Cache cache = mock(Cache.class);

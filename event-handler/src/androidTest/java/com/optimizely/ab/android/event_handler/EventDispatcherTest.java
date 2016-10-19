@@ -18,6 +18,8 @@ package com.optimizely.ab.android.event_handler;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -59,6 +61,7 @@ public class EventDispatcherTest {
     private Context context;
     private Client client;
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Before
     public void setup() {
         context = InstrumentationRegistry.getTargetContext();

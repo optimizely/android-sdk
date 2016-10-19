@@ -19,7 +19,9 @@ package com.optimizely.ab.android.event_handler;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.util.Pair;
 
 import org.slf4j.Logger;
@@ -43,6 +45,7 @@ class EventDAO {
         this.logger = logger;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     static EventDAO getInstance(@NonNull Context context, @NonNull Logger logger) {
         EventSQLiteOpenHelper sqLiteOpenHelper = new EventSQLiteOpenHelper(context, EventSQLiteOpenHelper.DB_NAME, null, EventSQLiteOpenHelper.VERSION, null, LoggerFactory.getLogger(EventSQLiteOpenHelper.class));
         return new EventDAO(sqLiteOpenHelper, logger);
