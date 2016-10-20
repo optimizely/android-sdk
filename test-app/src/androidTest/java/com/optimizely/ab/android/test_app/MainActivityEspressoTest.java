@@ -48,6 +48,7 @@ public class MainActivityEspressoTest {
         // Clear sticky bucketing
         context = InstrumentationRegistry.getTargetContext();
         context.deleteFile("optly-user-experiment-record-7664231436.json");
+        context.deleteFile("optly-data-file-7664231436.json");
         // Set the user's id to the test user that is in the whitelist.
         context.getSharedPreferences("user", Context.MODE_PRIVATE).edit()
                 .putString("userId", "test_user")
