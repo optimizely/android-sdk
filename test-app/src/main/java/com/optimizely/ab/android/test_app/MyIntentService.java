@@ -33,7 +33,7 @@ public class MyIntentService extends IntentService {
             // Get Optimizely from the Intent that started this Service
             final OptimizelyManager optimizelyManager = ((MyApplication) getApplication()).getOptimizelyManager();
             AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
-//            optimizely.track("goal_3", "user_1");
+            // TODO Setup an experiment here and test with Espresso.  Maybe show a notification?
         }
     }
 }

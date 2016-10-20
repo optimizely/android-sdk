@@ -35,9 +35,7 @@ public class SecondaryActivity extends AppCompatActivity {
         final MyApplication myApplication = (MyApplication) getApplication();
         final OptimizelyManager optimizelyManager = myApplication.getOptimizelyManager();
         AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
-
-        // track conversion event
-        optimizely.track("experiment_1", myApplication.getAnonUserId());
+        // TODO Setup an Optimizely experiment here and test with Espresso.
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -58,7 +56,7 @@ public class SecondaryActivity extends AppCompatActivity {
             super.onStart();
             final OptimizelyManager optimizelyManager = ((MyApplication) getActivity().getApplication()).getOptimizelyManager();
             AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
-//            optimizely.track("goal_2", "user_1");
+            // TODO Setup an Optimizely experiment here and test with Espresso.
         }
     }
 }
