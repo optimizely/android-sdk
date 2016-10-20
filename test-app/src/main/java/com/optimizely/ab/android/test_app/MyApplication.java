@@ -60,12 +60,11 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        // If the project doesn't compile because you are missing R.string.optly_project_id you need
-        // to put `git_ignored_strings.xml` in test-app/src/main/res/values.  This file is git ignored.
-        // It contains values that are unique for each developer.
-        final String projectId = getResources().getString(
-                getResources().getIdentifier("optly_project_id", "string", getPackageName()));
-        optimizelyManager = OptimizelyManager.builder(projectId)
+        // This app is built against a real Optimizely project with real experiments set.  Automated
+        // espresso tests are run against this project id.  Changing it will make the Optimizely
+        // tests setup not work and the Espresso tests will fail.  Also, the project id passed here
+        // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
+        optimizelyManager = OptimizelyManager.builder("7664231436")
                 .withEventHandlerDispatchInterval(30, TimeUnit.SECONDS)
                 .withDataFileDownloadInterval(30, TimeUnit.SECONDS)
                 .build();
