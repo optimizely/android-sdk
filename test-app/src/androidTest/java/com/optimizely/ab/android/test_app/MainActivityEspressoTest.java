@@ -30,6 +30,7 @@ import com.optimizely.ab.android.event_handler.EventIntentService;
 import com.optimizely.ab.android.sdk.DataFileService;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.bucketing.UserExperimentRecord;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +49,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -153,5 +155,10 @@ public class MainActivityEspressoTest {
             }
         }
         assertTrue(events.isEmpty());
+        MyApplication myApplication = (MyApplication) activityTestRule.getActivity().getApplication();
+        UserExperimentRecord userExperimentRecord = myApplication.getOptimizelyManager().getUserExperimentRecord();
+        // Being in the white list should override user experiment record
+        assertNull(userExperimentRecord.lookup("test_user", "experiment_0"));
+        assertNull(userExperimentRecord.lookup("test_user", "experiment_1"));
     }
 }
