@@ -27,7 +27,9 @@
           "key": "variation_2"
         }
       ],
-      "forcedVariations": {},
+      "forcedVariations": {
+        "test_user": "variation_1"
+      },
       "id": "7651112186"
     },
     {
@@ -55,7 +57,9 @@
           "key": "variation_2"
         }
       ],
-      "forcedVariations": {},
+      "forcedVariations": {
+        "test_user": "variation_1"
+      },
       "id": "7676481120"
     }
   ],
@@ -92,5 +96,5 @@
       "key": "experiment_1"
     }
   ],
-  "revision": "10"
+  "revision": "12"
 }

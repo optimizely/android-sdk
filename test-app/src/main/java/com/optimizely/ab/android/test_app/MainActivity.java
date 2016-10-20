@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,11 @@ package com.optimizely.ab.android.test_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
 
     private OptimizelyManager optimizelyManager;
     private MyApplication myApplication;
+
+
+    // The Idling Resource which will be null in production.
+    @Nullable private CountingIdlingResource countingIdlingResource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        if (countingIdlingResource != null) {
+            countingIdlingResource.increment();
+        }
         optimizelyManager.start(this, new OptimizelyStartListener() {
             @Override
             public void onStart(AndroidOptimizely optimizely) {
@@ -89,7 +101,22 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     textView1.setText(R.string.text_view_1_default);
                 }
+                if (countingIdlingResource != null) {
+                    countingIdlingResource.decrement();
+                }
             }
         });
+    }
+
+    /**
+     * Only called from test, creates and returns a new {@link CountingIdlingResource}.
+     */
+    @VisibleForTesting
+    @NonNull
+    public CountingIdlingResource getIdlingResource() {
+        if (countingIdlingResource == null) {
+            countingIdlingResource = new CountingIdlingResource("onOptimizelyStart", true);
+        }
+        return countingIdlingResource;
     }
 }
