@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.optimizely.ab.android.sdk.AndroidOptimizely;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
+import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 
 public class SecondaryActivity extends AppCompatActivity {
 
@@ -35,7 +36,8 @@ public class SecondaryActivity extends AppCompatActivity {
         final MyApplication myApplication = (MyApplication) getApplication();
         final OptimizelyManager optimizelyManager = myApplication.getOptimizelyManager();
         AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
-        // TODO Setup an Optimizely experiment here and test with Espresso.
+        CountingIdlingResourceManager.increment(); // For track event
+        optimizely.track("experiment_1", myApplication.getAnonUserId());
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

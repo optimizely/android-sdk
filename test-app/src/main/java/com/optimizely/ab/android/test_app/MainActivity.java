@@ -17,10 +17,8 @@ package com.optimizely.ab.android.test_app;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -30,16 +28,15 @@ import android.widget.TextView;
 import com.optimizely.ab.android.sdk.AndroidOptimizely;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
+import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.config.Variation;
 
 public class MainActivity extends AppCompatActivity {
 
+    // The Idling Resource which will be null in production.
+    @Nullable private static CountingIdlingResourceManager countingIdlingResourceManager;
     private OptimizelyManager optimizelyManager;
     private MyApplication myApplication;
-
-
-    // The Idling Resource which will be null in production.
-    @Nullable private CountingIdlingResource countingIdlingResource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Load Optimizely from a compiled in data file
         final AndroidOptimizely optimizely = optimizelyManager.getOptimizely(this, R.raw.data_file);
+        CountingIdlingResourceManager.increment(); // For impression event
         Variation variation = optimizely.activate("experiment_0", myApplication.getAnonUserId(), myApplication.getAttributes());
         if (variation != null) {
             if (variation.is("variation_1")) {
@@ -67,7 +65,9 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CountingIdlingResourceManager.increment();
                 optimizely.track("experiment_0", myApplication.getAnonUserId(), myApplication.getAttributes());
+                // For track event
 
                 v.getContext().getResources().getString(R.string.app_name);
                 Intent intent = new Intent(v.getContext(), SecondaryActivity.class);
@@ -83,14 +83,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if (countingIdlingResource != null) {
-            countingIdlingResource.increment();
-        }
+        CountingIdlingResourceManager.increment(); // For Optimizely starting
         optimizelyManager.start(this, new OptimizelyStartListener() {
             @Override
             public void onStart(AndroidOptimizely optimizely) {
+                CountingIdlingResourceManager.decrement(); // For Optimizely starting
                 TextView textView1 = (TextView) findViewById(R.id.text_view_1);
                 textView1.setVisibility(View.VISIBLE);
+                CountingIdlingResourceManager.increment(); // For impression event
                 Variation variation = optimizely.activate("experiment_1", myApplication.getAnonUserId());
                 if (variation != null) {
                     if (variation.is("variation_1")) {
@@ -101,22 +101,9 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     textView1.setText(R.string.text_view_1_default);
                 }
-                if (countingIdlingResource != null) {
-                    countingIdlingResource.decrement();
-                }
             }
         });
     }
 
-    /**
-     * Only called from test, creates and returns a new {@link CountingIdlingResource}.
-     */
-    @VisibleForTesting
-    @NonNull
-    public CountingIdlingResource getIdlingResource() {
-        if (countingIdlingResource == null) {
-            countingIdlingResource = new CountingIdlingResource("onOptimizelyStart", true);
-        }
-        return countingIdlingResource;
-    }
+
 }

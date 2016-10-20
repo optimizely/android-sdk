@@ -24,7 +24,6 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/text_view_1_cd"
-        android:text="@string/text_view_1_default"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:visibility="invisible"
         tools:text="@string/text_view_1_default"

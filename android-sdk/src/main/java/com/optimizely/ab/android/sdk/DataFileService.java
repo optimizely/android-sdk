@@ -35,7 +35,10 @@ import org.slf4j.LoggerFactory;
  * @hide
  */
 public class DataFileService extends Service {
-    static final String EXTRA_PROJECT_ID = "com.optimizely.ab.android.EXTRA_PROJECT_ID";
+    /**
+     * Extra containing the project id this instance of Optimizely was built with
+     */
+    public static final String EXTRA_PROJECT_ID = "com.optimizely.ab.android.EXTRA_PROJECT_ID";
     @NonNull private final IBinder binder = new LocalBinder();
     Logger logger = LoggerFactory.getLogger(getClass());
     private boolean isBound;

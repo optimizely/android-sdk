@@ -86,6 +86,16 @@ public class ServiceScheduler {
     }
 
     /**
+     * Is an {@link Intent} for a service scheduled
+     * @param intent the intent in question
+     * @return is it scheduled or not
+     * @hide
+     */
+    public boolean isScheduled(Intent intent) {
+        return pendingIntentFactory.hasPendingIntent(intent);
+    }
+
+    /**
      * Handles the complexities around PendingIntent flags
      *
      * We need to know if the PendingIntent has already been created to prevent pushing
