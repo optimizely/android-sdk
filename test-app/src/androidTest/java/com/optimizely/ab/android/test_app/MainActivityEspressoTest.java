@@ -119,6 +119,7 @@ public class MainActivityEspressoTest {
                     serviceScheduler.unschedule(dataFileServiceIntent);
                     assertFalse(serviceScheduler.isScheduled(dataFileServiceIntent));
                     assertFalse(serviceScheduler.isScheduled(eventIntentService));
+                    CountingIdlingResourceManager.clearEvents();
                 }
             })
             .around(activityTestRule);
