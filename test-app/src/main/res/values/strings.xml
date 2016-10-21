@@ -1,10 +1,16 @@
 <resources>
     <string name="app_name">Optimized</string>
-    <string name="button_1_text_default">Next Activity</string>
-    <string name="button_1_text_var_1">Start Next Activity!</string>
-    <string name="button_1_text_var_2">Start Second Activity!</string>
-    <string name="text_view_1_default">Optimizely X Test App</string>
-    <string name="text_view_1_var_1">Optimizely X</string>
-    <string name="text_view_1_var_2">Optimizely Test App</string>
-    <string name="text_view_1_cd">Text View 1</string>
+    <string name="main_act_button_1_text_default">Next Activity</string>
+    <string name="main_act_button_1_text_var_1">Start Next Activity!</string>
+    <string name="main_act_button_1_text_var_2">Start Second Activity!</string>
+    <string name="main_act_text_view_1_default">Optimizely X Test App</string>
+    <string name="main_act_text_view_1_var_1">Optimizely X</string>
+    <string name="main_act_text_view_1_var_2">Optimizely Test App</string>
+    <string name="main_act_text_view_1_cd">Text View 1</string>
+    <string name="secondary_frag_text_view_1_default">Inside of a Fragment</string>
+    <string name="secondary_frag_text_view_1_var_1">We\'re Inside of a Fragment</string>
+    <string name="secondary_frag_text_view_1_var_2">We are Inside of a Fragment</string>
+    <string name="secondary_frag_button_1_default">Show Toast</string>
+    <string name="notification_service_notification_title">Optimizely X Android</string>
+    <string name="notification_service_notification_text">Works in services!</string>
 </resources>

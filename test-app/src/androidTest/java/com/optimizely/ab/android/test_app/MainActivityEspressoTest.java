@@ -130,19 +130,25 @@ public class MainActivityEspressoTest {
         // These tests are pointed at a real project.
         // The user 'test_user` is in the whitelist for variation 1 for experiment 0 and experiment 1.
         onView(withId(R.id.button_1))
-                .check(matches(withText(context.getString(R.string.button_1_text_var_1))));
+                .check(matches(withText(context.getString(R.string.main_act_button_1_text_var_1))));
 
         // Espresso will wait for Optimizely to start due to the registered idling resources
         onView(withId(R.id.text_view_1))
-                .check(matches(withText(context.getString(R.string.text_view_1_var_1))));
+                .check(matches(withText(context.getString(R.string.main_act_text_view_1_var_1))));
 
         assertTrue(serviceScheduler.isScheduled(dataFileServiceIntent));
 
         onView(withId(R.id.button_1))      // withId(R.id.my_view) is a ViewMatcher
                 .perform(click());         // click() is a ViewAction
 
+        onView(withId(R.id.text_view_1))
+                .check(matches(withText(context.getString(R.string.secondary_frag_text_view_1_var_1))));
+
+        onView(withId(R.id.button_1))      // withId(R.id.my_view) is a ViewMatcher
+                .perform(click());         // click() is a ViewAction
+
         List<Pair<String, String>> events = CountingIdlingResourceManager.getEvents();
-        assertTrue(events.size() == 4);
+        assertTrue(events.size() == 6);
         Iterator<Pair<String, String>> iterator = events.iterator();
         while (iterator.hasNext()) {
             Pair<String, String> event = iterator.next();
@@ -151,7 +157,9 @@ public class MainActivityEspressoTest {
             if (url.equals("https://p13nlog.dz.optimizely.com/log/decision") && payload.contains("7676481120") && payload.contains("7661891902")
                     || url.equals("https://p13nlog.dz.optimizely.com/log/decision") && payload.contains("7651112186") && payload.contains("7674261140")
                     || url.equals("https://p13nlog.dz.optimizely.com/log/event") && payload.contains("experiment_0")
-                    || url.equals("https://p13nlog.dz.optimizely.com/log/event") && payload.contains("experiment_1")) {
+                    || url.equals("https://p13nlog.dz.optimizely.com/log/event") && payload.contains("experiment_1")
+                    || url.equals("https://p13nlog.dz.optimizely.com/log/decision") && payload.contains("7680080715") && payload.contains("7685562539")
+                    || url.equals("https://p13nlog.dz.optimizely.com/log/event") && payload.contains("experiment_2")) {
                 iterator.remove();
             }
         }

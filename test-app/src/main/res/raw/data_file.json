@@ -61,6 +61,36 @@
         "test_user": "variation_1"
       },
       "id": "7676481120"
+    },
+    {
+      "status": "Running",
+      "key": "experiment_2",
+      "layerId": "7694850183",
+      "trafficAllocation": [
+        {
+          "entityId": "7685562539",
+          "endOfRange": 5000
+        },
+        {
+          "entityId": "7705240012",
+          "endOfRange": 10000
+        }
+      ],
+      "audienceIds": [],
+      "variations": [
+        {
+          "id": "7685562539",
+          "key": "variation_1"
+        },
+        {
+          "id": "7705240012",
+          "key": "variation_2"
+        }
+      ],
+      "forcedVariations": {
+        "test_user": "variation_1"
+      },
+      "id": "7680080715"
     }
   ],
   "version": "2",
@@ -94,7 +124,14 @@
       ],
       "id": "7670870364",
       "key": "experiment_1"
+    },
+    {
+      "experimentIds": [
+        "7680080715"
+      ],
+      "id": "7687332536",
+      "key": "experiment_2"
     }
   ],
-  "revision": "12"
+  "revision": "16"
 }

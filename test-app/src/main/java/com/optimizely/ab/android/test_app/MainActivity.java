@@ -18,8 +18,6 @@ package com.optimizely.ab.android.test_app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -54,12 +52,12 @@ public class MainActivity extends AppCompatActivity {
         Variation variation = optimizely.activate("experiment_0", myApplication.getAnonUserId(), myApplication.getAttributes());
         if (variation != null) {
             if (variation.is("variation_1")) {
-                button.setText(R.string.button_1_text_var_1);
+                button.setText(R.string.main_act_button_1_text_var_1);
             } else if (variation.is("variation_2")) {
-                button.setText(R.string.button_1_text_var_2);
+                button.setText(R.string.main_act_button_1_text_var_2);
             }
         } else {
-            button.setText(R.string.button_1_text_default);
+            button.setText(R.string.main_act_button_1_text_default);
         }
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -72,9 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 v.getContext().getResources().getString(R.string.app_name);
                 Intent intent = new Intent(v.getContext(), SecondaryActivity.class);
                 startActivity(intent);
-
-                intent.setClass(v.getContext(), MyIntentService.class);
-                startService(intent);
             }
         });
     }
@@ -94,12 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 Variation variation = optimizely.activate("experiment_1", myApplication.getAnonUserId());
                 if (variation != null) {
                     if (variation.is("variation_1")) {
-                        textView1.setText(R.string.text_view_1_var_1);
+                        textView1.setText(R.string.main_act_text_view_1_var_1);
                     } else if (variation.is("variation_2")) {
-                        textView1.setText(R.string.text_view_1_var_2);
+                        textView1.setText(R.string.main_act_text_view_1_var_2);
                     }
                 } else {
-                    textView1.setText(R.string.text_view_1_default);
+                    textView1.setText(R.string.main_act_text_view_1_default);
                 }
             }
         });

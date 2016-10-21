@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/button_1_text_default"/>
+        android:text="@string/main_act_button_1_text_default"/>
 
     <TextView
         android:id="@+id/text_view_1"
@@ -23,9 +23,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:contentDescription="@string/text_view_1_cd"
+        android:contentDescription="@string/main_act_text_view_1_cd"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:visibility="invisible"
-        tools:text="@string/text_view_1_default"
+        tools:text="@string/main_act_text_view_1_default"
         tools:visibility="visible"/>
 </RelativeLayout>
