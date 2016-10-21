@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016, Optimizely
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,47 +17,59 @@ package com.optimizely.ab.android.test_app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.optimizely.ab.android.sdk.AndroidOptimizely;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
+import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.config.Variation;
 
 public class MainActivity extends AppCompatActivity {
 
+    // The Idling Resource which will be null in production.
+    @Nullable private static CountingIdlingResourceManager countingIdlingResourceManager;
     private OptimizelyManager optimizelyManager;
+    private MyApplication myApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button button = (Button) findViewById(R.id.button_1);
 
         // This could also be done via DI framework such as Dagger
-        optimizelyManager = ((MyApplication) getApplication()).getOptimizelyManager();
+        myApplication = (MyApplication) getApplication();
+        optimizelyManager = myApplication.getOptimizelyManager();
 
         // Load Optimizely from a compiled in data file
-        AndroidOptimizely optimizely = optimizelyManager.getOptimizely(this, R.raw.data_file);
-        Variation variation = optimizely.activate("experiment_0", "user_1");
+        final AndroidOptimizely optimizely = optimizelyManager.getOptimizely(this, R.raw.data_file);
+        CountingIdlingResourceManager.increment(); // For impression event
+        Variation variation = optimizely.activate("experiment_0", myApplication.getAnonUserId(), myApplication.getAttributes());
         if (variation != null) {
             if (variation.is("variation_1")) {
-                Toast.makeText(MainActivity.this, "Variation 1", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_LONG).show();
+                button.setText(R.string.main_act_button_1_text_var_1);
+            } else if (variation.is("variation_2")) {
+                button.setText(R.string.main_act_button_1_text_var_2);
             }
+        } else {
+            button.setText(R.string.main_act_button_1_text_default);
         }
 
-        findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CountingIdlingResourceManager.increment();
+                optimizely.track("experiment_0", myApplication.getAnonUserId(), myApplication.getAttributes());
+                // For track event
+
                 v.getContext().getResources().getString(R.string.app_name);
                 Intent intent = new Intent(v.getContext(), SecondaryActivity.class);
                 startActivity(intent);
-
-                intent.setClass(v.getContext(), MyIntentService.class);
-                startService(intent);
             }
         });
     }
@@ -66,19 +78,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        CountingIdlingResourceManager.increment(); // For Optimizely starting
         optimizelyManager.start(this, new OptimizelyStartListener() {
             @Override
             public void onStart(AndroidOptimizely optimizely) {
-                Variation variation = optimizely.activate("experiment_1", "user_1");
-
+                CountingIdlingResourceManager.decrement(); // For Optimizely starting
+                TextView textView1 = (TextView) findViewById(R.id.text_view_1);
+                textView1.setVisibility(View.VISIBLE);
+                CountingIdlingResourceManager.increment(); // For impression event
+                Variation variation = optimizely.activate("experiment_1", myApplication.getAnonUserId());
                 if (variation != null) {
                     if (variation.is("variation_1")) {
-                        Toast.makeText(MainActivity.this, "Variation 1", Toast.LENGTH_LONG).show();
+                        textView1.setText(R.string.main_act_text_view_1_var_1);
+                    } else if (variation.is("variation_2")) {
+                        textView1.setText(R.string.main_act_text_view_1_var_2);
                     }
                 } else {
-                    Toast.makeText(MainActivity.this, "Default", Toast.LENGTH_LONG).show();
+                    textView1.setText(R.string.main_act_text_view_1_default);
                 }
             }
         });
     }
+
+
 }

@@ -1,11 +1,137 @@
 {
-  "experiments": [ ],
+  "experiments": [
+    {
+      "status": "Running",
+      "key": "experiment_0",
+      "layerId": "7674261139",
+      "trafficAllocation": [
+        {
+          "entityId": "7674261140",
+          "endOfRange": 5000
+        },
+        {
+          "entityId": "7678410470",
+          "endOfRange": 10000
+        }
+      ],
+      "audienceIds": [
+        "7671101484"
+      ],
+      "variations": [
+        {
+          "id": "7674261140",
+          "key": "variation_1"
+        },
+        {
+          "id": "7678410470",
+          "key": "variation_2"
+        }
+      ],
+      "forcedVariations": {
+        "test_user": "variation_1"
+      },
+      "id": "7651112186"
+    },
+    {
+      "status": "Running",
+      "key": "experiment_1",
+      "layerId": "7648347370",
+      "trafficAllocation": [
+        {
+          "entityId": "7661891902",
+          "endOfRange": 5000
+        },
+        {
+          "entityId": "7654432134",
+          "endOfRange": 10000
+        }
+      ],
+      "audienceIds": [],
+      "variations": [
+        {
+          "id": "7661891902",
+          "key": "variation_1"
+        },
+        {
+          "id": "7654432134",
+          "key": "variation_2"
+        }
+      ],
+      "forcedVariations": {
+        "test_user": "variation_1"
+      },
+      "id": "7676481120"
+    },
+    {
+      "status": "Running",
+      "key": "experiment_2",
+      "layerId": "7694850183",
+      "trafficAllocation": [
+        {
+          "entityId": "7685562539",
+          "endOfRange": 5000
+        },
+        {
+          "entityId": "7705240012",
+          "endOfRange": 10000
+        }
+      ],
+      "audienceIds": [],
+      "variations": [
+        {
+          "id": "7685562539",
+          "key": "variation_1"
+        },
+        {
+          "id": "7705240012",
+          "key": "variation_2"
+        }
+      ],
+      "forcedVariations": {
+        "test_user": "variation_1"
+      },
+      "id": "7680080715"
+    }
+  ],
   "version": "2",
-  "audiences": [ ],
-  "groups": [ ],
-  "attributes": [ ],
-  "projectId": "7595190003",
-  "accountId": "6365361536",
-  "events": [ ],
-  "revision": "1"
+  "audiences": [
+    {
+      "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"locale\", \"type\": \"custom_attribute\", \"value\": \"en_US\"}]]]",
+      "id": "7671101484",
+      "name": "Americans"
+    }
+  ],
+  "groups": [],
+  "attributes": [
+    {
+      "id": "7656544299",
+      "key": "locale"
+    }
+  ],
+  "projectId": "7664231436",
+  "accountId": "3279320409",
+  "events": [
+    {
+      "experimentIds": [
+        "7651112186"
+      ],
+      "id": "7667071273",
+      "key": "experiment_0"
+    },
+    {
+      "experimentIds": [
+        "7676481120"
+      ],
+      "id": "7670870364",
+      "key": "experiment_1"
+    },
+    {
+      "experimentIds": [
+        "7680080715"
+      ],
+      "id": "7687332536",
+      "key": "experiment_2"
+    }
+  ],
+  "revision": "16"
 }

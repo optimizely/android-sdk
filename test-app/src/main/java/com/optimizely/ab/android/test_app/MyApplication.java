@@ -16,31 +16,57 @@
 package com.optimizely.ab.android.test_app;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.support.annotation.NonNull;
 
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class MyApplication extends Application {
 
+    public static final String PROJECT_ID = "7664231436";
     private OptimizelyManager optimizelyManager;
 
     public OptimizelyManager getOptimizelyManager() {
         return optimizelyManager;
+    }
+    public Map<String,String> getAttributes() {
+        Map<String,String> attributes = new HashMap<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            attributes.put("locale", getResources().getConfiguration().getLocales().get(0).toString());
+        } else {
+            attributes.put("locale", getResources().getConfiguration().locale.toString());
+        }
+        return attributes;
+    }
+    @NonNull
+    public String getAnonUserId() {
+        SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
+        String id = sharedPreferences.getString("userId", null);
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+            sharedPreferences.edit().putString("userId", id).apply();
+        }
+        return id;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        // If the project doesn't compile because you are missing R.string.optly_project_id you need
-        // to put `git_ignored_strings.xml` in test-app/src/main/res/values.  This file is git ignored.
-        // It contains values that are unique for each developer.
-        final String projectId = getResources().getString(
-                getResources().getIdentifier("optly_project_id", "string", getPackageName()));
-        optimizelyManager = OptimizelyManager.builder(projectId)
-                .withEventHandlerDispatchInterval(30, TimeUnit.SECONDS)
-                .withDataFileDownloadInterval(30, TimeUnit.SECONDS)
+        // This app is built against a real Optimizely project with real experiments set.  Automated
+        // espresso tests are run against this project id.  Changing it will make the Optimizely
+        // tests setup not work and the Espresso tests will fail.  Also, the project id passed here
+        // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
+        optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
+                .withEventHandlerDispatchInterval(3, TimeUnit.SECONDS)
+                .withDataFileDownloadInterval(30, TimeUnit.MINUTES)
                 .build();
     }
 }
