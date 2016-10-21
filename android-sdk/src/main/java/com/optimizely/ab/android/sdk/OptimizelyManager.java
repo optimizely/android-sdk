@@ -35,6 +35,7 @@ import android.support.annotation.RawRes;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.VisibleForTesting;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
@@ -56,13 +57,14 @@ import java.util.concurrent.TimeUnit;
  * Handles loading the Optimizely data file
  */
 public class OptimizelyManager {
-    @NonNull private static AndroidOptimizely androidOptimizely = new AndroidOptimizely(null,
+    @NonNull private static AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, null, null,
             LoggerFactory.getLogger(AndroidOptimizely.class));
     @NonNull private final String projectId;
     @NonNull private final Long eventHandlerDispatchInterval;
     @NonNull private final TimeUnit eventHandlerDispatchIntervalTimeUnit;
     @NonNull private final Long dataFileDownloadInterval;
     @NonNull private final TimeUnit dataFileDownloadIntervalTimeUnit;
+    @Nullable private final MixpanelAPI mixpanelAPI;
     @NonNull private final Executor executor;
     @NonNull private final Logger logger;
     @Nullable private DataFileServiceConnection dataFileServiceConnection;
@@ -74,6 +76,7 @@ public class OptimizelyManager {
                       @NonNull TimeUnit eventHandlerDispatchIntervalTimeUnit,
                       @NonNull Long dataFileDownloadInterval,
                       @NonNull TimeUnit dataFileDownloadIntervalTimeUnit,
+                      @Nullable MixpanelAPI mixpanelAPI,
                       @NonNull Executor executor,
                       @NonNull Logger logger) {
         this.projectId = projectId;
@@ -81,6 +84,7 @@ public class OptimizelyManager {
         this.eventHandlerDispatchIntervalTimeUnit = eventHandlerDispatchIntervalTimeUnit;
         this.dataFileDownloadInterval = dataFileDownloadInterval;
         this.dataFileDownloadIntervalTimeUnit = dataFileDownloadIntervalTimeUnit;
+        this.mixpanelAPI = mixpanelAPI;
         this.executor = executor;
         this.logger = logger;
     }
@@ -295,7 +299,7 @@ public class OptimizelyManager {
                 .withClientEngine(Event.ClientEngine.ANDROID_SDK)
                 .withClientVersion(BuildConfig.CLIENT_VERSION)
                 .build();
-        return new AndroidOptimizely(optimizely, LoggerFactory.getLogger(AndroidOptimizely.class));
+        return new AndroidOptimizely(optimizely, userExperimentRecord, mixpanelAPI, LoggerFactory.getLogger(AndroidOptimizely.class));
     }
 
     @VisibleForTesting
@@ -456,6 +460,7 @@ public class OptimizelyManager {
         @NonNull private TimeUnit dataFileDownloadIntervalTimeUnit = TimeUnit.DAYS;
         @NonNull private Long eventHandlerDispatchInterval = 1L;
         @NonNull private TimeUnit eventHandlerDispatchIntervalTimeUnit = TimeUnit.DAYS;
+        @Nullable private MixpanelAPI mixpanelAPI;
 
         Builder(@NonNull String projectId) {
             this.projectId = projectId;
@@ -487,6 +492,11 @@ public class OptimizelyManager {
             return this;
         }
 
+        public Builder withMixPanel(MixpanelAPI mixpanelAPI) {
+            this.mixpanelAPI = mixpanelAPI;
+            return this;
+        }
+
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          * @return a {@link Builder} instance
@@ -499,6 +509,7 @@ public class OptimizelyManager {
                     eventHandlerDispatchIntervalTimeUnit,
                     dataFileDownloadInterval,
                     dataFileDownloadIntervalTimeUnit,
+                    mixpanelAPI,
                     Executors.newSingleThreadExecutor(),
                     logger);
 

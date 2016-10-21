@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 
 import java.util.HashMap;
@@ -67,6 +68,7 @@ public class MyApplication extends Application {
         optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
                 .withEventHandlerDispatchInterval(3, TimeUnit.SECONDS)
                 .withDataFileDownloadInterval(30, TimeUnit.MINUTES)
+                .withMixPanel(MixpanelAPI.getInstance(this, "b2d92fb410494598279acc474c535d61"))
                 .build();
     }
 }

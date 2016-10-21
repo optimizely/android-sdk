@@ -36,6 +36,8 @@ dependencies {
 //    compile 'com.optimizely.ab:android-sdk:0.1.2-SNAPSHOT'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
+    compile "com.mixpanel.android:mixpanel-android:4.+"
+    compile "com.google.android.gms:play-services:7.5.0"
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
