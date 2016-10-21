@@ -15,6 +15,8 @@
  */
 package com.optimizely.user_experiment_record;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
 import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
@@ -48,6 +50,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link AndroidUserExperimentRecord}
  */
 @RunWith(AndroidJUnit4.class)
+@RequiresApi(Build.VERSION_CODES.HONEYCOMB)
 public class AndroidUserExperimentRecordTest {
 
     private AndroidUserExperimentRecord androidUserExperimentRecord;

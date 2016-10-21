@@ -15,8 +15,10 @@
  */
 package com.optimizely.ab.android.sdk;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
@@ -72,6 +74,7 @@ public class DataFileReschedulerTest {
         verify(logger).info("Received intent with action {}", Intent.ACTION_BOOT_COMPLETED);
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     @Test
     public void receivedActionMyPackageReplaced() {
         Context context = InstrumentationRegistry.getTargetContext();
