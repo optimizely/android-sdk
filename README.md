@@ -10,6 +10,11 @@ Devel<br/>
 <br/>
 <br/>
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+## Overview
+
+Our Optimizely X Android solution allows you to easily run experiments anywhere in an Android application, even Services. The solution includes easy-to-use SDKs for experimenting in your code and tracking conversion events in Optimizely.
+
+To find out more check out the [documentation](https://developers.optimizely.com/x/solutions/sdks/introduction/index.html?language=android&platform=mobile). 
 
 ## Architecture
 
@@ -81,4 +86,8 @@ When a release version needs to be published checkout the master branch and merg
 
 Once the next release has been published from the master branch the snapshot version in devel should be bumped to the next targeted version.
 
-*Note* only Optimizely employees can push to master, beta, and devel branches.
+*Note:* only Optimizely employees can push to master, beta, and devel branches.
+
+## Contributing
+Please see [CONTRIBUTING](CONTRIBUTING.md).
+
