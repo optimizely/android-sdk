@@ -31,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,7 +165,8 @@ public class AndroidOptimizely {
             optimizely.track(eventName, userId, attributes, eventValue);
             if (mixpanelAPI != null && userExperimentRecord != null) {
                 try {
-                    List<Experiment> experimentList = optimizely.getProjectConfig().getExperimentsForEvenName(eventName);
+//                    List<Experiment> experimentList = optimizely.getProjectConfig().getExperimentsForEvenName(eventName);
+                    List<Experiment> experimentList = new ArrayList<>();
                     JSONObject properties = new JSONObject();
                     for (Experiment experiment : experimentList) {
                         properties.put("[Optimizely] " + experiment.getKey(), userExperimentRecord.lookup(userId, experiment.getKey()));
