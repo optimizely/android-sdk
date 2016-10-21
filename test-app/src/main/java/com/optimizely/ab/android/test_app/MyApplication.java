@@ -19,7 +19,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 
 import com.optimizely.ab.android.sdk.OptimizelyManager;
@@ -31,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MyApplication extends Application {
 
+    public static final String PROJECT_ID = "7664231436";
     private OptimizelyManager optimizelyManager;
 
     public OptimizelyManager getOptimizelyManager() {
@@ -64,9 +64,9 @@ public class MyApplication extends Application {
         // espresso tests are run against this project id.  Changing it will make the Optimizely
         // tests setup not work and the Espresso tests will fail.  Also, the project id passed here
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
-        optimizelyManager = OptimizelyManager.builder("7664231436")
-                .withEventHandlerDispatchInterval(30, TimeUnit.SECONDS)
-                .withDataFileDownloadInterval(30, TimeUnit.SECONDS)
+        optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
+                .withEventHandlerDispatchInterval(3, TimeUnit.SECONDS)
+                .withDataFileDownloadInterval(30, TimeUnit.MINUTES)
                 .build();
     }
 }

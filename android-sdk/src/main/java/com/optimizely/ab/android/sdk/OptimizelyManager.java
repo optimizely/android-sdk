@@ -33,6 +33,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.annotation.RequiresApi;
+import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
@@ -66,6 +67,7 @@ public class OptimizelyManager {
     @NonNull private final Logger logger;
     @Nullable private DataFileServiceConnection dataFileServiceConnection;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
+    @Nullable private UserExperimentRecord userExperimentRecord;
 
     OptimizelyManager(@NonNull String projectId,
                       @NonNull Long eventHandlerDispatchInterval,
@@ -265,6 +267,7 @@ public class OptimizelyManager {
 
                 try {
                     OptimizelyManager.androidOptimizely = buildOptimizely(context, dataFile, userExperimentRecord);
+                    OptimizelyManager.this.userExperimentRecord = userExperimentRecord;
                     logger.info("Sending Optimizely instance to listener");
 
                     if (optimizelyStartListener != null) {
@@ -293,6 +296,21 @@ public class OptimizelyManager {
                 .withClientVersion(BuildConfig.CLIENT_VERSION)
                 .build();
         return new AndroidOptimizely(optimizely, LoggerFactory.getLogger(AndroidOptimizely.class));
+    }
+
+    @VisibleForTesting
+    public UserExperimentRecord getUserExperimentRecord() {
+        return userExperimentRecord;
+    }
+
+    private boolean isAndroidVersionSupported() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            return true;
+        } else {
+            logger.warn("Optimizely will not work on this phone.  It's Android version {} is less the minimum supported" +
+                    "version {}", Build.VERSION.SDK_INT, Build.VERSION_CODES.ICE_CREAM_SANDWICH);
+            return false;
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -484,16 +502,6 @@ public class OptimizelyManager {
                     Executors.newSingleThreadExecutor(),
                     logger);
 
-        }
-    }
-
-    private boolean isAndroidVersionSupported() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            return true;
-        } else {
-            logger.warn("Optimizely will not work on this phone.  It's Android version {} is less the minimum supported" +
-                    "version {}", Build.VERSION.SDK_INT, Build.VERSION_CODES.ICE_CREAM_SANDWICH);
-            return false;
         }
     }
 }
