@@ -19,8 +19,10 @@ package com.optimizely.ab.android.sdk;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 
@@ -33,7 +35,10 @@ import org.slf4j.LoggerFactory;
  * @hide
  */
 public class DataFileService extends Service {
-    static final String EXTRA_PROJECT_ID = "com.optimizely.ab.android.EXTRA_PROJECT_ID";
+    /**
+     * Extra containing the project id this instance of Optimizely was built with
+     */
+    public static final String EXTRA_PROJECT_ID = "com.optimizely.ab.android.EXTRA_PROJECT_ID";
     @NonNull private final IBinder binder = new LocalBinder();
     Logger logger = LoggerFactory.getLogger(getClass());
     private boolean isBound;
@@ -42,6 +47,7 @@ public class DataFileService extends Service {
      * @hide
      * @see Service#onStartCommand(Intent, int, int)
      */
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
@@ -93,6 +99,7 @@ public class DataFileService extends Service {
         stopSelf();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void getDataFile(String projectId, DataFileLoader dataFileLoader, DataFileLoadedListener loadedListener) {
         dataFileLoader.getDataFile(projectId, loadedListener);
     }

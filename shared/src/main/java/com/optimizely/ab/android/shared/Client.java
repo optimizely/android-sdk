@@ -64,7 +64,7 @@ public class Client {
     }
 
     /**
-     * Adds a if-modfied-since header to the open {@link URLConnection} if this value is
+     * Adds a if-modified-since header to the open {@link URLConnection} if this value is
      * stored in {@link OptlyStorage}.
      * @param urlConnection an open {@link URLConnection}
      * @hide
@@ -77,7 +77,7 @@ public class Client {
     }
 
     /**
-     * Retrieves the last-modfied head from a {@link URLConnection} and saves it
+     * Retrieves the last-modified head from a {@link URLConnection} and saves it
      * in {@link OptlyStorage}.
      * @param urlConnection a {@link URLConnection} instance
      * @hide

@@ -30,7 +30,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.2.2'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -61,7 +61,7 @@ ext {
     dexmaker_ver = "1.2"
     espresso_ver = "2.2.2"
     gson_ver = "2.6.2"
-    version_name = "0.1.1"
+    version_name = "0.1.2"
     group_id = "com.optimizely.ab"
 }
 
@@ -80,4 +80,5 @@ task testAllModules << {
 
 testAllModules.dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
         ':event-handler:connectedAndroidTest', ':event-handler:test',
-        ':user-experiment-record:connectedAndroidTest', ':shared:connectedAndroidTest')
+        ':user-experiment-record:connectedAndroidTest', ':shared:connectedAndroidTest',
+        ':test-app:connectedAndroidTest')

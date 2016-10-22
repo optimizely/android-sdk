@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
+import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
@@ -136,6 +137,8 @@ class EventDispatcher {
         boolean eventWasSent = eventClient.sendEvent(event);
 
         if (eventWasSent) {
+            CountingIdlingResourceManager.decrement();
+            CountingIdlingResourceManager.recordEvent(new Pair<>(event.getURL().toString(), event.getRequestBody()));
             return true;
         } else {
             boolean eventWasStored = eventDAO.storeEvent(event);
@@ -148,6 +151,4 @@ class EventDispatcher {
             }
         }
     }
-
-
 }

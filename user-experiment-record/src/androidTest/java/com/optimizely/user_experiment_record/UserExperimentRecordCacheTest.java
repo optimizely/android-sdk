@@ -68,9 +68,11 @@ public class UserExperimentRecordCacheTest {
     @Test
     public void testSaveAndLoad() throws JSONException {
         assertTrue(userExperimentRecordCache.save("foo", "exp1", "var1"));
+        assertTrue(userExperimentRecordCache.save("foo", "exp2", "var2"));
         JSONObject expectedActivation = new JSONObject();
         JSONObject expectedExpIdToVarId = new JSONObject();
         expectedExpIdToVarId.put("exp1", "var1");
+        expectedExpIdToVarId.put("exp2", "var2");
         expectedActivation.put("foo", expectedExpIdToVarId);
         assertEquals(expectedActivation.toString(), userExperimentRecordCache.load().toString());
     }

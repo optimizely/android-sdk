@@ -18,8 +18,10 @@ package com.optimizely.user_experiment_record;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.Pair;
 
 import com.optimizely.ab.android.shared.Cache;
@@ -42,7 +44,7 @@ import java.util.concurrent.Executors;
  * Makes bucketing sticky.  This module is what allows the core
  * to know if a user has already been bucketed for an experiment.
  * Once a user is bucketed they will stay bucketed unless the device's
- * storage is cleared. Bucketting information is stored in a simple file.
+ * storage is cleared. Bucketing information is stored in a simple file.
  */
 public class AndroidUserExperimentRecord implements UserExperimentRecord {
 
@@ -94,7 +96,10 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                 while (iterator2.hasNext()) {
                     String expId = iterator2.next();
                     String varId = expIdToVarIdJson.getString(expId);
-                    Map<String, String> expIdToVarIdMap = new HashMap<>();
+                    Map<String, String> expIdToVarIdMap = writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get(userId);
+                    if (expIdToVarIdMap == null) {
+                        expIdToVarIdMap = new HashMap<>();
+                    }
                     expIdToVarIdMap.put(expId, varId);
                     writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().put(userId, expIdToVarIdMap);
                 }
@@ -107,6 +112,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
     /**
      * @see UserExperimentRecord#save(String, String, String)
      */
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public boolean save(final String userId, final String experimentKey, final String variationKey) {
         if (userId == null) {
@@ -160,16 +166,13 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
             variationKey = expIdToVarIdMap.get(experimentKey);
         }
 
-        if (variationKey == null) {
-            logger.error("Project config did not contain matching experiment and variation ids");
-        }
-
         return variationKey;
     }
 
     /**
      * @see UserExperimentRecord#remove(String, String)
      */
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public boolean remove(final String userId, final String experimentKey) {
         if (userId == null) {
@@ -223,6 +226,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
             return memoryUserExperimentRecordCache;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
         void startWriteCacheTask(final String userId, final String experimentKey, final String variationKey) {
             AsyncTask<Void,Void,Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
@@ -256,6 +260,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
             task.executeOnExecutor(executor);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
         void startRemoveCacheTask(final String userId, final String experimentKey, final String variationKey) {
             AsyncTask<String, Void, Pair<String, Boolean>> task =  new AsyncTask<String, Void, Pair<String, Boolean>>() {
 

@@ -15,6 +15,8 @@
  */
 package com.optimizely.user_experiment_record;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
 import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
@@ -48,6 +50,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link AndroidUserExperimentRecord}
  */
 @RunWith(AndroidJUnit4.class)
+@RequiresApi(Build.VERSION_CODES.HONEYCOMB)
 public class AndroidUserExperimentRecordTest {
 
     private AndroidUserExperimentRecord androidUserExperimentRecord;
@@ -195,9 +198,11 @@ public class AndroidUserExperimentRecordTest {
     public void start() throws JSONException {
         androidUserExperimentRecord.start();
         androidUserExperimentRecord.save("user1", "exp1", "var1");
+        androidUserExperimentRecord.save("user1", "exp2", "var2");
 
         Map<String, String> expKeyToVarKeyMap = new HashMap<>();
         expKeyToVarKeyMap.put("exp1", "var1");
+        expKeyToVarKeyMap.put("exp2", "var2");
         Map<String, Map<String, String>> recordMap = new HashMap<>();
         recordMap.put("user1", expKeyToVarKeyMap);
 

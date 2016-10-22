@@ -20,6 +20,8 @@ import android.content.Context;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import org.slf4j.Logger;
 
@@ -48,6 +50,7 @@ class EventSQLiteOpenHelper extends SQLiteOpenHelper {
         this.logger = logger;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     EventSQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler, Logger logger) {
         super(context, name, factory, version, errorHandler);
         this.logger = logger;

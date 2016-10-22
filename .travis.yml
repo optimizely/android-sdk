@@ -5,6 +5,7 @@ android:
     - platform-tools
     - build-tools-24.0.3
     - android-24
+    - doc-24
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-24
 jdk:
@@ -22,4 +23,4 @@ before_script:
   - adb shell input keyevent 82 &
 script:
   - ./gradlew testAllModules
-  - if [ "$TRAVIS_BRANCH" == "beta" ] || [ "$TRAVIS_BRANCH" == "master" ]; then ./gradlew ship; fi
+  - if [[ ( "$TRAVIS_BRANCH" == "beta"  || "$TRAVIS_BRANCH" == "master" ) && ( -z "$TRAVIS_TAG") ]]; then ./gradlew ship; fi

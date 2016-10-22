@@ -17,6 +17,8 @@ package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -75,6 +77,7 @@ public class EventReschedulerTest {
         verify(logger).info("Rescheduling event flushing if necessary");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR1)
     @Test
     public void onReceiveValidPackageReplaced() {
         when(intent.getAction()).thenReturn(Intent.ACTION_MY_PACKAGE_REPLACED);

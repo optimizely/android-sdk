@@ -113,6 +113,7 @@ public class AndroidOptimizely {
                       @NonNull Map<String, String> attributes) throws UnknownEventTypeException {
         if (optimizely != null) {
             optimizely.track(eventName, userId, attributes);
+
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
                     " with attributes", eventName, userId);

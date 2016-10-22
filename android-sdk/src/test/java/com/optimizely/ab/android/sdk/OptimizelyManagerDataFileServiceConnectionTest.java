@@ -16,6 +16,8 @@
 package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
@@ -50,6 +52,7 @@ public class OptimizelyManagerDataFileServiceConnectionTest {
         dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnected() {
         DataFileService.LocalBinder binder = mock(DataFileService.LocalBinder.class);
@@ -66,6 +69,7 @@ public class OptimizelyManagerDataFileServiceConnectionTest {
         verify(optimizelyManager).injectOptimizely(any(Context.class), any(AndroidUserExperimentRecord.class), any(ServiceScheduler.class), eq(""));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnectedNotBoundWhenDataFileLoaded() {
         DataFileService.LocalBinder binder = mock(DataFileService.LocalBinder.class);
@@ -86,6 +90,7 @@ public class OptimizelyManagerDataFileServiceConnectionTest {
         verify(optimizelyManager, never()).injectOptimizely(any(Context.class), any(AndroidUserExperimentRecord.class), any(ServiceScheduler.class), eq(""));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnectedNullServiceFromBinder() {
         DataFileService.LocalBinder binder = mock(DataFileService.LocalBinder.class);

@@ -1,15 +1,20 @@
 # optimizely-ab-android-sdk
 Master<br/> 
-[![Master Status](https://travis-ci.com/optimizely/optimizely-ab-android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=master)](https://travis-ci.com/optimizely/optimizely-ab-android-sdk)
+[![Master Status](https://travis-ci.com/optimizely/android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=master)](https://travis-ci.com/optimizely/android-sdk)
 <br/>
 Beta<br/>
-[![Beta Status](https://travis-ci.com/optimizely/optimizely-ab-android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=beta)](https://travis-ci.com/optimizely/optimizely-ab-android-sdk)
+[![Beta Status](https://travis-ci.com/optimizely/android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=beta)](https://travis-ci.com/optimizely/android-sdk)
 <br/>
 Devel<br/> 
-[![Devel Status](https://travis-ci.com/optimizely/optimizely-ab-android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=devel)](https://travis-ci.com/optimizely/optimizely-ab-android-sdk)
+[![Devel Status](https://travis-ci.com/optimizely/android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=devel)](https://travis-ci.com/optimizely/android-sdk)
 <br/>
 <br/>
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+## Overview
+
+Our Optimizely X Android solution allows you to easily run experiments anywhere in an Android application, even Services. The solution includes easy-to-use SDKs for experimenting in your code and tracking conversion events in Optimizely.
+
+To find out more check out the [documentation](https://developers.optimizely.com/x/solutions/sdks/introduction/index.html?language=android&platform=mobile). 
 
 ## Architecture
 
@@ -73,12 +78,16 @@ Tests can be run by right clicking the file in the project pane or by clicking t
 
 ## Releasing
 
-The default branch is devel.  Feature branch PRs are automatically made against it. When PRs are reviewed and pass checks they should be squased and merged into devel.  The version of the SDK in devel should always be the version of the next release plus `-SNAPSHOT`.  
+The default branch is devel.  Feature branch PRs are automatically made against it. When PRs are reviewed and pass checks they should be squashed and merged into devel.  The version of the SDK in devel should always be the version of the next release plus `-SNAPSHOT`.  
 
 If a beta, or snapshot, build needs to be published simply checkout beta and merge devel.  The beta branch should fast forward.  Push devel and Travis will start.  If the tests pass the build will be sent to our Maven repos on Bintray.  
 
-When a release version needs to be published checkout the master branch and merge devel.  The master branch should be fast forwared.  Remove the `-SNAPSHOT` from the version in `build.gradle` and commit directly onto master. Push master and if the tests pass Travis will publish the version to our Maven repos on Bintray.  if the version already exists on Bintray the upload will be rejected.  The commit that updates the version should also be tagged with the version number.
+When a release version needs to be published checkout the master branch and merge devel.  The master branch should be fast forwarded.  Remove the `-SNAPSHOT` from the version in `build.gradle` and commit directly onto master. Push master and if the tests pass Travis will publish the version to our Maven repos on Bintray.  if the version already exists on Bintray the upload will be rejected.  The commit that updates the version should also be tagged with the version number.
 
 Once the next release has been published from the master branch the snapshot version in devel should be bumped to the next targeted version.
 
-*Note* only Optimizely employees can push to master, beta, and devel branches.
+*Note:* only Optimizely employees can push to master, beta, and devel branches.
+
+## Contributing
+Please see [CONTRIBUTING](CONTRIBUTING.md).
+

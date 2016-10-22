@@ -16,11 +16,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SecondaryActivity">
+        <activity
+            android:name=".SecondaryActivity"
+            android:parentActivityName=".MainActivity">
         </activity>
 
         <service
-            android:name=".MyIntentService"
+            android:name=".NotificationService"
             android:exported="false">
         </service>
     </application>
