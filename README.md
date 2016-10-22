@@ -1,12 +1,12 @@
 # optimizely-ab-android-sdk
 Master<br/> 
-[![Master Status](https://travis-ci.com/optimizely/android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=master)](https://travis-ci.com/optimizely/android-sdk)
+[![Master Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=master)](https://travis-ci.org/optimizely/android-sdk)
 <br/>
 Beta<br/>
-[![Beta Status](https://travis-ci.com/optimizely/android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=beta)](https://travis-ci.com/optimizely/android-sdk)
+[![Beta Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=beta)](https://travis-ci.org/optimizely/android-sdk)
 <br/>
 Devel<br/> 
-[![Devel Status](https://travis-ci.com/optimizely/android-sdk.svg?token=gwpzBrYRAoACxHs4ThQT&branch=devel)](https://travis-ci.com/optimizely/android-sdk)
+[![Devel Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=devel)](https://travis-ci.org/optimizely/android-sdk)
 <br/>
 <br/>
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
