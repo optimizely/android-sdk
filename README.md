@@ -16,6 +16,8 @@ Our Optimizely X Android solution allows you to easily run experiments anywhere 
 
 To find out more check out the [documentation](https://developers.optimizely.com/x/solutions/sdks/introduction/index.html?language=android&platform=mobile). 
 
+This repo depends on [Optimizely X Java](https://github.com/optimizely/java-sdk).
+
 ## Architecture
 
 This project has 5 modules. Each module has source in `<module>/src/main/java`
