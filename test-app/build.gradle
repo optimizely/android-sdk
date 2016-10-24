@@ -9,7 +9,7 @@ android {
         targetSdkVersion target_sdk_version
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.optimizely.ab.android.test_app.TestRunner"
     }
     testOptions {
         unitTests.returnDefaultValues = true
