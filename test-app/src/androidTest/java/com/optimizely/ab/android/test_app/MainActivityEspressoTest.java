@@ -25,6 +25,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Pair;
+import android.view.WindowManager;
 
 import com.optimizely.ab.android.event_handler.EventIntentService;
 import com.optimizely.ab.android.sdk.DataFileService;
@@ -122,7 +123,26 @@ public class MainActivityEspressoTest {
                     CountingIdlingResourceManager.clearEvents();
                 }
             })
-            .around(activityTestRule);
+            .around(activityTestRule)
+            .around(new ExternalResource() {
+                @Override
+                protected void before() throws Throwable {
+                    super.before();
+                    Runnable wakeUpDevice = new Runnable() {
+                        public void run() {
+                            activityTestRule.getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                        }
+                    };
+                    activityTestRule.getActivity().runOnUiThread(wakeUpDevice);
+                }
+
+                @Override
+                protected void after() {
+                    super.after();
+                }
+            });
 
     @Test
     public void experimentActivationForWhitelistUser() throws InterruptedException {
