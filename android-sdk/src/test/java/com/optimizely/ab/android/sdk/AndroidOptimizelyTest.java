@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 
 import java.util.HashMap;
 
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -39,14 +40,14 @@ public class AndroidOptimizelyTest {
 
     @Test
     public void testGoodActivation1() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, null, null, logger);
         androidOptimizely.activate("1", "1");
         verify(optimizely).activate("1", "1");
     }
 
     @Test
     public void testBadActivation1() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, null, null, logger);
         androidOptimizely.activate("1", "1");
         verify(logger).warn("Optimizely is not initialized, can't activate experiment {} " +
                 "for user {}", "1", "1");
@@ -54,7 +55,7 @@ public class AndroidOptimizelyTest {
 
     @Test
     public void testGoodActivation2() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, null, null, logger);
         final HashMap<String, String> attributes = new HashMap<>();
         androidOptimizely.activate("1", "1", attributes);
         verify(optimizely).activate("1", "1", attributes);
@@ -62,7 +63,7 @@ public class AndroidOptimizelyTest {
 
     @Test
     public void testBadActivation2() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, null, null, logger);
         androidOptimizely.activate("1", "1", new HashMap<String, String>());
         verify(logger).warn("Optimizely is not initialized, can't activate experiment {} " +
                 "for user {} with attributes", "1", "1");
@@ -71,29 +72,29 @@ public class AndroidOptimizelyTest {
 
     @Test
     public void testGoodTrack1() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, null, null, logger);
         androidOptimizely.track("event1", "1");
-        verify(optimizely).track("event1", "1");
+        verify(optimizely).track(eq("event1"), eq("1"), eq(new HashMap<String, String>()), eq(0L));
     }
 
     @Test
     public void testBadTrack1() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, null, null, logger);
         androidOptimizely.track("event1", "1");
         verify(logger).warn("Optimizely is not initialized, could not track event {} for user {}", "event1", "1");
     }
 
     @Test
     public void testGoodTrack2() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, null, null, logger);
         final HashMap<String, String> attributes = new HashMap<>();
         androidOptimizely.track("event1", "1", attributes);
-        verify(optimizely).track("event1", "1", attributes);
+        verify(optimizely).track(eq("event1"), eq("1"), eq(new HashMap<String, String>()), eq(0L));
     }
 
     @Test
     public void testBadTrack2() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, null, null, logger);
         final HashMap<String, String> attributes = new HashMap<>();
         androidOptimizely.track("event1", "1", attributes);
         verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
@@ -102,14 +103,14 @@ public class AndroidOptimizelyTest {
 
     @Test
     public void testGoodTrack3() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, null, null, logger);
         androidOptimizely.track("event1", "1", 1L);
-        verify(optimizely).track("event1", "1", 1L);
+        verify(optimizely).track(eq("event1"), eq("1"), eq(new HashMap<String, String>()), eq(1L));
     }
 
     @Test
     public void testBadTrack3() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, null, null, logger);
         androidOptimizely.track("event1", "1", 1L);
         verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
                 "with value {}", "event1", "1", 1L);
@@ -117,7 +118,7 @@ public class AndroidOptimizelyTest {
 
     @Test
     public void testGoodTrack4() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, null, null, logger);
         final HashMap<String, String> attributes = new HashMap<>();
         androidOptimizely.track("event1", "1", attributes, 1L);
         verify(optimizely).track("event1", "1", attributes, 1L);
@@ -125,7 +126,7 @@ public class AndroidOptimizelyTest {
 
     @Test
     public void testBadTrack4() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, null, null, logger);
         final HashMap<String, String> attributes = new HashMap<>();
         androidOptimizely.track("event1", "1", attributes, 1L);
         verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
@@ -134,14 +135,14 @@ public class AndroidOptimizelyTest {
 
     @Test
     public void testGoodGetVariation1() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, null, null, logger);
         androidOptimizely.getVariation("1", "1");
         verify(optimizely).getVariation("1", "1");
     }
 
     @Test
     public void testBadGetVariation1() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, null, null, logger);
         androidOptimizely.getVariation("1", "1");
         verify(logger).warn("Optimizely is not initialized, could not get variation for experiment {} " +
                     "for user {}", "1", "1");
@@ -149,7 +150,7 @@ public class AndroidOptimizelyTest {
 
     @Test
     public void testGoodGetVariation3() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(optimizely, null, null, logger);
         final HashMap<String, String> attributes = new HashMap<>();
         androidOptimizely.getVariation("1", "1", attributes);
         verify(optimizely).getVariation("1", "1", attributes);
@@ -157,7 +158,7 @@ public class AndroidOptimizelyTest {
 
     @Test
     public void testBadGetVariation3() {
-        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, logger);
+        AndroidOptimizely androidOptimizely = new AndroidOptimizely(null, null, null, logger);
         final HashMap<String, String> attributes = new HashMap<>();
         androidOptimizely.getVariation("1", "1", attributes);
         verify(logger).warn("Optimizely is not initialized, could not get variation for experiment {} " +

@@ -71,7 +71,7 @@ public class OptimizelyManagerTest {
     public void setup() {
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
-        optimizelyManager = new OptimizelyManager("1", 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger);
+        optimizelyManager = new OptimizelyManager("1", 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, null, executor, logger);
     }
 
     @SuppressWarnings("WrongConstant")

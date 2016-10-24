@@ -20,13 +20,20 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.UnknownEventTypeException;
+import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,10 +49,15 @@ public class AndroidOptimizely {
 
     private final Logger logger;
 
-    @Nullable private Optimizely optimizely;
+    @Nullable private final Optimizely optimizely;
+    @Nullable private final MixpanelAPI mixpanelAPI;
+    @Nullable private final UserExperimentRecord userExperimentRecord;
 
-    AndroidOptimizely(@Nullable Optimizely optimizely, @NonNull Logger logger) {
+    AndroidOptimizely(@Nullable Optimizely optimizely, @Nullable UserExperimentRecord userExperimentRecord,
+                      @Nullable MixpanelAPI mixpanelAPI, @NonNull Logger logger) {
         this.optimizely = optimizely;
+        this.mixpanelAPI = mixpanelAPI;
+        this.userExperimentRecord = userExperimentRecord;
         this.logger = logger;
     }
 
@@ -96,7 +108,7 @@ public class AndroidOptimizely {
     public void track(@NonNull String eventName,
                       @NonNull String userId) {
         if (optimizely != null) {
-            optimizely.track(eventName, userId);
+            track(eventName, userId, new HashMap<String, String>(), 0);
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}", eventName, userId);
         }
@@ -112,7 +124,7 @@ public class AndroidOptimizely {
                       @NonNull String userId,
                       @NonNull Map<String, String> attributes) throws UnknownEventTypeException {
         if (optimizely != null) {
-            optimizely.track(eventName, userId, attributes);
+            optimizely.track(eventName, userId, attributes, 0);
 
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
@@ -130,7 +142,7 @@ public class AndroidOptimizely {
                       @NonNull String userId,
                       long eventValue) throws UnknownEventTypeException {
         if (optimizely != null) {
-            optimizely.track(eventName, userId, eventValue);
+            optimizely.track(eventName, userId, new HashMap<String, String>(), eventValue);
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
                     " with value {}", eventName, userId, eventValue);
@@ -151,6 +163,19 @@ public class AndroidOptimizely {
                       long eventValue) {
         if (optimizely != null) {
             optimizely.track(eventName, userId, attributes, eventValue);
+            if (mixpanelAPI != null && userExperimentRecord != null) {
+                try {
+//                    List<Experiment> experimentList = optimizely.getProjectConfig().getExperimentsForEventName(eventName);
+                    List<Experiment> experimentList = new ArrayList<>();
+                    JSONObject properties = new JSONObject();
+                    for (Experiment experiment : experimentList) {
+                        properties.put("[Optimizely] " + experiment.getKey(), userExperimentRecord.lookup(userId, experiment.getKey()));
+                    }
+                    mixpanelAPI.track(eventName, properties);
+                } catch (JSONException e) {
+                    logger.error("Unable to build Mixpanel properties", e);
+                }
+            }
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
                     " with value {} and attributes", eventName, userId, eventValue);

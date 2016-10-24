@@ -56,6 +56,7 @@ dependencies {
     compile project(':event-handler')
     compile project(':user-experiment-record')
     provided "com.android.support:support-annotations:$support_annotations_ver"
+    provided "com.mixpanel.android:mixpanel-android:4.+"
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
