@@ -80,13 +80,18 @@ Tests can be run by right clicking the file in the project pane or by clicking t
 
 ## Releasing
 
-The default branch is devel.  Feature branch PRs are automatically made against it. When PRs are reviewed and pass checks they should be squashed and merged into devel.  The version of the SDK in devel should always be the version of the next release plus `-SNAPSHOT`.  
+The default branch is devel.  Feature branch PRs are automatically made against it. When PRs are reviewed and pass checks they should be squashed and merged into devel.  Devel will be built and tested for each commit.
 
-If a beta, or snapshot, build needs to be published simply checkout beta and merge devel.  The beta branch should fast forward.  Push devel and Travis will start.  If the tests pass the build will be sent to our Maven repos on Bintray.  
+Versions are managed via git tags.  Tags can be created from the command line or from the Github UI.
 
-When a release version needs to be published checkout the master branch and merge devel.  The master branch should be fast forwarded.  Remove the `-SNAPSHOT` from the version in `build.gradle` and commit directly onto master. Push master and if the tests pass Travis will publish the version to our Maven repos on Bintray.  if the version already exists on Bintray the upload will be rejected.  The commit that updates the version should also be tagged with the version number.
+Snapshot builds are made off of the beta branch.  Travis will test all commits to this branch.  When commit is tagged and pushed travis will build, test, *and*, ship the build bintray.  The version name used
+is the name of the tag.  For snapshot builds the version should have `-SNAPSHOT` appended.  For example `0.1.2-SNAPSHOT`.  Multiple builds with the same version can be pushed to Bintray when using snapshot versions.
+This keeps the version number from increasing too quickly for beta builds.  Grade and maven ensure that users are on the latest snapshot via timestamps.
+There can be only one git tag per version name so snapshot tags may need to be moved.  For example `git tag -f -a 0.1.2` and `git push -f --tags`.  
 
-Once the next release has been published from the master branch the snapshot version in devel should be bumped to the next targeted version.
+Release builds are made off of the master branch.  Travis will test all commits to this branch.  Just like the beta branch, pushing a tag will trigger a build, tests, and release of the version of the tag to Bintray.
+For example, to release version 0.1.2 you need to pull devel, checkout master, pull master, fast-forward master to devel, push master, then release 0.1.2 on Github, which creates a tag.  You could also run 
+`git tag -a 0.1.2 -m 'Version 0.1.2`.  The argument to `-a` is the actual version name used on Bintray so it must be exact.  Then run `git push --tags` to trigger Travis.
 
 *Note:* only Optimizely employees can push to master, beta, and devel branches.
 
