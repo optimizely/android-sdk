@@ -2,6 +2,9 @@
 <manifest package="com.optimizely.ab.android.test_app"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
     <application
         android:name=".MyApplication"
         android:allowBackup="false"
