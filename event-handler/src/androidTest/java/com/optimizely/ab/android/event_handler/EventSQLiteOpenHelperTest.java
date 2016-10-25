@@ -18,6 +18,8 @@ package com.optimizely.ab.android.event_handler;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -48,13 +50,14 @@ public class EventSQLiteOpenHelperTest {
 
     @After
     public void teardown() {
-        context.deleteDatabase(EventSQLiteOpenHelper.DB_NAME);
+        context.deleteDatabase(String.format(EventSQLiteOpenHelper.DB_NAME, "1"));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onCreateMakesTables() {
         EventSQLiteOpenHelper eventSQLiteOpenHelper =
-                new EventSQLiteOpenHelper(context, EventSQLiteOpenHelper.DB_NAME, null, 1, logger);
+                new EventSQLiteOpenHelper(context, "1", null, 1, logger);
         SQLiteDatabase db = eventSQLiteOpenHelper.getWritableDatabase();
         String[] projection = {
                 EventTable.Column._ID,

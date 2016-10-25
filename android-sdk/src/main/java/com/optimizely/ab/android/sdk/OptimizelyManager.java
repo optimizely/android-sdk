@@ -56,7 +56,7 @@ import java.util.concurrent.TimeUnit;
  * Handles loading the Optimizely data file
  */
 public class OptimizelyManager {
-    @NonNull private static AndroidOptimizely androidOptimizely = new AndroidOptimizely(null,
+    @NonNull private AndroidOptimizely androidOptimizely = new AndroidOptimizely(null,
             LoggerFactory.getLogger(AndroidOptimizely.class));
     @NonNull private final String projectId;
     @NonNull private final Long eventHandlerDispatchInterval;
@@ -266,7 +266,7 @@ public class OptimizelyManager {
                 serviceScheduler.schedule(intent, dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval));
 
                 try {
-                    OptimizelyManager.androidOptimizely = buildOptimizely(context, dataFile, userExperimentRecord);
+                    OptimizelyManager.this.androidOptimizely = buildOptimizely(context, dataFile, userExperimentRecord);
                     OptimizelyManager.this.userExperimentRecord = userExperimentRecord;
                     logger.info("Sending Optimizely instance to listener");
 

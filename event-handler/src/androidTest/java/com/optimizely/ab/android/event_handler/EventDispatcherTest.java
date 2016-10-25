@@ -67,7 +67,7 @@ public class EventDispatcherTest {
         context = InstrumentationRegistry.getTargetContext();
         logger = mock(Logger.class);
         client = mock(Client.class);
-        eventDAO = EventDAO.getInstance(context, logger);
+        eventDAO = EventDAO.getInstance(context, "1", logger);
         eventClient = new EventClient(client, logger);
         serviceScheduler = mock(ServiceScheduler.class);
         optlyStorage = mock(OptlyStorage.class);
@@ -77,7 +77,7 @@ public class EventDispatcherTest {
 
     @After
     public void tearDown() {
-        context.deleteDatabase(EventSQLiteOpenHelper.DB_NAME);
+        context.deleteDatabase(String.format(EventSQLiteOpenHelper.DB_NAME, "1"));
     }
 
     @Test
