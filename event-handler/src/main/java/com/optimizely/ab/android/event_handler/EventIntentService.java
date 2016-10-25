@@ -63,7 +63,7 @@ public class EventIntentService extends IntentService {
         OptlyStorage optlyStorage = new OptlyStorage(this);
         EventClient eventClient = new EventClient(new Client(optlyStorage,
                 LoggerFactory.getLogger(Client.class)), LoggerFactory.getLogger(EventClient.class));
-        EventDAO eventDAO = EventDAO.getInstance(this, LoggerFactory.getLogger(EventDAO.class));
+        EventDAO eventDAO = EventDAO.getInstance(this, "1", LoggerFactory.getLogger(EventDAO.class));
         ServiceScheduler serviceScheduler = new ServiceScheduler(
                 (AlarmManager) getSystemService(ALARM_SERVICE),
                 new ServiceScheduler.PendingIntentFactory(this),

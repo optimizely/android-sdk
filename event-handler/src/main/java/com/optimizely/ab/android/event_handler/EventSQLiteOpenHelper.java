@@ -21,6 +21,8 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
 import org.slf4j.Logger;
@@ -31,7 +33,7 @@ import org.slf4j.Logger;
 class EventSQLiteOpenHelper extends SQLiteOpenHelper {
 
     static final int VERSION = 1;
-    static final String DB_NAME = "optly-events";
+    static final String DB_NAME = "optly-events-%s";
 
     static final String SQL_CREATE_EVENT_TABLE =
             "CREATE TABLE " + EventTable.NAME + " (" +
@@ -43,17 +45,16 @@ class EventSQLiteOpenHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_EVENT_TABLE =
             "DROP TABLE IF EXISTS " + EventTable.NAME;
 
-    private final Logger logger;
-
-    EventSQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, Logger logger) {
-        super(context, name, factory, version);
-        this.logger = logger;
-    }
+    @NonNull private final Logger logger;
+    @NonNull private final String projectId;
+    @NonNull private final Context context;
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    EventSQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler, Logger logger) {
-        super(context, name, factory, version, errorHandler);
+    EventSQLiteOpenHelper(@NonNull Context context, @NonNull String projectId, @Nullable SQLiteDatabase.CursorFactory factory, int version, @NonNull Logger logger) {
+        super(context, String.format(DB_NAME, projectId), factory, version, null);
         this.logger = logger;
+        this.projectId = projectId;
+        this.context = context;
     }
 
     /**
@@ -62,6 +63,8 @@ class EventSQLiteOpenHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
+        // Deletes the old events db that stored events for all projects
+        context.deleteDatabase("optly-events");
         db.execSQL(SQL_CREATE_EVENT_TABLE);
         logger.info("Created event table with SQL: {}", SQL_CREATE_EVENT_TABLE);
     }
@@ -73,6 +76,10 @@ class EventSQLiteOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO Create an upgrade strategy once we actually upgrade the schema.
+
+    }
+
+    public String getDbName() {
+        return String.format(DB_NAME, projectId);
     }
 }
