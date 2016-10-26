@@ -35,6 +35,7 @@ import java.util.Scanner;
 public class Client {
 
     static final String LAST_MODIFIED_HEADER_KEY = "com.optimizely.ab.android.LAST_MODIFIED_HEADER";
+    static final int MAX_BACKOFF_TIMEOUT = (int) Math.pow(2, 5);
 
     @NonNull private final OptlyStorage optlyStorage;
     @NonNull private final Logger logger;
@@ -95,5 +96,43 @@ public class Client {
         InputStream in = new BufferedInputStream(urlConnection.getInputStream());
         Scanner s = new Scanner(in).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
+    }
+
+    /**
+     * Executes a request with exponential backoff
+     * @param request the request executable, would be a lambda on Java 8
+     * @param timeout the numerical base for the exponential backoff
+     * @param power the number of retries
+     * @param <T> the response type of the request
+     * @return the response
+     */
+    public <T> T execute(Request<T> request, int timeout, int power) {
+        int baseTimeout = timeout;
+        int maxTimeout = (int) Math.pow(baseTimeout, power);
+        T response = null;
+        while(timeout <= maxTimeout) {
+            response = request.execute();
+            if (response == null || response == Boolean.FALSE) {
+                try {
+                    logger.info("Request failed, waiting {} seconds to try again", timeout);
+                    Thread.sleep(timeout);
+                } catch (InterruptedException e) {
+                    logger.warn("Exponential backoff failed", e);
+                    break;
+                }
+                timeout = timeout * baseTimeout;
+            } else {
+                break;
+            }
+        }
+        return response;
+    }
+
+    /**
+     * Bundles up a request allowing it's execution to be deferred
+     * @param <T> The response type of the request
+     */
+    public interface Request<T> {
+        T execute();
     }
 }

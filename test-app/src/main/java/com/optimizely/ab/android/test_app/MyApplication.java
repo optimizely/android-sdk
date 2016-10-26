@@ -66,7 +66,7 @@ public class MyApplication extends Application {
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
         optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
                 .withEventHandlerDispatchInterval(3, TimeUnit.SECONDS)
-                .withDataFileDownloadInterval(30, TimeUnit.MINUTES)
+                .withDataFileDownloadInterval(30, TimeUnit.SECONDS)
                 .build();
     }
 }
