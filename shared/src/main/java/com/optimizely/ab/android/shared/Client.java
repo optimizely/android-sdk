@@ -27,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Functionality common to all clients
@@ -115,7 +116,7 @@ public class Client {
             if (response == null || response == Boolean.FALSE) {
                 try {
                     logger.info("Request failed, waiting {} seconds to try again", timeout);
-                    Thread.sleep(timeout);
+                    Thread.sleep(TimeUnit.MILLISECONDS.convert(timeout, TimeUnit.SECONDS));
                 } catch (InterruptedException e) {
                     logger.warn("Exponential backoff failed", e);
                     break;
