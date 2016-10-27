@@ -70,7 +70,7 @@ dependencies {
 }
 
 uploadArchives {
-    dependsOn = [':event-handler:clean', ':event-handler:releaseJavadocJar']
+    dependsOn = [':event-handler:clean', ':event-handler:releaseJavadocJar', ':event-handler:releaseSourcesJar']
     shouldRunAfter = [':shared:uploadArchives']
     repositories {
         mavenDeployer {
@@ -111,5 +111,13 @@ android.libraryVariants.all { variant ->
 
     // Add the Javadoc jar to the project's artifacts. This will allow us to upload it easily later
     project.artifacts.add("archives", tasks["${variant.name}JavadocJar"]);
+}
+
+android.libraryVariants.all { variant ->
+    task("${variant.name}SourcesJar", type: Jar) {
+        classifier = 'sources'
+        from variant.javaCompile.source
+    }
+    project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
 }
 
