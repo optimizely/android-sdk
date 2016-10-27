@@ -41,7 +41,7 @@ import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.internal.payload.Event;
-import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
+import com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ import java.util.concurrent.TimeUnit;
  * Handles loading the Optimizely data file
  */
 public class OptimizelyManager {
-    @NonNull private static AndroidOptimizely androidOptimizely = new AndroidOptimizely(null,
+    @NonNull private AndroidOptimizely androidOptimizely = new AndroidOptimizely(null,
             LoggerFactory.getLogger(AndroidOptimizely.class));
     @NonNull private final String projectId;
     @NonNull private final Long eventHandlerDispatchInterval;
@@ -266,7 +266,7 @@ public class OptimizelyManager {
                 serviceScheduler.schedule(intent, dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval));
 
                 try {
-                    OptimizelyManager.androidOptimizely = buildOptimizely(context, dataFile, userExperimentRecord);
+                    OptimizelyManager.this.androidOptimizely = buildOptimizely(context, dataFile, userExperimentRecord);
                     OptimizelyManager.this.userExperimentRecord = userExperimentRecord;
                     logger.info("Sending Optimizely instance to listener");
 

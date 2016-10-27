@@ -42,6 +42,7 @@ import java.net.URL;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.contains;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,7 +68,7 @@ public class EventDispatcherTest {
         context = InstrumentationRegistry.getTargetContext();
         logger = mock(Logger.class);
         client = mock(Client.class);
-        eventDAO = EventDAO.getInstance(context, logger);
+        eventDAO = EventDAO.getInstance(context, "1", logger);
         eventClient = new EventClient(client, logger);
         serviceScheduler = mock(ServiceScheduler.class);
         optlyStorage = mock(OptlyStorage.class);
@@ -77,7 +78,7 @@ public class EventDispatcherTest {
 
     @After
     public void tearDown() {
-        context.deleteDatabase(EventSQLiteOpenHelper.DB_NAME);
+        context.deleteDatabase(String.format(EventSQLiteOpenHelper.DB_NAME, "1"));
     }
 
     @Test
@@ -103,7 +104,6 @@ public class EventDispatcherTest {
         verify(serviceScheduler).schedule(mockIntent, AlarmManager.INTERVAL_HOUR);
         verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
 
-        verify(logger).error("Unexpected response from event endpoint, status: " + 400);
         verify(logger).info("Scheduled events to be dispatched");
     }
 

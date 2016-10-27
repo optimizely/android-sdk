@@ -20,6 +20,7 @@ import com.optimizely.ab.android.shared.Client;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
@@ -28,10 +29,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,7 +72,16 @@ public class EventClientTest {
         InputStream inputStream = mock(InputStream.class);
         when(urlConnection.getInputStream()).thenReturn(inputStream);
 
-        assertTrue(eventClient.sendEvent(event));
+        eventClient.sendEvent(event);
+        ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
+        ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
+        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(5), captor3.getValue());
+        Object response = captor1.getValue().execute();
+        assertEquals(Boolean.TRUE, response);
+
         verify(logger).info("Dispatching event: {}", event);
     }
 
@@ -78,7 +92,16 @@ public class EventClientTest {
         InputStream inputStream = mock(InputStream.class);
         when(urlConnection.getInputStream()).thenReturn(inputStream);
 
-        assertTrue(eventClient.sendEvent(event));
+        eventClient.sendEvent(event);
+        ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
+        ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
+        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(5), captor3.getValue());
+        Object response = captor1.getValue().execute();
+        assertEquals(Boolean.TRUE, response);
+
         verify(logger).info("Dispatching event: {}", event);
     }
 
@@ -89,7 +112,16 @@ public class EventClientTest {
         InputStream inputStream = mock(InputStream.class);
         when(urlConnection.getInputStream()).thenReturn(inputStream);
 
-        assertFalse(eventClient.sendEvent(event));
+        eventClient.sendEvent(event);
+        ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
+        ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
+        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(5), captor3.getValue());
+        Object response = captor1.getValue().execute();
+        assertEquals(Boolean.FALSE, response);
+
         verify(logger).info("Dispatching event: {}", event);
         verify(logger).error("Unexpected response from event endpoint, status: 300");
     }
@@ -101,7 +133,15 @@ public class EventClientTest {
         when(urlConnection.getResponseCode()).thenReturn(200);
         when(urlConnection.getInputStream()).thenThrow(IOException.class);
 
-        assertFalse(eventClient.sendEvent(event));
+        eventClient.sendEvent(event);
+        ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
+        ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
+        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(5), captor3.getValue());
+        Object response = captor1.getValue().execute();
+        assertEquals(Boolean.FALSE, response);
         verify(logger).info("Dispatching event: {}", event);
 
     }
@@ -111,8 +151,22 @@ public class EventClientTest {
     public void sendEventsIoExceptionOpenConnection() throws IOException {
         when(client.openConnection(event.getURL())).thenThrow(IOException.class);
 
-        assertFalse(eventClient.sendEvent(event));
+        eventClient.sendEvent(event);
+        ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
+        ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
+        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(5), captor3.getValue());
+        Object response = captor1.getValue().execute();
+        assertEquals(Boolean.FALSE, response);
         verify(logger).info("Dispatching event: {}", event);
+    }
 
+    @Test
+    public void convertsNullResponseToFalse() {
+        Event event = mock(Event.class);
+        when(client.execute(any(Client.Request.class), eq(2), eq(5))).thenReturn(null);
+        assertFalse(eventClient.sendEvent(event));
     }
 }

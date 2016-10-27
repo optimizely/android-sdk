@@ -20,17 +20,25 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 /**
  * Tests for {@link com.optimizely.ab.android.shared.Client}
@@ -81,5 +89,29 @@ public class ClientTest {
         when(urlConnection.getInputStream()).thenReturn(is);
         String readFoo = client.readStream(urlConnection);
         assertEquals(foo, readFoo);
+    }
+
+    @Test
+    public void testExpBackoffSuccess() {
+        Client.Request request = mock(Client.Request.class);
+        final Object expectedResponse = new Object();
+        when(request.execute()).thenReturn(expectedResponse);
+        Object response = client.execute(request, 2, 4);
+        assertEquals(expectedResponse, response);
+        verify(logger, never()).info(eq("Request failed, waiting {} seconds to try again"), any(Integer.class));
+    }
+
+    @Test
+    public void testExpBackoffFailure() {
+        Client.Request request = mock(Client.Request.class);
+        when(request.execute()).thenReturn(null);
+        assertNull(client.execute(request, 2, 4));
+        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
+        verify(logger, times(4)).info(eq("Request failed, waiting {} seconds to try again"), captor.capture());
+        List<Integer> timeouts = captor.getAllValues();
+        assertTrue(timeouts.contains(2));
+        assertTrue(timeouts.contains(4));
+        assertTrue(timeouts.contains(8));
+        assertTrue(timeouts.contains(16));
     }
 }
