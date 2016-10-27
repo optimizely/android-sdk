@@ -41,7 +41,7 @@ import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.internal.payload.Event;
-import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
+import com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

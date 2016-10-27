@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.optimizely.user_experiment_record;
+package com.optimizely.ab.android.user_experiment_record;
 
 import android.support.annotation.NonNull;
 

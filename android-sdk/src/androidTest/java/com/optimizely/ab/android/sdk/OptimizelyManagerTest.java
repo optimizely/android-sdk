@@ -24,7 +24,7 @@ import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecuto
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.user_experiment_record.AndroidUserExperimentRecord;
+import com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord;
 
 import org.junit.Before;
 import org.junit.Test;
