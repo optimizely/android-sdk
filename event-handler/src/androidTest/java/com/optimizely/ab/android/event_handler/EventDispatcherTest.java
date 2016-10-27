@@ -42,6 +42,7 @@ import java.net.URL;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.contains;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -103,7 +104,6 @@ public class EventDispatcherTest {
         verify(serviceScheduler).schedule(mockIntent, AlarmManager.INTERVAL_HOUR);
         verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
 
-        verify(logger).error("Unexpected response from event endpoint, status: " + 400);
         verify(logger).info("Scheduled events to be dispatched");
     }
 

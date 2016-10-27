@@ -41,29 +41,40 @@ class EventClient {
         this.logger = logger;
     }
 
-    boolean sendEvent(Event event) {
-        try {
-            logger.info("Dispatching event: {}", event);
-            HttpURLConnection urlConnection = client.openConnection(event.getURL());
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Content-Type", "application/json");
-            urlConnection.setDoOutput(true);
-            OutputStream outputStream = urlConnection.getOutputStream();
-            outputStream.write(event.getRequestBody().getBytes());
-            outputStream.flush();
-            outputStream.close();
-            int status = urlConnection.getResponseCode();
-            if (status >= 200 && status < 300) {
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                in.close();
-                return true;
-            } else {
-                logger.error("Unexpected response from event endpoint, status: " + status);
-                return false;
+    boolean sendEvent(final Event event) {
+        Client.Request<Boolean> request = new Client.Request<Boolean>() {
+            @Override
+            public Boolean execute() {
+                try {
+                    logger.info("Dispatching event: {}", event);
+                    HttpURLConnection urlConnection = client.openConnection(event.getURL());
+                    urlConnection.setRequestMethod("POST");
+                    urlConnection.setRequestProperty("Content-Type", "application/json");
+                    urlConnection.setDoOutput(true);
+                    OutputStream outputStream = urlConnection.getOutputStream();
+                    outputStream.write(event.getRequestBody().getBytes());
+                    outputStream.flush();
+                    outputStream.close();
+                    int status = urlConnection.getResponseCode();
+                    if (status >= 200 && status < 300) {
+                        InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                        in.close();
+                        return Boolean.TRUE;
+                    } else {
+                        logger.error("Unexpected response from event endpoint, status: " + status);
+                        return Boolean.FALSE;
+                    }
+                } catch (IOException e) {
+                    logger.error("Unable to send event: {}", event, e);
+                    return Boolean.FALSE;
+                }
             }
-        } catch (IOException e) {
-            logger.error("Unable to send event: {}", event, e);
-            return false;
+        };
+
+        Boolean success = client.execute(request, 2, 5);
+        if (success == null) {
+            success = false;
         }
+        return success;
     }
 }
