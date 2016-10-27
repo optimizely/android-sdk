@@ -17,15 +17,17 @@ package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+
+import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,7 +69,7 @@ public class EventReschedulerTest {
     public void onReceiveInvalidAction() {
         when(intent.getAction()).thenReturn("invalid");
         rescheduler.onReceive(context, intent);
-        verify(logger).warn("Received invalid broadcast to event rescheduler");
+        verify(logger).warn("Received unsupported broadcast action to event rescheduler");
     }
 
     @Test
@@ -83,5 +85,17 @@ public class EventReschedulerTest {
         when(intent.getAction()).thenReturn(Intent.ACTION_MY_PACKAGE_REPLACED);
         rescheduler.onReceive(context, intent);
         verify(logger).info("Rescheduling event flushing if necessary");
+    }
+
+    @Test
+    public void flushOnWifiConnectionIfScheduled() {
+        final Intent eventServiceIntent = mock(Intent.class);
+        ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
+        when(intent.getAction()).thenReturn(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        when(intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)).thenReturn(true);
+        when(serviceScheduler.isScheduled(eventServiceIntent)).thenReturn(true);
+        rescheduler.reschedule(context, intent, eventServiceIntent, serviceScheduler);
+        verify(context).startService(eventServiceIntent);
+        verify(logger).info("Preemptively flushing events since wifi became available");
     }
 }

@@ -16,21 +16,26 @@
 
 package com.optimizely.ab.android.event_handler;
 
+import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
+import android.support.annotation.NonNull;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static android.content.Context.ALARM_SERVICE;
+
 /**
  * Reschedules event flushing after package updates and reboots
- *
+ * <p>
  * After the app is updated or the phone is rebooted the event flushing
  * jobs scheduled by {@link ServiceScheduler} are cancelled.
- *
+ * <p>
  * This code is called by the Android Framework.  The Intent Filters are registered
  * AndroidManifest.xml.
  *
@@ -46,13 +51,37 @@ public class EventRescheduler extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        if ((context != null && intent != null) && (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
-                intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED))) {
-            intent = new Intent(context, EventIntentService.class);
-            context.startService(intent);
-            logger.info("Rescheduling event flushing if necessary");
+        if (context != null && intent != null) {
+            ServiceScheduler serviceScheduler = new ServiceScheduler(
+                    (AlarmManager) context.getSystemService(ALARM_SERVICE),
+                    new ServiceScheduler.PendingIntentFactory(context),
+                    LoggerFactory.getLogger(ServiceScheduler.class));
+            Intent eventServiceIntent = new Intent(context, EventIntentService.class);
+            reschedule(context, intent, eventServiceIntent, serviceScheduler);
         } else {
             logger.warn("Received invalid broadcast to event rescheduler");
+        }
+    }
+
+    void reschedule(@NonNull Context context, @NonNull Intent broadcastIntent, @NonNull Intent eventServiceIntent, @NonNull ServiceScheduler serviceScheduler) {
+        if (broadcastIntent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
+                broadcastIntent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
+            context.startService(eventServiceIntent);
+            logger.info("Rescheduling event flushing if necessary");
+        } else if (broadcastIntent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)
+                && broadcastIntent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
+
+            if (serviceScheduler.isScheduled(eventServiceIntent)) {
+                // If we get wifi and the event flushing service is scheduled preemptively
+                // flush events before the next interval occurs.  If sending fails even
+                // with wifi the service will be rescheduled on the interval.
+                // Wifi connection state changes all the time and starting services is expensive
+                // so it's important to only do this if we have stored events.
+                context.startService(eventServiceIntent);
+                logger.info("Preemptively flushing events since wifi became available");
+            }
+        } else {
+            logger.warn("Received unsupported broadcast action to event rescheduler");
         }
     }
 }
