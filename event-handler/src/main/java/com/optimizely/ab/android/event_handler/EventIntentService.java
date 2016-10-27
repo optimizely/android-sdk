@@ -84,8 +84,8 @@ public class EventIntentService extends IntentService {
         }
 
         if (eventDispatcher != null) {
-            eventDispatcher.dispatch(intent);
             logger.info("Handled intent");
+            eventDispatcher.dispatch(intent);
         } else {
             logger.warn("Unable to create dependencies needed by intent handler");
         }
