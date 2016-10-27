@@ -20,14 +20,14 @@ import android.app.Activity;
 import android.content.Context;
 
 /**
- * Listens for new instances of {@link AndroidOptimizely} that are built after calling
+ * Listens for new instances of {@link OptimizelyClient} that are built after calling
  * {@link OptimizelyManager#start(Activity, OptimizelyStartListener)} or {@link OptimizelyManager#start(Context, OptimizelyStartListener)}
  */
 public interface OptimizelyStartListener {
     /**
-     * Receives a started {@link AndroidOptimizely} instances
+     * Receives a started {@link OptimizelyClient} instances
      *
-     * @param optimizely an {@link AndroidOptimizely} that is started
+     * @param optimizely an {@link OptimizelyClient} that is started
      */
-    void onStart(AndroidOptimizely optimizely);
+    void onStart(OptimizelyClient optimizely);
 }

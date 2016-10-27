@@ -23,7 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.optimizely.ab.android.sdk.AndroidOptimizely;
+import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         optimizelyManager = myApplication.getOptimizelyManager();
 
         // Load Optimizely from a compiled in data file
-        final AndroidOptimizely optimizely = optimizelyManager.getOptimizely(this, R.raw.data_file);
+        final OptimizelyClient optimizely = optimizelyManager.getOptimizely(this, R.raw.data_file);
         CountingIdlingResourceManager.increment(); // For impression event
         Variation variation = optimizely.activate("experiment_0", myApplication.getAnonUserId(), myApplication.getAttributes());
         if (variation != null) {
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         CountingIdlingResourceManager.increment(); // For Optimizely starting
         optimizelyManager.start(this, new OptimizelyStartListener() {
             @Override
-            public void onStart(AndroidOptimizely optimizely) {
+            public void onStart(OptimizelyClient optimizely) {
                 CountingIdlingResourceManager.decrement(); // For Optimizely starting
                 TextView textView1 = (TextView) findViewById(R.id.text_view_1);
                 textView1.setVisibility(View.VISIBLE);

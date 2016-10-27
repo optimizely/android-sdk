@@ -18,7 +18,7 @@ package com.optimizely.ab.android.test_app;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.optimizely.ab.android.sdk.AndroidOptimizely;
+import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 
@@ -32,7 +32,7 @@ public class SecondaryActivity extends AppCompatActivity {
         // Get Optimizely from the Intent that started this Activity
         final MyApplication myApplication = (MyApplication) getApplication();
         final OptimizelyManager optimizelyManager = myApplication.getOptimizelyManager();
-        AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
+        OptimizelyClient optimizely = optimizelyManager.getOptimizely();
         CountingIdlingResourceManager.increment(); // For track event
         optimizely.track("experiment_1", myApplication.getAnonUserId());
     }

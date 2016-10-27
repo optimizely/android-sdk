@@ -130,7 +130,7 @@ public class OptimizelyManagerTest {
         verify(userExperimentRecord).start();
         verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
         verify(logger).info("Sending Optimizely instance to listener");
-        verify(startListener).onStart(any(AndroidOptimizely.class));
+        verify(startListener).onStart(any(OptimizelyClient.class));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -204,7 +204,7 @@ public class OptimizelyManagerTest {
         verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
 
         verify(logger).info("Sending Optimizely instance to listener");
-        verify(startListener).onStart(any(AndroidOptimizely.class));
+        verify(startListener).onStart(any(OptimizelyClient.class));
 
         optimizelyManager.injectOptimizely(context, userExperimentRecord, serviceScheduler, minDataFile);
         try {
