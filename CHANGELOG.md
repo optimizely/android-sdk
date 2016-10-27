@@ -14,3 +14,4 @@ October 27, 2016
 
 *New Features*
 - *Exponential Backoff.* Datafile download event dispatching now exmploy exponential backoff.
+- *Preemptive Wifi Event Flushing.* If event flushing is scheduled and wifi becomes available Optmizely will preemptively attempt to flush events before the next interval occurs.  If flushing occurs the flushing will be rescheduled.
