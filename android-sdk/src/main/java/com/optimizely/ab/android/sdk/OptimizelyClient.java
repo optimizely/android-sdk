@@ -38,13 +38,13 @@ import java.util.Map;
  * Optimizely through this interface checking for null is not required.  If Optimizely is null warnings
  * will be logged.
  */
-public class AndroidOptimizely {
+public class OptimizelyClient {
 
     private final Logger logger;
 
     @Nullable private Optimizely optimizely;
 
-    AndroidOptimizely(@Nullable Optimizely optimizely, @NonNull Logger logger) {
+    OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
         this.optimizely = optimizely;
         this.logger = logger;
     }

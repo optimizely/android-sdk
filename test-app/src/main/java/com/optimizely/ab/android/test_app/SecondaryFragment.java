@@ -27,7 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.optimizely.ab.android.sdk.AndroidOptimizely;
+import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.config.Variation;
@@ -51,7 +51,7 @@ public class SecondaryFragment extends Fragment {
         final MyApplication myApplication = (MyApplication) getActivity().getApplication();
         final OptimizelyManager optimizelyManager = myApplication.getOptimizelyManager();
 
-        AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
+        OptimizelyClient optimizely = optimizelyManager.getOptimizely();
         CountingIdlingResourceManager.increment();
         Variation variation = optimizely.activate("experiment_2", myApplication.getAnonUserId());
         if (variation != null) {
