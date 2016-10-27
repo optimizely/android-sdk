@@ -103,10 +103,11 @@ public class ServiceSchedulerTest {
     public void testAlreadyScheduledAlarm() {
         final Intent intent = new Intent(context, EventIntentService.class);
         when(pendingIntentFactory.hasPendingIntent(intent)).thenReturn(true);
+        when(pendingIntentFactory.getPendingIntent(intent)).thenReturn(PendingIntent.getService(InstrumentationRegistry.getTargetContext(), 1, intent, 0));
 
         serviceScheduler.schedule(intent, AlarmManager.INTERVAL_HOUR);
 
-        verify(logger).debug("Not scheduling {}. It's already scheduled", intent.getComponent().toShortString());
+        verify(logger).info("Unscheduled {}", intent.getComponent().toShortString());
     }
 
     @Test

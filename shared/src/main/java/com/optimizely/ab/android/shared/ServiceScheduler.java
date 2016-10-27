@@ -50,6 +50,9 @@ public class ServiceScheduler {
     /**
      * Schedule a service starting {@link Intent} that starts on an interval
      *
+     * Previously scheduled services matching this intent will be unscheduled.  They will
+     * match even if the interval is different.
+     *
      * @param intent   an {@link Intent}
      * @param interval the interval in MS
      * @hide
@@ -60,15 +63,14 @@ public class ServiceScheduler {
             return;
         }
 
-        if (!pendingIntentFactory.hasPendingIntent(intent)) {
-
-            PendingIntent pendingIntent = pendingIntentFactory.getPendingIntent(intent);
-            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, interval, interval, pendingIntent);
-
-            logger.info("Scheduled {}", intent.getComponent().toShortString());
-        } else {
-            logger.debug("Not scheduling {}. It's already scheduled", intent.getComponent().toShortString());
+        if (isScheduled(intent)) {
+            unschedule(intent);
         }
+
+        PendingIntent pendingIntent = pendingIntentFactory.getPendingIntent(intent);
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, interval, interval, pendingIntent);
+
+        logger.info("Scheduled {}", intent.getComponent().toShortString());
     }
 
     /**
