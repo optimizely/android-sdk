@@ -43,9 +43,6 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        maven {
-            url  "http://optimizely.bintray.com/optimizely"
-        }
     }
 }
 
