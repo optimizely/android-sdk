@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
-import com.optimizely.ab.android.sdk.AndroidOptimizely;
+import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 
@@ -40,7 +40,7 @@ public class NotificationService extends IntentService {
             // Get Optimizely from the Intent that started this Service
             final MyApplication myApplication = (MyApplication) getApplication();
             final OptimizelyManager optimizelyManager = myApplication.getOptimizelyManager();
-            AndroidOptimizely optimizely = optimizelyManager.getOptimizely();
+            OptimizelyClient optimizely = optimizelyManager.getOptimizely();
             CountingIdlingResourceManager.increment();
             optimizely.track("experiment_2", myApplication.getAnonUserId());
         }
