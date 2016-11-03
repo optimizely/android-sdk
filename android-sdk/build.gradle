@@ -60,7 +60,6 @@ dependencies {
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
     testCompile "com.noveogroup.android:android-logger:$android_logger_ver"
-    testCompile "com.android.support.test.espresso:espresso-core:$espresso_ver"
 
     androidTestCompile "com.android.support.test:runner:$support_test_runner_ver"
     // Set this dependency to use JUnit 4 rules
