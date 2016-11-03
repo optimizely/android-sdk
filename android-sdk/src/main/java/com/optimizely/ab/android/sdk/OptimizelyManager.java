@@ -429,21 +429,18 @@ public class OptimizelyManager {
                         AlarmManager alarmManager = (AlarmManager) dataFileService.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
                         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(dataFileService.getApplicationContext());
                         ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory, LoggerFactory.getLogger(ServiceScheduler.class));
-                        if (bound) {
-                            if (dataFile != null) {
-                                AndroidUserExperimentRecord userExperimentRecord =
-                                        (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(optimizelyManager.getProjectId(), dataFileService.getApplicationContext());
-                                optimizelyManager.injectOptimizely(dataFileService.getApplicationContext(), userExperimentRecord, serviceScheduler, dataFile);
-                            } else {
-                                // We should always call the callback even with the dummy
-                                // instances.  Devs might gate the rest of their app
-                                // based on the loading of Optimizely
-                                OptimizelyStartListener optimizelyStartListener = optimizelyManager.getOptimizelyStartListener();
-                                if (optimizelyStartListener != null) {
-                                    optimizelyStartListener.onStart(optimizelyManager.getOptimizely());
-                                }
+                        if (dataFile != null) {
+                            AndroidUserExperimentRecord userExperimentRecord =
+                                    (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(optimizelyManager.getProjectId(), dataFileService.getApplicationContext());
+                            optimizelyManager.injectOptimizely(dataFileService.getApplicationContext(), userExperimentRecord, serviceScheduler, dataFile);
+                        } else {
+                            // We should always call the callback even with the dummy
+                            // instances.  Devs might gate the rest of their app
+                            // based on the loading of Optimizely
+                            OptimizelyStartListener optimizelyStartListener = optimizelyManager.getOptimizelyStartListener();
+                            if (optimizelyStartListener != null) {
+                                optimizelyStartListener.onStart(optimizelyManager.getOptimizely());
                             }
-
                         }
                     }
                 });
