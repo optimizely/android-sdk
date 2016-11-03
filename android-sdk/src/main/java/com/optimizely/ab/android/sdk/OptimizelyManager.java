@@ -37,6 +37,9 @@ import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
+import com.optimizely.ab.android.shared.Cache;
+import com.optimizely.ab.android.shared.Client;
+import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.parser.ConfigParseException;
@@ -136,12 +139,12 @@ public class OptimizelyManager {
     }
 
     /**
+     * @param context                 any type of context instance
+     * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
      * @see #start(Activity, OptimizelyStartListener)
-     *
+     * <p>
      * This method does the same thing except it can be used with a generic {@link Context}.
      * When using this method be sure to call {@link #stop(Context)} to unbind {@link DataFileService}.
-     * @param context any type of context instance
-     * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
      */
     public void start(@NonNull Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
         if (!isAndroidVersionSupported()) {
@@ -181,15 +184,16 @@ public class OptimizelyManager {
 
     /**
      * Gets a cached Optimizely instance
-     *
+     * <p>
      * If {@link #start(Activity, OptimizelyStartListener)} or {@link #start(Context, OptimizelyStartListener)}
      * has not been called yet the returned {@link OptimizelyClient} instance will be a dummy instance
      * that logs warnings in order to prevent {@link NullPointerException}.
-     *
+     * <p>
      * If {@link #getOptimizely(Context, int)} was used the built {@link OptimizelyClient} instance
      * will be updated.  Using {@link #start(Activity, OptimizelyStartListener)} or {@link #start(Context, OptimizelyStartListener)}
      * will update the cached instance with a new {@link OptimizelyClient} built from a cached local
      * datafile on disk or a remote datafile on the CDN.
+     *
      * @return the cached instance of {@link OptimizelyClient}
      */
     @NonNull
@@ -200,12 +204,12 @@ public class OptimizelyManager {
 
     /**
      * Create an instance of {@link OptimizelyClient} from a compiled in datafile
-     *
+     * <p>
      * After using this method successfully {@link #getOptimizely()} will contain a
      * cached instance built from the compiled in datafile.  The datafile should be
      * stored in res/raw.
      *
-     * @param context any {@link Context} instance
+     * @param context     any {@link Context} instance
      * @param dataFileRes the R id that the data file is located under.
      * @return an {@link OptimizelyClient} instance
      */
@@ -319,8 +323,8 @@ public class OptimizelyManager {
         }
 
         /**
-         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityCreated(Activity, Bundle)
          * @hide
+         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityCreated(Activity, Bundle)
          */
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -328,8 +332,8 @@ public class OptimizelyManager {
         }
 
         /**
-         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityStarted(Activity)
          * @hide
+         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityStarted(Activity)
          */
         @Override
         public void onActivityStarted(Activity activity) {
@@ -337,8 +341,8 @@ public class OptimizelyManager {
         }
 
         /**
-         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityResumed(Activity)
          * @hide
+         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityResumed(Activity)
          */
         @Override
         public void onActivityResumed(Activity activity) {
@@ -346,8 +350,8 @@ public class OptimizelyManager {
         }
 
         /**
-         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityPaused(Activity)
          * @hide
+         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityPaused(Activity)
          */
         @Override
         public void onActivityPaused(Activity activity) {
@@ -355,8 +359,8 @@ public class OptimizelyManager {
         }
 
         /**
-         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityStopped(Activity)
          * @hide
+         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityStopped(Activity)
          */
         @Override
         public void onActivityStopped(Activity activity) {
@@ -364,8 +368,8 @@ public class OptimizelyManager {
         }
 
         /**
-         * @see android.app.Application.ActivityLifecycleCallbacks#onActivitySaveInstanceState(Activity, Bundle)
          * @hide
+         * @see android.app.Application.ActivityLifecycleCallbacks#onActivitySaveInstanceState(Activity, Bundle)
          */
         @Override
         public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
@@ -373,8 +377,8 @@ public class OptimizelyManager {
         }
 
         /**
-         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityDestroyed(Activity)
          * @hide
+         * @see android.app.Application.ActivityLifecycleCallbacks#onActivityDestroyed(Activity)
          */
         @Override
         public void onActivityDestroyed(Activity activity) {
@@ -392,8 +396,8 @@ public class OptimizelyManager {
         }
 
         /**
-         * @see ServiceConnection#onServiceConnected(ComponentName, IBinder)
          * @hide
+         * @see ServiceConnection#onServiceConnected(ComponentName, IBinder)
          */
         @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
         @Override
@@ -403,8 +407,21 @@ public class OptimizelyManager {
             DataFileService.LocalBinder binder = (DataFileService.LocalBinder) service;
             final DataFileService dataFileService = binder.getService();
             if (dataFileService != null) {
-                DataFileLoader dataFileLoader = new DataFileLoader(new DataFileLoader.TaskChain(dataFileService),
+                DataFileClient dataFileClient = new DataFileClient(
+                        new Client(new OptlyStorage(dataFileService.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
+                        LoggerFactory.getLogger(DataFileClient.class));
+
+                DataFileCache dataFileCache = new DataFileCache(
+                        optimizelyManager.getProjectId(),
+                        new Cache(dataFileService.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
+                        LoggerFactory.getLogger(DataFileCache.class));
+
+                DataFileLoader dataFileLoader = new DataFileLoader(dataFileService,
+                        dataFileClient,
+                        dataFileCache,
+                        Executors.newSingleThreadExecutor(),
                         LoggerFactory.getLogger(DataFileLoader.class));
+
                 dataFileService.getDataFile(optimizelyManager.getProjectId(), dataFileLoader, new DataFileLoadedListener() {
                     @Override
                     public void onDataFileLoaded(@Nullable String dataFile) {
@@ -435,8 +452,8 @@ public class OptimizelyManager {
         }
 
         /**
-         * @see ServiceConnection#onServiceDisconnected(ComponentName)
          * @hide
+         * @see ServiceConnection#onServiceDisconnected(ComponentName)
          */
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
@@ -472,6 +489,7 @@ public class OptimizelyManager {
         /**
          * Sets the interval which {@link com.optimizely.ab.android.event_handler.EventIntentService}
          * will flush events.
+         *
          * @param interval the interval
          * @param timeUnit the unit of the interval
          * @return this {@link Builder} instance
@@ -485,6 +503,7 @@ public class OptimizelyManager {
         /**
          * Sets the interval which {@link DataFileService} will attempt to update the
          * cached datafile.
+         *
          * @param interval the interval
          * @param timeUnit the unit of the interval
          * @return this {@link Builder} instance
@@ -497,6 +516,7 @@ public class OptimizelyManager {
 
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
+         *
          * @return a {@link Builder} instance
          */
         public OptimizelyManager build() {

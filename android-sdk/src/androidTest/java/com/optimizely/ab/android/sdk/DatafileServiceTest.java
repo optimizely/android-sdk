@@ -21,7 +21,11 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
 import android.support.test.rule.ServiceTestRule;
+
+import com.optimizely.ab.android.shared.Cache;
+import com.optimizely.ab.android.shared.Client;
 
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -33,6 +37,7 @@ import java.util.concurrent.TimeoutException;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link DataFileService}
@@ -51,9 +56,16 @@ public class DatafileServiceTest {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, DataFileService.class);
         IBinder binder = mServiceRule.bindService(intent);
-        DataFileService dataFileService = ((DataFileService.LocalBinder) binder).getService();
-        DataFileLoader dataFileLoader = new DataFileLoader(new DataFileLoader.TaskChain(dataFileService), mock(Logger.class));
+        final Context targetContext = InstrumentationRegistry.getTargetContext();
+        Logger logger = mock(Logger.class);
+        DataFileCache dataFileCache = new DataFileCache("1", new Cache(targetContext, logger), logger);
+        Client client = mock(Client.class);
+        DataFileClient dataFileClient = new DataFileClient(client, logger);
         DataFileLoadedListener dataFileLoadedListener = mock(DataFileLoadedListener.class);
+
+
+        DataFileService dataFileService = ((DataFileService.LocalBinder) binder).getService();
+        DataFileLoader dataFileLoader = new DataFileLoader(dataFileService, dataFileClient, dataFileCache, MoreExecutors.newDirectExecutorService(), mock(Logger.class));
         dataFileService.getDataFile("1", dataFileLoader, dataFileLoadedListener);
 
         assertTrue(dataFileService.isBound());

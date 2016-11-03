@@ -93,12 +93,4 @@ class DataFileClient {
 
         return client.execute(request, 2, 3);
     }
-
-    boolean isModifiedResponse(@Nullable String dataFile) {
-        return dataFile != null && !dataFile.isEmpty();
-    }
-
-    boolean isNotModifiedResponse(@Nullable String dataFile) {
-        return dataFile == null || dataFile.isEmpty();
-    }
 }

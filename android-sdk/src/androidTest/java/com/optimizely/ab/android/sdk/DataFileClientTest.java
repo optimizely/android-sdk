@@ -62,7 +62,7 @@ public class DataFileClientTest {
 
     @Test
     public void request200() throws IOException {
-        URL url = new URL(String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1"));
+        URL url = new URL(String.format(DataFileLoader.FORMAT_CDN_URL, "1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(200);
         when(client.readStream(urlConnection)).thenReturn("{}");
@@ -87,7 +87,7 @@ public class DataFileClientTest {
 
     @Test
     public void request201() throws IOException {
-        URL url = new URL(String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1"));
+        URL url = new URL(String.format(DataFileLoader.FORMAT_CDN_URL, "1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(201);
         when(client.readStream(urlConnection)).thenReturn("{}");
@@ -112,7 +112,7 @@ public class DataFileClientTest {
 
     @Test
     public void request299() throws IOException {
-        URL url = new URL(String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1"));
+        URL url = new URL(String.format(DataFileLoader.FORMAT_CDN_URL, "1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(299);
         when(client.readStream(urlConnection)).thenReturn("{}");
@@ -137,7 +137,7 @@ public class DataFileClientTest {
 
     @Test
     public void request300() throws IOException {
-        URL url = new URL(String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1"));
+        URL url = new URL(String.format(DataFileLoader.FORMAT_CDN_URL, "1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(300);
 
@@ -157,7 +157,7 @@ public class DataFileClientTest {
 
     @Test
     public void handlesIOException() throws IOException {
-        URL url = new URL(String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1"));
+        URL url = new URL(String.format(DataFileLoader.FORMAT_CDN_URL, "1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(200);
         doThrow(new IOException()).when(client).readStream(urlConnection);
@@ -179,14 +179,14 @@ public class DataFileClientTest {
 
     @Test
     public void handlesNullResponse() throws MalformedURLException {
-        URL url = new URL(String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1"));
+        URL url = new URL(String.format(DataFileLoader.FORMAT_CDN_URL, "1"));
         when(client.execute(any(Client.Request.class), eq(2), eq(3))).thenReturn(null);
         assertNull(dataFileClient.request(url.toString()));
     }
 
     @Test
     public void handlesEmptyStringResponse() throws MalformedURLException {
-        URL url = new URL(String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1"));
+        URL url = new URL(String.format(DataFileLoader.FORMAT_CDN_URL, "1"));
         when(client.execute(any(Client.Request.class), eq(2), eq(3))).thenReturn("");
         assertEquals("", dataFileClient.request(url.toString()));
     }
