@@ -17,6 +17,7 @@
 package com.optimizely.ab.android.sdk;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.optimizely.ab.android.shared.Client;
 
@@ -27,7 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /*
- * Makes requests to the Optly CDN to get the data file
+ * Makes requests to the Optly CDN to get the datafile
  */
 class DataFileClient {
 
@@ -39,6 +40,20 @@ class DataFileClient {
         this.logger = logger;
     }
 
+    /*
+     * If the datafile is modified on the CDN since the last time
+     * our local datafile was modified the response body will be a valid
+     * Optimizely datafile and the response code will be 200.
+     *
+     * If the datafile has not been modified since last time our local
+     * datafile was modified there will be no response body and the
+     * response code will be 304.
+     *
+     * @param urlString the CDN url of an Optimizely datafile
+     *
+     * @return a valid datafile, null, or an empty string (on 304 responses)
+     */
+    @Nullable
     String request(final String urlString) {
         Client.Request<String> request = new Client.Request<String>() {
             @Override
@@ -76,13 +91,14 @@ class DataFileClient {
             }
         };
 
-        // If the response was a 304 Not Modified an empty string is returned
-        // Consumers of this method expect either a valid datafile or null
-        String response = client.execute(request, 2, 3);
-        if (response != null && response.isEmpty()) {
-            response = null;
-        }
+        return client.execute(request, 2, 3);
+    }
 
-        return response;
+    boolean isModifiedResponse(@Nullable String dataFile) {
+        return dataFile != null && !dataFile.isEmpty();
+    }
+
+    boolean isNotModifiedResponse(@Nullable String dataFile) {
+        return dataFile == null || dataFile.isEmpty();
     }
 }

@@ -188,6 +188,6 @@ public class DataFileClientTest {
     public void handlesEmptyStringResponse() throws MalformedURLException {
         URL url = new URL(String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1"));
         when(client.execute(any(Client.Request.class), eq(2), eq(3))).thenReturn("");
-        assertNull(dataFileClient.request(url.toString()));
+        assertEquals("", dataFileClient.request(url.toString()));
     }
 }

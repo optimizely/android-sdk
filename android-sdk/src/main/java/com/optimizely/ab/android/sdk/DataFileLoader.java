@@ -47,18 +47,17 @@ class DataFileLoader {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    boolean getDataFile(@NonNull String projectId, @Nullable DataFileLoadedListener dataFileLoadedListener) {
+    void getDataFile(@NonNull String projectId, @Nullable DataFileLoadedListener dataFileLoadedListener) {
         taskChain.start(projectId, dataFileLoadedListener);
 
         logger.info("Refreshing data file");
-
-        return true;
     }
 
     static class TaskChain {
 
         @NonNull private final DataFileService dataFileService;
         @NonNull private final Executor executor;
+        @Nullable DataFileLoadedListener dataFileLoadedListener;
 
         TaskChain(@NonNull DataFileService dataFileService) {
             this.dataFileService = dataFileService;
@@ -67,6 +66,7 @@ class DataFileLoader {
 
         @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
         void start(@NonNull String projectId, @Nullable DataFileLoadedListener dataFileLoadedListener) {
+            this.dataFileLoadedListener = dataFileLoadedListener;
             DataFileClient dataFileClient = new DataFileClient(
                     new Client(new OptlyStorage(dataFileService), LoggerFactory.getLogger(OptlyStorage.class)),
                     LoggerFactory.getLogger(DataFileClient.class));
@@ -76,27 +76,30 @@ class DataFileLoader {
                     LoggerFactory.getLogger(DataFileCache.class));
             RequestDataFileFromClientTask requestDataFileFromClientTask =
                     new RequestDataFileFromClientTask(projectId,
-                            dataFileService, dataFileCache,
+                            dataFileService,
+                            dataFileCache,
                             dataFileClient,
-                            dataFileLoadedListener,
+                            this,
                             LoggerFactory.getLogger(RequestDataFileFromClientTask.class));
-            LoadDataFileFromCacheTask loadDataFileFromCacheTask = new LoadDataFileFromCacheTask(dataFileCache, dataFileLoadedListener);
+            LoadDataFileFromCacheTask loadDataFileFromCacheTask = new LoadDataFileFromCacheTask(dataFileCache, this);
 
             // Execute tasks in order
             loadDataFileFromCacheTask.executeOnExecutor(executor);
             requestDataFileFromClientTask.executeOnExecutor(executor);
         }
+
+
     }
 
     static class LoadDataFileFromCacheTask extends AsyncTask<Void, Void, JSONObject> {
 
         @NonNull private final DataFileCache dataFileCache;
-        @Nullable private final DataFileLoadedListener dataFileLoadedListener;
+        @NonNull private final TaskChain taskChain;
 
         LoadDataFileFromCacheTask(@NonNull DataFileCache dataFileCache,
-                                  @Nullable DataFileLoadedListener dataFileLoadedListener) {
+                                  @NonNull TaskChain taskChain) {
             this.dataFileCache = dataFileCache;
-            this.dataFileLoadedListener = dataFileLoadedListener;
+            this.taskChain = taskChain;
         }
 
         @Override
@@ -107,8 +110,14 @@ class DataFileLoader {
         @Override
         protected void onPostExecute(JSONObject dataFile) {
             if (dataFile != null) {
-                if (dataFileLoadedListener != null) {
-                    dataFileLoadedListener.onDataFileLoaded(dataFile.toString());
+                if (taskChain.dataFileLoadedListener != null) {
+                    taskChain.dataFileLoadedListener.onDataFileLoaded(dataFile.toString());
+                    // Prevents the callback from being hit twice
+                    // if the CDN datafile is different from the cached
+                    // datafile.  The service will still get the remote
+                    // datafile and update the cache but Optimizely
+                    // will be started from the cached datafile.
+                    taskChain.dataFileLoadedListener = null;
                 }
             }
         }
@@ -122,35 +131,33 @@ class DataFileLoader {
         @NonNull private final DataFileCache dataFileCache;
         @NonNull private final DataFileClient dataFileClient;
         @NonNull private final Logger logger;
-        @Nullable private final DataFileLoadedListener optimizelyStartedListener;
+        @NonNull private final TaskChain taskChain;
 
         RequestDataFileFromClientTask(@NonNull String projectId,
                                       @NonNull DataFileService dataFileService,
                                       @NonNull DataFileCache dataFileCache,
                                       @NonNull DataFileClient dataFileClient,
-                                      @Nullable DataFileLoadedListener dataFileLoadedListener,
+                                      @NonNull TaskChain taskChain,
                                       @NonNull Logger logger) {
             this.projectId = projectId;
             this.dataFileService = dataFileService;
             this.dataFileCache = dataFileCache;
             this.dataFileClient = dataFileClient;
-            this.optimizelyStartedListener = dataFileLoadedListener;
+            this.taskChain = taskChain;
             this.logger = logger;
         }
 
         @Override
         protected String doInBackground(Void... params) {
             String dataFile = dataFileClient.request(String.format(FORMAT_CDN_URL, projectId));
-            if (dataFile != null) {
+            if (dataFileClient.isModifiedResponse(dataFile)) {
                 if (dataFileCache.exists()) {
                     if (!dataFileCache.delete()) {
                         logger.warn("Unable to delete old data file");
-                        return null; // Unable to delete
                     }
                 }
                 if (!dataFileCache.save(dataFile)) {
                     logger.warn("Unable to save new data file");
-                    return null;
                 }
             }
 
@@ -158,15 +165,17 @@ class DataFileLoader {
         }
 
         @Override
-        protected void onPostExecute(String dataFile) {
-            // If dataFile isn't null the dataFile has been modified on the CDN because we are
-            // using last-modified and since-last-modified headers.
-            if (dataFile != null) {
-                if (optimizelyStartedListener != null) {
-                    optimizelyStartedListener.onDataFileLoaded(dataFile);
+        protected void onPostExecute(@Nullable String dataFile) {
+            // If this is null either this is a background sync
+            // Or a locally cached datafile was already loaded.
+            if (taskChain.dataFileLoadedListener != null) {
+                // An empty datafile (304) should not be possible unless someone manually
+                // deleted the cached datafile and not the caching headers
+                // on a rooted device.
+                if (dataFileClient.isNotModifiedResponse(dataFile)) {
+                    taskChain.dataFileLoadedListener.onDataFileLoaded(dataFile);
                 }
             }
-
             // We are running in the background so stop the service
             dataFileService.stop();
         }

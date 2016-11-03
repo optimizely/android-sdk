@@ -18,6 +18,7 @@ package com.optimizely.ab.android.sdk;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -27,7 +28,6 @@ import org.slf4j.Logger;
 import java.net.MalformedURLException;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -43,37 +43,47 @@ public class DataFileLoaderTest {
     @Mock private DataFileService datafileService;
     @Mock private DataFileCache dataFileCache;
     @Mock private DataFileClient dataFileClient;
-    @Mock private DataFileLoadedListener dataFileLoadedListener;
     @Mock private Logger logger;
+    private DataFileLoader.TaskChain taskChain;
+    private DataFileLoadedListener dataFileLoadedListener;
+
+    @Before
+    public void setup() {
+        taskChain = mock(DataFileLoader.TaskChain.class);
+        dataFileLoadedListener = mock(DataFileLoadedListener.class);
+        taskChain.dataFileLoadedListener = dataFileLoadedListener;
+    }
 
     @Test
     public void existingDataFileWhenRequestingFromClient() throws MalformedURLException {
         DataFileLoader.RequestDataFileFromClientTask task =
                 new DataFileLoader.RequestDataFileFromClientTask("1", datafileService, dataFileCache,
-                        dataFileClient, dataFileLoadedListener, logger);
+                        dataFileClient, taskChain, logger);
 
         String url = String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1");
-        when(dataFileClient.request(url)).thenReturn("");
+        when(dataFileClient.request(url)).thenReturn("{}");
+        when(dataFileClient.isModifiedResponse("{}")).thenReturn(true);
         when(dataFileCache.exists()).thenReturn(false);
-        when(dataFileCache.save("")).thenReturn(true);
+        when(dataFileCache.save("{}")).thenReturn(true);
         String dataFile = task.doInBackground();
-        assertEquals("", dataFile);
+        assertEquals("{}", dataFile);
         verify(dataFileClient).request(url);
-        verify(dataFileCache).save("");
+        verify(dataFileCache).save("{}");
     }
 
     @Test
     public void existingDataFileWhenRequestingFromClientFailsToDelete() throws MalformedURLException {
         DataFileLoader.RequestDataFileFromClientTask task =
                 new DataFileLoader.RequestDataFileFromClientTask("1", datafileService, dataFileCache,
-                        dataFileClient, dataFileLoadedListener, logger);
+                        dataFileClient, taskChain, logger);
 
         String url = String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1");
-        when(dataFileClient.request(url)).thenReturn("");
+        when(dataFileClient.request(url)).thenReturn("{}");
+        when(dataFileClient.isModifiedResponse("{}")).thenReturn(true);
         when(dataFileCache.exists()).thenReturn(true);
         when(dataFileCache.delete()).thenReturn(false);
         String dataFile = task.doInBackground();
-        assertEquals(null, dataFile);
+        assertEquals("{}", dataFile);
         verify(logger).warn("Unable to delete old data file");
     }
 
@@ -81,14 +91,15 @@ public class DataFileLoaderTest {
     public void existingDataFileWhenRequestingFromClientFailsToSave() throws MalformedURLException {
         DataFileLoader.RequestDataFileFromClientTask task =
                 new DataFileLoader.RequestDataFileFromClientTask("1", datafileService, dataFileCache,
-                        dataFileClient, dataFileLoadedListener, logger);
+                        dataFileClient, taskChain, logger);
 
         String url = String.format(DataFileLoader.RequestDataFileFromClientTask.FORMAT_CDN_URL, "1");
-        when(dataFileClient.request(url)).thenReturn("");
+        when(dataFileClient.request(url)).thenReturn("{}");
+        when(dataFileClient.isModifiedResponse("{}")).thenReturn(true);
         when(dataFileCache.exists()).thenReturn(false);
-        when(dataFileCache.save("")).thenReturn(false);
+        when(dataFileCache.save("{}")).thenReturn(false);
         String dataFile = task.doInBackground();
-        assertEquals(null, dataFile);
+        assertEquals("{}", dataFile);
         verify(logger).warn("Unable to save new data file");
     }
 
@@ -96,7 +107,7 @@ public class DataFileLoaderTest {
     public void handlesNullDataFile() {
         DataFileLoader.RequestDataFileFromClientTask task =
                 new DataFileLoader.RequestDataFileFromClientTask("1", datafileService, dataFileCache,
-                        dataFileClient, dataFileLoadedListener, logger);
+                        dataFileClient, taskChain, logger);
 
         when(datafileService.isBound()).thenReturn(false);
         task.onPostExecute(null);
@@ -106,9 +117,10 @@ public class DataFileLoaderTest {
 
     @Test
     public void handlesNullListener() {
+        taskChain.dataFileLoadedListener = null;
         DataFileLoader.RequestDataFileFromClientTask task =
                 new DataFileLoader.RequestDataFileFromClientTask("1", datafileService, dataFileCache,
-                        dataFileClient, null, logger);
+                        dataFileClient, taskChain, logger);
 
         when(datafileService.isBound()).thenReturn(false);
         task.onPostExecute("");
@@ -118,7 +130,7 @@ public class DataFileLoaderTest {
 
     @Test
     public void loadFromCache() {
-        DataFileLoader.LoadDataFileFromCacheTask task = new DataFileLoader.LoadDataFileFromCacheTask(dataFileCache, dataFileLoadedListener);
+        DataFileLoader.LoadDataFileFromCacheTask task = new DataFileLoader.LoadDataFileFromCacheTask(dataFileCache, taskChain);
 
         task.doInBackground();
         verify(dataFileCache).load();
@@ -126,7 +138,7 @@ public class DataFileLoaderTest {
 
     @Test
     public void loadFromCacheNullDataFile() {
-        DataFileLoader.LoadDataFileFromCacheTask task = new DataFileLoader.LoadDataFileFromCacheTask(dataFileCache, dataFileLoadedListener);
+        DataFileLoader.LoadDataFileFromCacheTask task = new DataFileLoader.LoadDataFileFromCacheTask(dataFileCache, taskChain);
 
         task.onPostExecute(null);
         verify(dataFileLoadedListener, never()).onDataFileLoaded(any(String.class));
@@ -137,7 +149,7 @@ public class DataFileLoaderTest {
     public void getDataFile() {
         DataFileLoader.TaskChain taskChain = mock(DataFileLoader.TaskChain.class);
         DataFileLoader dataFileLoader = new DataFileLoader(taskChain, logger);
-        assertTrue(dataFileLoader.getDataFile("1", dataFileLoadedListener));
+        dataFileLoader.getDataFile("1", dataFileLoadedListener);
         verify(taskChain).start("1", dataFileLoadedListener);
         verify(logger).info("Refreshing data file");
     }

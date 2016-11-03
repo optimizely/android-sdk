@@ -272,10 +272,6 @@ public class OptimizelyManager {
 
                     if (optimizelyStartListener != null) {
                         optimizelyStartListener.onStart(optimizelyClient);
-                        // Prevent the onOptimizelyStarted(AndroidOptimizely) callback from being hit twice
-                        // This could happen if the local data file is not null and is different
-                        // from the remote data file.  Setting the listener to null handles this case.
-                        optimizelyStartListener = null;
                     } else {
                         logger.info("No listener to send Optimizely to");
                     }
@@ -411,14 +407,26 @@ public class OptimizelyManager {
                         LoggerFactory.getLogger(DataFileLoader.class));
                 dataFileService.getDataFile(optimizelyManager.getProjectId(), dataFileLoader, new DataFileLoadedListener() {
                     @Override
-                    public void onDataFileLoaded(String dataFile) {
+                    public void onDataFileLoaded(@Nullable String dataFile) {
+                        // App is being used, i.e. in the foreground
+                        AlarmManager alarmManager = (AlarmManager) dataFileService.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                        ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(dataFileService.getApplicationContext());
+                        ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory, LoggerFactory.getLogger(ServiceScheduler.class));
                         if (bound) {
-                            AlarmManager alarmManager = (AlarmManager) dataFileService.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-                            ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(dataFileService.getApplicationContext());
-                            ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory, LoggerFactory.getLogger(ServiceScheduler.class));
-                            AndroidUserExperimentRecord userExperimentRecord =
-                                    (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(optimizelyManager.getProjectId(), dataFileService.getApplicationContext());
-                            optimizelyManager.injectOptimizely(dataFileService.getApplicationContext(), userExperimentRecord, serviceScheduler, dataFile);
+                            if (dataFile != null) {
+                                AndroidUserExperimentRecord userExperimentRecord =
+                                        (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(optimizelyManager.getProjectId(), dataFileService.getApplicationContext());
+                                optimizelyManager.injectOptimizely(dataFileService.getApplicationContext(), userExperimentRecord, serviceScheduler, dataFile);
+                            } else {
+                                // We should always call the callback even with the dummy
+                                // instances.  Devs might gate the rest of their app
+                                // based on the loading of Optimizely
+                                OptimizelyStartListener optimizelyStartListener = optimizelyManager.getOptimizelyStartListener();
+                                if (optimizelyStartListener != null) {
+                                    optimizelyStartListener.onStart(optimizelyManager.getOptimizely());
+                                }
+                            }
+
                         }
                     }
                 });
