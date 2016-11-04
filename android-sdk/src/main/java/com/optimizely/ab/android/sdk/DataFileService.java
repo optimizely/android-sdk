@@ -25,9 +25,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
+import com.optimizely.ab.android.shared.Client;
+import com.optimizely.ab.android.shared.OptlyStorage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Executors;
 
 /**
  * Service that handles loading the datafile from cache or downloads it from the CDN
@@ -53,7 +57,14 @@ public class DataFileService extends Service {
         if (intent != null) {
             if (intent.hasExtra(EXTRA_PROJECT_ID)) {
                 String projectId = intent.getStringExtra(EXTRA_PROJECT_ID);
-                DataFileLoader dataFileLoader = new DataFileLoader(new DataFileLoader.TaskChain(this), LoggerFactory.getLogger(DataFileLoader.class));
+                DataFileClient dataFileClient = new DataFileClient(
+                        new Client(new OptlyStorage(getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
+                        LoggerFactory.getLogger(DataFileClient.class));
+                DataFileCache dataFileCache = new DataFileCache(
+                        projectId,
+                        new Cache(getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
+                        LoggerFactory.getLogger(DataFileCache.class));
+                DataFileLoader dataFileLoader = new DataFileLoader(this, dataFileClient, dataFileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DataFileLoader.class));
                 dataFileLoader.getDataFile(projectId, null);
                 BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
                         new Cache(this, LoggerFactory.getLogger(Cache.class)),
@@ -91,8 +102,8 @@ public class DataFileService extends Service {
         return false;
     }
 
-    boolean isBound() {
-        return  isBound;
+    public boolean isBound() {
+        return isBound;
     }
 
     void stop() {

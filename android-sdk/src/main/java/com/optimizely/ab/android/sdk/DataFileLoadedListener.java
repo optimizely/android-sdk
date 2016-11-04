@@ -16,8 +16,12 @@
 
 package com.optimizely.ab.android.sdk;
 
+import android.support.annotation.Nullable;
+
 /**
  * Listens for new Optimizely datafiles
+ *
+ * Datafiles can come from a local file or the CDN
  *
  * @hide
  */
@@ -26,8 +30,9 @@ interface DataFileLoadedListener {
     /**
      * Called with new datafile
      *
-     * @param dataFile the datafile json
+     * @param dataFile the datafile json, can be null if datafile loading failed.
+     *
      * @hide
      */
-    void onDataFileLoaded(String dataFile);
+    void onDataFileLoaded(@Nullable String dataFile);
 }

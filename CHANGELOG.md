@@ -1,4 +1,9 @@
 # Optimizely Android X SDK Changelog
+### 0.2.0
+October 28, 2016
+
+*Breaking Changes*
+- Renames `AndroidOptimizely` to `OptimizelyClient`
 
 ### 0.1.3
 October 27, 2016
