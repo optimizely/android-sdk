@@ -212,7 +212,5 @@ public class OptimizelyManagerTest {
         } catch (InterruptedException e) {
             fail("Timed out");
         }
-
-        verify(logger).info("No listener to send Optimizely to");
     }
 }

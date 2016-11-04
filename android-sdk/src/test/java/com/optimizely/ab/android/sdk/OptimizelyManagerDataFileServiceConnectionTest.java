@@ -71,27 +71,6 @@ public class OptimizelyManagerDataFileServiceConnectionTest {
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
-    public void onServiceConnectedNotBoundWhenDataFileLoaded() {
-        DataFileService.LocalBinder binder = mock(DataFileService.LocalBinder.class);
-        DataFileService service = mock(DataFileService.class);
-        Context context = mock(Context.class);
-        when(service.getApplicationContext()).thenReturn(context);
-        when(binder.getService()).thenReturn(service);
-        when(optimizelyManager.getProjectId()).thenReturn("1");
-        ArgumentCaptor<DataFileLoadedListener> captor = ArgumentCaptor.forClass(DataFileLoadedListener.class);
-        dataFileServiceConnection.onServiceConnected(null, binder);
-        verify(service).getDataFile(same("1"), any(DataFileLoader.class), captor.capture());
-
-        dataFileServiceConnection.onServiceDisconnected(null);
-
-        DataFileLoadedListener listener = captor.getValue();
-        listener.onDataFileLoaded("");
-
-        verify(optimizelyManager, never()).injectOptimizely(any(Context.class), any(AndroidUserExperimentRecord.class), any(ServiceScheduler.class), eq(""));
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    @Test
     public void onServiceConnectedNullServiceFromBinder() {
         DataFileService.LocalBinder binder = mock(DataFileService.LocalBinder.class);
         when(binder.getService()).thenReturn(null);
