@@ -39,17 +39,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests {@link DataFileServiceConnection}
+ * Tests {@link OptimizelyManager.DataFileServiceConnection}
  */
 @RunWith(MockitoJUnitRunner.class)
-public class DataFileServiceConnectionTest {
+public class OptimizelyManagerDataFileServiceConnectionTest {
 
-    private DataFileServiceConnection dataFileServiceConnection;
+    private OptimizelyManager.DataFileServiceConnection dataFileServiceConnection;
     @Mock private OptimizelyManager optimizelyManager;
 
     @Before
     public void setup() {
-        dataFileServiceConnection = new DataFileServiceConnection(optimizelyManager);
+        dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
