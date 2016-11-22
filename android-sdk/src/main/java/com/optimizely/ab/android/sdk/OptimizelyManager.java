@@ -125,13 +125,13 @@ public class OptimizelyManager {
         }
 
         AndroidUserExperimentRecord userExperimentRecord =
-                (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(getProjectId(), activity.getApplication());
+                (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(getProjectId(), activity.getApplicationContext());
         // The User Experiment Record is started off the of the main thread when starting
         // asynchronously.  Starting simply creates the file if it doesn't exist so it's not
         // terribly expensive. Blocking the UI the thread prevents touch input...
         userExperimentRecord.start();
         try {
-            optimizelyClient = buildOptimizely(activity.getApplication(), datafile, userExperimentRecord);
+            optimizelyClient = buildOptimizely(activity.getApplicationContext(), datafile, userExperimentRecord);
         } catch (ConfigParseException e) {
             logger.error("Unable to parse compiled data file", e);
         }
@@ -185,7 +185,7 @@ public class OptimizelyManager {
             return;
         }
         activity.getApplication().registerActivityLifecycleCallbacks(new OptlyActivityLifecycleCallbacks(this));
-        initialize(activity.getApplication(), optimizelyStartListener);
+        initialize(activity.getApplicationContext(), optimizelyStartListener);
     }
 
     /**
