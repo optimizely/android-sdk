@@ -84,12 +84,12 @@ public class OptimizelyManagerTest {
         when(appContext.getPackageName()).thenReturn("com.optly");
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
 
-        optimizelyManager.start(context, startListener);
+        optimizelyManager.initialize(context, startListener);
 
         assertNotNull(optimizelyManager.getOptimizelyStartListener());
         assertNotNull(optimizelyManager.getDataFileServiceConnection());
 
-        verify(appContext).bindService(captor.capture(), any(OptimizelyManager.DataFileServiceConnection.class), eq(Context.BIND_AUTO_CREATE));
+        verify(appContext).bindService(captor.capture(), any(DataFileServiceConnection.class), eq(Context.BIND_AUTO_CREATE));
 
         Intent intent = captor.getValue();
         assertTrue(intent.getComponent().getShortClassName().contains("DataFileService"));
@@ -101,7 +101,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
 
-        OptimizelyManager.DataFileServiceConnection dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager);
+        DataFileServiceConnection dataFileServiceConnection = new DataFileServiceConnection(optimizelyManager);
         dataFileServiceConnection.setBound(true);
         optimizelyManager.setDataFileServiceConnection(dataFileServiceConnection);
 

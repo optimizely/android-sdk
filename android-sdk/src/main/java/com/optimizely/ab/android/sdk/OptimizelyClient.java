@@ -89,6 +89,14 @@ public class OptimizelyClient {
     }
 
     /**
+     * Check that this is a valid instance
+     * @return True if the OptimizelyClient instance was instantiated correctly
+     */
+    public boolean isValid() {
+        return optimizely != null;
+    }
+
+    /**
      * Track an event for a user
      * @param eventName the name of the event
      * @param userId the user id

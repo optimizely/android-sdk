@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         optimizelyManager = myApplication.getOptimizelyManager();
 
         // Load Optimizely from a compiled in data file
-        final OptimizelyClient optimizely = optimizelyManager.getOptimizely(this, R.raw.data_file);
+        final OptimizelyClient optimizely = optimizelyManager.initialize(this, R.raw.data_file);
         CountingIdlingResourceManager.increment(); // For impression event
         Variation variation = optimizely.activate("experiment_0", myApplication.getAnonUserId(), myApplication.getAttributes());
         if (variation != null) {
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         CountingIdlingResourceManager.increment(); // For Optimizely starting
-        optimizelyManager.start(this, new OptimizelyStartListener() {
+        optimizelyManager.initialize(this, new OptimizelyStartListener() {
             @Override
             public void onStart(OptimizelyClient optimizely) {
                 CountingIdlingResourceManager.decrement(); // For Optimizely starting
