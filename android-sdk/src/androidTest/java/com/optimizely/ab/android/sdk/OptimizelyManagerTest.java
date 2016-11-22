@@ -19,22 +19,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
 import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -54,6 +59,8 @@ public class OptimizelyManagerTest {
     private ListeningExecutorService executor;
     private Logger logger;
     private OptimizelyManager optimizelyManager;
+    private DataFileCache dataFileCache;
+    private Context targetContext;
 
     private String minDataFile = "{\n" +
             "experiments: [ ],\n" +
@@ -69,14 +76,21 @@ public class OptimizelyManagerTest {
 
     @Before
     public void setup() {
+        targetContext = InstrumentationRegistry.getTargetContext();
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
-        optimizelyManager = new OptimizelyManager("1", 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger);
+        optimizelyManager = new OptimizelyManager("7595190003", 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger);
+        dataFileCache = new DataFileCache("7595190003", new Cache(targetContext, logger), logger);
+    }
+
+    @After
+    public void tearDown() {
+        dataFileCache.delete();
     }
 
     @SuppressWarnings("WrongConstant")
     @Test
-    public void start() {
+    public void initialize() {
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
         Context context = mock(Context.class);
         Context appContext = mock(Context.class);
@@ -93,6 +107,15 @@ public class OptimizelyManagerTest {
 
         Intent intent = captor.getValue();
         assertTrue(intent.getComponent().getShortClassName().contains("DataFileService"));
+    }
+
+    @Test
+    public void initializeFromCachedDatafile() {
+        Logger logger = mock(Logger.class);
+        dataFileCache.save(minDataFile);
+
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(targetContext);
+        assertTrue(optimizelyClient.isValid());
     }
 
     @Test
@@ -212,5 +235,14 @@ public class OptimizelyManagerTest {
         } catch (InterruptedException e) {
             fail("Timed out");
         }
+    }
+
+    @Test
+    public void isDatafileCached() {
+        assertFalse(optimizelyManager.isDatafileCached(targetContext));
+
+        dataFileCache.save(minDataFile);
+
+        assertTrue(optimizelyManager.isDatafileCached(targetContext));
     }
 }

@@ -46,6 +46,7 @@ import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.internal.payload.Event;
 import com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,23 +123,23 @@ public class OptimizelyManager {
      * <p>
      * Instantiates and returns an {@link OptimizelyClient} instance. Will also cache the instance
      * for future lookups via getClient
-     * @param activity an Activity, used to automatically unbind {@link DataFileService}
+     * @param context  any {@link Context} instance
      * @param datafile the datafile
      * @return an {@link OptimizelyClient} instance
      */
-    public OptimizelyClient initialize(@NonNull Activity activity, @NonNull String datafile) {
+    public OptimizelyClient initialize(@NonNull Context context, @NonNull String datafile) {
         if (!isAndroidVersionSupported()) {
             return optimizelyClient;
         }
 
         AndroidUserExperimentRecord userExperimentRecord =
-                (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(getProjectId(), activity.getApplicationContext());
-        // The User Experiment Record is started off the of the main thread when starting
-        // asynchronously.  Starting simply creates the file if it doesn't exist so it's not
-        // terribly expensive. Blocking the UI the thread prevents touch input...
+                (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(getProjectId(), context);
+        // The User Experiment Record is started on the main thread on an asynchronous start.
+        // Starting simply creates the file if it doesn't exist so it's not
+        // terribly expensive. Blocking the UI thread prevents touch input...
         userExperimentRecord.start();
         try {
-            optimizelyClient = buildOptimizely(activity.getApplicationContext(), datafile, userExperimentRecord);
+            optimizelyClient = buildOptimizely(context, datafile, userExperimentRecord);
         } catch (ConfigParseException e) {
             logger.error("Unable to parse compiled data file", e);
         }
@@ -146,8 +147,8 @@ public class OptimizelyManager {
         // After instantiating the OptimizelyClient, we will begin the datafile sync so that next time
         // the user can instantiate with the latest datafile
         this.dataFileServiceConnection = new DataFileServiceConnection(this);
-        final Intent intent = new Intent(activity.getApplicationContext(), DataFileService.class);
-        activity.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
+        final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
+        context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
 
         return optimizelyClient;
     }
@@ -158,19 +159,44 @@ public class OptimizelyManager {
      * Instantiates and returns an {@link OptimizelyClient} instance. Will also cache the instance
      * for future lookups via getClient. The datafile should be stored in res/raw.
      *
-     * @param activity    any {@link Activity} instance
+     * @param context    any {@link Context} instance
      * @param dataFileRes the R id that the data file is located under.
      * @return an {@link OptimizelyClient} instance
      */
     @NonNull
-    public OptimizelyClient initialize(@NonNull Activity activity, @RawRes int dataFileRes) {
+    public OptimizelyClient initialize(@NonNull Context context, @RawRes int dataFileRes) {
         try {
-            String datafile = loadRawResource(activity.getApplication(), dataFileRes);
-            return initialize(activity, datafile);
+            String datafile = loadRawResource(context, dataFileRes);
+            return initialize(context, datafile);
         } catch (IOException e) {
             logger.error("Unable to load compiled data file", e);
         }
 
+        // return dummy client if not able to initialize a valid one
+        return optimizelyClient;
+    }
+
+    /**
+     * Initialize Optimizely Synchronously
+     * <p>
+     * Instantiates and returns an {@link OptimizelyClient} instance using the datafile cached on disk
+     * if not available then it will return a dummy instance.
+     * @param context any {@link Context} instance
+     * @return an {@link OptimizelyClient} instance
+     */
+    public OptimizelyClient initialize(@NonNull Context context) {
+        DataFileCache dataFileCache = new DataFileCache(
+            projectId,
+            new Cache(context, LoggerFactory.getLogger(Cache.class)),
+            LoggerFactory.getLogger(DataFileCache.class)
+        );
+
+        JSONObject datafile = dataFileCache.load();
+        if (datafile != null) {
+            return initialize(context, datafile.toString());
+        }
+
+        // return dummy client if not able to initialize a valid one
         return optimizelyClient;
     }
 
@@ -268,6 +294,21 @@ public class OptimizelyManager {
         } else {
             throw new IOException("Couldn't parse raw res fixture, no bytes");
         }
+    }
+
+    /**
+     * Check if the datafile is cached on the disk
+     * @param context any {@link Context} instance
+     * @return True if the datafile is cached on the disk
+     */
+    public boolean isDatafileCached(Context context) {
+        DataFileCache dataFileCache = new DataFileCache(
+                projectId,
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(DataFileCache.class)
+        );
+
+        return dataFileCache.exists();
     }
 
     @NonNull
