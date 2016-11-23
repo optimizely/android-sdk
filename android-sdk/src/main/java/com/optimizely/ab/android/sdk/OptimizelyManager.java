@@ -144,11 +144,11 @@ public class OptimizelyManager {
             logger.error("Unable to parse compiled data file", e);
         }
 
-        // After instantiating the OptimizelyClient, we will begin the datafile sync so that next time
-        // the user can instantiate with the latest datafile
-        this.dataFileServiceConnection = new DataFileServiceConnection(this);
-        final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
-        context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
+//        // After instantiating the OptimizelyClient, we will begin the datafile sync so that next time
+//        // the user can instantiate with the latest datafile
+//        this.dataFileServiceConnection = new DataFileServiceConnection(this);
+//        final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
+//        context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
 
         return optimizelyClient;
     }
