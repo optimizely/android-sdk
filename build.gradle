@@ -62,10 +62,6 @@ ext {
     espresso_ver = "2.2.2"
     gson_ver = "2.6.2"
     group_id = "com.optimizely.ab"
-
-    travisBuild = System.getenv("TRAVIS") == "true"
-    // allows for -Dpre-dex=false to be set
-    preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
 }
 
 task clean(type: Delete) {
