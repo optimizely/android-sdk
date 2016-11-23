@@ -59,6 +59,8 @@ public class OptimizelyManagerTest {
     private ListeningExecutorService executor;
     private Logger logger;
     private OptimizelyManager optimizelyManager;
+    private DataFileCache dataFileCache;
+    private Context targetContext;
 
     private String minDataFile = "{\n" +
             "experiments: [ ],\n" +
@@ -74,11 +76,17 @@ public class OptimizelyManagerTest {
 
     @Before
     public void setup() {
+        targetContext = InstrumentationRegistry.getTargetContext();
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
         optimizelyManager = new OptimizelyManager("7595190003", 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger);
+        dataFileCache = new DataFileCache("7595190003", new Cache(targetContext, logger), logger);
     }
 
+    @After
+    public void tearDown() {
+        dataFileCache.delete();
+    }
 
     @SuppressWarnings("WrongConstant")
     @Test
@@ -99,6 +107,15 @@ public class OptimizelyManagerTest {
 
         Intent intent = captor.getValue();
         assertTrue(intent.getComponent().getShortClassName().contains("DataFileService"));
+    }
+
+    @Test
+    public void initializeFromCachedDatafile() {
+        Logger logger = mock(Logger.class);
+        dataFileCache.save(minDataFile);
+
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(targetContext);
+        assertTrue(optimizelyClient.isValid());
     }
 
     @Test
@@ -218,5 +235,14 @@ public class OptimizelyManagerTest {
         } catch (InterruptedException e) {
             fail("Timed out");
         }
+    }
+
+    @Test
+    public void isDatafileCached() {
+        assertFalse(optimizelyManager.isDatafileCached(targetContext));
+
+        dataFileCache.save(minDataFile);
+
+        assertTrue(optimizelyManager.isDatafileCached(targetContext));
     }
 }
