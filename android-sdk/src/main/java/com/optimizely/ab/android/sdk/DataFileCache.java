@@ -32,8 +32,7 @@ import java.io.IOException;
 /*
  * Abstracts the actual data "file" {@link java.io.File}
  */
-@VisibleForTesting
-class DataFileCache {
+public class DataFileCache {
 
     private static final String OPTLY_DATA_FILE_NAME = "optly-data-file-%s.json";
 
