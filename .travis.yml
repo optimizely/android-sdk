@@ -8,7 +8,6 @@ android:
     - doc-24
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-22
-sudo: required
 jdk:
   - oraclejdk8
 before_cache:
