@@ -73,6 +73,13 @@ task ship() {
             'event-handler:uploadArchives', 'user-experiment-record:uploadArchives')
 }
 
+task cleanAllModules << {
+    logger.info("Running clena for all modules")
+}
+
+cleanAllModules.dependsOn(':android-sdk:clean', ':event-handler:clean',
+        ':user-experiment-record:clean', ':shared:clean')
+
 task testAllModules << {
     logger.info("Running android tests for all modules")
 }
