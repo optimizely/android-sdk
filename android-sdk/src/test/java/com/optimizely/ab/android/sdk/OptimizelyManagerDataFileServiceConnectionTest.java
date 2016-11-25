@@ -49,7 +49,7 @@ public class OptimizelyManagerDataFileServiceConnectionTest {
 
     @Before
     public void setup() {
-        dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager);
+        dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager, mock(Context.class));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
