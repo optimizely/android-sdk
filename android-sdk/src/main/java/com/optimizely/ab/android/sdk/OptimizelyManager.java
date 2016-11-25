@@ -265,6 +265,7 @@ public class OptimizelyManager {
         }
         if (dataFileServiceConnection != null && dataFileServiceConnection.isBound()) {
             context.getApplicationContext().unbindService(dataFileServiceConnection);
+            dataFileServiceConnection = null;
         }
 
         this.optimizelyStartListener = null;
@@ -522,6 +523,7 @@ public class OptimizelyManager {
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             bound = false;
+            optimizelyManager.setDataFileServiceConnection(null);
         }
 
         boolean isBound() {
