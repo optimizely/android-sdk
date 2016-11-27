@@ -87,7 +87,6 @@ public class DataFileReschedulerTest {
 
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     @Test
-    @Ignore
     public void dispatchingOne() {
         Context mockContext = mock(Context.class);
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
