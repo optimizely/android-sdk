@@ -19,27 +19,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
 import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;

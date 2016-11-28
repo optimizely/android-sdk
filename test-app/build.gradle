@@ -32,7 +32,6 @@ dependencies {
 //    compile 'com.optimizely.ab:android-sdk:0.2.0'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.1'
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"

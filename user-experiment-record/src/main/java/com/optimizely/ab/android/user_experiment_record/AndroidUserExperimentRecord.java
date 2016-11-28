@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -68,7 +69,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
      * @return the instance as {@link UserExperimentRecord}
      */
     public static UserExperimentRecord newInstance(@NonNull String projectId, @NonNull Context context) {
-        HashMap<String, Map<String, String>> memoryUserExperimentRecordCache = new HashMap<>();
+        Map<String, Map<String, String>> memoryUserExperimentRecordCache = new ConcurrentHashMap<>();
         UserExperimentRecordCache userExperimentRecordCache =
                 new UserExperimentRecordCache(projectId,
                         new Cache(context,
@@ -98,7 +99,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                     String varId = expIdToVarIdJson.getString(expId);
                     Map<String, String> expIdToVarIdMap = writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get(userId);
                     if (expIdToVarIdMap == null) {
-                        expIdToVarIdMap = new HashMap<>();
+                        expIdToVarIdMap = new ConcurrentHashMap<>();
                     }
                     expIdToVarIdMap.put(expId, varId);
                     writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().put(userId, expIdToVarIdMap);
@@ -238,7 +239,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                 protected void onPreExecute() {
                     Map<String, String> expIdToVarIdMap = memoryUserExperimentRecordCache.get(userId);
                     if (expIdToVarIdMap == null) {
-                        expIdToVarIdMap = new HashMap<>();
+                        expIdToVarIdMap = new ConcurrentHashMap<>();
                     }
                     expIdToVarIdMap.put(experimentKey, variationKey);
                     memoryUserExperimentRecordCache.put(userId, expIdToVarIdMap);
@@ -288,7 +289,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                 protected void onPostExecute(Pair<String, Boolean> result) {
                     // Put the mapping back in the write through cache if removing failed
                     if (!result.second) {
-                        Map<String, String> expIdToVarIdMap = new HashMap<>();
+                        Map<String, String> expIdToVarIdMap = new ConcurrentHashMap<>();
                         expIdToVarIdMap.put(experimentKey, result.first);
                         memoryUserExperimentRecordCache.put(userId, expIdToVarIdMap);
                         logger.error("Restored experimentKey: {} variationKey: {} record for user: {} to memory", experimentKey, result.first, userId);

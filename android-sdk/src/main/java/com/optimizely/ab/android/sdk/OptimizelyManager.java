@@ -123,6 +123,7 @@ public class OptimizelyManager {
      * <p>
      * Instantiates and returns an {@link OptimizelyClient} instance. Will also cache the instance
      * for future lookups via getClient
+     *
      * @param context  any {@link Context} instance
      * @param datafile the datafile
      * @return an {@link OptimizelyClient} instance
@@ -162,7 +163,7 @@ public class OptimizelyManager {
      * Instantiates and returns an {@link OptimizelyClient} instance. Will also cache the instance
      * for future lookups via getClient. The datafile should be stored in res/raw.
      *
-     * @param context    any {@link Context} instance
+     * @param context     any {@link Context} instance
      * @param dataFileRes the R id that the data file is located under.
      * @return an {@link OptimizelyClient} instance
      */
@@ -184,14 +185,15 @@ public class OptimizelyManager {
      * <p>
      * Instantiates and returns an {@link OptimizelyClient} instance using the datafile cached on disk
      * if not available then it will return a dummy instance.
+     *
      * @param context any {@link Context} instance
      * @return an {@link OptimizelyClient} instance
      */
     public OptimizelyClient initialize(@NonNull Context context) {
         DataFileCache dataFileCache = new DataFileCache(
-            projectId,
-            new Cache(context, LoggerFactory.getLogger(Cache.class)),
-            LoggerFactory.getLogger(DataFileCache.class)
+                projectId,
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(DataFileCache.class)
         );
 
         JSONObject datafile = dataFileCache.load();
@@ -304,6 +306,7 @@ public class OptimizelyManager {
 
     /**
      * Check if the datafile is cached on the disk
+     *
      * @param context any {@link Context} instance
      * @return True if the datafile is cached on the disk
      */
