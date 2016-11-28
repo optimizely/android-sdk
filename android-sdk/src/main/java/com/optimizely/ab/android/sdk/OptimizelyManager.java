@@ -149,7 +149,7 @@ public class OptimizelyManager {
         // the user can instantiate with the latest datafile
         final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
         if (dataFileServiceConnection == null) {
-            this.dataFileServiceConnection = new DataFileServiceConnection(this);
+            this.dataFileServiceConnection = new DataFileServiceConnection(this, context);
             context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
         }
 
@@ -239,7 +239,7 @@ public class OptimizelyManager {
         this.optimizelyStartListener = optimizelyStartListener;
         final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
         if (dataFileServiceConnection == null) {
-            this.dataFileServiceConnection = new DataFileServiceConnection(this);
+            this.dataFileServiceConnection = new DataFileServiceConnection(this, context);
             context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
         }
     }
@@ -265,6 +265,7 @@ public class OptimizelyManager {
         }
         if (dataFileServiceConnection != null && dataFileServiceConnection.isBound()) {
             context.getApplicationContext().unbindService(dataFileServiceConnection);
+            dataFileServiceConnection = null;
         }
 
         this.optimizelyStartListener = null;
@@ -456,10 +457,12 @@ public class OptimizelyManager {
     static class DataFileServiceConnection implements ServiceConnection {
 
         @NonNull private final OptimizelyManager optimizelyManager;
+        @NonNull private final Context context;
         private boolean bound = false;
 
-        DataFileServiceConnection(@NonNull OptimizelyManager optimizelyManager) {
+        DataFileServiceConnection(@NonNull OptimizelyManager optimizelyManager, @NonNull Context context) {
             this.optimizelyManager = optimizelyManager;
+            this.context = context;
         }
 
         /**
@@ -522,6 +525,7 @@ public class OptimizelyManager {
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             bound = false;
+            optimizelyManager.stop(context);
         }
 
         boolean isBound() {

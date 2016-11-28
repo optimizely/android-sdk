@@ -107,7 +107,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
 
-        OptimizelyManager.DataFileServiceConnection dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager);
+        OptimizelyManager.DataFileServiceConnection dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager, context);
         dataFileServiceConnection.setBound(true);
         optimizelyManager.setDataFileServiceConnection(dataFileServiceConnection);
 

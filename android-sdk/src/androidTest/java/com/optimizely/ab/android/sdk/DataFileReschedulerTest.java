@@ -24,6 +24,7 @@ import android.support.test.InstrumentationRegistry;
 import com.optimizely.ab.android.shared.Cache;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
