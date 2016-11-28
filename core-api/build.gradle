@@ -1,5 +1,6 @@
 dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jacksonVersion
 
     provided group: 'com.google.code.findbugs', name: 'annotations', version: findbugsVersion
     provided group: 'com.google.code.findbugs', name: 'jsr305', version: findbugsVersion

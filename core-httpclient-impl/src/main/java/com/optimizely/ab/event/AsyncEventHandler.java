@@ -121,7 +121,6 @@ public class AsyncEventHandler implements EventHandler, Closeable {
                     } else {
                         request = generatePostRequest(event);
                     }
-                    logger.info("dispatching event: {}", request.toString());
                     httpClient.execute(request, EVENT_RESPONSE_HANDLER);
                 } catch (InterruptedException e) {
                     logger.info("terminating event dispatcher event loop");
