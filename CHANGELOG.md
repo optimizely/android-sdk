@@ -1,3 +1,8 @@
+## 1.0.3
+
+- Remove extraneous log message in `AsyncEventHandler`
+- Add `jackson-annotations` as a compiled dependency
+
 ## 1.0.2
 
 - Gracefully handle datafile that doesn't contain required fields
@@ -6,7 +11,6 @@
 
 - Allow for configurability of `clientEngine` and `clientVersion` through `Optimizely.Builder`
 - Remove ppid query string from V1 events
-
 
 ## 1.0.0
 
