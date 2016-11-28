@@ -5,7 +5,7 @@ android {
     buildToolsVersion build_tools_version
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 14
         targetSdkVersion target_sdk_version
         versionCode 1
         versionName "1.0"
@@ -28,16 +28,17 @@ android {
 
 dependencies {
     // Includes SST Java core, event handler, and user experiment record
-//    compile project(':android-sdk')
-    compile 'com.optimizely.ab:android-sdk:0.2.0'
+    compile project(':android-sdk')
+//    compile 'com.optimizely.ab:android-sdk:0.2.0'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.1'
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
     testCompile "com.noveogroup.android:android-logger:$android_logger_ver"
-    testCompile 'com.optimizely.ab:android-sdk:0.2.0'
-//    testCompile project(':android-sdk')
+//    testCompile 'com.optimizely.ab:android-sdk:0.2.0'
+    testCompile project(':android-sdk')
 
     androidTestCompile("com.android.support.test:runner:$support_test_runner_ver")
     androidTestCompile "com.android.support:support-annotations:24.2.1"
@@ -48,6 +49,6 @@ dependencies {
     androidTestCompile "org.mockito:mockito-core:$mockito_ver"
     androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
-    androidTestCompile 'com.optimizely.ab:android-sdk:0.2.0'
-//    androidTestCompile project(':android-sdk')
+//    androidTestCompile 'com.optimizely.ab:android-sdk:0.2.0'
+    androidTestCompile project(':android-sdk')
 }
