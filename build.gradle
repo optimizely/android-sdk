@@ -52,11 +52,11 @@ ext {
     min_sdk_version = 10
     target_sdk_version = 24
 
-    java_core_ver = "1.0.2"
+    java_core_ver = "1.0.3"
     android_logger_ver = "1.3.1"
     support_annotations_ver = "24.2.1"
     junit_ver = "4.12"
-    mockito_ver = "1.10.19"
+    mockito_ver = "1.9.5"
     support_test_runner_ver = "0.5"
     dexmaker_ver = "1.2"
     espresso_ver = "2.2.2"
@@ -72,6 +72,13 @@ task ship() {
     dependsOn(':android-sdk:uploadArchives', ':shared:uploadArchives',
             'event-handler:uploadArchives', 'user-experiment-record:uploadArchives')
 }
+
+task cleanAllModules << {
+    logger.info("Running clena for all modules")
+}
+
+cleanAllModules.dependsOn(':android-sdk:clean', ':event-handler:clean',
+        ':user-experiment-record:clean', ':shared:clean')
 
 task testAllModules << {
     logger.info("Running android tests for all modules")

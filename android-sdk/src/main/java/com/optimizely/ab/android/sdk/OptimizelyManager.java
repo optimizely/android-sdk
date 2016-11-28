@@ -46,6 +46,7 @@ import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.internal.payload.Event;
 import com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,6 +119,93 @@ public class OptimizelyManager {
     }
 
     /**
+     * Initialize Optimizely Synchronously
+     * <p>
+     * Instantiates and returns an {@link OptimizelyClient} instance. Will also cache the instance
+     * for future lookups via getClient
+     *
+     * @param context  any {@link Context} instance
+     * @param datafile the datafile
+     * @return an {@link OptimizelyClient} instance
+     */
+    public OptimizelyClient initialize(@NonNull Context context, @NonNull String datafile) {
+        if (!isAndroidVersionSupported()) {
+            return optimizelyClient;
+        }
+
+        AndroidUserExperimentRecord userExperimentRecord =
+                (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(getProjectId(), context);
+        // The User Experiment Record is started on the main thread on an asynchronous start.
+        // Starting simply creates the file if it doesn't exist so it's not
+        // terribly expensive. Blocking the UI thread prevents touch input...
+        userExperimentRecord.start();
+        try {
+            optimizelyClient = buildOptimizely(context, datafile, userExperimentRecord);
+        } catch (ConfigParseException e) {
+            logger.error("Unable to parse compiled data file", e);
+        }
+
+
+        // After instantiating the OptimizelyClient, we will begin the datafile sync so that next time
+        // the user can instantiate with the latest datafile
+        final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
+        if (dataFileServiceConnection == null) {
+            this.dataFileServiceConnection = new DataFileServiceConnection(this, context);
+            context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
+        }
+
+        return optimizelyClient;
+    }
+
+    /**
+     * Initialize Optimizely Synchronously
+     * <p>
+     * Instantiates and returns an {@link OptimizelyClient} instance. Will also cache the instance
+     * for future lookups via getClient. The datafile should be stored in res/raw.
+     *
+     * @param context     any {@link Context} instance
+     * @param dataFileRes the R id that the data file is located under.
+     * @return an {@link OptimizelyClient} instance
+     */
+    @NonNull
+    public OptimizelyClient initialize(@NonNull Context context, @RawRes int dataFileRes) {
+        try {
+            String datafile = loadRawResource(context, dataFileRes);
+            return initialize(context, datafile);
+        } catch (IOException e) {
+            logger.error("Unable to load compiled data file", e);
+        }
+
+        // return dummy client if not able to initialize a valid one
+        return optimizelyClient;
+    }
+
+    /**
+     * Initialize Optimizely Synchronously
+     * <p>
+     * Instantiates and returns an {@link OptimizelyClient} instance using the datafile cached on disk
+     * if not available then it will return a dummy instance.
+     *
+     * @param context any {@link Context} instance
+     * @return an {@link OptimizelyClient} instance
+     */
+    public OptimizelyClient initialize(@NonNull Context context) {
+        DataFileCache dataFileCache = new DataFileCache(
+                projectId,
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(DataFileCache.class)
+        );
+
+        JSONObject datafile = dataFileCache.load();
+        if (datafile != null) {
+            return initialize(context, datafile.toString());
+        }
+
+        // return dummy client if not able to initialize a valid one
+        return optimizelyClient;
+    }
+
+    /**
      * Starts Optimizely asynchronously
      * <p>
      * An {@link OptimizelyClient} instance will be delivered to
@@ -130,30 +218,32 @@ public class OptimizelyManager {
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public void start(@NonNull Activity activity, @NonNull OptimizelyStartListener optimizelyStartListener) {
+    public void initialize(@NonNull Activity activity, @NonNull OptimizelyStartListener optimizelyStartListener) {
         if (!isAndroidVersionSupported()) {
             return;
         }
         activity.getApplication().registerActivityLifecycleCallbacks(new OptlyActivityLifecycleCallbacks(this));
-        start(activity.getApplication(), optimizelyStartListener);
+        initialize(activity.getApplicationContext(), optimizelyStartListener);
     }
 
     /**
      * @param context                 any type of context instance
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
-     * @see #start(Activity, OptimizelyStartListener)
+     * @see #initialize(Activity, OptimizelyStartListener)
      * <p>
      * This method does the same thing except it can be used with a generic {@link Context}.
      * When using this method be sure to call {@link #stop(Context)} to unbind {@link DataFileService}.
      */
-    public void start(@NonNull Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
+    public void initialize(@NonNull Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
         if (!isAndroidVersionSupported()) {
             return;
         }
         this.optimizelyStartListener = optimizelyStartListener;
-        this.dataFileServiceConnection = new DataFileServiceConnection(this);
         final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
-        context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
+        if (dataFileServiceConnection == null) {
+            this.dataFileServiceConnection = new DataFileServiceConnection(this, context);
+            context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -165,7 +255,7 @@ public class OptimizelyManager {
     /**
      * Unbinds {@link DataFileService}
      * <p>
-     * Calling this is not necessary if using {@link #start(Activity, OptimizelyStartListener)} which
+     * Calling this is not necessary if using {@link #initialize(Activity, OptimizelyStartListener)} which
      * handles unbinding implicitly.
      *
      * @param context any {@link Context} instance
@@ -177,6 +267,7 @@ public class OptimizelyManager {
         }
         if (dataFileServiceConnection != null && dataFileServiceConnection.isBound()) {
             context.getApplicationContext().unbindService(dataFileServiceConnection);
+            dataFileServiceConnection = null;
         }
 
         this.optimizelyStartListener = null;
@@ -185,12 +276,11 @@ public class OptimizelyManager {
     /**
      * Gets a cached Optimizely instance
      * <p>
-     * If {@link #start(Activity, OptimizelyStartListener)} or {@link #start(Context, OptimizelyStartListener)}
+     * If {@link #initialize(Activity, OptimizelyStartListener)} or {@link #initialize(Context, OptimizelyStartListener)}
      * has not been called yet the returned {@link OptimizelyClient} instance will be a dummy instance
      * that logs warnings in order to prevent {@link NullPointerException}.
      * <p>
-     * If {@link #getOptimizely(Context, int)} was used the built {@link OptimizelyClient} instance
-     * will be updated.  Using {@link #start(Activity, OptimizelyStartListener)} or {@link #start(Context, OptimizelyStartListener)}
+     * Using {@link #initialize(Activity, OptimizelyStartListener)} or {@link #initialize(Context, OptimizelyStartListener)}
      * will update the cached instance with a new {@link OptimizelyClient} built from a cached local
      * datafile on disk or a remote datafile on the CDN.
      *
@@ -199,41 +289,6 @@ public class OptimizelyManager {
     @NonNull
     public OptimizelyClient getOptimizely() {
         isAndroidVersionSupported();
-        return optimizelyClient;
-    }
-
-    /**
-     * Create an instance of {@link OptimizelyClient} from a compiled in datafile
-     * <p>
-     * After using this method successfully {@link #getOptimizely()} will contain a
-     * cached instance built from the compiled in datafile.  The datafile should be
-     * stored in res/raw.
-     *
-     * @param context     any {@link Context} instance
-     * @param dataFileRes the R id that the data file is located under.
-     * @return an {@link OptimizelyClient} instance
-     */
-    @NonNull
-    public OptimizelyClient getOptimizely(@NonNull Context context, @RawRes int dataFileRes) {
-        if (!isAndroidVersionSupported()) {
-            return optimizelyClient;
-        }
-
-        AndroidUserExperimentRecord userExperimentRecord =
-                (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(getProjectId(), context);
-        // Blocking File I/O is necessary here in order to provide a synchronous API
-        // The User Experiment Record is started off the of the main thread when starting
-        // asynchronously.  Starting simply creates the file if it doesn't exist so it's not
-        // terribly expensive. Blocking the UI the thread prevents touch input...
-        userExperimentRecord.start();
-        try {
-            optimizelyClient = buildOptimizely(context, loadRawResource(context, dataFileRes), userExperimentRecord);
-        } catch (ConfigParseException e) {
-            logger.error("Unable to parse compiled data file", e);
-        } catch (IOException e) {
-            logger.error("Unable to load compiled data file", e);
-        }
-
         return optimizelyClient;
     }
 
@@ -247,6 +302,22 @@ public class OptimizelyManager {
         } else {
             throw new IOException("Couldn't parse raw res fixture, no bytes");
         }
+    }
+
+    /**
+     * Check if the datafile is cached on the disk
+     *
+     * @param context any {@link Context} instance
+     * @return True if the datafile is cached on the disk
+     */
+    public boolean isDatafileCached(Context context) {
+        DataFileCache dataFileCache = new DataFileCache(
+                projectId,
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(DataFileCache.class)
+        );
+
+        return dataFileCache.exists();
     }
 
     @NonNull
@@ -389,10 +460,12 @@ public class OptimizelyManager {
     static class DataFileServiceConnection implements ServiceConnection {
 
         @NonNull private final OptimizelyManager optimizelyManager;
+        @NonNull private final Context context;
         private boolean bound = false;
 
-        DataFileServiceConnection(@NonNull OptimizelyManager optimizelyManager) {
+        DataFileServiceConnection(@NonNull OptimizelyManager optimizelyManager, @NonNull Context context) {
             this.optimizelyManager = optimizelyManager;
+            this.context = context;
         }
 
         /**
@@ -455,6 +528,7 @@ public class OptimizelyManager {
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             bound = false;
+            optimizelyManager.stop(context);
         }
 
         boolean isBound() {

@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 
 import java.util.HashMap;
 
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertFalse;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -162,5 +164,17 @@ public class OptimizelyClientTest {
         optimizelyClient.getVariation("1", "1", attributes);
         verify(logger).warn("Optimizely is not initialized, could not get variation for experiment {} " +
                 "for user {} with attributes", "1", "1");
+    }
+
+    @Test
+    public void testIsValid() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        assertTrue(optimizelyClient.isValid());
+    }
+
+    @Test
+    public void testIsInvalid() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        assertFalse(optimizelyClient.isValid());
     }
 }

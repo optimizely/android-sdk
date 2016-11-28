@@ -1,4 +1,10 @@
 # Optimizely Android X SDK Changelog
+### 0.2.1
+November 4, 2016
+
+*Bug Fixes*
+- Ensures that the `OptimizelyStartedListener` is always called *once* and *only once* even if Optimizely fails to load a datafile from everywhere. It should be safe to launch parts of your app after the callback hits now.
+
 ### 0.2.0
 October 28, 2016
 

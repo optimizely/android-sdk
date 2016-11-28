@@ -71,12 +71,13 @@ public class OptimizelyManagerTest {
     public void setup() {
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
-        optimizelyManager = new OptimizelyManager("1", 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger);
+        optimizelyManager = new OptimizelyManager("7595190003", 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger);
     }
+
 
     @SuppressWarnings("WrongConstant")
     @Test
-    public void start() {
+    public void initialize() {
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
         Context context = mock(Context.class);
         Context appContext = mock(Context.class);
@@ -84,7 +85,7 @@ public class OptimizelyManagerTest {
         when(appContext.getPackageName()).thenReturn("com.optly");
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
 
-        optimizelyManager.start(context, startListener);
+        optimizelyManager.initialize(context, startListener);
 
         assertNotNull(optimizelyManager.getOptimizelyStartListener());
         assertNotNull(optimizelyManager.getDataFileServiceConnection());
@@ -101,7 +102,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
 
-        OptimizelyManager.DataFileServiceConnection dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager);
+        OptimizelyManager.DataFileServiceConnection dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager, context);
         dataFileServiceConnection.setBound(true);
         optimizelyManager.setDataFileServiceConnection(dataFileServiceConnection);
 
