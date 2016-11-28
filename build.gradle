@@ -58,7 +58,7 @@ ext {
     junit_ver = "4.12"
     mockito_ver = "1.10.19"
     support_test_runner_ver = "0.5"
-    dexmaker_ver = "1.2"
+    dexmaker_ver = "1.1"
     espresso_ver = "2.2.2"
     gson_ver = "2.6.2"
     group_id = "com.optimizely.ab"
