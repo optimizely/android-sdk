@@ -33,7 +33,7 @@ import java.util.Map;
  * Wraps {@link Optimizely} instances
  *
  * This proxy ensures that the Android SDK will not crash if the inner Optimizely SDK
- * failed to start.  When Optimizely fails to start via {@link OptimizelyManager#start(Activity, OptimizelyStartListener)}
+ * failed to start.  When Optimizely fails to start via {@link OptimizelyManager#initialize(Activity, OptimizelyStartListener)}
  * there will be no cached instance returned from {@link OptimizelyManager#getOptimizely()}.  By accessing
  * Optimizely through this interface checking for null is not required.  If Optimizely is null warnings
  * will be logged.
