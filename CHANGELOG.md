@@ -1,4 +1,14 @@
 # Optimizely Android X SDK Changelog
+### 0.2.2
+November 30, 2016
+*Bug Fixes*
+- Update to java-core 1.0.3 which fixes crashes with Jackson annotations on ICS
+- Use the old SQLiteDatabse constructor for compatibility with ICS
+
+*Breaking Changes*
+- Changed the initialization call from `start` to `initialize`
+- `getOptimizely` now only returns the cached version of the client
+
 ### 0.2.1
 November 4, 2016
 
