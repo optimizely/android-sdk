@@ -25,7 +25,7 @@ import java.util.Map;
  * user experience after changing traffic allocations.  Also, this interface gives users
  * a hook to keep track of activation history.
  */
-public interface UserExperimentRecord {
+public interface UserProfile {
 
     /**
      * Called when implementors should save an activation

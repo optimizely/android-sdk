@@ -447,12 +447,12 @@ public class BucketerTest {
 
     /**
      * Verify that {@link Bucketer#bucket(Experiment,String)} saves a variation of an experiment for a user
-     * when a {@link UserExperimentRecord} is present.
+     * when a {@link UserProfile} is present.
      */
     @Test public void bucketUserSaveActivationWithUserExperimentRecord() throws Exception {
         final AtomicInteger bucketValue = new AtomicInteger();
-        UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
-        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
+        UserProfile userProfile = mock(UserProfile.class);
+        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userProfile);
         bucketValue.set(3000);
 
         ProjectConfig projectConfig = validProjectConfigV2();
@@ -460,24 +460,24 @@ public class BucketerTest {
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
 
-        when(userExperimentRecord.save("blah", groupExperiment.getKey(), variation.getKey())).thenReturn(true);
+        when(userProfile.save("blah", groupExperiment.getKey(), variation.getKey())).thenReturn(true);
 
         assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
 
         logbackVerifier.expectMessage(Level.INFO,
                 "Saved variation \"e2_vtag1\" of experiment \"group_etag2\" for user \"blah\".");
 
-        verify(userExperimentRecord).save("blah", groupExperiment.getKey(), variation.getKey());
+        verify(userProfile).save("blah", groupExperiment.getKey(), variation.getKey());
     }
 
     /**
      * Verify that {@link Bucketer#bucket(Experiment,String)} logs correctly
-     * when a {@link UserExperimentRecord} is present and fails to save an activation.
+     * when a {@link UserProfile} is present and fails to save an activation.
      */
     @Test public void bucketUserSaveActivationFailWithUserExperimentRecord() throws Exception {
         final AtomicInteger bucketValue = new AtomicInteger();
-        UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
-        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
+        UserProfile userProfile = mock(UserProfile.class);
+        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userProfile);
         bucketValue.set(3000);
 
         ProjectConfig projectConfig = validProjectConfigV2();
@@ -485,24 +485,24 @@ public class BucketerTest {
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
 
-        when(userExperimentRecord.save("blah", groupExperiment.getKey(), variation.getKey())).thenReturn(false);
+        when(userProfile.save("blah", groupExperiment.getKey(), variation.getKey())).thenReturn(false);
 
         assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
 
         logbackVerifier.expectMessage(Level.WARN,
                 "Failed to save variation \"e2_vtag1\" of experiment \"group_etag2\" for user \"blah\".");
 
-        verify(userExperimentRecord).save("blah", groupExperiment.getKey(), variation.getKey());
+        verify(userProfile).save("blah", groupExperiment.getKey(), variation.getKey());
     }
 
     /**
      * Verify that {@link Bucketer#bucket(Experiment,String)} returns a variation that is
-     * stored in the provided {@link UserExperimentRecord}.
+     * stored in the provided {@link UserProfile}.
      */
     @Test public void bucketUserRestoreActivationWithUserExperimentRecord() throws Exception {
         final AtomicInteger bucketValue = new AtomicInteger();
-        UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
-        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
+        UserProfile userProfile = mock(UserProfile.class);
+        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userProfile);
         bucketValue.set(3000);
 
         ProjectConfig projectConfig = validProjectConfigV2();
@@ -510,7 +510,7 @@ public class BucketerTest {
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
 
-        when(userExperimentRecord.lookup("blah", groupExperiment.getKey())).thenReturn(variation.getKey());
+        when(userProfile.lookup("blah", groupExperiment.getKey())).thenReturn(variation.getKey());
 
         assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
 
@@ -518,17 +518,17 @@ public class BucketerTest {
                 "Returning previously activated variation \"e2_vtag1\" of experiment \"group_etag2\""
                                       + " for user \"blah\" from user experiment record.");
 
-        verify(userExperimentRecord).lookup("blah", groupExperiment.getKey());
+        verify(userProfile).lookup("blah", groupExperiment.getKey());
     }
 
     /**
-     * Verify {@link Bucketer#bucket(Experiment,String)} handles a present {@link UserExperimentRecord}
+     * Verify {@link Bucketer#bucket(Experiment,String)} handles a present {@link UserProfile}
      * returning null when looking up a variation.
      */
     @Test public void bucketUserRestoreActivationNullWithUserExperimentRecord() throws Exception {
         final AtomicInteger bucketValue = new AtomicInteger();
-        UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
-        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
+        UserProfile userProfile = mock(UserProfile.class);
+        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userProfile);
         bucketValue.set(3000);
 
         ProjectConfig projectConfig = validProjectConfigV2();
@@ -536,17 +536,17 @@ public class BucketerTest {
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
 
-        when(userExperimentRecord.lookup("blah", groupExperiment.getKey())).thenReturn(null);
+        when(userProfile.lookup("blah", groupExperiment.getKey())).thenReturn(null);
 
         assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
 
         logbackVerifier.expectMessage(Level.INFO, "No previously activated variation of experiment " +
                                       "\"group_etag2\" for user \"blah\" found in user experiment record.");
-        verify(userExperimentRecord).lookup("blah", groupExperiment.getKey());
+        verify(userProfile).lookup("blah", groupExperiment.getKey());
     }
 
     /**
-     * Verify {@link Bucketer#cleanUserExperimentRecords()} handles a null {@link UserExperimentRecord}.
+     * Verify {@link Bucketer#cleanUserExperimentRecords()} handles a null {@link UserProfile}.
      */
     @Test
     public void nullUserExperimentRecordWhenCleaning() {
@@ -562,16 +562,16 @@ public class BucketerTest {
 
     /**
      * Verify {@link Bucketer#cleanUserExperimentRecords()} handles a null returned from
-     * {@link UserExperimentRecord#getAllRecords()}.
+     * {@link UserProfile#getAllRecords()}.
      */
     @Test
     public void nullUserExperimentRecords() {
         final AtomicInteger bucketValue = new AtomicInteger();
-        UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
-        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
+        UserProfile userProfile = mock(UserProfile.class);
+        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userProfile);
         bucketValue.set(3000);
 
-        when(userExperimentRecord.getAllRecords()).thenReturn(null);
+        when(userProfile.getAllRecords()).thenReturn(null);
         try {
             algorithm.cleanUserExperimentRecords();
         } catch (NullPointerException e) {
@@ -586,19 +586,19 @@ public class BucketerTest {
     @Test
     public void cleanRemovesRecordsOfExperimentsThatNoLongerExist() {
         final AtomicInteger bucketValue = new AtomicInteger();
-        UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
-        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
+        UserProfile userProfile = mock(UserProfile.class);
+        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userProfile);
         bucketValue.set(3000);
 
         Map<String,Map<String,String>> records = new HashMap<String, Map<String, String>>();
         Map<String,String> activation = new HashMap<String, String>();
         activation.put("exp1", "var1");
         records.put("blah",  activation);
-        when(userExperimentRecord.getAllRecords()).thenReturn(records);
+        when(userProfile.getAllRecords()).thenReturn(records);
 
         algorithm.cleanUserExperimentRecords();
 
-        verify(userExperimentRecord).remove("blah", "exp1");
+        verify(userProfile).remove("blah", "exp1");
     }
 
     /**
@@ -608,19 +608,19 @@ public class BucketerTest {
     @Test
     public void cleanRemovesRecordsOfExperimentsThatAreNotRunning() {
         final AtomicInteger bucketValue = new AtomicInteger();
-        UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
-        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userExperimentRecord);
+        UserProfile userProfile = mock(UserProfile.class);
+        Bucketer algorithm = mockUserExperimentRecordAlgorithm(bucketValue, userProfile);
         bucketValue.set(3000);
 
         Map<String,Map<String,String>> records = new HashMap<String, Map<String, String>>();
         Map<String,String> activation = new HashMap<String, String>();
         activation.put("exp1", "var1");
         records.put("blah",  activation);
-        when(userExperimentRecord.getAllRecords()).thenReturn(records);
+        when(userProfile.getAllRecords()).thenReturn(records);
 
         algorithm.cleanUserExperimentRecords();
 
-        verify(userExperimentRecord).remove("blah", "exp1");
+        verify(userProfile).remove("blah", "exp1");
     }
 
     //======== Helper methods ========//
@@ -642,13 +642,13 @@ public class BucketerTest {
     /**
      * Sets up a mock algorithm that returns an expected bucket value.
      *
-     * Includes a composed {@link UserExperimentRecord} mock instance
+     * Includes a composed {@link UserProfile} mock instance
      *
      * @param bucketValue the expected bucket value holder
      * @return the mock bucket algorithm
      */
-    private Bucketer mockUserExperimentRecordAlgorithm(final AtomicInteger bucketValue, final UserExperimentRecord userExperimentRecord) {
-        return new Bucketer(validProjectConfigV2(), userExperimentRecord) {
+    private Bucketer mockUserExperimentRecordAlgorithm(final AtomicInteger bucketValue, final UserProfile userProfile) {
+        return new Bucketer(validProjectConfigV2(), userProfile) {
             @Override
             int generateBucketValue(int hashCode) {
                 return bucketValue.get();

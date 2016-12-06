@@ -47,7 +47,7 @@ public class Bucketer {
 
     private final ProjectConfig projectConfig;
 
-    @Nullable private final UserExperimentRecord userExperimentRecord;
+    @Nullable private final UserProfile userProfile;
 
     private static final Logger logger = LoggerFactory.getLogger(Bucketer.class);
 
@@ -63,9 +63,9 @@ public class Bucketer {
         this(projectConfig, null);
     }
 
-    public Bucketer(ProjectConfig projectConfig, @Nullable UserExperimentRecord userExperimentRecord) {
+    public Bucketer(ProjectConfig projectConfig, @Nullable UserProfile userProfile) {
         this.projectConfig = projectConfig;
-        this.userExperimentRecord = userExperimentRecord;
+        this.userProfile = userProfile;
     }
 
     private String bucketToEntity(int bucketValue, List<TrafficAllocation> trafficAllocations) {
@@ -113,8 +113,8 @@ public class Bucketer {
         String combinedBucketId = userId + experimentId;
 
         // If a user experiment record instance is present then check it for a saved variation
-        if (userExperimentRecord != null) {
-            String variationKey = userExperimentRecord.lookup(userId, experimentKey);
+        if (userProfile != null) {
+            String variationKey = userProfile.lookup(userId, experimentKey);
             if (variationKey != null) {
                 logger.info("Returning previously activated variation \"{}\" of experiment \"{}\" "
                             + "for user \"{}\" from user experiment record.",
@@ -146,8 +146,8 @@ public class Bucketer {
                         experimentKey);
 
             // If a user experiment record is present give it a variation to store
-            if (userExperimentRecord != null) {
-                boolean saved = userExperimentRecord.save(userId, experiment.getKey(), variationKey);
+            if (userProfile != null) {
+                boolean saved = userProfile.save(userId, experiment.getKey(), variationKey);
                 if (saved) {
                     logger.info("Saved variation \"{}\" of experiment \"{}\" for user \"{}\".",
                                 variationKey, experimentKey, userId);
@@ -224,23 +224,23 @@ public class Bucketer {
     }
 
     @Nullable
-    public UserExperimentRecord getUserExperimentRecord() {
-        return userExperimentRecord;
+    public UserProfile getUserProfile() {
+        return userProfile;
     }
 
     /**
-     * Gives implementations of {@link UserExperimentRecord} a chance to remove records
+     * Gives implementations of {@link UserProfile} a chance to remove records
      * of experiments that are deleted or not running.
      */
     public void cleanUserExperimentRecords() {
-        if (userExperimentRecord != null) {
-            Map<String, Map<String,String>> records = userExperimentRecord.getAllRecords();
+        if (userProfile != null) {
+            Map<String, Map<String,String>> records = userProfile.getAllRecords();
             if (records != null) {
                 for (Map.Entry<String,Map<String,String>> record : records.entrySet()) {
                     for (String experimentKey : record.getValue().keySet()) {
                         Experiment experiment = projectConfig.getExperimentKeyMapping().get(experimentKey);
                         if (experiment == null || !experiment.isRunning()) {
-                            userExperimentRecord.remove(record.getKey(), experimentKey);
+                            userProfile.remove(record.getKey(), experimentKey);
                         }
                     }
                 }
