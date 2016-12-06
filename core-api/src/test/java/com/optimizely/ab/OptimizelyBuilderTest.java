@@ -102,10 +102,10 @@ public class OptimizelyBuilderTest {
     }
 
     @Test
-    public void withUserExperimentRecord() throws Exception {
+    public void withUserProfile() throws Exception {
         UserProfile userProfile = mock(UserProfile.class);
         Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
-            .withUserExperimentRecord(userProfile)
+            .withUserProfile(userProfile)
             .build();
 
         assertThat(optimizelyClient.bucketer.getUserProfile(), is(userProfile));

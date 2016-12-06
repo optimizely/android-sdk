@@ -112,12 +112,12 @@ public class Bucketer {
         String experimentKey = experiment.getKey();
         String combinedBucketId = userId + experimentId;
 
-        // If a user experiment record instance is present then check it for a saved variation
+        // If a user profile instance is present then check it for a saved variation
         if (userProfile != null) {
             String variationKey = userProfile.lookup(userId, experimentKey);
             if (variationKey != null) {
                 logger.info("Returning previously activated variation \"{}\" of experiment \"{}\" "
-                            + "for user \"{}\" from user experiment record.",
+                            + "for user \"{}\" from user profile.",
                             variationKey, experimentKey, userId);
                 // A variation is stored for this combined bucket id
                 return projectConfig
@@ -127,7 +127,7 @@ public class Bucketer {
                     .get(variationKey);
             } else {
                 logger.info("No previously activated variation of experiment \"{}\" "
-                            + "for user \"{}\" found in user experiment record.",
+                            + "for user \"{}\" found in user profile.",
                             experimentKey, userId);
             }
         }
@@ -145,7 +145,7 @@ public class Bucketer {
                 logger.info("User \"{}\" is in variation \"{}\" of experiment \"{}\".", userId, variationKey,
                         experimentKey);
 
-            // If a user experiment record is present give it a variation to store
+            // If a user profile is present give it a variation to store
             if (userProfile != null) {
                 boolean saved = userProfile.save(userId, experiment.getKey(), variationKey);
                 if (saved) {
@@ -232,7 +232,7 @@ public class Bucketer {
      * Gives implementations of {@link UserProfile} a chance to remove records
      * of experiments that are deleted or not running.
      */
-    public void cleanUserExperimentRecords() {
+    public void cleanUserProfiles() {
         if (userProfile != null) {
             Map<String, Map<String,String>> records = userProfile.getAllRecords();
             if (records != null) {

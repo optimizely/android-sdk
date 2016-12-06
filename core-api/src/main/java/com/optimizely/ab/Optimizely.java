@@ -102,7 +102,7 @@ public class Optimizely {
 
     // Do work here that should be done once per Optimizely lifecycle
     @VisibleForTesting void initialize() {
-        bucketer.cleanUserExperimentRecords();
+        bucketer.cleanUserProfiles();
     }
 
     //======== activate calls ========//
@@ -458,7 +458,7 @@ public class Optimizely {
             return this;
         }
 
-        public Builder withUserExperimentRecord(UserProfile userProfile) {
+        public Builder withUserProfile(UserProfile userProfile) {
             this.userProfile = userProfile;
             return this;
         }

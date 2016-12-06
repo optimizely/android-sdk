@@ -47,7 +47,7 @@ public interface UserProfile {
     String lookup(String userId, String experimentKey);
 
     /**
-     * Called when user experiment record should be removed
+     * Called when user profile should be removed
      *
      * Records should be removed when an experiment is not running or when an experiment has been
      * deleted.
