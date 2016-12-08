@@ -17,13 +17,17 @@
 package com.optimizely.ab.config.parser;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.LiveVariableUsageInstance;
 import com.optimizely.ab.config.TrafficAllocation;
 import com.optimizely.ab.config.Variation;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -32,15 +36,24 @@ import java.util.Set;
 
 final class GsonHelpers {
 
-    private static List<Variation> parseVariations(JsonArray variationJson) {
+    private static List<Variation> parseVariations(JsonArray variationJson, JsonDeserializationContext context) {
         List<Variation> variations = new ArrayList<Variation>(variationJson.size());
-
         for (Object obj : variationJson) {
             JsonObject variationObject = (JsonObject)obj;
             String id = variationObject.get("id").getAsString();
             String key = variationObject.get("key").getAsString();
 
-            variations.add(new Variation(id, key));
+            List<LiveVariableUsageInstance> variableUsageInstances = null;
+            // this is an existence check rather than a version check since it's difficult to pass data
+            // across deserializers.
+            if (variationObject.has("variables")) {
+                Type liveVariableUsageInstancesType = new TypeToken<List<LiveVariableUsageInstance>>() {}.getType();
+                variableUsageInstances =
+                        context.deserialize(variationObject.getAsJsonArray("variables"),
+                                            liveVariableUsageInstancesType);
+            }
+
+            variations.add(new Variation(id, key, variableUsageInstances));
         }
 
         return variations;
@@ -70,7 +83,7 @@ final class GsonHelpers {
         return trafficAllocation;
     }
 
-    static Experiment parseExperiment(JsonObject experimentJson, String groupId) {
+    static Experiment parseExperiment(JsonObject experimentJson, String groupId, JsonDeserializationContext context) {
         String id = experimentJson.get("id").getAsString();
         String key = experimentJson.get("key").getAsString();
         String status = experimentJson.get("status").getAsString();
@@ -84,7 +97,7 @@ final class GsonHelpers {
         }
 
         // parse the child objects
-        List<Variation> variations = parseVariations(experimentJson.getAsJsonArray("variations"));
+        List<Variation> variations = parseVariations(experimentJson.getAsJsonArray("variations"), context);
         Map<String, String> userIdToVariationKeyMap =
                 parseForcedVariations(experimentJson.getAsJsonObject("forcedVariations"));
         List<TrafficAllocation> trafficAllocations =
@@ -94,7 +107,7 @@ final class GsonHelpers {
                               trafficAllocations, groupId);
     }
 
-    static Experiment parseExperiment(JsonObject experimentJson) {
-        return parseExperiment(experimentJson, "");
+    static Experiment parseExperiment(JsonObject experimentJson, JsonDeserializationContext context) {
+        return parseExperiment(experimentJson, "", context);
     }
 }

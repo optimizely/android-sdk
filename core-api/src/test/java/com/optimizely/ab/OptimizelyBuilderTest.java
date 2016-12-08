@@ -16,7 +16,7 @@
  */
 package com.optimizely.ab;
 
-import com.optimizely.ab.bucketing.UserExperimentRecord;
+import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
@@ -39,6 +39,8 @@ import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV1;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV1;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV3;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -85,6 +87,14 @@ public class OptimizelyBuilderTest {
     }
 
     @Test
+    public void projectConfigV3() throws Exception {
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV3(), mockEventHandler)
+            .build();
+
+        ProjectConfigTestUtils.verifyProjectConfig(optimizelyClient.getProjectConfig(), validProjectConfigV3());
+    }
+
+    @Test
     public void withErrorHandler() throws Exception {
         Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
             .withErrorHandler(mockErrorHandler)
@@ -102,13 +112,13 @@ public class OptimizelyBuilderTest {
     }
 
     @Test
-    public void withUserExperimentRecord() throws Exception {
-        UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
+    public void withUserProfile() throws Exception {
+        UserProfile userProfile = mock(UserProfile.class);
         Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
-            .withUserExperimentRecord(userExperimentRecord)
+            .withUserProfile(userProfile)
             .build();
 
-        assertThat(optimizelyClient.bucketer.getUserExperimentRecord(), is(userExperimentRecord));
+        assertThat(optimizelyClient.bucketer.getUserProfile(), is(userProfile));
     }
 
     @Test

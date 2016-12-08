@@ -46,7 +46,7 @@ public class GroupGsonDeserializer implements JsonDeserializer<Group> {
         JsonArray experimentsJson = jsonObject.getAsJsonArray("experiments");
         for (Object obj : experimentsJson) {
             JsonObject experimentObj = (JsonObject)obj;
-            experiments.add(GsonHelpers.parseExperiment(experimentObj, id));
+            experiments.add(GsonHelpers.parseExperiment(experimentObj, id, context));
         }
 
         List<TrafficAllocation> trafficAllocations =

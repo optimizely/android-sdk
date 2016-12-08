@@ -25,11 +25,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import com.optimizely.ab.config.Attribute;
+import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Group;
+import com.optimizely.ab.config.LiveVariable;
 import com.optimizely.ab.config.ProjectConfig;
-import com.optimizely.ab.config.audience.Audience;
 
 import java.io.IOException;
 import java.util.List;
@@ -56,7 +57,7 @@ class ProjectConfigJacksonDeserializer extends JsonDeserializer<ProjectConfig> {
                                                         new TypeReference<List<Experiment>>() {});
 
         List<Attribute> attributes;
-        if (version.equals(ProjectConfig.V1)) {
+        if (version.equals(ProjectConfig.Version.V1.toString())) {
             attributes = mapper.readValue(node.get("dimensions").toString(), new TypeReference<List<Attribute>>() {});
         } else {
             attributes = mapper.readValue(node.get("attributes").toString(), new TypeReference<List<Attribute>>() {});
@@ -67,7 +68,13 @@ class ProjectConfigJacksonDeserializer extends JsonDeserializer<ProjectConfig> {
         List<Audience> audiences = mapper.readValue(node.get("audiences").toString(),
                                                     new TypeReference<List<Audience>>() {});
 
+        List<LiveVariable> liveVariables = null;
+        if (version.equals(ProjectConfig.Version.V3.toString())) {
+            liveVariables = mapper.readValue(node.get("variables").toString(),
+                                             new TypeReference<List<LiveVariable>>() {});
+        }
+
         return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
-                                 audiences);
+                                 audiences, liveVariables);
     }
 }

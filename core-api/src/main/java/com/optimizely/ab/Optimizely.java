@@ -18,10 +18,12 @@ package com.optimizely.ab;
 
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
-import com.optimizely.ab.bucketing.UserExperimentRecord;
+import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.LiveVariable;
+import com.optimizely.ab.config.LiveVariableUsageInstance;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.ConfigParseException;
@@ -102,7 +104,7 @@ public class Optimizely {
 
     // Do work here that should be done once per Optimizely lifecycle
     @VisibleForTesting void initialize() {
-        bucketer.cleanUserExperimentRecords();
+        bucketer.cleanUserProfiles();
     }
 
     //======== activate calls ========//
@@ -253,12 +255,136 @@ public class Optimizely {
         }
     }
 
+    //======== live variable getters ========//
+
+    public @Nullable String getVariableString(@Nonnull String variableKey,
+                                              boolean activateExperiment,
+                                              @Nonnull String userId) throws UnknownLiveVariableException {
+        return getVariableString(variableKey, activateExperiment, userId, Collections.<String, String>emptyMap());
+    }
+
+    public @Nullable String getVariableString(@Nonnull String variableKey,
+                                              boolean activateExperiment,
+                                              @Nonnull String userId,
+                                              @Nonnull Map<String, String> attributes)
+            throws UnknownLiveVariableException {
+
+        LiveVariable variable = getLiveVariableOrThrow(projectConfig, variableKey);
+        if (variable == null) {
+            return null;
+        }
+
+        List<Experiment> experimentsUsingLiveVariable =
+                projectConfig.getLiveVariableIdToExperimentsMapping().get(variable.getId());
+        Map<String, Map<String, LiveVariableUsageInstance>> variationToLiveVariableUsageInstanceMapping =
+                projectConfig.getVariationToLiveVariableUsageInstanceMapping();
+
+        if (experimentsUsingLiveVariable == null) {
+            logger.warn("No experiment is using variable \"{}\".", variable.getKey());
+            return variable.getDefaultValue();
+        }
+
+        for (Experiment experiment : experimentsUsingLiveVariable) {
+            Variation variation;
+            if (activateExperiment) {
+                variation = activate(experiment, userId, attributes);
+            } else {
+                variation = getVariation(experiment, userId, attributes);
+            }
+
+            if (variation != null) {
+                LiveVariableUsageInstance usageInstance =
+                        variationToLiveVariableUsageInstanceMapping.get(variation.getId()).get(variable.getId());
+                return usageInstance.getValue();
+            }
+        }
+
+        return variable.getDefaultValue();
+    }
+
+    public @Nullable Boolean getVariableBoolean(@Nonnull String variableKey,
+                                                boolean activateExperiment,
+                                                @Nonnull String userId) throws UnknownLiveVariableException {
+        return getVariableBoolean(variableKey, activateExperiment, userId, Collections.<String, String>emptyMap());
+    }
+
+    public @Nullable Boolean getVariableBoolean(@Nonnull String variableKey,
+                                                boolean activateExperiment,
+                                                @Nonnull String userId,
+                                                @Nonnull Map<String, String> attributes)
+            throws UnknownLiveVariableException {
+
+        String variableValueString = getVariableString(variableKey, activateExperiment, userId, attributes);
+        if (variableValueString != null) {
+            return Boolean.parseBoolean(variableValueString);
+        }
+
+        return null;
+    }
+
+    public @Nullable Integer getVariableInteger(@Nonnull String variableKey,
+                                                boolean activateExperiment,
+                                                @Nonnull String userId) throws UnknownLiveVariableException {
+        return getVariableInteger(variableKey, activateExperiment, userId, Collections.<String, String>emptyMap());
+    }
+
+    public @Nullable Integer getVariableInteger(@Nonnull String variableKey,
+                                                boolean activateExperiment,
+                                                @Nonnull String userId,
+                                                @Nonnull Map<String, String> attributes)
+            throws UnknownLiveVariableException {
+
+        String variableValueString = getVariableString(variableKey, activateExperiment, userId, attributes);
+        if (variableValueString != null) {
+            try {
+                return Integer.parseInt(variableValueString);
+            } catch (NumberFormatException e) {
+                logger.error("Variable value \"{}\" for live variable \"{}\" is not an integer.", variableValueString,
+                             variableKey);
+            }
+        }
+
+        return null;
+    }
+
+    public @Nullable Float getVariableFloat(@Nonnull String variableKey,
+                                            boolean activateExperiment,
+                                            @Nonnull String userId) throws UnknownLiveVariableException {
+        return getVariableFloat(variableKey, activateExperiment, userId, Collections.<String, String>emptyMap());
+    }
+
+    public @Nullable Float getVariableFloat(@Nonnull String variableKey,
+                                            boolean activateExperiment,
+                                            @Nonnull String userId,
+                                            @Nonnull Map<String, String> attributes)
+            throws UnknownLiveVariableException {
+
+        String variableValueString = getVariableString(variableKey, activateExperiment, userId, attributes);
+        if (variableValueString != null) {
+            try {
+                return Float.parseFloat(variableValueString);
+            } catch (NumberFormatException e) {
+                logger.error("Variable value \"{}\" for live variable \"{}\" is not a float.", variableValueString,
+                             variableKey);
+            }
+        }
+
+        return null;
+    }
+
     //======== getVariation calls ========//
 
     public @Nullable Variation getVariation(@Nonnull Experiment experiment,
                                             @Nonnull String userId) throws UnknownExperimentException {
 
-        return getVariation(getProjectConfig(), experiment, Collections.<String, String>emptyMap(), userId);
+        return getVariation(experiment, userId, Collections.<String, String>emptyMap());
+    }
+
+    public @Nullable Variation getVariation(@Nonnull Experiment experiment,
+                                            @Nonnull String userId,
+                                            @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
+
+        return getVariation(getProjectConfig(), experiment, attributes, userId);
     }
 
     public @Nullable Variation getVariation(@Nonnull String experimentKey,
@@ -373,6 +499,36 @@ public class Optimizely {
     }
 
     /**
+     * Helper method to retrieve the {@link LiveVariable} for the given variable key.
+     * If {@link RaiseExceptionErrorHandler} is provided, either a live variable is returned, or an exception is
+     * thrown.
+     * If {@link NoOpErrorHandler} is used, either a live variable or {@code null} is returned.
+     *
+     * @param projectConfig the current project config
+     * @param variableKey the key for the live variable being retrieved from the current project config
+     * @return the live variable to retrieve for the given variable key
+     *
+     * @throws UnknownLiveVariableException if there are no event types in the current project config with the given
+     * name
+     */
+    private LiveVariable getLiveVariableOrThrow(ProjectConfig projectConfig, String variableKey)
+        throws UnknownLiveVariableException {
+
+        LiveVariable liveVariable = projectConfig
+            .getLiveVariableKeyMapping()
+            .get(variableKey);
+
+        if (liveVariable == null) {
+            String unknownLiveVariableKeyError =
+                    String.format("Live variable \"%s\" is not in the datafile.", variableKey);
+            logger.error(unknownLiveVariableKeyError);
+            errorHandler.handleError(new UnknownLiveVariableException(unknownLiveVariableKeyError));
+        }
+
+        return liveVariable;
+    }
+
+    /**
      * Helper method to verify that the given attributes map contains only keys that are present in the
      * {@link ProjectConfig}.
      *
@@ -420,6 +576,7 @@ public class Optimizely {
 
         return true;
     }
+
     //======== Builder ========//
 
     public static Builder builder(@Nonnull String datafile,
@@ -439,7 +596,7 @@ public class Optimizely {
 
         private String datafile;
         private Bucketer bucketer;
-        private UserExperimentRecord userExperimentRecord;
+        private UserProfile userProfile;
         private ErrorHandler errorHandler;
         private EventHandler eventHandler;
         private EventBuilder eventBuilder;
@@ -458,8 +615,8 @@ public class Optimizely {
             return this;
         }
 
-        public Builder withUserExperimentRecord(UserExperimentRecord userExperimentRecord) {
-            this.userExperimentRecord = userExperimentRecord;
+        public Builder withUserProfile(UserProfile userProfile) {
+            this.userProfile = userProfile;
             return this;
         }
 
@@ -496,7 +653,7 @@ public class Optimizely {
 
             // use the default bucketer and event builder, if no overrides were provided
             if (bucketer == null) {
-                bucketer = new Bucketer(projectConfig, userExperimentRecord);
+                bucketer = new Bucketer(projectConfig, userProfile);
             }
 
             if (clientEngine == null) {
@@ -508,7 +665,7 @@ public class Optimizely {
             }
 
             if (eventBuilder == null) {
-                if (projectConfig.getVersion().equals(ProjectConfig.V1)) {
+                if (projectConfig.getVersion().equals(ProjectConfig.Version.V1.toString())) {
                     eventBuilder = new EventBuilderV1();
                 } else {
                     eventBuilder = new EventBuilderV2(clientEngine, clientVersion);

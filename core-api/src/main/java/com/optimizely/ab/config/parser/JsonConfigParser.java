@@ -16,17 +16,20 @@
  */
 package com.optimizely.ab.config.parser;
 
+import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.audience.AndCondition;
 import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.audience.Condition;
 import com.optimizely.ab.config.audience.NotCondition;
 import com.optimizely.ab.config.audience.OrCondition;
 import com.optimizely.ab.config.audience.UserAttribute;
-
-import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Group;
+import com.optimizely.ab.config.LiveVariable;
+import com.optimizely.ab.config.LiveVariableUsageInstance;
+import com.optimizely.ab.config.LiveVariable.VariableStatus;
+import com.optimizely.ab.config.LiveVariable.VariableType;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.TrafficAllocation;
 import com.optimizely.ab.config.Variation;
@@ -60,7 +63,7 @@ final class JsonConfigParser implements ConfigParser {
             List<Experiment> experiments = parseExperiments(rootObject.getJSONArray("experiments"));
 
             List<Attribute> attributes;
-            if (version.equals(ProjectConfig.V1)) {
+            if (version.equals(ProjectConfig.Version.V1.toString())) {
                 attributes = parseAttributes(rootObject.getJSONArray("dimensions"));
             } else {
                 attributes = parseAttributes(rootObject.getJSONArray("attributes"));
@@ -70,8 +73,13 @@ final class JsonConfigParser implements ConfigParser {
             List<Audience> audiences = parseAudiences(rootObject.getJSONArray("audiences"));
             List<Group> groups = parseGroups(rootObject.getJSONArray("groups"));
 
+            List<LiveVariable> liveVariables = null;
+            if (version.equals(ProjectConfig.Version.V3.toString())) {
+                liveVariables = parseLiveVariables(rootObject.getJSONArray("variables"));
+            }
+
             return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
-                                     audiences);
+                                     audiences, liveVariables);
         } catch (Exception e) {
             throw new ConfigParseException("Unable to parse datafile: " + json, e);
         }
@@ -122,7 +130,13 @@ final class JsonConfigParser implements ConfigParser {
             String id = variationObject.getString("id");
             String key = variationObject.getString("key");
 
-            variations.add(new Variation(id, key));
+            List<LiveVariableUsageInstance> liveVariableUsageInstances = null;
+            if (variationObject.has("variables")) {
+                liveVariableUsageInstances =
+                        parseLiveVariableInstances(variationObject.getJSONArray("variables"));
+            }
+
+            variations.add(new Variation(id, key, liveVariableUsageInstances));
         }
 
         return variations;
@@ -247,5 +261,36 @@ final class JsonConfigParser implements ConfigParser {
         }
 
         return groups;
+    }
+
+    private List<LiveVariable> parseLiveVariables(JSONArray liveVariablesJson) {
+        List<LiveVariable> liveVariables = new ArrayList<LiveVariable>(liveVariablesJson.length());
+
+        for (Object obj : liveVariablesJson) {
+            JSONObject liveVariableObject = (JSONObject)obj;
+            String id = liveVariableObject.getString("id");
+            String key = liveVariableObject.getString("key");
+            String defaultValue = liveVariableObject.getString("defaultValue");
+            VariableType type = VariableType.fromString(liveVariableObject.getString("type"));
+            VariableStatus status = VariableStatus.fromString(liveVariableObject.getString("status"));
+
+            liveVariables.add(new LiveVariable(id, key, defaultValue, status, type));
+        }
+
+        return liveVariables;
+    }
+
+    private List<LiveVariableUsageInstance> parseLiveVariableInstances(JSONArray liveVariableInstancesJson) {
+        List<LiveVariableUsageInstance> liveVariableUsageInstances = new ArrayList<LiveVariableUsageInstance>(liveVariableInstancesJson.length());
+
+        for (Object obj : liveVariableInstancesJson) {
+            JSONObject liveVariableInstanceObject = (JSONObject)obj;
+            String id = liveVariableInstanceObject.getString("id");
+            String value = liveVariableInstanceObject.getString("value");
+
+            liveVariableUsageInstances.add(new LiveVariableUsageInstance(id, value));
+        }
+
+        return liveVariableUsageInstances;
     }
 }
