@@ -39,6 +39,8 @@ import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV1;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV1;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV3;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -82,6 +84,14 @@ public class OptimizelyBuilderTest {
             .build();
 
         ProjectConfigTestUtils.verifyProjectConfig(optimizelyClient.getProjectConfig(), validProjectConfigV2());
+    }
+
+    @Test
+    public void projectConfigV3() throws Exception {
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV3(), mockEventHandler)
+            .build();
+
+        ProjectConfigTestUtils.verifyProjectConfig(optimizelyClient.getProjectConfig(), validProjectConfigV3());
     }
 
     @Test

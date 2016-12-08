@@ -26,6 +26,8 @@ import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV1;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV1;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV3;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.verifyProjectConfig;
 
 /**
@@ -50,6 +52,15 @@ public class GsonConfigParserTest {
         GsonConfigParser parser = new GsonConfigParser();
         ProjectConfig actual = parser.parseProjectConfig(validConfigJsonV2());
         ProjectConfig expected = validProjectConfigV2();
+
+        verifyProjectConfig(actual, expected);
+    }
+
+    @Test
+    public void parseProjectConfigV3() throws Exception {
+        GsonConfigParser parser = new GsonConfigParser();
+        ProjectConfig actual = parser.parseProjectConfig(validConfigJsonV3());
+        ProjectConfig expected = validProjectConfigV3();
 
         verifyProjectConfig(actual, expected);
     }

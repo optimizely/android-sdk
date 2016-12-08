@@ -1,0 +1,93 @@
+{
+  "accountId": "789",
+  "projectId": "1234",
+  "version": "2",
+  "revision": "42",
+  "experiments": [
+    {
+      "id": "223",
+      "key": "etag1",
+      "status": "Running",
+      "layerId": "1",
+      "percentageIncluded": 9000,
+      "audienceIds": [],
+      "variations": [{
+        "id": "276",
+        "key": "vtag1",
+        "variables": []
+      }, {
+        "id": "277",
+        "key": "vtag2",
+        "variables": []
+      }],
+      "forcedVariations": {
+        "testUser1": "vtag1",
+        "testUser2": "vtag2"
+      },
+      "trafficAllocation": [{
+        "entityId": "276",
+        "endOfRange": 3500
+      }, {
+        "entityId": "277",
+        "endOfRange": 9000
+      }]
+    },
+    {
+      "id": "118",
+      "key": "etag2",
+      "status": "Not started",
+      "layerId": "2",
+      "audienceIds": [],
+      "variations": [{
+        "id": "278",
+        "key": "vtag3",
+        "variables": []
+      }, {
+        "id": "279",
+        "key": "vtag4",
+        "variables": []
+      }],
+      "forcedVariations": {},
+      "trafficAllocation": [{
+        "entityId": "278",
+        "endOfRange": 4500
+      }, {
+        "entityId": "279",
+        "endOfRange": 9000
+      }]
+    }
+  ],
+  "groups": [],
+  "audiences": [],
+  "attributes": [
+    {
+      "id": "134",
+      "key": "browser_type"
+    }
+  ],
+  "events": [
+    {
+      "id": "971",
+      "key": "clicked_cart",
+      "experimentIds": [
+        "223"
+      ]
+    },
+    {
+      "id": "098",
+      "key": "Total Revenue",
+      "experimentIds": [
+        "223"
+      ]
+    },
+    {
+      "id": "099",
+      "key": "clicked_purchase",
+      "experimentIds": [
+        "118",
+        "223"
+      ]
+    }
+  ],
+  "variables": []
+}

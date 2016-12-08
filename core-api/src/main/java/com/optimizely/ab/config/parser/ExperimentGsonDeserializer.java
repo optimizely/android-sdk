@@ -33,6 +33,6 @@ final class ExperimentGsonDeserializer implements JsonDeserializer<Experiment> {
         throws JsonParseException {
 
         JsonObject jsonObject = json.getAsJsonObject();
-        return GsonHelpers.parseExperiment(jsonObject);
+        return GsonHelpers.parseExperiment(jsonObject, context);
     }
 }

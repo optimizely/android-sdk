@@ -17,31 +17,49 @@
 package com.optimizely.ab.config;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import java.util.List;
 
 /**
  * Represents the Optimizely Variation configuration.
  *
  * @see <a href="http://developers.optimizely.com/server/reference/index.html#json">Project JSON</a>
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Variation implements IdKeyMapped {
 
     private final String id;
     private final String key;
+    private final List<LiveVariableUsageInstance> liveVariableUsageInstances;
+
+    public Variation(String id, String key) {
+        this(id, key, null);
+    }
 
     @JsonCreator
     public Variation(@JsonProperty("id") String id,
-                     @JsonProperty("key") String key) {
+                     @JsonProperty("key") String key,
+                     @JsonProperty("variables") List<LiveVariableUsageInstance> liveVariableUsageInstances) {
         this.id = id;
         this.key = key;
+        this.liveVariableUsageInstances = liveVariableUsageInstances;
     }
 
-    public String getId() {
+    public @Nonnull String getId() {
         return id;
     }
 
-    public String getKey() {
+    public @Nonnull String getKey() {
         return key;
+    }
+
+    public @Nullable List<LiveVariableUsageInstance> getLiveVariableUsageInstances() {
+        return liveVariableUsageInstances;
     }
 
     public boolean is(String otherKey) {

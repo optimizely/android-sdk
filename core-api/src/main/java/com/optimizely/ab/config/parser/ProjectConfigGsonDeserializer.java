@@ -23,11 +23,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
-import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.Attribute;
+import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Group;
+import com.optimizely.ab.config.LiveVariable;
 import com.optimizely.ab.config.ProjectConfig;
 
 import java.lang.reflect.Type;
@@ -60,7 +61,7 @@ public class ProjectConfigGsonDeserializer implements JsonDeserializer<ProjectCo
             context.deserialize(jsonObject.get("experiments").getAsJsonArray(), experimentsType);
 
         List<Attribute> attributes;
-        if (version.equals(ProjectConfig.V1)) {
+        if (version.equals(ProjectConfig.Version.V1.toString())) {
             attributes = context.deserialize(jsonObject.get("dimensions"), attributesType);
         } else {
             attributes = context.deserialize(jsonObject.get("attributes"), attributesType);
@@ -71,7 +72,14 @@ public class ProjectConfigGsonDeserializer implements JsonDeserializer<ProjectCo
         List<Audience> audiences =
             context.deserialize(jsonObject.get("audiences").getAsJsonArray(), audienceType);
 
+        // live variables should be null if using V1
+        List<LiveVariable> liveVariables = null;
+        if (version.equals(ProjectConfig.Version.V3.toString())) {
+            Type liveVariablesType = new TypeToken<List<LiveVariable>>() {}.getType();
+            liveVariables = context.deserialize(jsonObject.getAsJsonArray("variables"), liveVariablesType);
+        }
+
         return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
-                                 audiences);
+                                 audiences, liveVariables);
     }
 }
