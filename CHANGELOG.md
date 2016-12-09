@@ -1,4 +1,11 @@
 # Optimizely Android X SDK Changelog
+### 0.3.0
+December 8, 2016
+
+*New Features*
+
+- Add support for live variables
+
 ### 0.2.2
 November 30, 2016
 *Bug Fixes*
