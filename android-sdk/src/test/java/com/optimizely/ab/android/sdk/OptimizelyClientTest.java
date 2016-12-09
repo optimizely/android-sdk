@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
+import java.util.Collections;
 import java.util.HashMap;
 
 import static junit.framework.Assert.assertTrue;
@@ -176,5 +177,77 @@ public class OptimizelyClientTest {
     public void testIsInvalid() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
         assertFalse(optimizelyClient.isValid());
+    }
+
+    @Test
+    public void testGoodGetVariableString() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        optimizelyClient.getVariableString("test_key", true, "userId",
+                                           Collections.<String, String>emptyMap());
+        verify(optimizely).getVariableString("test_key", true, "userId",
+                                             Collections.<String, String>emptyMap());
+    }
+
+    @Test
+    public void testBadGetVariableString() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        optimizelyClient.getVariableString("test_key", true, "userId",
+                                           Collections.<String, String>emptyMap());
+        verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
+                "for user {}", "test_key", "userId");
+    }
+
+    @Test
+    public void testGoodGetVariableBoolean() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        optimizelyClient.getVariableBoolean("test_key", true, "userId",
+                                            Collections.<String, String>emptyMap());
+        verify(optimizely).getVariableBoolean("test_key", true, "userId",
+                                              Collections.<String, String>emptyMap());
+    }
+
+    @Test
+    public void testBadGetVariableBoolean() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        optimizelyClient.getVariableBoolean("test_key", true, "userId",
+                                            Collections.<String, String>emptyMap());
+        verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
+                "for user {}", "test_key", "userId");
+    }
+
+    @Test
+    public void testGoodGetVariableInteger() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        optimizelyClient.getVariableInteger("test_key", true, "userId",
+                                            Collections.<String, String>emptyMap());
+        verify(optimizely).getVariableInteger("test_key", true, "userId",
+                                              Collections.<String, String>emptyMap());
+    }
+
+    @Test
+    public void testBadGetVariableInteger() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        optimizelyClient.getVariableInteger("test_key", true, "userId",
+                                            Collections.<String, String>emptyMap());
+        verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
+                "for user {}", "test_key", "userId");
+    }
+
+    @Test
+    public void testGoodGetVariableFloat() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        optimizelyClient.getVariableFloat("test_key", true, "userId",
+                                          Collections.<String, String>emptyMap());
+        verify(optimizely).getVariableFloat("test_key", true, "userId",
+                                            Collections.<String, String>emptyMap());
+    }
+
+    @Test
+    public void testBadGetVariableFloat() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        optimizelyClient.getVariableFloat("test_key", true, "userId",
+                                          Collections.<String, String>emptyMap());
+        verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
+                "for user {}", "test_key", "userId");
     }
 }

@@ -27,6 +27,7 @@ import com.optimizely.ab.config.Variation;
 
 import org.slf4j.Logger;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -162,6 +163,150 @@ public class OptimizelyClient {
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
                     " with value {} and attributes", eventName, userId, eventValue);
+        }
+    }
+
+    /**
+     * Get the value of a String live variable
+     * @param variableKey the String key for the variable
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @param userId the user ID
+     * @return String value of the live variable
+     */
+    public @Nullable String getVariableString(@NonNull String variableKey,
+                                              boolean activateExperiment,
+                                              @NonNull String userId) {
+        return getVariableString(variableKey, activateExperiment, userId,
+                                 Collections.<String, String>emptyMap());
+    }
+
+    /**
+     * Get the value of a String live variable
+     * @param variableKey the String key for the variable
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @param userId the user ID
+     * @param attributes a map of attributes about the user
+     * @return String value of the live variable
+     */
+    public @Nullable String getVariableString(@NonNull String variableKey,
+                                              boolean activateExperiment,
+                                              @NonNull String userId,
+                                              @NonNull Map<String, String> attributes) {
+        if (optimizely != null) {
+            return optimizely.getVariableString(variableKey, activateExperiment, userId,
+                                                attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get live variable {} " +
+                    "for user {}", variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the value of a Boolean live variable
+     * @param variableKey the String key for the variable
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @param userId the user ID
+     * @return Boolean value of the live variable
+     */
+    public @Nullable Boolean getVariableBoolean(@NonNull String variableKey,
+                                                boolean activateExperiment,
+                                                @NonNull String userId) {
+        return getVariableBoolean(variableKey, activateExperiment, userId,
+                                  Collections.<String, String>emptyMap());
+    }
+
+    /**
+     * Get the value of a Boolean live variable
+     * @param variableKey the String key for the variable
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @param userId the user ID
+     * @param attributes a map of attributes about the user
+     * @return Boolean value of the live variable
+     */
+    public @Nullable Boolean getVariableBoolean(@NonNull String variableKey,
+                                                boolean activateExperiment,
+                                                @NonNull String userId,
+                                                @NonNull Map<String, String> attributes) {
+        if (optimizely != null) {
+            return optimizely.getVariableBoolean(variableKey, activateExperiment, userId,
+                                                 attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get live variable {} " +
+                    "for user {}", variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the value of a Integer live variable
+     * @param variableKey the String key for the variable
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @param userId the user ID
+     * @return Integer value of the live variable
+     */
+    public @Nullable Integer getVariableInteger(@NonNull String variableKey,
+                                                boolean activateExperiment,
+                                                @NonNull String userId) {
+        return getVariableInteger(variableKey, activateExperiment, userId,
+                                  Collections.<String, String>emptyMap());
+    }
+
+    /**
+     * Get the value of a Integer live variable
+     * @param variableKey the String key for the variable
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @param userId the user ID
+     * @param attributes a map of attributes about the user
+     * @return Integer value of the live variable
+     */
+    public @Nullable Integer getVariableInteger(@NonNull String variableKey,
+                                                boolean activateExperiment,
+                                                @NonNull String userId,
+                                                @NonNull Map<String, String> attributes) {
+        if (optimizely != null) {
+            return optimizely.getVariableInteger(variableKey, activateExperiment, userId,
+                                                 attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get live variable {} " +
+                    "for user {}", variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the value of a Float live variable
+     * @param variableKey the String key for the variable
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @param userId the user ID
+     * @return Float value of the live variable
+     */
+    public @Nullable Float getVariableFloat(@NonNull String variableKey,
+                                            boolean activateExperiment,
+                                            @NonNull String userId) {
+        return getVariableFloat(variableKey, activateExperiment, userId,
+                                Collections.<String, String>emptyMap());
+    }
+
+    /**
+     * Get the value of a Float live variable
+     * @param variableKey the String key for the variable
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @param userId the user ID
+     * @param attributes a map of attributes about the user
+     * @return Float value of the live variable
+     */
+    public @Nullable Float getVariableFloat(@NonNull String variableKey,
+                                            boolean activateExperiment,
+                                            @NonNull String userId,
+                                            @NonNull Map<String, String> attributes) {
+        if (optimizely != null) {
+            return optimizely.getVariableFloat(variableKey, activateExperiment, userId,
+                                               attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get live variable {} " +
+                    "for user {}", variableKey, userId);
+            return null;
         }
     }
 
