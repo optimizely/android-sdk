@@ -18,7 +18,7 @@ package com.optimizely.ab;
 
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
-import com.optimizely.ab.bucketing.UserProfile;
+import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -104,7 +104,7 @@ public class Optimizely {
 
     // Do work here that should be done once per Optimizely lifecycle
     @VisibleForTesting void initialize() {
-        bucketer.cleanUserProfiles();
+        bucketer.cleanUserExperimentRecords();
     }
 
     //======== activate calls ========//
@@ -596,7 +596,7 @@ public class Optimizely {
 
         private String datafile;
         private Bucketer bucketer;
-        private UserProfile userProfile;
+        private UserExperimentRecord userExperimentRecord;
         private ErrorHandler errorHandler;
         private EventHandler eventHandler;
         private EventBuilder eventBuilder;
@@ -615,8 +615,8 @@ public class Optimizely {
             return this;
         }
 
-        public Builder withUserProfile(UserProfile userProfile) {
-            this.userProfile = userProfile;
+        public Builder withUserExperimentRecord(UserExperimentRecord userExperimentRecord) {
+            this.userExperimentRecord = userExperimentRecord;
             return this;
         }
 
@@ -653,7 +653,7 @@ public class Optimizely {
 
             // use the default bucketer and event builder, if no overrides were provided
             if (bucketer == null) {
-                bucketer = new Bucketer(projectConfig, userProfile);
+                bucketer = new Bucketer(projectConfig, userExperimentRecord);
             }
 
             if (clientEngine == null) {

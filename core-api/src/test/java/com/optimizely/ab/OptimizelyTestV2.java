@@ -31,8 +31,10 @@ import com.optimizely.ab.error.NoOpErrorHandler;
 import com.optimizely.ab.error.RaiseExceptionErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
+import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 import com.optimizely.ab.internal.LogbackVerifier;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 
@@ -159,7 +161,7 @@ public class OptimizelyTestV2 {
                 .withErrorHandler(mockErrorHandler)
                 .build();
 
-        verify(mockBucketer).cleanUserProfiles();
+        verify(mockBucketer).cleanUserExperimentRecords();
     }
 
     /**

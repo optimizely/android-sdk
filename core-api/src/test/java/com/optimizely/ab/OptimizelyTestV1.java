@@ -159,7 +159,7 @@ public class OptimizelyTestV1 {
             .withErrorHandler(mockErrorHandler)
             .build();
 
-        verify(mockBucketer).cleanUserProfiles();
+        verify(mockBucketer).cleanUserExperimentRecords();
     }
 
     /**

@@ -16,7 +16,7 @@
  */
 package com.optimizely.ab;
 
-import com.optimizely.ab.bucketing.UserProfile;
+import com.optimizely.ab.bucketing.UserExperimentRecord;
 import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
@@ -112,13 +112,13 @@ public class OptimizelyBuilderTest {
     }
 
     @Test
-    public void withUserProfile() throws Exception {
-        UserProfile userProfile = mock(UserProfile.class);
+    public void withUserExperimentRecord() throws Exception {
+        UserExperimentRecord userExperimentRecord = mock(UserExperimentRecord.class);
         Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
-            .withUserProfile(userProfile)
+            .withUserExperimentRecord(userExperimentRecord)
             .build();
 
-        assertThat(optimizelyClient.bucketer.getUserProfile(), is(userProfile));
+        assertThat(optimizelyClient.bucketer.getUserExperimentRecord(), is(userExperimentRecord));
     }
 
     @Test

@@ -25,7 +25,7 @@ import java.util.Map;
  * user experience after changing traffic allocations.  Also, this interface gives users
  * a hook to keep track of activation history.
  */
-public interface UserProfile {
+public interface UserExperimentRecord {
 
     /**
      * Called when implementors should save an activation
@@ -47,7 +47,7 @@ public interface UserProfile {
     String lookup(String userId, String experimentKey);
 
     /**
-     * Called when user profile should be removed
+     * Called when user experiment record should be removed
      *
      * Records should be removed when an experiment is not running or when an experiment has been
      * deleted.

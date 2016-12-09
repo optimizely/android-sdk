@@ -1,7 +1,6 @@
 ## 1.1.0
 
 - Add support for live variables
-- Change `UserExperimentRecord` to `UserProfile`
 
 ## 1.0.3
 
