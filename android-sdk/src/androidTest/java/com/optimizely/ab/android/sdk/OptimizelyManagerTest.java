@@ -51,6 +51,7 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class OptimizelyManagerTest {
 
+    private String testProjectId = "7595190003";
     private ListeningExecutorService executor;
     private Logger logger;
     private OptimizelyManager optimizelyManager;
@@ -61,7 +62,7 @@ public class OptimizelyManagerTest {
             "audiences: [ ],\n" +
             "groups: [ ],\n" +
             "attributes: [ ],\n" +
-            "projectId: \"7595190003\",\n" +
+            "projectId: \"" + testProjectId + "\",\n" +
             "accountId: \"6365361536\",\n" +
             "events: [ ],\n" +
             "revision: \"1\"\n" +
@@ -71,7 +72,7 @@ public class OptimizelyManagerTest {
     public void setup() {
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
-        optimizelyManager = new OptimizelyManager("7595190003", 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger);
+        optimizelyManager = new OptimizelyManager(testProjectId, 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger);
     }
 
 
