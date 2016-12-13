@@ -320,6 +320,14 @@ public class OptimizelyManager {
         return dataFileCache.exists();
     }
 
+    /**
+     * Returns the URL of the versioned datafile that this SDK expects to use
+     * @return the CDN location of the datafile
+     */
+    public @NonNull String getDatafileUrl() {
+        return DataFileService.getDatafileUrl(projectId);
+    }
+
     @NonNull
     String getProjectId() {
         return projectId;

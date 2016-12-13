@@ -22,6 +22,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
@@ -43,6 +44,9 @@ public class DataFileService extends Service {
      * Extra containing the project id this instance of Optimizely was built with
      */
     public static final String EXTRA_PROJECT_ID = "com.optimizely.ab.android.EXTRA_PROJECT_ID";
+    public static final String FORMAT_VERSIONED_CDN_URL = "https://cdn.optimizely.com/public/%s/datafile_v%s.json";
+    static final String DATAFILE_VERSION = "3";
+
     @NonNull private final IBinder binder = new LocalBinder();
     Logger logger = LoggerFactory.getLogger(getClass());
     private boolean isBound;
@@ -64,8 +68,10 @@ public class DataFileService extends Service {
                         projectId,
                         new Cache(getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
                         LoggerFactory.getLogger(DataFileCache.class));
+
+                String datafileUrl = getDatafileUrl(projectId);
                 DataFileLoader dataFileLoader = new DataFileLoader(this, dataFileClient, dataFileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DataFileLoader.class));
-                dataFileLoader.getDataFile(projectId, null);
+                dataFileLoader.getDataFile(datafileUrl, null);
                 BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
                         new Cache(this, LoggerFactory.getLogger(Cache.class)),
                         LoggerFactory.getLogger(BackgroundWatchersCache.class));
@@ -106,13 +112,18 @@ public class DataFileService extends Service {
         return isBound;
     }
 
+    public static @NonNull String getDatafileUrl(@NonNull String projectId) {
+        return String.format(FORMAT_VERSIONED_CDN_URL, projectId, DATAFILE_VERSION);
+    }
+
     void stop() {
         stopSelf();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void getDataFile(String projectId, DataFileLoader dataFileLoader, DataFileLoadedListener loadedListener) {
-        dataFileLoader.getDataFile(projectId, loadedListener);
+        String datafileUrl = getDatafileUrl(projectId);
+        dataFileLoader.getDataFile(datafileUrl, loadedListener);
     }
 
     class LocalBinder extends Binder {
