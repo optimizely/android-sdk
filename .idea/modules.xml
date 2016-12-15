@@ -7,7 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/event-handler/event-handler.iml" filepath="$PROJECT_DIR$/event-handler/event-handler.iml" />
       <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/test-app/test-app.iml" filepath="$PROJECT_DIR$/test-app/test-app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/user-experiment-record/user-experiment-record.iml" filepath="$PROJECT_DIR$/user-experiment-record/user-experiment-record.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user-profile/user-profile.iml" filepath="$PROJECT_DIR$/user-profile/user-profile.iml" />
     </modules>
   </component>
 </project>

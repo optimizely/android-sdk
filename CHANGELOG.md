@@ -1,4 +1,11 @@
 # Optimizely Android X SDK Changelog
+### 0.3.1
+December 14, 2016
+
+*Breaking Changes*
+
+- Rename `AndroidUserExperimentRecord` to `AndroidUserProfile`
+
 ### 0.3.0
 December 8, 2016
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.optimizely.ab.android.user_experiment_record;
+package com.optimizely.ab.android.user_profile;
 
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
@@ -39,12 +39,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link UserExperimentRecordCache}
+ * Tests for {@link UserProfileCache}
  */
 @RunWith(AndroidJUnit4.class)
-public class UserExperimentRecordCacheTest {
+public class UserProfileCacheTest {
 
-    private UserExperimentRecordCache userExperimentRecordCache;
+    private UserProfileCache userProfileCache;
     private Cache cache;
     private Logger logger;
 
@@ -52,62 +52,62 @@ public class UserExperimentRecordCacheTest {
     public void setup() {
         logger = mock(Logger.class);
         cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
-        userExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
+        userProfileCache = new UserProfileCache("1", cache, logger);
     }
 
     @After
     public void teardown() {
-        cache.delete(userExperimentRecordCache.getFileName());
+        cache.delete(userProfileCache.getFileName());
     }
 
     @Test
     public void loadWhenNoFile() throws JSONException {
-        assertEquals(userExperimentRecordCache.load().toString(), new JSONObject().toString());
+        assertEquals(userProfileCache.load().toString(), new JSONObject().toString());
     }
 
     @Test
     public void testSaveAndLoad() throws JSONException {
-        assertTrue(userExperimentRecordCache.save("foo", "exp1", "var1"));
-        assertTrue(userExperimentRecordCache.save("foo", "exp2", "var2"));
+        assertTrue(userProfileCache.save("foo", "exp1", "var1"));
+        assertTrue(userProfileCache.save("foo", "exp2", "var2"));
         JSONObject expectedActivation = new JSONObject();
         JSONObject expectedExpIdToVarId = new JSONObject();
         expectedExpIdToVarId.put("exp1", "var1");
         expectedExpIdToVarId.put("exp2", "var2");
         expectedActivation.put("foo", expectedExpIdToVarId);
-        assertEquals(expectedActivation.toString(), userExperimentRecordCache.load().toString());
+        assertEquals(expectedActivation.toString(), userProfileCache.load().toString());
     }
 
     @Test
     public void testSaveIOException() throws IOException, JSONException {
         cache = mock(Cache.class);
         final IOException ioException = new IOException();
-        userExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
+        userProfileCache = new UserProfileCache("1", cache, logger);
         JSONObject expectedActivation = new JSONObject();
         JSONObject expectedExpIdToVarId = new JSONObject();
         expectedExpIdToVarId.put("exp1", "var1");
         expectedActivation.put("foo", expectedExpIdToVarId);
-        when(cache.save(userExperimentRecordCache.getFileName(), expectedActivation.toString())).thenThrow(ioException);
-        assertFalse(userExperimentRecordCache.save("foo", "exp1", "var1"));
-        verify(logger).error("Unable to save user experiment record cache", ioException);
+        when(cache.save(userProfileCache.getFileName(), expectedActivation.toString())).thenThrow(ioException);
+        assertFalse(userProfileCache.save("foo", "exp1", "var1"));
+        verify(logger).error("Unable to save user profile cache", ioException);
     }
 
     @Test
     public void testRestoreIOException() throws IOException, JSONException {
         cache = mock(Cache.class);
         final IOException ioException = new IOException();
-        userExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
-        when(cache.load(userExperimentRecordCache.getFileName())).thenThrow(ioException);
-        assertEquals(userExperimentRecordCache.load().toString(), new JSONObject().toString());
-        verify(logger).error("Unable to load user experiment record cache", ioException);
+        userProfileCache = new UserProfileCache("1", cache, logger);
+        when(cache.load(userProfileCache.getFileName())).thenThrow(ioException);
+        assertEquals(userProfileCache.load().toString(), new JSONObject().toString());
+        verify(logger).error("Unable to load user profile cache", ioException);
     }
 
     @Test
     public void testRestoreFileNotFoundException() throws IOException, JSONException {
         cache = mock(Cache.class);
         final FileNotFoundException fileNotFoundException = new FileNotFoundException();
-        userExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
-        when(cache.load(userExperimentRecordCache.getFileName())).thenThrow(fileNotFoundException);
-        assertEquals(userExperimentRecordCache.load().toString(), new JSONObject().toString());
-        verify(logger).info("No user experiment record cache found");
+        userProfileCache = new UserProfileCache("1", cache, logger);
+        when(cache.load(userProfileCache.getFileName())).thenThrow(fileNotFoundException);
+        assertEquals(userProfileCache.load().toString(), new JSONObject().toString());
+        verify(logger).info("No user profile cache found");
     }
 }

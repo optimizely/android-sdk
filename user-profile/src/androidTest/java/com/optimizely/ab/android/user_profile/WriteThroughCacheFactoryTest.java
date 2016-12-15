@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.optimizely.ab.android.user_experiment_record;
+package com.optimizely.ab.android.user_profile;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord.WriteThroughCacheTaskFactory}
+ * Tests for {@link com.optimizely.ab.android.user_profile.AndroidUserProfile.WriteThroughCacheTaskFactory}
  */
 @RunWith(AndroidJUnit4.class)
 public class WriteThroughCacheFactoryTest {
@@ -64,9 +64,9 @@ public class WriteThroughCacheFactoryTest {
     @Test
     public void startWriteCacheTask() throws JSONException {
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
-        UserExperimentRecordCache diskUserExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
-        AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
-                new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache,
+        UserProfileCache diskUserProfileCache = new UserProfileCache("1", cache, logger);
+        AndroidUserProfile.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
+                new AndroidUserProfile.WriteThroughCacheTaskFactory(diskUserProfileCache,
                         new HashMap<String, Map<String, String>>(), executor, logger);
 
         writeThroughCacheTaskFactory.startWriteCacheTask("user1", "exp1", "var1");
@@ -76,34 +76,34 @@ public class WriteThroughCacheFactoryTest {
             fail("Timed out");
         }
 
-        verify(logger).info("Updated in memory user experiment record");
-        assertTrue(writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().containsKey("user1"));
-        Map<String, String> activation = writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get("user1");
+        verify(logger).info("Updated in memory user profile");
+        assertTrue(writeThroughCacheTaskFactory.getMemoryUserProfileCache().containsKey("user1"));
+        Map<String, String> activation = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get("user1");
         assertTrue(activation.containsKey("exp1"));
         assertEquals("var1", activation.get("exp1"));
 
-        final JSONObject json = diskUserExperimentRecordCache.load();
+        final JSONObject json = diskUserProfileCache.load();
         assertTrue(json.has("user1"));
         final JSONObject user1 = json.getJSONObject("user1");
         assertTrue(user1.has("exp1"));
         assertEquals("var1", user1.getString("exp1"));
         verify(logger).info("Persisted user in variation {} for experiment {}.", "var1", "exp1");
 
-        cache.delete(diskUserExperimentRecordCache.getFileName());
+        cache.delete(diskUserProfileCache.getFileName());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void startWriteCacheTaskFail() throws JSONException, IOException {
         Cache cache = mock(Cache.class);
-        UserExperimentRecordCache diskUserExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
-        AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
-                new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache,
+        UserProfileCache diskUserProfileCache = new UserProfileCache("1", cache, logger);
+        AndroidUserProfile.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
+                new AndroidUserProfile.WriteThroughCacheTaskFactory(diskUserProfileCache,
                         new HashMap<String, Map<String, String>>(), executor, logger);
 
         JSONObject json = getJsonObject();
 
-        when(cache.save(diskUserExperimentRecordCache.getFileName(), json.toString())).thenThrow(new IOException());
+        when(cache.save(diskUserProfileCache.getFileName(), json.toString())).thenThrow(new IOException());
 
         writeThroughCacheTaskFactory.startWriteCacheTask("user1", "exp1", "var1");
         try {
@@ -112,9 +112,9 @@ public class WriteThroughCacheFactoryTest {
             fail("Timed out");
         }
 
-        verify(logger).info("Updated in memory user experiment record");
-        assertTrue(writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().containsKey("user1"));
-        Map<String, String> activation = writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get("user1");
+        verify(logger).info("Updated in memory user profile");
+        assertTrue(writeThroughCacheTaskFactory.getMemoryUserProfileCache().containsKey("user1"));
+        Map<String, String> activation = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get("user1");
         assertFalse(activation.containsKey("exp1"));
 
         verify(logger).error("Failed to persist user in variation {} for experiment {}.", "var1", "exp1");
@@ -124,16 +124,16 @@ public class WriteThroughCacheFactoryTest {
     @Test
     public void startRemoveCacheTask() throws JSONException, IOException {
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
-        UserExperimentRecordCache diskUserExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
-        AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
-                new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache,
+        UserProfileCache diskUserProfileCache = new UserProfileCache("1", cache, logger);
+        AndroidUserProfile.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
+                new AndroidUserProfile.WriteThroughCacheTaskFactory(diskUserProfileCache,
                         new HashMap<String, Map<String, String>>(), executor, logger);
 
-        diskUserExperimentRecordCache.save("user1", "exp1", "var1");
+        diskUserProfileCache.save("user1", "exp1", "var1");
 
         Map<String, String> activation = new HashMap<>();
         activation.put("exp1", "var1");
-        writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().put("user1", activation);
+        writeThroughCacheTaskFactory.getMemoryUserProfileCache().put("user1", activation);
 
         writeThroughCacheTaskFactory.startRemoveCacheTask("user1", "exp1", "var1");
         try {
@@ -143,11 +143,11 @@ public class WriteThroughCacheFactoryTest {
         }
 
         verify(logger).info("Removed experimentKey: {} variationKey: {} record for user: {} from memory", "exp1", "var1", "user1");
-        JSONObject json = diskUserExperimentRecordCache.load();
+        JSONObject json = diskUserProfileCache.load();
         assertTrue(json.has("user1"));
         json = json.getJSONObject("user1");
         assertFalse(json.has("exp1"));
-        assertFalse(writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get("user1").containsKey("exp1"));
+        assertFalse(writeThroughCacheTaskFactory.getMemoryUserProfileCache().get("user1").containsKey("exp1"));
         verify(logger).info("Removed experimentKey: {} variationKey: {} record for user: {} from disk", "exp1", "var1", "user1");
     }
 
@@ -155,16 +155,16 @@ public class WriteThroughCacheFactoryTest {
     @Test
     public void startRemoveCacheTaskFail() throws JSONException, IOException {
         Cache cache = mock(Cache.class);
-        UserExperimentRecordCache diskUserExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
-        AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
-                new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache,
+        UserProfileCache diskUserProfileCache = new UserProfileCache("1", cache, logger);
+        AndroidUserProfile.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
+                new AndroidUserProfile.WriteThroughCacheTaskFactory(diskUserProfileCache,
                         new HashMap<String, Map<String, String>>(), executor, logger);
 
-        when(cache.save(diskUserExperimentRecordCache.getFileName(), getJsonObject().toString())).thenReturn(false);
+        when(cache.save(diskUserProfileCache.getFileName(), getJsonObject().toString())).thenReturn(false);
 
         Map<String, String> activation = new HashMap<>();
         activation.put("exp1", "var1");
-        writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().put("user1", activation);
+        writeThroughCacheTaskFactory.getMemoryUserProfileCache().put("user1", activation);
         writeThroughCacheTaskFactory.startRemoveCacheTask("user1", "exp1", "var1");
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
@@ -174,7 +174,7 @@ public class WriteThroughCacheFactoryTest {
 
         verify(logger).info("Removed experimentKey: {} variationKey: {} record for user: {} from memory", "exp1", "var1", "user1");
         verify(logger).error("Restored experimentKey: {} variationKey: {} record for user: {} to memory", "exp1", "var1","user1");
-        assertTrue(writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get("user1").containsKey("exp1"));
+        assertTrue(writeThroughCacheTaskFactory.getMemoryUserProfileCache().get("user1").containsKey("exp1"));
     }
 
     @NonNull

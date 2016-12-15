@@ -20,7 +20,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord;
+import com.optimizely.ab.android.user_profile.AndroidUserProfile;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,7 +65,7 @@ public class OptimizelyManagerDataFileServiceConnectionTest {
         verify(service).getDataFile(same("1"), any(DataFileLoader.class), captor.capture());
         DataFileLoadedListener listener = captor.getValue();
         listener.onDataFileLoaded("");
-        verify(optimizelyManager).injectOptimizely(any(Context.class), any(AndroidUserExperimentRecord.class), any(ServiceScheduler.class), eq(""));
+        verify(optimizelyManager).injectOptimizely(any(Context.class), any(AndroidUserProfile.class), any(ServiceScheduler.class), eq(""));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
