@@ -324,7 +324,7 @@ public class OptimizelyManager {
      * Returns the URL of the versioned datafile that this SDK expects to use
      * @return the CDN location of the datafile
      */
-    public @NonNull String getDatafileUrl() {
+    public static @NonNull String getDatafileUrl(String projectId) {
         return DataFileService.getDatafileUrl(projectId);
     }
 
