@@ -1,6 +1,6 @@
 # Optimizely Android X SDK Changelog
 ### 0.4.0
-December 14, 2016
+December 15, 2016
 
 *New Features*
 
