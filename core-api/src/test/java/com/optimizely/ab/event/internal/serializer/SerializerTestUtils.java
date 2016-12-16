@@ -73,6 +73,7 @@ public class SerializerTestUtils {
         impression.setDecision(decision);
         impression.setUserFeatures(userFeatures);
         impression.setClientVersion("0.1.1");
+        impression.setAnonymizeIP(true);
 
         return impression;
     }
@@ -91,6 +92,7 @@ public class SerializerTestUtils {
         conversion.setEventFeatures(eventFeatures);
         conversion.setIsGlobalHoldback(isGlobalHoldback);
         conversion.setClientVersion("0.1.1");
+        conversion.setAnonymizeIP(true);
 
         return conversion;
     }

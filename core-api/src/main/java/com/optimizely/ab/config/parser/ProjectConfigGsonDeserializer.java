@@ -72,14 +72,17 @@ public class ProjectConfigGsonDeserializer implements JsonDeserializer<ProjectCo
         List<Audience> audiences =
             context.deserialize(jsonObject.get("audiences").getAsJsonArray(), audienceType);
 
+        boolean anonymizeIP = false;
         // live variables should be null if using V1
         List<LiveVariable> liveVariables = null;
         if (version.equals(ProjectConfig.Version.V3.toString())) {
             Type liveVariablesType = new TypeToken<List<LiveVariable>>() {}.getType();
             liveVariables = context.deserialize(jsonObject.getAsJsonArray("variables"), liveVariablesType);
+
+            anonymizeIP = jsonObject.get("anonymizeIP").getAsBoolean();
         }
 
         return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
-                                 audiences, liveVariables);
+                                 audiences, anonymizeIP, liveVariables);
     }
 }

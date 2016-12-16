@@ -58,6 +58,7 @@ public class ProjectConfig {
     private final String projectId;
     private final String revision;
     private final String version;
+    private final boolean anonymizeIP;
     private final List<Group> groups;
     private final List<Experiment> experiments;
     private final List<Attribute> attributes;
@@ -79,18 +80,19 @@ public class ProjectConfig {
     public ProjectConfig(String accountId, String projectId, String version, String revision, List<Group> groups,
                          List<Experiment> experiments, List<Attribute> attributes, List<EventType> eventType,
                          List<Audience> audiences) {
-        this(accountId, projectId, version, revision, groups, experiments, attributes, eventType, audiences,
+        this(accountId, projectId, version, revision, groups, experiments, attributes, eventType, audiences, false,
              null);
     }
 
     public ProjectConfig(String accountId, String projectId, String version, String revision, List<Group> groups,
                          List<Experiment> experiments, List<Attribute> attributes, List<EventType> eventType,
-                         List<Audience> audiences, List<LiveVariable> liveVariables) {
+                         List<Audience> audiences, boolean anonymizeIP, List<LiveVariable> liveVariables) {
 
         this.accountId = accountId;
         this.projectId = projectId;
         this.version = version;
         this.revision = revision;
+        this.anonymizeIP = anonymizeIP;
 
         this.groups = Collections.unmodifiableList(groups);
         List<Experiment> allExperiments = new ArrayList<Experiment>();
@@ -149,6 +151,10 @@ public class ProjectConfig {
 
     public String getRevision() {
         return revision;
+    }
+
+    public boolean getAnonymizeIP() {
+        return anonymizeIP;
     }
 
     public List<Group> getGroups() {
@@ -233,6 +239,7 @@ public class ProjectConfig {
                 ", projectId='" + projectId + '\'' +
                 ", revision='" + revision + '\'' +
                 ", version='" + version + '\'' +
+                ", anonymizeIP='" + anonymizeIP + '\'' +
                 ", groups=" + groups +
                 ", experiments=" + experiments +
                 ", attributes=" + attributes +

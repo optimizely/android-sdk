@@ -90,6 +90,7 @@ public class EventBuilderV2Test {
         assertThat(impression.getVisitorId(), is(userId));
         assertThat((double)impression.getTimestamp(), closeTo((double)System.currentTimeMillis(), 60.0));
         assertFalse(impression.getIsGlobalHoldback());
+        assertThat(impression.getAnonymizeIP(), is(projectConfig.getAnonymizeIP()));
         assertThat(impression.getProjectId(), is(projectConfig.getProjectId()));
         assertThat(impression.getDecision(), is(expectedDecision));
         assertThat(impression.getLayerId(), is(activatedExperiment.getLayerId()));
@@ -207,6 +208,7 @@ public class EventBuilderV2Test {
         assertThat(conversion.getEventMetrics(), is(Collections.<EventMetric>emptyList()));
         assertThat(conversion.getEventFeatures(), is(Collections.<Feature>emptyList()));
         assertFalse(conversion.getIsGlobalHoldback());
+        assertThat(conversion.getAnonymizeIP(), is(projectConfig.getAnonymizeIP()));
         assertThat(conversion.getClientEngine(), is(ClientEngine.JAVA_SDK.getClientEngineValue()));
         assertThat(conversion.getClientVersion(), is(BuildVersionInfo.VERSION));
     }

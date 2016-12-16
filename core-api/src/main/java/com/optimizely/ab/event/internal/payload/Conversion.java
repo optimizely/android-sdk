@@ -31,12 +31,13 @@ public class Conversion extends Event {
     private List<EventMetric> eventMetrics;
     private List<Feature> eventFeatures;
     private boolean isGlobalHoldback;
+    private boolean anonymizeIP;
 
     public Conversion() { }
 
     public Conversion(String visitorId, long timestamp, String projectId, String accountId, List<Feature> userFeatures,
                       List<LayerState> layerStates, String eventEntityId, String eventName,
-                      List<EventMetric> eventMetrics, List<Feature> eventFeatures, boolean isGlobalHoldback) {
+                      List<EventMetric> eventMetrics, List<Feature> eventFeatures, boolean isGlobalHoldback, boolean anonymizeIP) {
         this.visitorId = visitorId;
         this.timestamp = timestamp;
         this.projectId = projectId;
@@ -48,6 +49,7 @@ public class Conversion extends Event {
         this.eventMetrics = eventMetrics;
         this.eventFeatures = eventFeatures;
         this.isGlobalHoldback = isGlobalHoldback;
+        this.anonymizeIP = anonymizeIP;
     }
 
     public String getVisitorId() {
@@ -138,6 +140,10 @@ public class Conversion extends Event {
         this.isGlobalHoldback = globalHoldback;
     }
 
+    public boolean getAnonymizeIP() { return anonymizeIP; }
+
+    public void setAnonymizeIP(boolean anonymizeIP) { this.anonymizeIP = anonymizeIP; }
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof Conversion))
@@ -192,6 +198,7 @@ public class Conversion extends Event {
                 ", eventMetrics=" + eventMetrics +
                 ", eventFeatures=" + eventFeatures +
                 ", isGlobalHoldback=" + isGlobalHoldback +
+                ", anonymizeIP=" + anonymizeIP +
                 ", clientEngine='" + clientEngine +
                 ", clientVersion='" + clientVersion + '}';
     }

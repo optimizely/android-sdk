@@ -18,7 +18,7 @@ package com.optimizely.ab;
 
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
-import com.optimizely.ab.bucketing.UserExperimentRecord;
+import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -39,6 +39,8 @@ import com.optimizely.ab.event.internal.EventBuilderV1;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 import com.optimizely.ab.internal.ProjectValidationUtils;
+import com.optimizely.ab.notification.NotificationListener;
+import com.optimizely.ab.notification.NotificationBroadcaster;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +91,7 @@ public class Optimizely {
     @VisibleForTesting final ProjectConfig projectConfig;
     @VisibleForTesting final EventHandler eventHandler;
     @VisibleForTesting final ErrorHandler errorHandler;
+    @VisibleForTesting final NotificationBroadcaster notificationBroadcaster = new NotificationBroadcaster();
 
     private Optimizely(@Nonnull ProjectConfig projectConfig,
                        @Nonnull Bucketer bucketer,
@@ -104,7 +107,7 @@ public class Optimizely {
 
     // Do work here that should be done once per Optimizely lifecycle
     @VisibleForTesting void initialize() {
-        bucketer.cleanUserExperimentRecords();
+        bucketer.cleanUserProfiles();
     }
 
     //======== activate calls ========//
@@ -179,6 +182,8 @@ public class Optimizely {
         } catch (Exception e) {
             logger.error("Unexpected exception in event dispatcher", e);
         }
+
+        notificationBroadcaster.broadcastExperimentActivated(experiment, userId, attributes, variation);
 
         return variation;
     }
@@ -258,15 +263,15 @@ public class Optimizely {
     //======== live variable getters ========//
 
     public @Nullable String getVariableString(@Nonnull String variableKey,
-                                              boolean activateExperiment,
-                                              @Nonnull String userId) throws UnknownLiveVariableException {
-        return getVariableString(variableKey, activateExperiment, userId, Collections.<String, String>emptyMap());
+                                              @Nonnull String userId,
+                                              boolean activateExperiment) throws UnknownLiveVariableException {
+        return getVariableString(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
     public @Nullable String getVariableString(@Nonnull String variableKey,
-                                              boolean activateExperiment,
                                               @Nonnull String userId,
-                                              @Nonnull Map<String, String> attributes)
+                                              @Nonnull Map<String, String> attributes,
+                                              boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         LiveVariable variable = getLiveVariableOrThrow(projectConfig, variableKey);
@@ -303,18 +308,18 @@ public class Optimizely {
     }
 
     public @Nullable Boolean getVariableBoolean(@Nonnull String variableKey,
-                                                boolean activateExperiment,
-                                                @Nonnull String userId) throws UnknownLiveVariableException {
-        return getVariableBoolean(variableKey, activateExperiment, userId, Collections.<String, String>emptyMap());
+                                                @Nonnull String userId,
+                                                boolean activateExperiment) throws UnknownLiveVariableException {
+        return getVariableBoolean(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
     public @Nullable Boolean getVariableBoolean(@Nonnull String variableKey,
-                                                boolean activateExperiment,
                                                 @Nonnull String userId,
-                                                @Nonnull Map<String, String> attributes)
+                                                @Nonnull Map<String, String> attributes,
+                                                boolean activateExperiment)
             throws UnknownLiveVariableException {
 
-        String variableValueString = getVariableString(variableKey, activateExperiment, userId, attributes);
+        String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
         if (variableValueString != null) {
             return Boolean.parseBoolean(variableValueString);
         }
@@ -323,18 +328,18 @@ public class Optimizely {
     }
 
     public @Nullable Integer getVariableInteger(@Nonnull String variableKey,
-                                                boolean activateExperiment,
-                                                @Nonnull String userId) throws UnknownLiveVariableException {
-        return getVariableInteger(variableKey, activateExperiment, userId, Collections.<String, String>emptyMap());
+                                                @Nonnull String userId,
+                                                boolean activateExperiment) throws UnknownLiveVariableException {
+        return getVariableInteger(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
     public @Nullable Integer getVariableInteger(@Nonnull String variableKey,
-                                                boolean activateExperiment,
                                                 @Nonnull String userId,
-                                                @Nonnull Map<String, String> attributes)
+                                                @Nonnull Map<String, String> attributes,
+                                                boolean activateExperiment)
             throws UnknownLiveVariableException {
 
-        String variableValueString = getVariableString(variableKey, activateExperiment, userId, attributes);
+        String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
         if (variableValueString != null) {
             try {
                 return Integer.parseInt(variableValueString);
@@ -348,18 +353,18 @@ public class Optimizely {
     }
 
     public @Nullable Float getVariableFloat(@Nonnull String variableKey,
-                                            boolean activateExperiment,
-                                            @Nonnull String userId) throws UnknownLiveVariableException {
-        return getVariableFloat(variableKey, activateExperiment, userId, Collections.<String, String>emptyMap());
+                                            @Nonnull String userId,
+                                            boolean activateExperiment) throws UnknownLiveVariableException {
+        return getVariableFloat(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
     public @Nullable Float getVariableFloat(@Nonnull String variableKey,
-                                            boolean activateExperiment,
                                             @Nonnull String userId,
-                                            @Nonnull Map<String, String> attributes)
+                                            @Nonnull Map<String, String> attributes,
+                                            boolean activateExperiment)
             throws UnknownLiveVariableException {
 
-        String variableValueString = getVariableString(variableKey, activateExperiment, userId, attributes);
+        String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
         if (variableValueString != null) {
             try {
                 return Float.parseFloat(variableValueString);
@@ -436,6 +441,33 @@ public class Optimizely {
      */
     private static ProjectConfig getProjectConfig(String datafile) throws ConfigParseException {
         return DefaultConfigParser.getInstance().parseProjectConfig(datafile);
+    }
+
+    //======== Notification listeners ========//
+
+    /**
+     * Add a {@link NotificationListener} if it does not exist already.
+     *
+     * @param listener listener to add
+     */
+    public void addNotificationListener(@Nonnull NotificationListener listener) {
+        notificationBroadcaster.addListener(listener);
+    }
+
+    /**
+     * Remove a {@link NotificationListener} if it exists.
+     *
+     * @param listener listener to remove
+     */
+    public void removeNotificationListener(@Nonnull NotificationListener listener) {
+        notificationBroadcaster.removeListener(listener);
+    }
+
+    /**
+     * Remove all {@link NotificationListener}.
+     */
+    public void clearNotificationListeners() {
+        notificationBroadcaster.clearListeners();
     }
 
     //======== Helper methods ========//
@@ -596,7 +628,7 @@ public class Optimizely {
 
         private String datafile;
         private Bucketer bucketer;
-        private UserExperimentRecord userExperimentRecord;
+        private UserProfile userProfile;
         private ErrorHandler errorHandler;
         private EventHandler eventHandler;
         private EventBuilder eventBuilder;
@@ -615,8 +647,8 @@ public class Optimizely {
             return this;
         }
 
-        public Builder withUserExperimentRecord(UserExperimentRecord userExperimentRecord) {
-            this.userExperimentRecord = userExperimentRecord;
+        public Builder withUserProfile(UserProfile userProfile) {
+            this.userProfile = userProfile;
             return this;
         }
 
@@ -653,7 +685,7 @@ public class Optimizely {
 
             // use the default bucketer and event builder, if no overrides were provided
             if (bucketer == null) {
-                bucketer = new Bucketer(projectConfig, userExperimentRecord);
+                bucketer = new Bucketer(projectConfig, userProfile);
             }
 
             if (clientEngine == null) {

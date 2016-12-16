@@ -68,13 +68,15 @@ class ProjectConfigJacksonDeserializer extends JsonDeserializer<ProjectConfig> {
         List<Audience> audiences = mapper.readValue(node.get("audiences").toString(),
                                                     new TypeReference<List<Audience>>() {});
 
+        boolean anonymizeIP = false;
         List<LiveVariable> liveVariables = null;
         if (version.equals(ProjectConfig.Version.V3.toString())) {
             liveVariables = mapper.readValue(node.get("variables").toString(),
                                              new TypeReference<List<LiveVariable>>() {});
+            anonymizeIP = node.get("anonymizeIP").asBoolean();
         }
 
         return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
-                                 audiences, liveVariables);
+                                 audiences, anonymizeIP, liveVariables);
     }
 }

@@ -30,6 +30,7 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -178,5 +179,16 @@ public class ProjectConfigTest {
 
         assertThat(projectConfig.getVariationToLiveVariableUsageInstanceMapping(),
                    is(expectedVariationToLiveVariableUsageInstanceMapping));
+    }
+
+    /**
+     * Asserts that anonymizeIP is set to false if not explicitly passed into the constructor (in the case of V1 or V2
+     * projects).
+     * @throws Exception
+     */
+    @Test
+    public void verifyAnonymizeIPIsFalseByDefault() throws Exception {
+        ProjectConfig v2ProjectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        assertFalse(v2ProjectConfig.getAnonymizeIP());
     }
 }

@@ -2,6 +2,7 @@
   "visitorId": "testvisitor",
   "timestamp": 12345,
   "isGlobalHoldback": false,
+  "anonymizeIP": true,
   "projectId": "1",
   "decision": {
     "variationId": "4",

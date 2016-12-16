@@ -36,6 +36,7 @@ import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.internal.LogbackVerifier;
 import com.optimizely.ab.internal.ProjectValidationUtils;
+import com.optimizely.ab.notification.NotificationListener;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,6 +74,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -161,7 +163,7 @@ public class OptimizelyTestV3 {
             .withErrorHandler(mockErrorHandler)
             .build();
 
-        verify(mockBucketer).cleanUserExperimentRecords();
+        verify(mockBucketer).cleanUserProfiles();
     }
 
     /**
@@ -958,7 +960,7 @@ public class OptimizelyTestV3 {
     //======== live variable getters tests ========//
 
     /**
-     * Verify that {@link Optimizely#getVariableString(String, boolean, String)} returns null and logs properly when
+     * Verify that {@link Optimizely#getVariableString(String, String, boolean)} returns null and logs properly when
      * an invalid live variable key is provided and the {@link NoOpErrorHandler} is used.
      */
     @Test
@@ -971,11 +973,11 @@ public class OptimizelyTestV3 {
             .build();
 
         logbackVerifier.expectMessage(Level.ERROR, "Live variable \"invalid_key\" is not in the datafile.");
-        assertNull(optimizely.getVariableString("invalid_key", false, "userId"));
+        assertNull(optimizely.getVariableString("invalid_key", "userId", false));
     }
 
     /**
-     * Verify that {@link Optimizely#getVariableString(String, boolean, String)} returns throws an
+     * Verify that {@link Optimizely#getVariableString(String, String, boolean)} returns throws an
      * {@link UnknownLiveVariableException} when an invalid live variable key is provided and the
      * {@link RaiseExceptionErrorHandler} is used.
      */
@@ -991,11 +993,11 @@ public class OptimizelyTestV3 {
             .withErrorHandler(new RaiseExceptionErrorHandler())
             .build();
 
-        optimizely.getVariableString("invalid_key", false, "userId");
+        optimizely.getVariableString("invalid_key", "userId", false);
     }
 
     /**
-     * Verify that {@link Optimizely#getVariableString(String, boolean, String, Map)} returns a string live variable
+     * Verify that {@link Optimizely#getVariableString(String, String, Map, boolean)} returns a string live variable
      * value when an proper variable key is provided and dispatches an impression when activateExperiment is true.
      */
     @Test
@@ -1015,14 +1017,14 @@ public class OptimizelyTestV3 {
             .withErrorHandler(new RaiseExceptionErrorHandler())
             .build();
 
-        assertThat(optimizely.getVariableString("string_variable", true, "userId",
-                                                Collections.singletonMap("browser_type", "chrome")),
+        assertThat(optimizely.getVariableString("string_variable", "userId",
+                                                Collections.singletonMap("browser_type", "chrome"), true),
                    is("string_var_vtag1"));
         verify(mockEventHandler).dispatchEvent(any(LogEvent.class));
     }
 
     /**
-     * Verify that {@link Optimizely#getVariableString(String, boolean, String, Map)} returns a string live variable
+     * Verify that {@link Optimizely#getVariableString(String, String, Map, boolean)} returns a string live variable
      * value when an proper variable key is provided and doesn't dispatch an impression when activateExperiment is
      * false.
      */
@@ -1043,14 +1045,14 @@ public class OptimizelyTestV3 {
             .withErrorHandler(new RaiseExceptionErrorHandler())
             .build();
 
-        assertThat(optimizely.getVariableString("string_variable", false, "userId",
-                                                Collections.singletonMap("browser_type", "chrome")),
+        assertThat(optimizely.getVariableString("string_variable", "userId",
+                                                Collections.singletonMap("browser_type", "chrome"), false),
                    is("string_var_vtag1"));
         verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
     }
 
     /**
-     * Verify that {@link Optimizely#getVariableString(String, boolean, String)} returns the default value of
+     * Verify that {@link Optimizely#getVariableString(String, String, boolean)} returns the default value of
      * a live variable when no experiments are using the live variable.
      */
     @Test
@@ -1063,11 +1065,11 @@ public class OptimizelyTestV3 {
             .build();
 
         logbackVerifier.expectMessage(Level.WARN, "No experiment is using variable \"unused_string_variable\".");
-        assertThat(optimizely.getVariableString("unused_string_variable", true, "userId"), is("unused_variable"));
+        assertThat(optimizely.getVariableString("unused_string_variable", "userId", true), is("unused_variable"));
     }
 
     /**
-     * Verify that {@link Optimizely#getVariableString(String, boolean, String, Map)} returns the default value when
+     * Verify that {@link Optimizely#getVariableString(String, String, Map, boolean)} returns the default value when
      * a user isn't bucketed into a variation in the experiment.
      */
     @Test
@@ -1084,13 +1086,13 @@ public class OptimizelyTestV3 {
             .withBucketing(mockBucketer)
             .build();
 
-        assertThat(optimizely.getVariableString("string_variable", true, "userId",
-                                                Collections.singletonMap("browser_type", "chrome")),
+        assertThat(optimizely.getVariableString("string_variable", "userId",
+                                                Collections.singletonMap("browser_type", "chrome"), true),
                    is("string_live_variable"));
     }
 
     /**
-     * Verify that {@link Optimizely#getVariableBoolean(String, boolean, String, Map)} returns a boolean live variable
+     * Verify that {@link Optimizely#getVariableBoolean(String, String, Map, boolean)} returns a boolean live variable
      * value when an proper variable key is provided and dispatches an impression when activateExperiment is true.
      */
     @Test
@@ -1109,12 +1111,12 @@ public class OptimizelyTestV3 {
             .withBucketing(mockBucketer)
             .build();
 
-        assertTrue(optimizely.getVariableBoolean("etag1_variable", true, "userId",
-                                                 Collections.singletonMap("browser_type", "chrome")));
+        assertTrue(optimizely.getVariableBoolean("etag1_variable", "userId",
+                                                 Collections.singletonMap("browser_type", "chrome"), true));
     }
 
     /**
-     * Verify that {@link Optimizely#getVariableFloat(String, boolean, String, Map)} returns a float live variable
+     * Verify that {@link Optimizely#getVariableFloat(String, String, Map, boolean)} returns a float live variable
      * value when an proper variable key is provided and dispatches an impression when activateExperiment is true.
      */
     @Test
@@ -1133,14 +1135,14 @@ public class OptimizelyTestV3 {
             .withBucketing(mockBucketer)
             .build();
 
-        assertThat(optimizely.getVariableFloat("float_variable", true, "userId",
-                                               Collections.singletonMap("browser_type", "chrome")),
+        assertThat(optimizely.getVariableFloat("float_variable", "userId",
+                                               Collections.singletonMap("browser_type", "chrome"), true),
                    is(5.3f));
         verify(mockEventHandler).dispatchEvent(any(LogEvent.class));
     }
 
     /**
-     * Verify that {@link Optimizely#getVariableInteger(String, boolean, String, Map)} returns a integer live variable
+     * Verify that {@link Optimizely#getVariableInteger(String, String, Map, boolean)} returns a integer live variable
      * value when an proper variable key is provided and dispatches an impression when activateExperiment is true.
      */
     @Test
@@ -1159,8 +1161,8 @@ public class OptimizelyTestV3 {
             .withBucketing(mockBucketer)
             .build();
 
-        assertThat(optimizely.getVariableInteger("integer_variable", true, "userId",
-                                                 Collections.singletonMap("browser_type", "chrome")),
+        assertThat(optimizely.getVariableInteger("integer_variable", "userId",
+                                                 Collections.singletonMap("browser_type", "chrome"), true),
                    is(10));
         verify(mockEventHandler).dispatchEvent(any(LogEvent.class));
     }
@@ -1450,6 +1452,168 @@ public class OptimizelyTestV3 {
         logbackVerifier.expectMessage(Level.INFO, "Experiment \"etag2\" is not running.");
         // testUser3 has a corresponding forced variation, but experiment status should be checked first
         assertNull(optimizely.getVariation(experiment.getKey(), "testUser3"));
+    }
+
+    //======== Notification listeners ========//
+
+    /**
+     * Verify that {@link Optimizely#addNotificationListener(NotificationListener)} properly calls
+     * through to {@link com.optimizely.ab.notification.NotificationBroadcaster} and the listener is
+     * added and notified when an experiment is activated.
+     */
+    @Test
+    public void addNotificationListener() throws Exception {
+        String datafile = validConfigJsonV3();
+        ProjectConfig projectConfig = validProjectConfigV3();
+        Experiment activatedExperiment = projectConfig.getExperiments().get(0);
+        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(projectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        String userId = "userId";
+        Map<String, String> attributes = Collections.singletonMap("browser_type", "chrome");
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createImpressionEvent(projectConfig, activatedExperiment,
+                                                    bucketedVariation, userId, attributes))
+                .thenReturn(logEventToDispatch);
+
+        when(mockBucketer.bucket(activatedExperiment, userId))
+                .thenReturn(bucketedVariation);
+
+        when(mockEventBuilder.createImpressionEvent(projectConfig, activatedExperiment,
+                bucketedVariation, userId, attributes))
+                .thenReturn(logEventToDispatch);
+
+        // Add listener
+        NotificationListener listener = mock(NotificationListener.class);
+        optimizely.addNotificationListener(listener);
+
+        // Check if listener is notified when experiment is activated
+        Variation actualVariation = optimizely.activate(activatedExperiment, userId, attributes);
+        verify(listener, times(1))
+                .onExperimentActivated(activatedExperiment, userId, attributes, actualVariation);
+
+        // Check if listener is notified when live variable is accessed
+        boolean activateExperiment = true;
+        optimizely.getVariableString("string_variable", userId, attributes, activateExperiment);
+        verify(listener, times(2))
+                .onExperimentActivated(activatedExperiment, userId, attributes, actualVariation);
+    }
+
+    /**
+     * Verify that {@link Optimizely#removeNotificationListener(NotificationListener)} properly
+     * calls through to {@link com.optimizely.ab.notification.NotificationBroadcaster} and the
+     * listener is removed and no longer notified when an experiment is activated.
+     */
+    @Test
+    public void removeNotificationListener() throws Exception {
+        String datafile = validConfigJsonV3();
+        ProjectConfig projectConfig = validProjectConfigV3();
+        Experiment activatedExperiment = projectConfig.getExperiments().get(0);
+        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(projectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        String userId = "userId";
+        Map<String, String> attributes = Collections.singletonMap("browser_type", "chrome");
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createImpressionEvent(projectConfig, activatedExperiment,
+                bucketedVariation, userId, attributes))
+                .thenReturn(logEventToDispatch);
+
+        when(mockBucketer.bucket(activatedExperiment, userId))
+                .thenReturn(bucketedVariation);
+
+        when(mockEventBuilder.createImpressionEvent(projectConfig, activatedExperiment,
+                bucketedVariation, userId, attributes))
+                .thenReturn(logEventToDispatch);
+
+        // Add and remove listener
+        NotificationListener listener = mock(NotificationListener.class);
+        optimizely.addNotificationListener(listener);
+        optimizely.removeNotificationListener(listener);
+
+        // Check if listener is notified after an experiment is activated
+        Variation actualVariation = optimizely.activate(activatedExperiment, userId, attributes);
+        verify(listener, never())
+                .onExperimentActivated(activatedExperiment, userId, attributes, actualVariation);
+
+        // Check if listener is notified after a live variable is accessed
+        boolean activateExperiment = true;
+        optimizely.getVariableString("string_variable", userId, attributes, activateExperiment);
+        verify(listener, never())
+                .onExperimentActivated(activatedExperiment, userId, attributes, actualVariation);
+    }
+
+    /**
+     * Verify that {@link Optimizely#clearNotificationListeners()} properly calls through to
+     * {@link com.optimizely.ab.notification.NotificationBroadcaster} and all listeners are removed
+     * and no longer notified when an experiment is activated.
+     */
+    @Test
+    public void clearNotificationListeners() throws Exception {
+        String datafile = validConfigJsonV3();
+        ProjectConfig projectConfig = validProjectConfigV3();
+        Experiment activatedExperiment = projectConfig.getExperiments().get(0);
+        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(projectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        String userId = "userId";
+        Map<String, String> attributes = Collections.singletonMap("browser_type", "chrome");
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createImpressionEvent(projectConfig, activatedExperiment,
+                bucketedVariation, userId, attributes))
+                .thenReturn(logEventToDispatch);
+
+        when(mockBucketer.bucket(activatedExperiment, userId))
+                .thenReturn(bucketedVariation);
+
+        when(mockEventBuilder.createImpressionEvent(projectConfig, activatedExperiment,
+                bucketedVariation, userId, attributes))
+                .thenReturn(logEventToDispatch);
+
+        NotificationListener listener = mock(NotificationListener.class);
+        optimizely.addNotificationListener(listener);
+        optimizely.clearNotificationListeners();
+
+        // Check if listener is notified after an experiment is activated
+        Variation actualVariation = optimizely.activate(activatedExperiment, userId, attributes);
+        verify(listener, never())
+                .onExperimentActivated(activatedExperiment, userId, attributes, actualVariation);
+
+        // Check if listener is notified after a live variable is accessed
+        boolean activateExperiment = true;
+        optimizely.getVariableString("string_variable", userId, attributes, activateExperiment);
+        verify(listener, never())
+                .onExperimentActivated(activatedExperiment, userId, attributes, actualVariation);
     }
 
     //======== Helper methods ========//

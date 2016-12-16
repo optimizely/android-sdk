@@ -3,6 +3,7 @@
   "projectId": "1234",
   "version": "3",
   "revision": "42",
+  "anonymizeIP": true,
   "experiments": [
     {
       "id": "223",

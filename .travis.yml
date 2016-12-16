@@ -1,27 +1,17 @@
 language: java
 jdk:
+  - openjdk7
   - oraclejdk7
+  - oraclejdk8
 install: true
-before_script:
-    - git config user.name "Travis-CI"
-    - git config user.email "noreply@travis-ci.org"
-    - git checkout $TRAVIS_BRANCH
 script:
     - "./gradlew clean build check"
-    # - '[ "${TRAVIS_PULL_REQUEST}" != "false" ]  || ./gradlew release -Prelease.useAutomaticVersion=true'
-env:
-  global:
-  - TERM=dumb
-  - secure: "JVJ1w5ImgQkBwplEjlyTq0UaJQZncQEa35ggIbCffTon/FnWauy+HL9rzjBR6vTtSRlPxbKKxOdR0fGZQg5hQU10TEadwNBF5nLlFKK+mAz32z0RjgWAJhiFqjvFYdfGPuPZpAUZLIe7UxtcpQZPF2cAkc4Zw/r1HTI0GKS5L/H8FwJWlR1txu9O6GWfT58ntrD18LzrHQ9M5PC3gc4U/Af7kiPjeXQf06zliy7PMaMw8m1XLicjwzEHW2cNVXB0WrZwgcSrblnidRxPJj05k5clULu5VsetqMkLHCxuPbnjR0+1sZ6IX/3yhH5u/dm/vVtWikCqfpH2bLQw0vcYqisBPaJ/RlOa4r7ROL+G8LRo94LqwEVmZ+fbEFCqigP+Wv9GlLKL+LKTPDYWEnrBcHsE4EOwpLviEZRixHf/HtKvMfuwLyzyIAVyKjU0MrFDsOvDRorC1HIyg66CwjkKg5LJwW4IOTNTOldOpiGhB4PR4bcMUU8wuB5ts7eGGYCShthS4kOtuHlSuxfv6qKGIz4z5nD8/JPxVUU+P3RtrvoGYoeIqd6SGC40cvYupCzULJIYwrCKrRTpimrSwdrEEtLp91WjyrrDfznlGzoDOdCS5XaActcn4lh+ztkpYD/Qj2j31955kOkxq0/9TP5qi9qNvJAeFwkhW3VSmJVRbLw="
-  - secure: "3UGbdSed51Ul024Wj1l2zojolyMxCzlTERSJjXrh5mdcNAHxImZTNURUuKaQsJghnirjB3q124woWyymvepE8XdSH0Y7DYkqV247vczXm1nHhbUpzVQ8xsDWTE6AXIyq1CzGzKFK8Ws0C+xXOZoBr2l9dy6oF4rBxTYTBlL8BvqGtcZw3d3eWNI9wQ+l6XGbQDw3Ex2iJaUr9NOI1kD4Q0gcUSX+Zgowe1xlaySrRLXg5iZVUCLNbitJEJ91Xd3oCksqfKBBe2b24M6edhCLNOMQ4u0MTEu28D6gltqojqmp1UHI6fJD8+P79h6PfpMPA+3vB3kTQ9vwG/5L5JoTe5JJPp+yUgbEBH5QzI7si6oVTFHb8oTN2/TMJV+N4QjILrasfreAYUA2kHXzxmxlodNsILNvl5OgF0ValwOvgPDZfkGytMnvLWow6gw8gSYtiTYJjNSMXnpa9kjCLMUyizDFRn4PpcMi2bfml/vR/qlVMnln3AwSukPGqQ4uZhRnIkzBJQdXoxoYTaVOcfsgF8dFWwOShin/RTygwwg5cjm0Nhn6RmkFtt81arLeVho/SeqOjEkvcCV6a7bhhmCZpZvYZu57dLfF/jPHYmW30X3Pg9e+7VsQ61xQWnlVV1g8KjM0qVnThoUVj8j62bXIo/P5scaKkxg9j5/Mdq6t02E="
 cache:
   gradle: true
   directories:
   - "$HOME/.gradle/caches"
   - "$HOME/.gradle/wrapper"
-after_script:
-- git tag travis-build-$TRAVIS_BUILD_NUMBER
-- git push --tags
 branches:
   only:
   - master
+  - devel

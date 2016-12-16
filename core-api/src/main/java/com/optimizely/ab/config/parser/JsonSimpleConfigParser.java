@@ -75,13 +75,16 @@ final class JsonSimpleConfigParser implements ConfigParser {
             List<Audience> audiences = parseAudiences((JSONArray)parser.parse(rootObject.get("audiences").toString()));
             List<Group> groups = parseGroups((JSONArray)rootObject.get("groups"));
 
+            boolean anonymizeIP = false;
             List<LiveVariable> liveVariables = null;
             if (version.equals(ProjectConfig.Version.V3.toString())) {
                 liveVariables = parseLiveVariables((JSONArray)rootObject.get("variables"));
+
+                anonymizeIP = (Boolean)rootObject.get("anonymizeIP");
             }
 
             return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
-                                     audiences, liveVariables);
+                                     audiences, anonymizeIP, liveVariables);
         } catch (Exception e) {
             throw new ConfigParseException("Unable to parse datafile: " + json, e);
         }

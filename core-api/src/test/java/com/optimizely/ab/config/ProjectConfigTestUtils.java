@@ -437,7 +437,7 @@ public final class ProjectConfigTestUtils {
         );
 
         return new ProjectConfig("789", "1234", "3", "42", groups, experiments, attributes, events, audiences,
-                                 liveVariables);
+                                 true, liveVariables);
     }
 
     private static final ProjectConfig NO_AUDIENCE_PROJECT_CONFIG_V3 = generateNoAudienceProjectConfigV3();
@@ -474,7 +474,7 @@ public final class ProjectConfigTestUtils {
                                         new EventType("099", "clicked_purchase", multipleExperimentIds));
 
         return new ProjectConfig("789", "1234", "3", "42", Collections.<Group>emptyList(), experiments, attributes,
-                                 events, Collections.<Audience>emptyList(), Collections.<LiveVariable>emptyList());
+                                 events, Collections.<Audience>emptyList(), true, Collections.<LiveVariable>emptyList());
     }
 
     private ProjectConfigTestUtils() { }

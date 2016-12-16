@@ -28,11 +28,12 @@ public class Impression extends Event {
     private String layerId;
     private String accountId;
     private List<Feature> userFeatures;
+    private boolean anonymizeIP;
 
     public Impression() { }
 
     public Impression(String visitorId, long timestamp, boolean isGlobalHoldback, String projectId, Decision decision,
-                      String layerId, String accountId, List<Feature> userFeatures) {
+                      String layerId, String accountId, List<Feature> userFeatures, boolean anonymizeIP) {
         this.visitorId = visitorId;
         this.timestamp = timestamp;
         this.isGlobalHoldback = isGlobalHoldback;
@@ -41,6 +42,7 @@ public class Impression extends Event {
         this.layerId = layerId;
         this.accountId = accountId;
         this.userFeatures = userFeatures;
+        this.anonymizeIP = anonymizeIP;
     }
 
     public String getVisitorId() {
@@ -107,6 +109,14 @@ public class Impression extends Event {
         this.userFeatures = userFeatures;
     }
 
+    public boolean getAnonymizeIP() {
+        return anonymizeIP;
+    }
+
+    public void setAnonymizeIP(boolean anonymizeIP) {
+        this.anonymizeIP = anonymizeIP;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof Impression))
@@ -147,6 +157,7 @@ public class Impression extends Event {
                 "visitorId='" + visitorId + '\'' +
                 ", timestamp=" + timestamp +
                 ", isGlobalHoldback=" + isGlobalHoldback +
+                ", anonymizeIP=" + anonymizeIP +
                 ", projectId='" + projectId + '\'' +
                 ", decision=" + decision +
                 ", layerId='" + layerId + '\'' +

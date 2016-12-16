@@ -33,6 +33,7 @@
   ],
   "eventFeatures": [],
   "isGlobalHoldback": false,
+  "anonymizeIP": true,
   "clientEngine": "java-sdk",
   "clientVersion": "0.1.1"
 }

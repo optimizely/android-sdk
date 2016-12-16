@@ -51,8 +51,8 @@ public class EventBuilderV2 extends EventBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(EventBuilderV2.class);
 
-    static final String IMPRESSION_ENDPOINT = "https://p13nlog.dz.optimizely.com/log/decision";
-    static final String CONVERSION_ENDPOINT = "https://p13nlog.dz.optimizely.com/log/event";
+    static final String IMPRESSION_ENDPOINT = "https://logx.optimizely.com/log/decision";
+    static final String CONVERSION_ENDPOINT = "https://logx.optimizely.com/log/event";
 
     @VisibleForTesting
     public final ClientEngine clientEngine;
@@ -95,6 +95,7 @@ public class EventBuilderV2 extends EventBuilder {
         impressionPayload.setUserFeatures(createFeatures(attributes, projectConfig));
         impressionPayload.setClientEngine(clientEngine);
         impressionPayload.setClientVersion(clientVersion);
+        impressionPayload.setAnonymizeIP(projectConfig.getAnonymizeIP());
 
         String payload = this.serializer.serialize(impressionPayload);
         return new LogEvent(RequestMethod.POST, IMPRESSION_ENDPOINT, Collections.<String, String>emptyMap(), payload);
@@ -133,6 +134,7 @@ public class EventBuilderV2 extends EventBuilder {
 
         conversionPayload.setEventFeatures(Collections.<Feature>emptyList());
         conversionPayload.setIsGlobalHoldback(false);
+        conversionPayload.setAnonymizeIP(projectConfig.getAnonymizeIP());
         conversionPayload.setClientEngine(clientEngine);
         conversionPayload.setClientVersion(clientVersion);
 
