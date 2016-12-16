@@ -52,7 +52,7 @@ ext {
     min_sdk_version = 10
     target_sdk_version = 24
 
-    java_core_ver = "1.1.0"
+    java_core_ver = "1.2.0"
     android_logger_ver = "1.3.1"
     support_annotations_ver = "24.2.1"
     junit_ver = "4.12"
@@ -70,7 +70,7 @@ task clean(type: Delete) {
 
 task ship() {
     dependsOn(':android-sdk:uploadArchives', ':shared:uploadArchives',
-            'event-handler:uploadArchives', 'user-experiment-record:uploadArchives')
+            'event-handler:uploadArchives', 'user-profile:uploadArchives')
 }
 
 task cleanAllModules << {
@@ -78,7 +78,7 @@ task cleanAllModules << {
 }
 
 cleanAllModules.dependsOn(':android-sdk:clean', ':event-handler:clean',
-        ':user-experiment-record:clean', ':shared:clean')
+        ':user-profile:clean', ':shared:clean')
 
 task testAllModules << {
     logger.info("Running android tests for all modules")
@@ -86,4 +86,4 @@ task testAllModules << {
 
 testAllModules.dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
         ':event-handler:connectedAndroidTest', ':event-handler:test',
-        ':user-experiment-record:connectedAndroidTest', ':shared:connectedAndroidTest')
+        ':user-profile:connectedAndroidTest', ':shared:connectedAndroidTest')

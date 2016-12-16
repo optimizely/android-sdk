@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.optimizely.ab.android.user_experiment_record;
+package com.optimizely.ab.android.user_profile;
 
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -47,16 +47,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link AndroidUserExperimentRecord}
+ * Tests for {@link AndroidUserProfile}
  */
 @RunWith(AndroidJUnit4.class)
 @RequiresApi(Build.VERSION_CODES.HONEYCOMB)
-public class AndroidUserExperimentRecordTest {
+public class AndroidUserProfileTest {
 
-    private AndroidUserExperimentRecord androidUserExperimentRecord;
-    private UserExperimentRecordCache diskUserExperimentRecordCache;
-    private Map<String, Map<String, String>> memoryUserExperimentRecordCache = new HashMap<>();
-    private AndroidUserExperimentRecord.WriteThroughCacheTaskFactory writeThroughCacheFactory;
+    private AndroidUserProfile androidUserProfile;
+    private UserProfileCache diskUserProfileCache;
+    private Map<String, Map<String, String>> memoryUserProfileCache = new HashMap<>();
+    private AndroidUserProfile.WriteThroughCacheTaskFactory writeThroughCacheFactory;
     private Logger logger;
     private ListeningExecutorService executor;
     private Cache cache;
@@ -65,16 +65,16 @@ public class AndroidUserExperimentRecordTest {
     public void setup() {
         logger = mock(Logger.class);
         cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
-        diskUserExperimentRecordCache = new UserExperimentRecordCache("1", cache, logger);
+        diskUserProfileCache = new UserProfileCache("1", cache, logger);
         executor = MoreExecutors.newDirectExecutorService();
-        writeThroughCacheFactory = new AndroidUserExperimentRecord.WriteThroughCacheTaskFactory(diskUserExperimentRecordCache, memoryUserExperimentRecordCache, executor, logger);
-        androidUserExperimentRecord = new AndroidUserExperimentRecord(diskUserExperimentRecordCache,
+        writeThroughCacheFactory = new AndroidUserProfile.WriteThroughCacheTaskFactory(diskUserProfileCache, memoryUserProfileCache, executor, logger);
+        androidUserProfile = new AndroidUserProfile(diskUserProfileCache,
                 writeThroughCacheFactory, logger);
     }
 
     @After
     public void teardown() {
-        cache.delete(diskUserExperimentRecordCache.getFileName());
+        cache.delete(diskUserProfileCache.getFileName());
     }
 
     @Test
@@ -82,130 +82,130 @@ public class AndroidUserExperimentRecordTest {
         String userId = "user1";
         String expKey = "exp1";
         String varKey = "var1";
-        assertTrue(androidUserExperimentRecord.save(userId, expKey, varKey));
+        assertTrue(androidUserProfile.save(userId, expKey, varKey));
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Time out");
         }
-        assertEquals(varKey, androidUserExperimentRecord.lookup(userId, expKey));
+        assertEquals(varKey, androidUserProfile.lookup(userId, expKey));
     }
 
     @Test
     public void saveActivationNullUserId() {
-        assertFalse(androidUserExperimentRecord.save(null, "exp1", "var1"));
+        assertFalse(androidUserProfile.save(null, "exp1", "var1"));
         verify(logger).error("Received null userId, unable to save activation");
     }
 
     @Test
     public void saveActivationNullExperimentKey() {
-        assertFalse(androidUserExperimentRecord.save("foo", null, "var1"));
+        assertFalse(androidUserProfile.save("foo", null, "var1"));
         verify(logger).error("Received null experiment key, unable to save activation");
     }
 
     @Test
     public void saveActivationNullVariationKey() {
-        assertFalse(androidUserExperimentRecord.save("foo", "exp1", null));
+        assertFalse(androidUserProfile.save("foo", "exp1", null));
         verify(logger).error("Received null variation key, unable to save activation");
     }
 
     @Test
     public void saveActivationEmptyUserId() {
-        assertFalse(androidUserExperimentRecord.save("", "exp1", "var1"));
+        assertFalse(androidUserProfile.save("", "exp1", "var1"));
         verify(logger).error("Received empty user id, unable to save activation");
     }
 
     @Test
     public void saveActivationEmptyExperimentKey() {
-        assertFalse(androidUserExperimentRecord.save("foo", "", "var1"));
+        assertFalse(androidUserProfile.save("foo", "", "var1"));
         verify(logger).error("Received empty experiment key, unable to save activation");
     }
 
     @Test
     public void saveActivationEmptyVariationKey() {
-        assertFalse(androidUserExperimentRecord.save("foo", "exp1", ""));
+        assertFalse(androidUserProfile.save("foo", "exp1", ""));
         verify(logger).error("Received empty variation key, unable to save activation");
     }
 
     @Test
     public void lookupActivationNullUserId() {
-        assertNull(androidUserExperimentRecord.lookup(null, "exp1"));
+        assertNull(androidUserProfile.lookup(null, "exp1"));
         verify(logger).error("Received null user id, unable to lookup activation");
     }
 
     @Test
     public void lookupActivationNullExperimentKey() {
-        assertNull(androidUserExperimentRecord.lookup("foo", null));
+        assertNull(androidUserProfile.lookup("foo", null));
         verify(logger).error("Received null experiment key, unable to lookup activation");
     }
 
     @Test
     public void lookupActivationEmptyUserId() {
-        assertNull(androidUserExperimentRecord.lookup("", "exp1"));
+        assertNull(androidUserProfile.lookup("", "exp1"));
         verify(logger).error("Received empty user id, unable to lookup activation");
     }
 
     @Test
     public void lookupActivationEmptyExperimentKey() {
-        assertNull(androidUserExperimentRecord.lookup("foo", ""));
+        assertNull(androidUserProfile.lookup("foo", ""));
         verify(logger).error("Received empty experiment key, unable to lookup activation");
     }
 
     @Test
     public void removeExistingActivation() {
-        androidUserExperimentRecord.save("user1", "exp1", "var1");
-        assertTrue(androidUserExperimentRecord.remove("user1", "exp1"));
-        assertNull(androidUserExperimentRecord.lookup("user1", "exp1"));
+        androidUserProfile.save("user1", "exp1", "var1");
+        assertTrue(androidUserProfile.remove("user1", "exp1"));
+        assertNull(androidUserProfile.lookup("user1", "exp1"));
     }
 
     @Test
     public void removeNonExistingActivation() {
-        assertFalse(androidUserExperimentRecord.remove("user1", "exp1"));
+        assertFalse(androidUserProfile.remove("user1", "exp1"));
     }
 
     @Test
     public void removeActivationNullUserId() {
-        assertFalse(androidUserExperimentRecord.remove(null, "exp1"));
+        assertFalse(androidUserProfile.remove(null, "exp1"));
         verify(logger).error("Received null user id, unable to remove activation");
     }
 
     @Test
     public void removeActivationNullExperimentKey() {
-        assertFalse(androidUserExperimentRecord.remove("foo", null));
+        assertFalse(androidUserProfile.remove("foo", null));
         verify(logger).error("Received null experiment key, unable to remove activation");
     }
 
     @Test
     public void removeActivationEmptyUserId() {
-        assertFalse(androidUserExperimentRecord.remove("", "exp1"));
+        assertFalse(androidUserProfile.remove("", "exp1"));
         verify(logger).error("Received empty user id, unable to remove activation");
     }
 
     @Test
     public void removeActivationEmptyExperimentKey() {
-        assertFalse(androidUserExperimentRecord.remove("foo", ""));
+        assertFalse(androidUserProfile.remove("foo", ""));
         verify(logger).error("Received empty experiment key, unable to remove activation");
     }
 
     @Test
     public void startHandlesJSONException() throws IOException {
-        assertTrue(cache.save(diskUserExperimentRecordCache.getFileName(), "{"));
-        androidUserExperimentRecord.start();
-        verify(logger).error(eq("Unable to parse user experiment record cache"), any(JSONException.class));
+        assertTrue(cache.save(diskUserProfileCache.getFileName(), "{"));
+        androidUserProfile.start();
+        verify(logger).error(eq("Unable to parse user profile cache"), any(JSONException.class));
     }
 
     @Test
     public void start() throws JSONException {
-        androidUserExperimentRecord.start();
-        androidUserExperimentRecord.save("user1", "exp1", "var1");
-        androidUserExperimentRecord.save("user1", "exp2", "var2");
+        androidUserProfile.start();
+        androidUserProfile.save("user1", "exp1", "var1");
+        androidUserProfile.save("user1", "exp2", "var2");
 
         Map<String, String> expKeyToVarKeyMap = new HashMap<>();
         expKeyToVarKeyMap.put("exp1", "var1");
         expKeyToVarKeyMap.put("exp2", "var2");
-        Map<String, Map<String, String>> recordMap = new HashMap<>();
-        recordMap.put("user1", expKeyToVarKeyMap);
+        Map<String, Map<String, String>> profileMap = new HashMap<>();
+        profileMap.put("user1", expKeyToVarKeyMap);
 
-        assertEquals(recordMap, memoryUserExperimentRecordCache);
+        assertEquals(profileMap, memoryUserProfileCache);
     }
 }

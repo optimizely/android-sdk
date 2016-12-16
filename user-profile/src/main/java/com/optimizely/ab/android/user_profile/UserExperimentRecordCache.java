@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.optimizely.ab.android.user_experiment_record;
+package com.optimizely.ab.android.user_profile;
 
 import android.support.annotation.NonNull;
 
@@ -30,14 +30,14 @@ import java.io.IOException;
 /*
  * Stores a map of userIds to a map of expIds to variationIds in a file.
  */
-class UserExperimentRecordCache {
+class UserProfileCache {
 
-    private static final String FILE_NAME = "optly-user-experiment-record-%s.json";
+    private static final String FILE_NAME = "optly-user-profile-%s.json";
     @NonNull private final String projectId;
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
 
-    UserExperimentRecordCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
+    UserProfileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
         this.projectId = projectId;
         this.cache = cache;
         this.logger = logger;
@@ -45,52 +45,52 @@ class UserExperimentRecordCache {
 
     @NonNull
     JSONObject load() throws JSONException {
-        String userExperimentRecord = null;
+        String userProfile = null;
         try {
-            userExperimentRecord = cache.load(getFileName());
+            userProfile = cache.load(getFileName());
         } catch (FileNotFoundException e) {
-            logger.info("No user experiment record cache found");
+            logger.info("No user profile cache found");
         } catch (IOException e) {
-            logger.error("Unable to load user experiment record cache", e);
+            logger.error("Unable to load user profile cache", e);
         }
 
-        if (userExperimentRecord == null) {
+        if (userProfile == null) {
             return new JSONObject();
         } else {
-            return new JSONObject(userExperimentRecord);
+            return new JSONObject(userProfile);
         }
     }
 
     boolean remove(@NonNull String userId, @NonNull String experimentId) {
         try {
-            JSONObject userExperimentRecord = load();
-            JSONObject expIdToVarId = userExperimentRecord.getJSONObject(userId);
+            JSONObject userProfile = load();
+            JSONObject expIdToVarId = userProfile.getJSONObject(userId);
             expIdToVarId.remove(experimentId);
-            return cache.save(getFileName(), userExperimentRecord.toString());
+            return cache.save(getFileName(), userProfile.toString());
         } catch (IOException e) {
-            logger.error("Unable to remove experiment for user from user experiment record cache", e);
+            logger.error("Unable to remove experiment for user from user profile cache", e);
             return false;
         } catch (JSONException e) {
-            logger.error("Unable to remove experiment for user from user experiment record cache", e);
+            logger.error("Unable to remove experiment for user from user profile cache", e);
             return false;
         }
     }
 
     boolean save(@NonNull String userId, @NonNull String experimentId, @NonNull String variationId) {
         try {
-            JSONObject userExperimentRecord = load();
-            JSONObject expIdToVarId = userExperimentRecord.optJSONObject(userId);
+            JSONObject userProfile = load();
+            JSONObject expIdToVarId = userProfile.optJSONObject(userId);
             if (expIdToVarId == null) {
                 expIdToVarId = new JSONObject();
             }
             expIdToVarId.put(experimentId, variationId);
-            userExperimentRecord.put(userId, expIdToVarId);
-            return cache.save(getFileName(), userExperimentRecord.toString());
+            userProfile.put(userId, expIdToVarId);
+            return cache.save(getFileName(), userProfile.toString());
         } catch (IOException e) {
-            logger.error("Unable to save user experiment record cache", e);
+            logger.error("Unable to save user profile cache", e);
             return false;
         } catch (JSONException e) {
-            logger.error("Unable to parse user experiment record cache", e);
+            logger.error("Unable to parse user profile cache", e);
             return false;
         }
     }

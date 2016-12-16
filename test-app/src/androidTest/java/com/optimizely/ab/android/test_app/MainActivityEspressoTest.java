@@ -31,7 +31,7 @@ import com.optimizely.ab.android.event_handler.EventIntentService;
 import com.optimizely.ab.android.sdk.DataFileService;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.bucketing.UserExperimentRecord;
+import com.optimizely.ab.bucketing.UserProfile;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -94,7 +94,7 @@ public class MainActivityEspressoTest {
                     super.after();
                     context.getSharedPreferences("user", Context.MODE_PRIVATE).edit().apply();
                     // Clear sticky bucketing
-                    context.deleteFile(String.format("optly-user-experiment-record-%s.json", MyApplication.PROJECT_ID));
+                    context.deleteFile(String.format("optly-user-profile-%s.json", MyApplication.PROJECT_ID));
                 }
             })
             .around(new ExternalResource() {
@@ -185,9 +185,9 @@ public class MainActivityEspressoTest {
         }
         assertTrue(events.isEmpty());
         MyApplication myApplication = (MyApplication) activityTestRule.getActivity().getApplication();
-        UserExperimentRecord userExperimentRecord = myApplication.getOptimizelyManager().getUserExperimentRecord();
-        // Being in the white list should override user experiment record
-        assertNull(userExperimentRecord.lookup("test_user", "experiment_0"));
-        assertNull(userExperimentRecord.lookup("test_user", "experiment_1"));
+        UserProfile userProfile = myApplication.getOptimizelyManager().getUserProfile();
+        // Being in the white list should override user profile
+        assertNull(userProfile.lookup("test_user", "experiment_0"));
+        assertNull(userProfile.lookup("test_user", "experiment_1"));
     }
 }
