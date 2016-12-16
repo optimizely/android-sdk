@@ -24,6 +24,7 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.UnknownEventTypeException;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.notification.NotificationListener;
 
 import org.slf4j.Logger;
 
@@ -346,6 +347,49 @@ public class OptimizelyClient {
             logger.warn("Optimizely is not initialized, could not get variation for experiment {} " +
                     "for user {} with attributes", experimentKey, userId);
             return null;
+        }
+    }
+
+    //======== Notification listeners ========//
+
+    /**
+     * Add a {@link NotificationListener} if it does not exist already.
+     * <p>
+     * Listeners are held by weak reference and may automatically be garbage collected. You may
+     * need to re-register them, for example if your Activity subclass implements the listener
+     * interface, you will need to re-register the listener on each onCreate.
+     *
+     * @param listener listener to add
+     */
+    public void addNotificationListener(@NonNull NotificationListener listener) {
+        if (optimizely != null) {
+            optimizely.addNotificationListener(listener);
+        } else {
+            logger.warn("Optimizely is not initialized, could not add notification listener");
+        }
+    }
+
+    /**
+     * Remove a {@link NotificationListener} if it exists.
+     *
+     * @param listener listener to remove
+     */
+    public void removeNotificationListener(@NonNull NotificationListener listener) {
+        if (optimizely != null) {
+            optimizely.removeNotificationListener(listener);
+        } else {
+            logger.warn("Optimizely is not initialized, could not remove notification listener");
+        }
+    }
+
+    /**
+     * Remove all {@link NotificationListener} instances.
+     */
+    public void clearNotificationListeners() {
+        if (optimizely != null) {
+            optimizely.clearNotificationListeners();
+        } else {
+            logger.warn("Optimizely is not initialized, could not clear notification listeners");
         }
     }
 }
