@@ -9,6 +9,7 @@ December 14, 2016
 *Breaking Changes*
 
 - Rename `AndroidUserExperimentRecord` to `AndroidUserProfile`
+- Change position of `activateExperiment` parameter in live variable getters
 
 ### 0.3.0
 December 8, 2016
