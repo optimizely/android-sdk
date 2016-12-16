@@ -24,7 +24,7 @@ import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecuto
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord;
+import com.optimizely.ab.android.user_profile.AndroidUserProfile;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -117,19 +117,19 @@ public class OptimizelyManagerTest {
     @Test
     public void injectOptimizely() {
         Context context = mock(Context.class);
-        AndroidUserExperimentRecord userExperimentRecord = mock(AndroidUserExperimentRecord.class);
+        AndroidUserProfile userProfile = mock(AndroidUserProfile.class);
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
         optimizelyManager.setOptimizelyStartListener(startListener);
-        optimizelyManager.injectOptimizely(context, userExperimentRecord, serviceScheduler, minDataFile);
+        optimizelyManager.injectOptimizely(context, userProfile, serviceScheduler, minDataFile);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Timed out");
         }
 
-        verify(userExperimentRecord).start();
+        verify(userProfile).start();
         verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
@@ -140,18 +140,18 @@ public class OptimizelyManagerTest {
     public void injectOptimizelyNullListener() {
         Context context = mock(Context.class);
         when(context.getPackageName()).thenReturn("com.optly");
-        AndroidUserExperimentRecord userExperimentRecord = mock(AndroidUserExperimentRecord.class);
+        AndroidUserProfile userProfile = mock(AndroidUserProfile.class);
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         optimizelyManager.setOptimizelyStartListener(null);
-        optimizelyManager.injectOptimizely(context, userExperimentRecord, serviceScheduler, minDataFile);
+        optimizelyManager.injectOptimizely(context, userProfile, serviceScheduler, minDataFile);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Timed out");
         }
 
-        verify(userExperimentRecord).start();
+        verify(userProfile).start();
         verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
         verify(logger).info("No listener to send Optimizely to");
 
@@ -165,18 +165,18 @@ public class OptimizelyManagerTest {
     public void injectOptimizelyHandlesInvalidDataFile() {
         Context context = mock(Context.class);
         when(context.getPackageName()).thenReturn("com.optly");
-        AndroidUserExperimentRecord userExperimentRecord = mock(AndroidUserExperimentRecord.class);
+        AndroidUserProfile userProfile = mock(AndroidUserProfile.class);
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         optimizelyManager.setOptimizelyStartListener(null);
-        optimizelyManager.injectOptimizely(context, userExperimentRecord, serviceScheduler, "{}");
+        optimizelyManager.injectOptimizely(context, userProfile, serviceScheduler, "{}");
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Timed out");
         }
 
-        verify(userExperimentRecord).start();
+        verify(userProfile).start();
         verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
         verify(logger).error(eq("Unable to build optimizely instance"), any(Exception.class));
 
@@ -190,25 +190,25 @@ public class OptimizelyManagerTest {
     public void injectOptimizelyDoesNotDuplicateCallback() {
         Context context = mock(Context.class);
         when(context.getPackageName()).thenReturn("com.optly");
-        AndroidUserExperimentRecord userExperimentRecord = mock(AndroidUserExperimentRecord.class);
+        AndroidUserProfile userProfile = mock(AndroidUserProfile.class);
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
         optimizelyManager.setOptimizelyStartListener(startListener);
-        optimizelyManager.injectOptimizely(context, userExperimentRecord, serviceScheduler, minDataFile);
+        optimizelyManager.injectOptimizely(context, userProfile, serviceScheduler, minDataFile);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Timed out");
         }
 
-        verify(userExperimentRecord).start();
+        verify(userProfile).start();
         verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
 
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
 
-        optimizelyManager.injectOptimizely(context, userExperimentRecord, serviceScheduler, minDataFile);
+        optimizelyManager.injectOptimizely(context, userProfile, serviceScheduler, minDataFile);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {

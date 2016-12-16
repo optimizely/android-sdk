@@ -1,4 +1,15 @@
 # Optimizely Android X SDK Changelog
+### 0.4.0
+December 14, 2016
+
+*New Features*
+
+- Add support for IP anonymization
+
+*Breaking Changes*
+
+- Rename `AndroidUserExperimentRecord` to `AndroidUserProfile`
+
 ### 0.3.0
 December 8, 2016
 
