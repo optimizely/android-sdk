@@ -36,7 +36,7 @@ config common for all modules.
   - Uses a Service so events can be sent without the app being reopened
   - Persists events in a SQLite3 database
   - Required to be implemented by the Optimizely Java core
-3. User Experiment Record
+3. User Profile
   - Optional implementation for Optimizely Java core
   - Makes bucketing persistent
     - Once a user is bucketed in an variation they will remain in that variation
@@ -68,7 +68,7 @@ config common for all modules.
 7.  Discover more gradle tasks
   * `./gradlew tasks`
   * To see the task of an individual module
-    * `./gradlew user-experiment-record:tasks`
+    * `./gradlew user-profile:tasks`
 
 ### Android Studio
 

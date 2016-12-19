@@ -41,10 +41,10 @@ import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.bucketing.UserExperimentRecord;
+import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.internal.payload.Event;
-import com.optimizely.ab.android.user_experiment_record.AndroidUserExperimentRecord;
+import com.optimizely.ab.android.user_profile.AndroidUserProfile;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class OptimizelyManager {
     @NonNull private final Logger logger;
     @Nullable private DataFileServiceConnection dataFileServiceConnection;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
-    @Nullable private UserExperimentRecord userExperimentRecord;
+    @Nullable private UserProfile userProfile;
 
     OptimizelyManager(@NonNull String projectId,
                       @NonNull Long eventHandlerDispatchInterval,
@@ -133,14 +133,14 @@ public class OptimizelyManager {
             return optimizelyClient;
         }
 
-        AndroidUserExperimentRecord userExperimentRecord =
-                (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(getProjectId(), context);
-        // The User Experiment Record is started on the main thread on an asynchronous start.
+        AndroidUserProfile userProfile =
+                (AndroidUserProfile) AndroidUserProfile.newInstance(getProjectId(), context);
+        // The User Profile is started on the main thread on an asynchronous start.
         // Starting simply creates the file if it doesn't exist so it's not
         // terribly expensive. Blocking the UI thread prevents touch input...
-        userExperimentRecord.start();
+        userProfile.start();
         try {
-            optimizelyClient = buildOptimizely(context, datafile, userExperimentRecord);
+            optimizelyClient = buildOptimizely(context, datafile, userProfile);
         } catch (ConfigParseException e) {
             logger.error("Unable to parse compiled data file", e);
         }
@@ -320,29 +320,38 @@ public class OptimizelyManager {
         return dataFileCache.exists();
     }
 
+    /**
+     * Returns the URL of the versioned datafile that this SDK expects to use
+     * @param projectId The id of the project for which we are getting the datafile
+     * @return the CDN location of the datafile
+     */
+    public static @NonNull String getDatafileUrl(String projectId) {
+        return DataFileService.getDatafileUrl(projectId);
+    }
+
     @NonNull
     String getProjectId() {
         return projectId;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    void injectOptimizely(@NonNull final Context context, final @NonNull AndroidUserExperimentRecord userExperimentRecord, @NonNull final ServiceScheduler serviceScheduler, @NonNull final String dataFile) {
-        AsyncTask<Void, Void, UserExperimentRecord> initUserExperimentRecordTask = new AsyncTask<Void, Void, UserExperimentRecord>() {
+    void injectOptimizely(@NonNull final Context context, final @NonNull AndroidUserProfile userProfile, @NonNull final ServiceScheduler serviceScheduler, @NonNull final String dataFile) {
+        AsyncTask<Void, Void, UserProfile> initUserProfileTask = new AsyncTask<Void, Void, UserProfile>() {
             @Override
-            protected UserExperimentRecord doInBackground(Void[] params) {
-                userExperimentRecord.start();
-                return userExperimentRecord;
+            protected UserProfile doInBackground(Void[] params) {
+                userProfile.start();
+                return userProfile;
             }
 
             @Override
-            protected void onPostExecute(UserExperimentRecord userExperimentRecord) {
+            protected void onPostExecute(UserProfile userProfile) {
                 Intent intent = new Intent(context, DataFileService.class);
                 intent.putExtra(DataFileService.EXTRA_PROJECT_ID, projectId);
                 serviceScheduler.schedule(intent, dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval));
 
                 try {
-                    OptimizelyManager.this.optimizelyClient = buildOptimizely(context, dataFile, userExperimentRecord);
-                    OptimizelyManager.this.userExperimentRecord = userExperimentRecord;
+                    OptimizelyManager.this.optimizelyClient = buildOptimizely(context, dataFile, userProfile);
+                    OptimizelyManager.this.userProfile = userProfile;
                     logger.info("Sending Optimizely instance to listener");
 
                     if (optimizelyStartListener != null) {
@@ -355,14 +364,14 @@ public class OptimizelyManager {
                 }
             }
         };
-        initUserExperimentRecordTask.executeOnExecutor(executor);
+        initUserProfileTask.executeOnExecutor(executor);
     }
 
-    private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserExperimentRecord userExperimentRecord) throws ConfigParseException {
+    private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserProfile userProfile) throws ConfigParseException {
         OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
         eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
         Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
-                .withUserExperimentRecord(userExperimentRecord)
+                .withUserProfile(userProfile)
                 .withClientEngine(Event.ClientEngine.ANDROID_SDK)
                 .withClientVersion(BuildConfig.CLIENT_VERSION)
                 .build();
@@ -370,8 +379,8 @@ public class OptimizelyManager {
     }
 
     @VisibleForTesting
-    public UserExperimentRecord getUserExperimentRecord() {
-        return userExperimentRecord;
+    public UserProfile getUserProfile() {
+        return userProfile;
     }
 
     private boolean isAndroidVersionSupported() {
@@ -503,9 +512,9 @@ public class OptimizelyManager {
                         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(dataFileService.getApplicationContext());
                         ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory, LoggerFactory.getLogger(ServiceScheduler.class));
                         if (dataFile != null) {
-                            AndroidUserExperimentRecord userExperimentRecord =
-                                    (AndroidUserExperimentRecord) AndroidUserExperimentRecord.newInstance(optimizelyManager.getProjectId(), dataFileService.getApplicationContext());
-                            optimizelyManager.injectOptimizely(dataFileService.getApplicationContext(), userExperimentRecord, serviceScheduler, dataFile);
+                            AndroidUserProfile userProfile =
+                                    (AndroidUserProfile) AndroidUserProfile.newInstance(optimizelyManager.getProjectId(), dataFileService.getApplicationContext());
+                            optimizelyManager.injectOptimizely(dataFileService.getApplicationContext(), userProfile, serviceScheduler, dataFile);
                         } else {
                             // We should always call the callback even with the dummy
                             // instances.  Devs might gate the rest of their app

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.optimizely.ab.android.user_experiment_record;
+package com.optimizely.ab.android.user_profile;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -25,14 +25,13 @@ import android.support.annotation.RequiresApi;
 import android.util.Pair;
 
 import com.optimizely.ab.android.shared.Cache;
-import com.optimizely.ab.bucketing.UserExperimentRecord;
+import com.optimizely.ab.bucketing.UserProfile;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,55 +39,55 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * Android implemenation of {@link UserExperimentRecord}
+ * Android implemenation of {@link UserProfile}
  *
  * Makes bucketing sticky.  This module is what allows the core
  * to know if a user has already been bucketed for an experiment.
  * Once a user is bucketed they will stay bucketed unless the device's
  * storage is cleared. Bucketing information is stored in a simple file.
  */
-public class AndroidUserExperimentRecord implements UserExperimentRecord {
+public class AndroidUserProfile implements UserProfile {
 
-    @NonNull private final UserExperimentRecordCache diskUserExperimentRecordCache;
+    @NonNull private final UserProfileCache diskUserProfileCache;
     @NonNull private final Logger logger;
     @NonNull private final WriteThroughCacheTaskFactory writeThroughCacheTaskFactory;
 
-    AndroidUserExperimentRecord(@NonNull UserExperimentRecordCache diskUserExperimentRecordCache,
+    AndroidUserProfile(@NonNull UserProfileCache diskUserProfileCache,
                                 @NonNull WriteThroughCacheTaskFactory writeThroughCacheTaskFactory,
                                 @NonNull Logger logger) {
-        this.diskUserExperimentRecordCache = diskUserExperimentRecordCache;
+        this.diskUserProfileCache = diskUserProfileCache;
         this.writeThroughCacheTaskFactory = writeThroughCacheTaskFactory;
         this.logger = logger;
     }
 
     /**
-     * Gets a new instance of {@link AndroidUserExperimentRecord}
+     * Gets a new instance of {@link AndroidUserProfile}
      *
      * @param projectId your project's id
      * @param context   an instance of {@link Context}
-     * @return the instance as {@link UserExperimentRecord}
+     * @return the instance as {@link UserProfile}
      */
-    public static UserExperimentRecord newInstance(@NonNull String projectId, @NonNull Context context) {
-        Map<String, Map<String, String>> memoryUserExperimentRecordCache = new ConcurrentHashMap<>();
-        UserExperimentRecordCache userExperimentRecordCache =
-                new UserExperimentRecordCache(projectId,
+    public static UserProfile newInstance(@NonNull String projectId, @NonNull Context context) {
+        Map<String, Map<String, String>> memoryUserProfileCache = new ConcurrentHashMap<>();
+        UserProfileCache userProfileCache =
+                new UserProfileCache(projectId,
                         new Cache(context,
                         LoggerFactory.getLogger(Cache.class)),
-                        LoggerFactory.getLogger(UserExperimentRecordCache.class));
-        return new AndroidUserExperimentRecord(userExperimentRecordCache,
-                new WriteThroughCacheTaskFactory(userExperimentRecordCache,
-                        memoryUserExperimentRecordCache,
+                        LoggerFactory.getLogger(UserProfileCache.class));
+        return new AndroidUserProfile(userProfileCache,
+                new WriteThroughCacheTaskFactory(userProfileCache,
+                        memoryUserProfileCache,
                         Executors.newSingleThreadExecutor(),
                         LoggerFactory.getLogger(WriteThroughCacheTaskFactory.class)),
-                LoggerFactory.getLogger(AndroidUserExperimentRecord.class));
+                LoggerFactory.getLogger(AndroidUserProfile.class));
     }
 
     /**
-     * Creates the file that backs {@link AndroidUserExperimentRecord}
+     * Creates the file that backs {@link AndroidUserProfile}
      */
     public void start() {
         try {
-            JSONObject userIdToActivationJson = diskUserExperimentRecordCache.load();
+            JSONObject userIdToActivationJson = diskUserProfileCache.load();
             Iterator<String> iterator1 = userIdToActivationJson.keys();
             while (iterator1.hasNext()) {
                 String userId = iterator1.next();
@@ -97,21 +96,21 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                 while (iterator2.hasNext()) {
                     String expId = iterator2.next();
                     String varId = expIdToVarIdJson.getString(expId);
-                    Map<String, String> expIdToVarIdMap = writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get(userId);
+                    Map<String, String> expIdToVarIdMap = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get(userId);
                     if (expIdToVarIdMap == null) {
                         expIdToVarIdMap = new ConcurrentHashMap<>();
                     }
                     expIdToVarIdMap.put(expId, varId);
-                    writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().put(userId, expIdToVarIdMap);
+                    writeThroughCacheTaskFactory.getMemoryUserProfileCache().put(userId, expIdToVarIdMap);
                 }
             }
         } catch (JSONException e) {
-            logger.error("Unable to parse user experiment record cache", e);
+            logger.error("Unable to parse user profile cache", e);
         }
     }
 
     /**
-     * @see UserExperimentRecord#save(String, String, String)
+     * @see UserProfile#save(String, String, String)
      */
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
@@ -142,7 +141,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
     }
 
     /**
-     * @see UserExperimentRecord#lookup(String, String)
+     * @see UserProfile#lookup(String, String)
      */
     @Override
     @Nullable
@@ -161,7 +160,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
             return null;
         }
 
-        Map<String, String> expIdToVarIdMap = writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get(userId);
+        Map<String, String> expIdToVarIdMap = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get(userId);
         String variationKey = null;
         if (expIdToVarIdMap != null) {
             variationKey = expIdToVarIdMap.get(experimentKey);
@@ -171,7 +170,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
     }
 
     /**
-     * @see UserExperimentRecord#remove(String, String)
+     * @see UserProfile#remove(String, String)
      */
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
@@ -190,7 +189,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
             return false;
         }
 
-        Map<String, String> expKeyToVarKeyMap = writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache().get(userId);
+        Map<String, String> expKeyToVarKeyMap = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get(userId);
         if (expKeyToVarKeyMap == null) {
             return false;
         }
@@ -202,29 +201,29 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
     }
 
     /**
-     * @see UserExperimentRecord#getAllRecords()
+     * @see UserProfile#getAllRecords()
      */
     @Override
     public Map<String, Map<String, String>> getAllRecords() {
-        return writeThroughCacheTaskFactory.getMemoryUserExperimentRecordCache();
+        return writeThroughCacheTaskFactory.getMemoryUserProfileCache();
     }
 
     static class WriteThroughCacheTaskFactory {
-        @NonNull private final UserExperimentRecordCache diskUserExperimentRecordCache;
-        @NonNull private final Map<String, Map<String, String>> memoryUserExperimentRecordCache;
+        @NonNull private final UserProfileCache diskUserProfileCache;
+        @NonNull private final Map<String, Map<String, String>> memoryUserProfileCache;
         @NonNull private final Executor executor;
         @NonNull private final Logger logger;
 
-        WriteThroughCacheTaskFactory(@NonNull UserExperimentRecordCache diskUserExperimentRecordCache, @NonNull Map<String, Map<String, String>> memoryUserExperimentRecordCache, @NonNull Executor executor, @NonNull Logger logger) {
-            this.diskUserExperimentRecordCache = diskUserExperimentRecordCache;
-            this.memoryUserExperimentRecordCache = memoryUserExperimentRecordCache;
+        WriteThroughCacheTaskFactory(@NonNull UserProfileCache diskUserProfileCache, @NonNull Map<String, Map<String, String>> memoryUserProfileCache, @NonNull Executor executor, @NonNull Logger logger) {
+            this.diskUserProfileCache = diskUserProfileCache;
+            this.memoryUserProfileCache = memoryUserProfileCache;
             this.executor = executor;
             this.logger = logger;
         }
 
         @NonNull
-        Map<String, Map<String, String>> getMemoryUserExperimentRecordCache() {
-            return memoryUserExperimentRecordCache;
+        Map<String, Map<String, String>> getMemoryUserProfileCache() {
+            return memoryUserProfileCache;
         }
 
         @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -232,18 +231,18 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
             AsyncTask<Void,Void,Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void[] params) {
-                    return diskUserExperimentRecordCache.save(userId, experimentKey, variationKey);
+                    return diskUserProfileCache.save(userId, experimentKey, variationKey);
                 }
 
                 @Override
                 protected void onPreExecute() {
-                    Map<String, String> expIdToVarIdMap = memoryUserExperimentRecordCache.get(userId);
+                    Map<String, String> expIdToVarIdMap = memoryUserProfileCache.get(userId);
                     if (expIdToVarIdMap == null) {
                         expIdToVarIdMap = new ConcurrentHashMap<>();
                     }
                     expIdToVarIdMap.put(experimentKey, variationKey);
-                    memoryUserExperimentRecordCache.put(userId, expIdToVarIdMap);
-                    logger.info("Updated in memory user experiment record");
+                    memoryUserProfileCache.put(userId, expIdToVarIdMap);
+                    logger.info("Updated in memory user profile");
                 }
 
 
@@ -253,7 +252,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                         logger.info("Persisted user in variation {} for experiment {}.", variationKey, experimentKey);
                     } else {
                         // Remove the activation from the cache since saving failed
-                        memoryUserExperimentRecordCache.get(userId).remove(experimentKey);
+                        memoryUserProfileCache.get(userId).remove(experimentKey);
                         logger.error("Failed to persist user in variation {} for experiment {}.", variationKey, experimentKey);
                     }
                 }
@@ -267,7 +266,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
 
                 @Override
                 protected void onPreExecute() {
-                    Map<String, String> expIdToVarIdMap = memoryUserExperimentRecordCache.get(userId);
+                    Map<String, String> expIdToVarIdMap = memoryUserProfileCache.get(userId);
                     if (expIdToVarIdMap != null) {
                         expIdToVarIdMap.remove(experimentKey);
                         logger.info("Removed experimentKey: {} variationKey: {} record for user: {} from memory", experimentKey, variationKey, userId);
@@ -276,7 +275,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
 
                 @Override
                 protected Pair<String, Boolean> doInBackground(String... params) {
-                    boolean success = diskUserExperimentRecordCache.remove(userId, experimentKey);
+                    boolean success = diskUserProfileCache.remove(userId, experimentKey);
                     if (success) {
                         return new Pair<>(params[0], true);
                     } else {
@@ -291,7 +290,7 @@ public class AndroidUserExperimentRecord implements UserExperimentRecord {
                     if (!result.second) {
                         Map<String, String> expIdToVarIdMap = new ConcurrentHashMap<>();
                         expIdToVarIdMap.put(experimentKey, result.first);
-                        memoryUserExperimentRecordCache.put(userId, expIdToVarIdMap);
+                        memoryUserProfileCache.put(userId, expIdToVarIdMap);
                         logger.error("Restored experimentKey: {} variationKey: {} record for user: {} to memory", experimentKey, result.first, userId);
                     } else {
                         logger.info("Removed experimentKey: {} variationKey: {} record for user: {} from disk", experimentKey, result.first, userId);

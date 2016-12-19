@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 
 import java.util.concurrent.TimeoutException;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -111,5 +112,15 @@ public class DatafileServiceTest {
         dataFileService.logger = logger;
         dataFileService.onStartCommand(intent, 0, 0);
         verify(logger).warn("Data file service received an intent with no project id extra");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    @Test
+    public void testGetDatafileUrl(){
+        // HARD-CODING link here to make sure we don't unintentionally mess up the datafile version
+        // and url by accidentally changing those constants. Bumping datafile versions will force
+        // us to update this test.
+        String datafileUrl = DataFileService.getDatafileUrl("1");
+        assertEquals("https://cdn.optimizely.com/public/1/datafile_v3.json", datafileUrl);
     }
 }

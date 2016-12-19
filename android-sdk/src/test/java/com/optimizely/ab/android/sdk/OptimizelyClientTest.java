@@ -17,6 +17,9 @@
 package com.optimizely.ab.android.sdk;
 
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.notification.NotificationListener;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +29,7 @@ import org.slf4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
@@ -182,17 +186,17 @@ public class OptimizelyClientTest {
     @Test
     public void testGoodGetVariableString() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
-        optimizelyClient.getVariableString("test_key", true, "userId",
-                                           Collections.<String, String>emptyMap());
-        verify(optimizely).getVariableString("test_key", true, "userId",
-                                             Collections.<String, String>emptyMap());
+        optimizelyClient.getVariableString("test_key", "userId",
+                                           Collections.<String, String>emptyMap(), true);
+        verify(optimizely).getVariableString("test_key", "userId",
+                                             Collections.<String, String>emptyMap(), true);
     }
 
     @Test
     public void testBadGetVariableString() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.getVariableString("test_key", true, "userId",
-                                           Collections.<String, String>emptyMap());
+        optimizelyClient.getVariableString("test_key", "userId",
+                                           Collections.<String, String>emptyMap(), true);
         verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
                 "for user {}", "test_key", "userId");
     }
@@ -200,17 +204,17 @@ public class OptimizelyClientTest {
     @Test
     public void testGoodGetVariableBoolean() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
-        optimizelyClient.getVariableBoolean("test_key", true, "userId",
-                                            Collections.<String, String>emptyMap());
-        verify(optimizely).getVariableBoolean("test_key", true, "userId",
-                                              Collections.<String, String>emptyMap());
+        optimizelyClient.getVariableBoolean("test_key", "userId",
+                                            Collections.<String, String>emptyMap(), true);
+        verify(optimizely).getVariableBoolean("test_key", "userId",
+                                              Collections.<String, String>emptyMap(), true);
     }
 
     @Test
     public void testBadGetVariableBoolean() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.getVariableBoolean("test_key", true, "userId",
-                                            Collections.<String, String>emptyMap());
+        optimizelyClient.getVariableBoolean("test_key", "userId",
+                                            Collections.<String, String>emptyMap(), true);
         verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
                 "for user {}", "test_key", "userId");
     }
@@ -218,17 +222,17 @@ public class OptimizelyClientTest {
     @Test
     public void testGoodGetVariableInteger() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
-        optimizelyClient.getVariableInteger("test_key", true, "userId",
-                                            Collections.<String, String>emptyMap());
-        verify(optimizely).getVariableInteger("test_key", true, "userId",
-                                              Collections.<String, String>emptyMap());
+        optimizelyClient.getVariableInteger("test_key", "userId",
+                                            Collections.<String, String>emptyMap(), true);
+        verify(optimizely).getVariableInteger("test_key", "userId",
+                                              Collections.<String, String>emptyMap(), true);
     }
 
     @Test
     public void testBadGetVariableInteger() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.getVariableInteger("test_key", true, "userId",
-                                            Collections.<String, String>emptyMap());
+        optimizelyClient.getVariableInteger("test_key", "userId",
+                                            Collections.<String, String>emptyMap(), true);
         verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
                 "for user {}", "test_key", "userId");
     }
@@ -236,18 +240,94 @@ public class OptimizelyClientTest {
     @Test
     public void testGoodGetVariableFloat() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
-        optimizelyClient.getVariableFloat("test_key", true, "userId",
-                                          Collections.<String, String>emptyMap());
-        verify(optimizely).getVariableFloat("test_key", true, "userId",
-                                            Collections.<String, String>emptyMap());
+        optimizelyClient.getVariableFloat("test_key", "userId",
+                                          Collections.<String, String>emptyMap(), true);
+        verify(optimizely).getVariableFloat("test_key", "userId",
+                                            Collections.<String, String>emptyMap(), true);
     }
 
     @Test
     public void testBadGetVariableFloat() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.getVariableFloat("test_key", true, "userId",
-                                          Collections.<String, String>emptyMap());
+        optimizelyClient.getVariableFloat("test_key", "userId",
+                                          Collections.<String, String>emptyMap(), true);
         verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
                 "for user {}", "test_key", "userId");
+    }
+
+    //======== Notification listeners ========//
+
+    @Test
+    public void testGoodAddNotificationListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        NotificationListener listener = new NotificationListener() {
+            @Override
+            public void onExperimentActivated(Experiment experiment,
+                                              String s,
+                                              Map<String, String> map,
+                                              Variation variation) {
+            }
+        };
+        optimizelyClient.addNotificationListener(listener);
+        verify(optimizely).addNotificationListener(listener);
+    }
+
+    @Test
+    public void testBadAddNotificationListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        NotificationListener listener = new NotificationListener() {
+            @Override
+            public void onExperimentActivated(Experiment experiment,
+                                              String s,
+                                              Map<String, String> map,
+                                              Variation variation) {
+            }
+        };
+        optimizelyClient.addNotificationListener(listener);
+        verify(logger).warn("Optimizely is not initialized, could not add notification listener");
+    }
+
+    @Test
+    public void testGoodRemoveNotificationListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        NotificationListener listener = new NotificationListener() {
+            @Override
+            public void onExperimentActivated(Experiment experiment,
+                                              String s,
+                                              Map<String, String> map,
+                                              Variation variation) {
+            }
+        };
+        optimizelyClient.removeNotificationListener(listener);
+        verify(optimizely).removeNotificationListener(listener);
+    }
+
+    @Test
+    public void testBadRemoveNotificationListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        NotificationListener listener = new NotificationListener() {
+            @Override
+            public void onExperimentActivated(Experiment experiment,
+                                              String s,
+                                              Map<String, String> map,
+                                              Variation variation) {
+            }
+        };
+        optimizelyClient.removeNotificationListener(listener);
+        verify(logger).warn("Optimizely is not initialized, could not remove notification listener");
+    }
+
+    @Test
+    public void testGoodClearNotificationListeners() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        optimizelyClient.clearNotificationListeners();
+        verify(optimizely).clearNotificationListeners();
+    }
+
+    @Test
+    public void testBadClearNotificationListeners() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        optimizelyClient.clearNotificationListeners();
+        verify(logger).warn("Optimizely is not initialized, could not clear notification listeners");
     }
 }

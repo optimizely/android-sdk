@@ -38,7 +38,6 @@ class DataFileLoader {
     @NonNull private final Logger logger;
     @NonNull private final DataFileCache dataFileCache;
     @NonNull private final DataFileClient dataFileClient;
-    static final String FORMAT_CDN_URL = "https://cdn.optimizely.com/json/%s.json";
 
     private boolean hasNotifiedListener = false;
 
@@ -55,9 +54,9 @@ class DataFileLoader {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    void getDataFile(@NonNull String projectId, @Nullable DataFileLoadedListener dataFileLoadedListener) {
+    void getDataFile(@NonNull String datafileUrl, @Nullable DataFileLoadedListener dataFileLoadedListener) {
         RequestDataFileFromClientTask requestDataFileFromClientTask =
-                new RequestDataFileFromClientTask(projectId,
+                new RequestDataFileFromClientTask(datafileUrl,
                         dataFileService,
                         dataFileCache,
                         dataFileClient,
@@ -113,7 +112,7 @@ class DataFileLoader {
 
     private static class RequestDataFileFromClientTask extends AsyncTask<Void, Void, String> {
 
-        @NonNull private final String projectId;
+        @NonNull private final String datafileUrl;
         @NonNull private final DataFileService dataFileService;
         @NonNull private final DataFileCache dataFileCache;
         @NonNull private final DataFileClient dataFileClient;
@@ -121,14 +120,14 @@ class DataFileLoader {
         @NonNull private final Logger logger;
         @Nullable private final DataFileLoadedListener dataFileLoadedListener;
 
-        RequestDataFileFromClientTask(@NonNull String projectId,
+        RequestDataFileFromClientTask(@NonNull String datafileUrl,
                                       @NonNull DataFileService dataFileService,
                                       @NonNull DataFileCache dataFileCache,
                                       @NonNull DataFileClient dataFileClient,
                                       @NonNull DataFileLoader dataFileLoader,
                                       @Nullable DataFileLoadedListener dataFileLoadedListener,
                                       @NonNull Logger logger) {
-            this.projectId = projectId;
+            this.datafileUrl = datafileUrl;
             this.dataFileService = dataFileService;
             this.dataFileCache = dataFileCache;
             this.dataFileClient = dataFileClient;
@@ -139,7 +138,7 @@ class DataFileLoader {
 
         @Override
         protected String doInBackground(Void... params) {
-            String dataFile = dataFileClient.request(String.format(FORMAT_CDN_URL, projectId));
+            String dataFile = dataFileClient.request(datafileUrl);
             if (dataFile != null && !dataFile.isEmpty()) {
                 if (dataFileCache.exists()) {
                     if (!dataFileCache.delete()) {
