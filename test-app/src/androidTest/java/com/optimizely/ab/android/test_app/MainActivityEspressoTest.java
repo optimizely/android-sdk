@@ -174,12 +174,12 @@ public class MainActivityEspressoTest {
             Pair<String, String> event = iterator.next();
             final String url = event.first;
             final String payload = event.second;
-            if (url.equals("https://p13nlog.dz.optimizely.com/log/decision") && payload.contains("7676481120") && payload.contains("7661891902")
-                    || url.equals("https://p13nlog.dz.optimizely.com/log/decision") && payload.contains("7651112186") && payload.contains("7674261140")
-                    || url.equals("https://p13nlog.dz.optimizely.com/log/event") && payload.contains("experiment_0")
-                    || url.equals("https://p13nlog.dz.optimizely.com/log/event") && payload.contains("experiment_1")
-                    || url.equals("https://p13nlog.dz.optimizely.com/log/decision") && payload.contains("7680080715") && payload.contains("7685562539")
-                    || url.equals("https://p13nlog.dz.optimizely.com/log/event") && payload.contains("experiment_2")) {
+            if (url.equals("https://logx.optimizely.com/log/decision") && payload.contains("7676481120") && payload.contains("7661891902")
+                    || url.equals("https://logx.optimizely.com/log/decision") && payload.contains("7651112186") && payload.contains("7674261140")
+                    || url.equals("https://logx.optimizely.com/log/event") && payload.contains("experiment_0")
+                    || url.equals("https://logx.optimizely.com/log/event") && payload.contains("experiment_1")
+                    || url.equals("https://logx.optimizely.com/log/decision") && payload.contains("7680080715") && payload.contains("7685562539")
+                    || url.equals("https://logx.optimizely.com/log/event") && payload.contains("experiment_2")) {
                 iterator.remove();
             }
         }
