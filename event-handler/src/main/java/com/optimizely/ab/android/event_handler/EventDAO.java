@@ -77,40 +77,48 @@ class EventDAO {
                 EventTable.Column.REQUEST_BODY,
         };
 
-        Cursor cursor = dbHelper.getReadableDatabase().query(
-                EventTable.NAME,           // The table to query
-                projection,                 // The columns to return
-                null,                       // The columns for the WHERE clause
-                null,                       // The values for the WHERE clause
-                null,                       // don't group the rows
-                null,                       // don't filter by row groups
-                null                        // The sort order
-        );
-
-        if (cursor.moveToFirst()) {
-            do {
-                long itemId = cursor.getLong(
-                        cursor.getColumnIndexOrThrow(EventTable._ID)
-                );
-                String url = cursor.getString(
-                        cursor.getColumnIndexOrThrow(EventTable.Column.URL)
-                );
-                String requestBody = cursor.getString(
-                        cursor.getColumnIndexOrThrow(EventTable.Column.REQUEST_BODY)
-                );
-                try {
-                    events.add(new Pair<>(itemId, new Event(new URL(url), requestBody)));
-                } catch (MalformedURLException e) {
-                    logger.error("Retrieved a malformed event from storage", e);
-
-                }
-            } while (cursor.moveToNext());
-
-            cursor.close();
-
-            logger.info("Got events from SQLite");
+        Cursor cursor = null;
+        try {
+            cursor = dbHelper.getReadableDatabase().query(
+                    EventTable.NAME,           // The table to query
+                    projection,                 // The columns to return
+                    null,                       // The columns for the WHERE clause
+                    null,                       // The values for the WHERE clause
+                    null,                       // don't group the rows
+                    null,                       // don't filter by row groups
+                    null                        // The sort order
+            );
+            logger.info("Opened database");
+        } catch (Exception e) {
+            logger.error("Failed to open database.", e);
         }
 
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    long itemId = cursor.getLong(
+                            cursor.getColumnIndexOrThrow(EventTable._ID)
+                    );
+                    String url = cursor.getString(
+                            cursor.getColumnIndexOrThrow(EventTable.Column.URL)
+                    );
+                    String requestBody = cursor.getString(
+                            cursor.getColumnIndexOrThrow(EventTable.Column.REQUEST_BODY)
+                    );
+                    try {
+                        events.add(new Pair<>(itemId, new Event(new URL(url), requestBody)));
+                    } catch (MalformedURLException e) {
+                        logger.error("Retrieved a malformed event from storage", e);
+                    }
+                } while (cursor.moveToNext());
+
+                cursor.close();
+
+                logger.info("Got events from SQLite");
+            }
+        } catch (Exception e) {
+            logger.error("Error reading events database cursor", e);
+        }
 
         return events;
     }

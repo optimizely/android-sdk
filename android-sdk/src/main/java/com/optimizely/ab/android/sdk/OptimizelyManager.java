@@ -485,6 +485,10 @@ public class OptimizelyManager {
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
+            if (!(service instanceof DataFileService.LocalBinder)) {
+                return;
+            }
+
             // We've bound to DataFileService, cast the IBinder and get DataFileService instance
             DataFileService.LocalBinder binder = (DataFileService.LocalBinder) service;
             final DataFileService dataFileService = binder.getService();

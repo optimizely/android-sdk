@@ -71,10 +71,16 @@ class EventClient {
             }
         };
 
-        Boolean success = client.execute(request, 2, 5);
-        if (success == null) {
-            success = false;
+        try {
+            Boolean success = client.execute(request, 2, 5);
+            if (success == null) {
+                success = false;
+            }
+            logger.info("Successfully dispatched event: {}", event);
+            return success;
+        } catch (Exception e) {
+            logger.error("Error executing client request", e);
         }
-        return success;
+        return false;
     }
 }
