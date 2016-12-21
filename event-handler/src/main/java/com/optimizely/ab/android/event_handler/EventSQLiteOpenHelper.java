@@ -63,10 +63,14 @@ class EventSQLiteOpenHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Deletes the old events db that stored events for all projects
-        context.deleteDatabase("optly-events");
-        db.execSQL(SQL_CREATE_EVENT_TABLE);
-        logger.info("Created event table with SQL: {}", SQL_CREATE_EVENT_TABLE);
+        try {
+            // Deletes the old events db that stored events for all projects
+            context.deleteDatabase("optly-events");
+            db.execSQL(SQL_CREATE_EVENT_TABLE);
+            logger.info("Created event table with SQL: {}", SQL_CREATE_EVENT_TABLE);
+        } catch (Exception e) {
+            logger.error("Error creating optly-events table.", e);
+        }
     }
 
     /**
