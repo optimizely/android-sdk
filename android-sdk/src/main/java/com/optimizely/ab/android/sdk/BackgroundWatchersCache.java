@@ -117,7 +117,7 @@ class BackgroundWatchersCache {
         }
 
         if (backGroundWatchersFile == null) {
-            return null;
+            backGroundWatchersFile = "{}";
         }
 
         return new JSONObject(backGroundWatchersFile);

@@ -124,7 +124,7 @@ class EventDAO {
                 logger.info("Got events from SQLite");
             }
         } catch (Exception e) {
-            logger.error("Error reading events database cursor", e);
+            logger.error("Error reading events db cursor", e);
         }
 
         return events;
@@ -156,6 +156,10 @@ class EventDAO {
     }
 
     void closeDb() {
-        dbHelper.close();
+        try {
+            dbHelper.close();
+        } catch (Exception e) {
+            logger.warn("Error closing db.", e);
+        }
     }
 }
