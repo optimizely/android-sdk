@@ -100,7 +100,7 @@ public class Client {
     }
 
     @Nullable
-    public String readStream(@NonNull URLConnection urlConnection) throws IOException {
+    public String readStream(@NonNull URLConnection urlConnection) {
         try {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             Scanner s = new Scanner(in).useDelimiter("\\A");
