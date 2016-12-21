@@ -69,7 +69,7 @@ class EventClient {
                         logger.error("Unexpected response from event endpoint, status: " + status);
                         return Boolean.FALSE;
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     logger.error("Unable to send event: {}", event, e);
                     return Boolean.FALSE;
                 }
