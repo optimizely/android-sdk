@@ -17,6 +17,7 @@
 package com.optimizely.ab.android.shared;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.slf4j.Logger;
 
@@ -58,11 +59,16 @@ public class Client {
      *
      * @param url a {@link URL} instance
      * @return an open {@link HttpURLConnection}
-     * @throws IOException if connection can't be opened
      * @hide
      */
-    public HttpURLConnection openConnection(URL url) throws IOException {
-        return (HttpURLConnection) url.openConnection();
+    @Nullable
+    public HttpURLConnection openConnection(URL url) {
+        try {
+            return (HttpURLConnection) url.openConnection();
+        } catch (Exception e) {
+            logger.warn("Error making request to {}.", url);
+        }
+        return null;
     }
 
     /**
@@ -93,10 +99,16 @@ public class Client {
         }
     }
 
+    @Nullable
     public String readStream(@NonNull URLConnection urlConnection) throws IOException {
-        InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-        Scanner s = new Scanner(in).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
+        try {
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            Scanner s = new Scanner(in).useDelimiter("\\A");
+            return s.hasNext() ? s.next() : "";
+        } catch (Exception e) {
+            logger.warn("Error reading urlConnection stream.", e);
+            return null;
+        }
     }
 
     /**
@@ -112,7 +124,12 @@ public class Client {
         int maxTimeout = (int) Math.pow(baseTimeout, power);
         T response = null;
         while(timeout <= maxTimeout) {
-            response = request.execute();
+            try {
+                response = request.execute();
+            } catch (Exception e) {
+                logger.error("Request failed with error: ", e);
+            }
+
             if (response == null || response == Boolean.FALSE) {
                 try {
                     logger.info("Request failed, waiting {} seconds to try again", timeout);

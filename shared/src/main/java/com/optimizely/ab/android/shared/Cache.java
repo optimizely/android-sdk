@@ -18,6 +18,7 @@ package com.optimizely.ab.android.shared;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.slf4j.Logger;
 
@@ -57,17 +58,25 @@ public class Cache {
      * @throws IOException if file can't be loaded
      * @hide
      */
-    @NonNull
+    @Nullable
     public String load(String fileName) throws IOException {
-        FileInputStream fis = context.openFileInput(fileName);
-        InputStreamReader inputStreamReader = new InputStreamReader(fis);
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            sb.append(line);
+        try {
+            FileInputStream fis = context.openFileInput(fileName);
+            InputStreamReader inputStreamReader = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            return sb.toString();
+        } catch (IOException e) {
+            // Pass through known exceptions
+            throw e;
+        } catch (Exception e) {
+            logger.warn("Unable to load file {}.", fileName);
+            return null;
         }
-        return sb.toString();
     }
 
     /**
@@ -109,8 +118,13 @@ public class Cache {
      * @hide
      */
     public boolean save(String fileName, String data) throws IOException {
-        FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-        fos.write(data.getBytes());
-        return true;
+        try {
+            FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+            fos.write(data.getBytes());
+            return true;
+        } catch (Exception e) {
+            logger.error("Error saving file {}.", fileName);
+        }
+        return false;
     }
 }

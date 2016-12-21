@@ -64,6 +64,10 @@ class DataFileClient {
                     logger.info("Requesting data file from {}", url);
                     urlConnection = client.openConnection(url);
 
+                    if (urlConnection == null) {
+                        return null;
+                    }
+
                     client.setIfModifiedSince(urlConnection);
 
                     urlConnection.setConnectTimeout(5 * 1000);
@@ -80,7 +84,7 @@ class DataFileClient {
                         logger.error("Unexpected response from data file cdn, status: {}", status);
                         return null;
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     logger.error("Error making request", e);
                     return null;
                 } finally {

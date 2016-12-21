@@ -48,6 +48,11 @@ class EventClient {
                 try {
                     logger.info("Dispatching event: {}", event);
                     HttpURLConnection urlConnection = client.openConnection(event.getURL());
+
+                    if (urlConnection == null) {
+                        return Boolean.FALSE;
+                    }
+
                     urlConnection.setRequestMethod("POST");
                     urlConnection.setRequestProperty("Content-Type", "application/json");
                     urlConnection.setDoOutput(true);
@@ -64,23 +69,18 @@ class EventClient {
                         logger.error("Unexpected response from event endpoint, status: " + status);
                         return Boolean.FALSE;
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     logger.error("Unable to send event: {}", event, e);
                     return Boolean.FALSE;
                 }
             }
         };
 
-        try {
-            Boolean success = client.execute(request, 2, 5);
-            if (success == null) {
-                success = false;
-            }
-            logger.info("Successfully dispatched event: {}", event);
-            return success;
-        } catch (Exception e) {
-            logger.error("Error executing client request", e);
+        Boolean success = client.execute(request, 2, 5);
+        if (success == null) {
+            success = false;
         }
-        return false;
+        logger.info("Successfully dispatched event: {}", event);
+        return success;
     }
 }
