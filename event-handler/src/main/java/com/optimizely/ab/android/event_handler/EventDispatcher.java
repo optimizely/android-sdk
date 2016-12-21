@@ -90,7 +90,7 @@ class EventDispatcher {
 
     // Either grab the interval for the first time from Intent or from storage
     // The extra won't exist if we are being restarted after a reboot or app update
-    private long getInterval(Intent intent) {
+    private long getInterval(@NonNull Intent intent) {
         long duration = intent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1);
         // We are either scheduling for the first time or rescheduling after our alarms were cancelled
         if (duration == -1) {
