@@ -59,7 +59,7 @@ public class Cache {
      * @hide
      */
     @Nullable
-    public String load(String fileName) throws IOException {
+    public String load(String fileName) {
         try {
             FileInputStream fis = context.openFileInput(fileName);
             InputStreamReader inputStreamReader = new InputStreamReader(fis);
@@ -70,9 +70,6 @@ public class Cache {
                 sb.append(line);
             }
             return sb.toString();
-        } catch (IOException e) {
-            // Pass through known exceptions
-            throw e;
         } catch (Exception e) {
             logger.warn("Unable to load file {}.", fileName);
             return null;
@@ -96,15 +93,8 @@ public class Cache {
      * @hide
      */
     public boolean exists(String fileName) {
-        try {
-            load(fileName);
-            return true;
-        } catch (FileNotFoundException e) {
-            return false;
-        } catch (IOException e) {
-            logger.error("Unable to check if file exists", e);
-            return false;
-        }
+        String file = load(fileName);
+        return file != null;
     }
 
     /**
@@ -114,10 +104,9 @@ public class Cache {
      * @param fileName the path to the file
      * @param data the String data to write to the file
      * @return true if the file was saved
-     * @throws IOException if file can't be saved
      * @hide
      */
-    public boolean save(String fileName, String data) throws IOException {
+    public boolean save(String fileName, String data) {
         try {
             FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             fos.write(data.getBytes());
