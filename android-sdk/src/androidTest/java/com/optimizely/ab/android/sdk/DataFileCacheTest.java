@@ -81,31 +81,4 @@ public class DataFileCacheTest {
         assertNull(dataFileCache.load());
         verify(logger).error(contains("Unable to parse data file"), any(JSONException.class));
     }
-
-    @Test
-    public void testLoadFileNotFound() throws IOException {
-        Cache cache = mock(Cache.class);
-        DataFileCache dataFileCache = new DataFileCache("1", cache, logger);
-        when(cache.load(dataFileCache.getFileName())).thenThrow(new FileNotFoundException());
-        assertNull(dataFileCache.load());
-        verify(logger).info(contains("No data file found"));
-    }
-
-    @Test
-    public void testLoadIoException() throws IOException {
-        Cache cache = mock(Cache.class);
-        DataFileCache dataFileCache = new DataFileCache("1", cache, logger);
-        when(cache.load(dataFileCache.getFileName())).thenThrow(new IOException());
-        assertNull(dataFileCache.load());
-        verify(logger).error(contains("Unable to load data file"), any(IOException.class));
-    }
-
-    @Test
-    public void testSaveIOException() throws IOException {
-        Cache cache = mock(Cache.class);
-        DataFileCache dataFileCache = new DataFileCache("1", cache, logger);
-        when(cache.save(dataFileCache.getFileName(), "")).thenThrow(new IOException());
-        assertFalse(dataFileCache.save(""));
-        verify(logger).error(contains("Unable to save data file"), any(IOException.class));
-    }
 }

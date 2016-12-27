@@ -109,6 +109,7 @@ class BackgroundWatchersCache {
         String backGroundWatchersFile = cache.load(BACKGROUND_WATCHERS_FILE_NAME);
         if (backGroundWatchersFile == null) {
             backGroundWatchersFile = "{}";
+            logger.info("Creating background watchers file {}.", BACKGROUND_WATCHERS_FILE_NAME);
         }
 
         return new JSONObject(backGroundWatchersFile);
@@ -119,6 +120,13 @@ class BackgroundWatchersCache {
     }
 
     private boolean save(String backgroundWatchersJson) {
-        return cache.save(BACKGROUND_WATCHERS_FILE_NAME, backgroundWatchersJson);
+        logger.info("Saving background watchers file {}.", BACKGROUND_WATCHERS_FILE_NAME);
+        boolean saved = cache.save(BACKGROUND_WATCHERS_FILE_NAME, backgroundWatchersJson);
+        if (saved) {
+            logger.info("Saved background watchers file {}.", BACKGROUND_WATCHERS_FILE_NAME);
+        } else {
+            logger.warn("Unable to save background watchers file {}.", BACKGROUND_WATCHERS_FILE_NAME);
+        }
+        return saved;
     }
 }

@@ -34,6 +34,7 @@ import java.io.IOException;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -80,34 +81,22 @@ public class UserProfileCacheTest {
     @Test
     public void testSaveIOException() throws IOException, JSONException {
         cache = mock(Cache.class);
-        final IOException ioException = new IOException();
         userProfileCache = new UserProfileCache("1", cache, logger);
         JSONObject expectedActivation = new JSONObject();
         JSONObject expectedExpIdToVarId = new JSONObject();
         expectedExpIdToVarId.put("exp1", "var1");
         expectedActivation.put("foo", expectedExpIdToVarId);
-        when(cache.save(userProfileCache.getFileName(), expectedActivation.toString())).thenThrow(ioException);
+        when(cache.save(userProfileCache.getFileName(), "{}")).thenReturn(false);
         assertFalse(userProfileCache.save("foo", "exp1", "var1"));
-        verify(logger).error("Unable to save user profile cache", ioException);
+        verify(logger).warn("Unable to save user profile cache.");
     }
 
     @Test
-    public void testRestoreIOException() throws IOException, JSONException {
+    public void testRestoreIOException() throws JSONException {
         cache = mock(Cache.class);
-        final IOException ioException = new IOException();
         userProfileCache = new UserProfileCache("1", cache, logger);
-        when(cache.load(userProfileCache.getFileName())).thenThrow(ioException);
+        when(cache.load(userProfileCache.getFileName())).thenReturn(null);
         assertEquals(userProfileCache.load().toString(), new JSONObject().toString());
-        verify(logger).error("Unable to load user profile cache", ioException);
-    }
-
-    @Test
-    public void testRestoreFileNotFoundException() throws IOException, JSONException {
-        cache = mock(Cache.class);
-        final FileNotFoundException fileNotFoundException = new FileNotFoundException();
-        userProfileCache = new UserProfileCache("1", cache, logger);
-        when(cache.load(userProfileCache.getFileName())).thenThrow(fileNotFoundException);
-        assertEquals(userProfileCache.load().toString(), new JSONObject().toString());
-        verify(logger).info("No user profile cache found");
+        verify(logger).warn("Unable to load user profile cache.");
     }
 }

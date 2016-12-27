@@ -47,6 +47,7 @@ class UserProfileCache {
     JSONObject load() throws JSONException {
         String userProfile = cache.load(getFileName());
         if (userProfile == null) {
+            logger.warn("Unable to load user profile cache.");
             return new JSONObject();
         } else {
             return new JSONObject(userProfile);
@@ -74,7 +75,11 @@ class UserProfileCache {
             }
             expIdToVarId.put(experimentId, variationId);
             userProfile.put(userId, expIdToVarId);
-            return cache.save(getFileName(), userProfile.toString());
+            boolean saved = cache.save(getFileName(), userProfile.toString());
+            if (!saved) {
+                logger.warn("Unable to save user profile cache.");
+            }
+            return saved;
         } catch (JSONException e) {
             logger.error("Unable to parse user profile cache", e);
             return false;
