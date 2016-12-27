@@ -107,33 +107,12 @@ public class BackgroundWatchersCacheTest {
     }
 
     @Test
-    public void testLoadFileNotFound() throws IOException {
+    public void testLoadFileNotFound() {
         Cache cache = mock(Cache.class);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
         // Cause a JSONException to be thrown
-        when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenThrow(new FileNotFoundException());
+        when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenReturn(null);
         assertFalse(backgroundWatchersCache.setIsWatching("1", true));
-        verify(logger).info("Creating background watchers file");
-    }
-
-    @Test
-    public void testLoadIOException() throws IOException {
-        Cache cache = mock(Cache.class);
-        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
-        // Cause a JSONException to be thrown
-        when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenThrow(new IOException());
-        assertFalse(backgroundWatchersCache.setIsWatching("1", true));
-        verify(logger).error(contains("Unable to load background watchers file"), any(IOException.class));
-    }
-
-    @Test
-    public void testSaveIOException() throws IOException {
-        Cache cache = mock(Cache.class);
-        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
-        // Cause a JSONException to be thrown
-        when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenReturn("{}");
-        when(cache.save(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME, "{\"1\":true}")).thenThrow(new IOException());
-        assertFalse(backgroundWatchersCache.setIsWatching("1", true));
-        verify(logger).error(contains("Unable to save background watchers file"), any(IOException.class));
+        verify(logger).info("Creating background watchers file {}.", BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }
 }
