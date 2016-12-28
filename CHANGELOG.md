@@ -1,4 +1,12 @@
 # Optimizely Android X SDK Changelog
+### 0.4.1
+December 28, 2016
+
+*Bug Fixes*
+
+- Add try catches around Cache.java and Client.java to handle exceptions gracefully
+- Fixes crash with not being able to bind to DatafileService
+
 ### 0.4.0
 December 15, 2016
 
