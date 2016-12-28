@@ -71,18 +71,25 @@ class EventDispatcher {
                 dispatched = dispatch(event);
             } catch (MalformedURLException e) {
                 logger.error("Received a malformed URL in event handler service", e);
+            } catch (Exception e) {
+                logger.warn("Failed to dispatch event.", e);
             }
         }
 
-        if (!dispatched) {
-            long interval = getInterval(intent);
-            serviceScheduler.schedule(intent, interval);
-            saveInterval(interval);
-            logger.info("Scheduled events to be dispatched");
-        } else {
-            // Quit trying to dispatch events because their aren't any in storage
-            serviceScheduler.unschedule(intent);
-            logger.info("Unscheduled event dispatch");
+
+        try {
+            if (!dispatched) {
+                long interval = getInterval(intent);
+                serviceScheduler.schedule(intent, interval);
+                saveInterval(interval);
+                logger.info("Scheduled events to be dispatched");
+            } else {
+                // Quit trying to dispatch events because their aren't any in storage
+                serviceScheduler.unschedule(intent);
+                logger.info("Unscheduled event dispatch");
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to schedule event dispatch.", e);
         }
 
         eventDAO.closeDb();
@@ -90,7 +97,7 @@ class EventDispatcher {
 
     // Either grab the interval for the first time from Intent or from storage
     // The extra won't exist if we are being restarted after a reboot or app update
-    private long getInterval(Intent intent) {
+    private long getInterval(@NonNull Intent intent) {
         long duration = intent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1);
         // We are either scheduling for the first time or rescheduling after our alarms were cancelled
         if (duration == -1) {

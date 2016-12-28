@@ -18,6 +18,7 @@ package com.optimizely.ab.android.shared;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.slf4j.Logger;
 
@@ -57,17 +58,22 @@ public class Cache {
      * @throws IOException if file can't be loaded
      * @hide
      */
-    @NonNull
-    public String load(String fileName) throws IOException {
-        FileInputStream fis = context.openFileInput(fileName);
-        InputStreamReader inputStreamReader = new InputStreamReader(fis);
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            sb.append(line);
+    @Nullable
+    public String load(String fileName) {
+        try {
+            FileInputStream fis = context.openFileInput(fileName);
+            InputStreamReader inputStreamReader = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            logger.warn("Unable to load file {}.", fileName);
+            return null;
         }
-        return sb.toString();
     }
 
     /**
@@ -87,15 +93,8 @@ public class Cache {
      * @hide
      */
     public boolean exists(String fileName) {
-        try {
-            load(fileName);
-            return true;
-        } catch (FileNotFoundException e) {
-            return false;
-        } catch (IOException e) {
-            logger.error("Unable to check if file exists", e);
-            return false;
-        }
+        String file = load(fileName);
+        return file != null;
     }
 
     /**
@@ -105,12 +104,16 @@ public class Cache {
      * @param fileName the path to the file
      * @param data the String data to write to the file
      * @return true if the file was saved
-     * @throws IOException if file can't be saved
      * @hide
      */
-    public boolean save(String fileName, String data) throws IOException {
-        FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-        fos.write(data.getBytes());
-        return true;
+    public boolean save(String fileName, String data) {
+        try {
+            FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+            fos.write(data.getBytes());
+            return true;
+        } catch (Exception e) {
+            logger.error("Error saving file {}.", fileName);
+        }
+        return false;
     }
 }

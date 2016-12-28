@@ -71,7 +71,7 @@ public class OptlyEventHandler implements EventHandler {
      * @see EventHandler#dispatchEvent(LogEvent)
      */
     @Override
-    public void dispatchEvent(LogEvent logEvent) {
+    public void dispatchEvent(@NonNull LogEvent logEvent) {
         if (logEvent.getEndpointUrl() == null) {
             logger.error("Event dispatcher received a null url");
             return;

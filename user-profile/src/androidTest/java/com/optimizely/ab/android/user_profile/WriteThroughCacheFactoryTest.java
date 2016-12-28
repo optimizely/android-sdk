@@ -94,7 +94,7 @@ public class WriteThroughCacheFactoryTest {
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
-    public void startWriteCacheTaskFail() throws JSONException, IOException {
+    public void startWriteCacheTaskFail() throws JSONException {
         Cache cache = mock(Cache.class);
         UserProfileCache diskUserProfileCache = new UserProfileCache("1", cache, logger);
         AndroidUserProfile.WriteThroughCacheTaskFactory writeThroughCacheTaskFactory =
@@ -103,7 +103,7 @@ public class WriteThroughCacheFactoryTest {
 
         JSONObject json = getJsonObject();
 
-        when(cache.save(diskUserProfileCache.getFileName(), json.toString())).thenThrow(new IOException());
+        when(cache.save(diskUserProfileCache.getFileName(), json.toString())).thenReturn(false);
 
         writeThroughCacheTaskFactory.startWriteCacheTask("user1", "exp1", "var1");
         try {

@@ -48,14 +48,7 @@ public class DataFileCache {
 
     @Nullable
     JSONObject load() {
-        String optlyDataFile = null;
-        try {
-            optlyDataFile = cache.load(getFileName());
-        } catch (FileNotFoundException e) {
-            logger.info("No data file found");
-        } catch (IOException e) {
-            logger.error("Unable to load data file", e);
-        }
+        String optlyDataFile = cache.load(getFileName());
 
         if (optlyDataFile == null) {
             return null;
@@ -78,12 +71,7 @@ public class DataFileCache {
     }
 
     boolean save(String dataFile) {
-        try {
-            return cache.save(getFileName(), dataFile);
-        } catch (IOException e) {
-            logger.error("Unable to save data file", e);
-            return false;
-        }
+        return cache.save(getFileName(), dataFile);
     }
 
 

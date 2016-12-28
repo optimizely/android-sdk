@@ -81,10 +81,16 @@ public class ServiceScheduler {
      * @hide
      */
     public void unschedule(Intent intent) {
-        PendingIntent pendingIntent = pendingIntentFactory.getPendingIntent(intent);
-        alarmManager.cancel(pendingIntent);
-        pendingIntent.cancel();
-        logger.info("Unscheduled {}", intent.getComponent().toShortString());
+        if (intent != null) {
+            try {
+                PendingIntent pendingIntent = pendingIntentFactory.getPendingIntent(intent);
+                alarmManager.cancel(pendingIntent);
+                pendingIntent.cancel();
+                logger.info("Unscheduled {}", intent.getComponent().toShortString());
+            } catch (Exception e) {
+                logger.debug("Failed to unschedule service", e);
+            }
+        }
     }
 
     /**
