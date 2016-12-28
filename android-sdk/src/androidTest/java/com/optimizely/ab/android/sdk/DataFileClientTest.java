@@ -160,7 +160,7 @@ public class DataFileClientTest {
         URL url = new URL(DataFileService.getDatafileUrl("1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(200);
-        doThrow(new IOException()).when(client).readStream(urlConnection);
+        doThrow(new IOException()).when(urlConnection).connect();
 
         dataFileClient.request(url.toString());
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);

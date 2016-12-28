@@ -45,16 +45,9 @@ class UserProfileCache {
 
     @NonNull
     JSONObject load() throws JSONException {
-        String userProfile = null;
-        try {
-            userProfile = cache.load(getFileName());
-        } catch (FileNotFoundException e) {
-            logger.info("No user profile cache found");
-        } catch (IOException e) {
-            logger.error("Unable to load user profile cache", e);
-        }
-
+        String userProfile = cache.load(getFileName());
         if (userProfile == null) {
+            logger.warn("Unable to load user profile cache.");
             return new JSONObject();
         } else {
             return new JSONObject(userProfile);
@@ -67,9 +60,6 @@ class UserProfileCache {
             JSONObject expIdToVarId = userProfile.getJSONObject(userId);
             expIdToVarId.remove(experimentId);
             return cache.save(getFileName(), userProfile.toString());
-        } catch (IOException e) {
-            logger.error("Unable to remove experiment for user from user profile cache", e);
-            return false;
         } catch (JSONException e) {
             logger.error("Unable to remove experiment for user from user profile cache", e);
             return false;
@@ -85,10 +75,11 @@ class UserProfileCache {
             }
             expIdToVarId.put(experimentId, variationId);
             userProfile.put(userId, expIdToVarId);
-            return cache.save(getFileName(), userProfile.toString());
-        } catch (IOException e) {
-            logger.error("Unable to save user profile cache", e);
-            return false;
+            boolean saved = cache.save(getFileName(), userProfile.toString());
+            if (!saved) {
+                logger.warn("Unable to save user profile cache.");
+            }
+            return saved;
         } catch (JSONException e) {
             logger.error("Unable to parse user profile cache", e);
             return false;

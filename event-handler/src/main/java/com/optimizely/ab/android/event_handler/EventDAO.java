@@ -52,18 +52,25 @@ class EventDAO {
     }
 
     boolean storeEvent(@NonNull Event event) {
+        logger.info("Inserting {} into db", event);
         ContentValues values = new ContentValues();
         values.put(EventTable.Column.URL, event.getURL().toString());
         values.put(EventTable.Column.REQUEST_BODY, event.getRequestBody());
 
         // Since we are setting the "null column hack" param to null empty values will not be inserted
         // at all instead of inserting null.
-        long newRowId;
-        newRowId = dbHelper.getWritableDatabase().insert(EventTable.NAME, null, values);
+        try {
+            long newRowId;
+            newRowId = dbHelper.getWritableDatabase().insert(EventTable.NAME, null, values);
 
-        logger.info("Inserted {} into db", event);
+            logger.info("Inserted {} into db", event);
 
-        return newRowId != -1;
+            return newRowId != -1;
+        } catch (Exception e) {
+            logger.error("Error inserting Optimizely event into db.", e);
+        }
+
+        return false;
     }
 
     List<Pair<Long, Event>> getEvents() {
@@ -77,40 +84,48 @@ class EventDAO {
                 EventTable.Column.REQUEST_BODY,
         };
 
-        Cursor cursor = dbHelper.getReadableDatabase().query(
-                EventTable.NAME,           // The table to query
-                projection,                 // The columns to return
-                null,                       // The columns for the WHERE clause
-                null,                       // The values for the WHERE clause
-                null,                       // don't group the rows
-                null,                       // don't filter by row groups
-                null                        // The sort order
-        );
-
-        if (cursor.moveToFirst()) {
-            do {
-                long itemId = cursor.getLong(
-                        cursor.getColumnIndexOrThrow(EventTable._ID)
-                );
-                String url = cursor.getString(
-                        cursor.getColumnIndexOrThrow(EventTable.Column.URL)
-                );
-                String requestBody = cursor.getString(
-                        cursor.getColumnIndexOrThrow(EventTable.Column.REQUEST_BODY)
-                );
-                try {
-                    events.add(new Pair<>(itemId, new Event(new URL(url), requestBody)));
-                } catch (MalformedURLException e) {
-                    logger.error("Retrieved a malformed event from storage", e);
-
-                }
-            } while (cursor.moveToNext());
-
-            cursor.close();
-
-            logger.info("Got events from SQLite");
+        Cursor cursor = null;
+        try {
+            cursor = dbHelper.getReadableDatabase().query(
+                    EventTable.NAME,           // The table to query
+                    projection,                 // The columns to return
+                    null,                       // The columns for the WHERE clause
+                    null,                       // The values for the WHERE clause
+                    null,                       // don't group the rows
+                    null,                       // don't filter by row groups
+                    null                        // The sort order
+            );
+            logger.info("Opened database");
+        } catch (Exception e) {
+            logger.error("Failed to open database.", e);
         }
 
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    long itemId = cursor.getLong(
+                            cursor.getColumnIndexOrThrow(EventTable._ID)
+                    );
+                    String url = cursor.getString(
+                            cursor.getColumnIndexOrThrow(EventTable.Column.URL)
+                    );
+                    String requestBody = cursor.getString(
+                            cursor.getColumnIndexOrThrow(EventTable.Column.REQUEST_BODY)
+                    );
+                    try {
+                        events.add(new Pair<>(itemId, new Event(new URL(url), requestBody)));
+                    } catch (MalformedURLException e) {
+                        logger.error("Retrieved a malformed event from storage", e);
+                    }
+                } while (cursor.moveToNext());
+
+                cursor.close();
+
+                logger.info("Got events from SQLite");
+            }
+        } catch (Exception e) {
+            logger.error("Error reading events db cursor", e);
+        }
 
         return events;
     }
@@ -120,20 +135,31 @@ class EventDAO {
         String selection = EventTable._ID + " = ?";
         // Specify arguments in placeholder order.
         String[] selectionArgs = {String.valueOf(eventId)};
-        // Issue SQL statement.
-        int numRowsDeleted = dbHelper.getWritableDatabase().delete(EventTable.NAME, selection, selectionArgs);
 
-        if (numRowsDeleted > 0) {
-            logger.info("Removed event with id {} from db", eventId);
-            return true;
-        } else {
-            logger.error("Tried to remove an event id {} that does not exist", eventId);
+        try {
+            // Issue SQL statement.
+            int numRowsDeleted = dbHelper.getWritableDatabase().delete(EventTable.NAME, selection, selectionArgs);
+
+            if (numRowsDeleted > 0) {
+                logger.info("Removed event with id {} from db", eventId);
+                return true;
+            } else {
+                logger.error("Tried to remove an event id {} that does not exist", eventId);
+            }
+
+            return numRowsDeleted > 0;
+        } catch (Exception e) {
+            logger.error("Could not open db.", e);
         }
 
-        return numRowsDeleted > 0;
+        return false;
     }
 
     void closeDb() {
-        dbHelper.close();
+        try {
+            dbHelper.close();
+        } catch (Exception e) {
+            logger.warn("Error closing db.", e);
+        }
     }
 }

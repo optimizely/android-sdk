@@ -24,12 +24,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link CacheTest}
@@ -59,5 +62,23 @@ public class CacheTest {
     @Test
     public void deleteFileFail() {
         assertFalse(cache.delete(FILE_NAME));
+    }
+
+    @Test
+    public void testLoadFileNotFoundExceptionReturnsNull() throws FileNotFoundException {
+        Context context = mock(Context.class);
+        Logger logger = mock(Logger.class);
+        Cache cache = new Cache(context, logger);
+        when(context.openFileInput(FILE_NAME)).thenThrow(new FileNotFoundException());
+        assertNull(cache.load(FILE_NAME));
+    }
+
+    @Test
+    public void testSaveFileNotFoundExceptionReturnsFalse() throws FileNotFoundException{
+        Context context = mock(Context.class);
+        Logger logger = mock(Logger.class);
+        Cache cache = new Cache(context, logger);
+        when(context.openFileInput(FILE_NAME)).thenThrow(new FileNotFoundException());
+        assertFalse(cache.save(FILE_NAME, "{}"));
     }
 }

@@ -48,6 +48,11 @@ class EventClient {
                 try {
                     logger.info("Dispatching event: {}", event);
                     HttpURLConnection urlConnection = client.openConnection(event.getURL());
+
+                    if (urlConnection == null) {
+                        return Boolean.FALSE;
+                    }
+
                     urlConnection.setRequestMethod("POST");
                     urlConnection.setRequestProperty("Content-Type", "application/json");
                     urlConnection.setDoOutput(true);
@@ -75,6 +80,7 @@ class EventClient {
         if (success == null) {
             success = false;
         }
+        logger.info("Successfully dispatched event: {}", event);
         return success;
     }
 }

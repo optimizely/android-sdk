@@ -64,6 +64,10 @@ class DataFileClient {
                     logger.info("Requesting data file from {}", url);
                     urlConnection = client.openConnection(url);
 
+                    if (urlConnection == null) {
+                        return null;
+                    }
+
                     client.setIfModifiedSince(urlConnection);
 
                     urlConnection.setConnectTimeout(5 * 1000);
