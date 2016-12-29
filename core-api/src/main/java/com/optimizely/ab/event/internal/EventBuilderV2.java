@@ -16,6 +16,7 @@
  */
 package com.optimizely.ab.event.internal;
 
+import com.optimizely.ab.BuildConfig;
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.config.Attribute;
@@ -63,7 +64,7 @@ public class EventBuilderV2 extends EventBuilder {
     private Serializer serializer;
 
     public EventBuilderV2() {
-        this(ClientEngine.JAVA_SDK, BuildVersionInfo.VERSION);
+        this(ClientEngine.JAVA_SDK, BuildConfig.VERSION);
     }
 
     public EventBuilderV2(ClientEngine clientEngine, String clientVersion) {

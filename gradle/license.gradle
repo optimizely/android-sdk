@@ -2,7 +2,8 @@ subprojects {
     apply plugin: 'license'
     license {
         header rootProject.file('gradle/HEADER')
-        excludes(['**/*.properties', '**/*.txt', '**/*.conf', '**/*.xml', '**/*.json', '**/LogbackVerifier.java'])
+        excludes(['**/*.properties', '**/*.txt', '**/*.conf', '**/*.xml', '**/*.json', '**/LogbackVerifier.java',
+                  '**/BuildConfig.java'])
         ext.year = Calendar.getInstance().get(Calendar.YEAR)
     }
 }

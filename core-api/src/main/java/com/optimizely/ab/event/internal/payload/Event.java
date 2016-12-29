@@ -18,7 +18,7 @@ package com.optimizely.ab.event.internal.payload;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import com.optimizely.ab.event.internal.BuildVersionInfo;
+import com.optimizely.ab.BuildConfig;
 
 public class Event {
 
@@ -39,7 +39,7 @@ public class Event {
     }
 
     String clientEngine = ClientEngine.JAVA_SDK.getClientEngineValue();
-    String clientVersion = BuildVersionInfo.VERSION;
+    String clientVersion = BuildConfig.VERSION;
 
     public String getClientEngine() {
         return clientEngine;
