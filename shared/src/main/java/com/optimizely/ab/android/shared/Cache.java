@@ -54,8 +54,7 @@ public class Cache {
      * Load the cache file
      *
      * @param fileName the path to the file
-     * @return the loaded cache file as String
-     * @throws IOException if file can't be loaded
+     * @return the loaded cache file as String or null if the file cannot be loaded
      * @hide
      */
     @Nullable
