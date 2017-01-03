@@ -20,4 +20,4 @@ branches:
   only:
   - master
   - devel
-  - /^\d+\.\d+\.\d+(-SNAPSHOT)?$/ # ensure builds are run on tags which have versions as branch names
+  - /^\d+\.\d+\.\d+(-SNAPSHOT)?$/ # trigger builds on tags which are semantically versioned to ship the SDK.
