@@ -1,6 +1,5 @@
-/**
- *
- *    Copyright 2016, Optimizely
+/*
+ *    Copyright 2017, Optimizely
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -18,31 +17,6 @@ package com.optimizely.ab.bucketing.internal;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-/**
- *  The MurmurHash3 algorithm was created by Austin Appleby and placed in the public domain.
- *  This java port was authored by Yonik Seeley and also placed into the public domain.
- *  The author hereby disclaims copyright to this source code.
- *  <p>
- *  This produces exactly the same hash values as the final C++
- *  version of MurmurHash3 and is thus suitable for producing the same hash values across
- *  platforms.
- *  <p>
- *  The 32 bit x86 version of this hash should be the fastest variant for relatively short keys like ids.
- *  murmurhash3_x64_128 is a good choice for longer strings or if you need more than 32 bits of hash.
- *  <p>
- *  Note - The x86 and x64 versions do _not_ produce the same results, as the
- *  algorithms are optimized for their respective platforms.
- *  <p>
- *  See http://github.com/yonik/java_util for future updates to this file.
- *  <p>
- *  <b>NOTICE:</b> changes made to the original
- *  <ul>
- *    <li>package changed</li>
- *    <li>removed 128-bit implementation, as we don't need it</li>
- *    <li>findbugs fixes</li>
- *    <li>added private constructor</li>
- *  </ul>
- */
 public final class MurmurHash3 {
 
     private MurmurHash3() { }

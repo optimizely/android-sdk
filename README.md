@@ -17,10 +17,7 @@ following in your `build.gradle` and substitute `VERSION` for the latest SDK ver
 
 ```
 repositories {
-  maven {
-    mavenCentral()
-    url  "http://optimizely.bintray.com/optimizely"
-  }
+  jcenter()
 }
 
 dependencies {
@@ -92,7 +89,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md).
 
 ## License
 ```
-   Copyright 2016, Optimizely
+   Copyright 2017, Optimizely
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

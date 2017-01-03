@@ -7,14 +7,14 @@ buildscript {
     }
 
     dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:latest.release'
     }
 }
 
 plugins {
-    id 'net.researchgate.release' version '2.2.1'
     id 'nebula.optional-base' version '3.0.3'
-    id "me.champeau.gradle.jmh" version "0.3.1"
+    id 'me.champeau.gradle.jmh' version '0.3.1'
 }
 
 allprojects {
@@ -24,13 +24,22 @@ allprojects {
 apply from: 'gradle/license.gradle'
 apply from: 'gradle/publish.gradle'
 
+allprojects {
+    def travis_defined_version = System.getenv('TRAVIS_TAG')
+    if (travis_defined_version != null) {
+        version = travis_defined_version
+    }
+}
+
 subprojects {
+    apply plugin: 'com.jfrog.bintray'
     apply plugin: 'findbugs'
     apply plugin: 'java'
     apply plugin: 'jacoco'
+    apply plugin: 'maven-publish'
+    apply plugin: 'me.champeau.gradle.jmh'
     apply plugin: 'nebula.provided-base'
     apply plugin: 'nebula.optional-base'
-    apply plugin: 'me.champeau.gradle.jmh'
 
     sourceCompatibility = 1.6
     targetCompatibility = 1.6
@@ -102,10 +111,66 @@ subprojects {
         testCompile group: 'ch.qos.logback', name: 'logback-core', version: logbackVersion
     }
 
-    // for commits performed by the release plugin, skip the travis build (as it would attempt to bump the version)
-    release {
-        preCommitText = '[ci skip]'
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact sourcesJar
+                artifact javadocJar
+                pom.withXml {
+                    asNode().children().last() + {
+                        resolveStrategy = Closure.DELEGATE_FIRST
+                        url 'https://github.com/optimizely/java-sdk'
+                        licenses {
+                            license {
+                                name 'The Apache Software License, Version 2.0'
+                                url 'http://www.apache.org/license/LICENSE-2.0.txt'
+                                distribution 'repo'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id 'optimizely'
+                                name 'Optimizely'
+                                email 'developers@optimizely.com'
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
+
+    def bintrayName = 'core-api';
+    if (name.equals('core-httpclient-impl')) {
+        bintrayName = 'httpclient'
+    }
+
+    bintray {
+        user = System.getenv('BINTRAY_USER')
+        key = System.getenv('BINTRAY_KEY')
+        pkg {
+            repo = 'optimizely'
+            name = "optimizely-sdk-${bintrayName}"
+            userOrg = 'optimizely'
+            version {
+                name = rootProject.version
+            }
+            publications = ['mavenJava']
+        }
+    }
+
+    build.dependsOn('generatePomFileForMavenJavaPublication')
+
+    bintrayUpload.dependsOn 'build'
+
+    task ship() {
+        dependsOn('bintrayUpload')
+    }
+}
+
+task ship() {
+    dependsOn(':core-api:ship', ':core-httpclient-impl:ship')
 }
 
 // todo: remove this wrapper version once we're publishing to jcenter/maven central
