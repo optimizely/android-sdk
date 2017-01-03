@@ -5,7 +5,12 @@ jdk:
   - oraclejdk8
 install: true
 script:
-    - "./gradlew clean build check"
+    - "./gradlew clean"
+    - "if [[ -n $TRAVIS_TAG ]]; then
+          ./gradlew ship;
+      else
+          ./gradlew build;
+      fi"
 cache:
   gradle: true
   directories:
