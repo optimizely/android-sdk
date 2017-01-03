@@ -20,3 +20,4 @@ branches:
   only:
   - master
   - devel
+  - /^\d+\.\d+\.\d+(-SNAPSHOT)?$/ # trigger builds on tags which are semantically versioned to ship the SDK.
