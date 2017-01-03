@@ -20,3 +20,4 @@ branches:
   only:
   - master
   - devel
+  - /^\d+\.\d+\.\d+(-SNAPSHOT)?$/ # ensure builds are run on tags which have versions as branch names
