@@ -14,20 +14,28 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.test_app;
 
-import android.app.Activity;
-import android.content.Context;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
-/**
- * Listens for new instances of {@link OptimizelyClient} that are built after calling
- * {@link OptimizelyManager#initialize(Activity, OptimizelyStartListener)} or {@link OptimizelyManager#initialize(Context, OptimizelyStartListener)}
- */
-public interface OptimizelyStartListener {
-    /**
-     * Receives a started {@link OptimizelyClient} instances
-     *
-     * @param optimizely an {@link OptimizelyClient} that is started
-     */
-    void onStart(OptimizelyClient optimizely);
+import com.optimizely.ab.android.sdk.OptimizelyClient;
+import com.optimizely.ab.android.sdk.OptimizelyManager;
+import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
+
+public class SecondaryActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_secondary);
+
+        // Get Optimizely from the Intent that started this Activity
+        final MyApplication myApplication = (MyApplication) getApplication();
+        final OptimizelyManager optimizelyManager = myApplication.getOptimizelyManager();
+        OptimizelyClient optimizely = optimizelyManager.getOptimizely();
+        CountingIdlingResourceManager.increment(); // For track event
+        optimizely.track("experiment_1", myApplication.getAnonUserId());
+    }
+
 }
