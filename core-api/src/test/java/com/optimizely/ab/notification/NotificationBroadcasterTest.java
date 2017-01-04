@@ -17,6 +17,7 @@ package com.optimizely.ab.notification;
 
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.event.LogEvent;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -101,6 +102,26 @@ public class NotificationBroadcasterTest {
         notificationBroadcaster.clearListeners();
         assertEquals("clearListeners did not remove all listeners that were added",
                 0, notificationBroadcaster.listeners.size());
+    }
+
+    /**
+     * Verify that {@link NotificationBroadcaster#broadcastEventTracked(String, String, Map, Long, LogEvent)}
+     * notifies all listeners.
+     */
+    @Test
+    public void broadcastEventTracked() throws Exception {
+        notificationBroadcaster.addListener(listener);
+        notificationBroadcaster.addListener(listener2);
+
+        String eventKey = "event1";
+        String userId = "user1";
+        Map<String, String> attributes = Collections.emptyMap();
+        Long eventValue = 0L;
+        LogEvent logEvent = mock(LogEvent.class);
+        notificationBroadcaster.broadcastEventTracked(
+                eventKey, userId, attributes, eventValue, logEvent);
+        verify(listener).onEventTracked(eventKey, userId, attributes, eventValue, logEvent);
+        verify(listener2).onEventTracked(eventKey, userId, attributes, eventValue, logEvent);
     }
 
     /**

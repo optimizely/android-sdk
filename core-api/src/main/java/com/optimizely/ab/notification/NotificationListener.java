@@ -17,9 +17,11 @@ package com.optimizely.ab.notification;
 
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.event.LogEvent;
 
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -32,6 +34,22 @@ import javax.annotation.Nonnull;
  * just the methods they need.
  */
 public abstract class NotificationListener {
+
+    /**
+     * Listener that is called after an event is tracked.
+     *
+     * @param eventKey the key of the tracked event
+     * @param userId the ID of the user
+     * @param attributes a map of attributes about the event
+     * @param eventValue an integer to be aggregated for the event
+     * @param logEvent the log event sent to the event dispatcher
+     */
+    public void onEventTracked(@Nonnull String eventKey,
+                               @Nonnull String userId,
+                               @Nonnull Map<String, String> attributes,
+                               @CheckForNull Long eventValue,
+                               @Nonnull LogEvent logEvent) {
+    }
 
     /**
      * Listener that is called after an experiment has been activated.

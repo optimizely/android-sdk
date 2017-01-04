@@ -18,6 +18,7 @@ package com.optimizely.ab.notification;
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.event.LogEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -73,6 +75,25 @@ public class NotificationBroadcaster {
     public void clearListeners() {
         listeners.clear();
         logger.debug("Notification listeners were cleared");
+    }
+
+    /**
+     * Notify listeners that an Optimizely event has been tracked.
+     *
+     * @param eventKey the key of the tracked event
+     * @param userId the ID of the user
+     * @param attributes a map of attributes about the event
+     * @param eventValue an integer to be aggregated for the event
+     * @param logEvent the log event sent to the event dispatcher
+     */
+    public void broadcastEventTracked(@Nonnull String eventKey,
+                                      @Nonnull String userId,
+                                      @Nonnull Map<String, String> attributes,
+                                      @CheckForNull Long eventValue,
+                                      @Nonnull LogEvent logEvent) {
+        for (final NotificationListener iterListener : listeners) {
+            iterListener.onEventTracked(eventKey, userId, attributes, eventValue, logEvent);
+        }
     }
 
     /**
