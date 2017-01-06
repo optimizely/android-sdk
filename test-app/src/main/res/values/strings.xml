@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Optimized</string>
+    <string name="app_name">Optimizely Demo App</string>
     <string name="main_act_button_1_text_default">Next Activity</string>
     <string name="main_act_button_1_text_var_1">Start Next Activity!</string>
     <string name="main_act_button_1_text_var_2">Start Second Activity!</string>
