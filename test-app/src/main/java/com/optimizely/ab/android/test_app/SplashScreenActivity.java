@@ -1,0 +1,79 @@
+/****************************************************************************
+ * Copyright 2017, Optimizely, Inc. and contributors                        *
+ *                                                                          *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ *                                                                          *
+ *    http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ ***************************************************************************/
+package com.optimizely.ab.android.test_app;
+
+import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+import com.optimizely.ab.android.sdk.OptimizelyClient;
+import com.optimizely.ab.android.sdk.OptimizelyManager;
+import com.optimizely.ab.android.sdk.OptimizelyStartListener;
+import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
+import com.optimizely.ab.config.Variation;
+
+public class SplashScreenActivity extends AppCompatActivity {
+
+    // The Idling Resource which will be null in production.
+    @Nullable
+    private static CountingIdlingResourceManager countingIdlingResourceManager;
+
+    private OptimizelyManager optimizelyManager;
+    private MyApplication myApplication;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash_screen);
+
+        // This could also be done via DI framework such as Dagger
+        myApplication = (MyApplication) getApplication();
+        optimizelyManager = myApplication.getOptimizelyManager();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Initialize Optimizely asynchronously
+        optimizelyManager.initialize(this, new OptimizelyStartListener() {
+
+            @Override
+            public void onStart(OptimizelyClient optimizely) {
+                Intent intent = new Intent(myApplication.getBaseContext(), ActivationErrorActivity.class);
+
+                // Activate user and start activity based on the variation we get
+                String userId = myApplication.getAnonUserId();
+                Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId);
+
+                // Utility method for verifying event dispatches in our automated tests
+                CountingIdlingResourceManager.increment(); // increment for impression event
+
+                // variation is nullable so we should check for null values
+                if (backgroundVariation != null) {
+                    if (backgroundVariation.getKey().equals("variation_a")) {
+                        intent = new Intent(myApplication.getBaseContext(), VariationAActivity.class);
+                    } else if (backgroundVariation.getKey().equals("variation_b")) {
+                        intent = new Intent(myApplication.getBaseContext(), VariationBActivity.class);
+                    }
+                }
+
+                startActivity(intent);
+            }
+        });
+    }
+}

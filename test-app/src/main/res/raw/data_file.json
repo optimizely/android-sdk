@@ -1,63 +1,54 @@
 {
+  "groups": [],
+  "variables": [],
   "experiments": [
     {
       "status": "Running",
-      "key": "experiment_0",
-      "layerId": "7674261139",
+      "key": "background_experiment",
+      "layerId": "8143622708",
       "trafficAllocation": [
         {
-          "entityId": "7674261140",
+          "entityId": "8146590584",
           "endOfRange": 5000
         },
         {
-          "entityId": "7678410470",
+          "entityId": "8134412703",
           "endOfRange": 10000
         }
       ],
-      "audienceIds": [
-        "7671101484"
-      ],
+      "audienceIds": [],
       "variations": [
         {
-          "id": "7674261140",
-          "key": "variation_1"
+          "variables": [],
+          "id": "8146590584",
+          "key": "variation_a"
         },
         {
-          "id": "7678410470",
-          "key": "variation_2"
+          "variables": [],
+          "id": "8134412703",
+          "key": "variation_b"
         }
       ],
       "forcedVariations": {
-        "test_user": "variation_1"
+        "test_user": "variation_a"
       },
-      "id": "7651112186"
+      "id": "8126664113"
     }
   ],
-  "version": "2",
-  "audiences": [
-    {
-      "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"locale\", \"type\": \"custom_attribute\", \"value\": \"en_US\"}]]]",
-      "id": "7671101484",
-      "name": "Americans"
-    }
-  ],
-  "groups": [],
-  "attributes": [
-    {
-      "id": "7656544299",
-      "key": "locale"
-    }
-  ],
-  "projectId": "7664231436",
-  "accountId": "3279320409",
+  "audiences": [],
+  "anonymizeIP": false,
+  "accountId": "6384711706",
+  "projectId": "8136462271",
+  "version": "3",
+  "attributes": [],
   "events": [
     {
       "experimentIds": [
-        "7651112186"
+        "8126664113"
       ],
-      "id": "7667071273",
-      "key": "experiment_0"
+      "id": "8128595839",
+      "key": "sample_conversion"
     }
   ],
-  "revision": "16"
+  "revision": "5"
 }

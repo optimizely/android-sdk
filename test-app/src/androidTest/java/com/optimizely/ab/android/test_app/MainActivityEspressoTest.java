@@ -1,18 +1,18 @@
-/*
- * Copyright 2016, Optimizely
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/****************************************************************************
+ * Copyright 2017, Optimizely, Inc. and contributors                        *
+ *                                                                          *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ *                                                                          *
+ *    http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ ***************************************************************************/
 package com.optimizely.ab.android.test_app;
 
 import android.app.AlarmManager;
@@ -47,6 +47,7 @@ import java.util.List;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertFalse;
@@ -62,7 +63,7 @@ public class MainActivityEspressoTest {
     private ServiceScheduler serviceScheduler;
     private Intent dataFileServiceIntent, eventIntentService;
 
-    private ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class);
+    private ActivityTestRule<SplashScreenActivity> activityTestRule = new ActivityTestRule<>(SplashScreenActivity.class);
     @Rule public TestRule chain = RuleChain
             .outerRule(new ExternalResource() {
                 @Override
@@ -148,38 +149,25 @@ public class MainActivityEspressoTest {
     public void experimentActivationForWhitelistUser() throws InterruptedException {
         // Check that the text was changed.
         // These tests are pointed at a real project.
-        // The user 'test_user` is in the whitelist for variation 1 for experiment 0 and experiment 1.
-        onView(withId(R.id.button_1))
-                .check(matches(withText(context.getString(R.string.main_act_button_1_text_var_1))));
+        // The user 'test_user` is in the whitelist for variation_a for experiment background_experiment
+        onView(withId(R.id.tv_variation_a_text_1))
+                .check(matches(isDisplayed()));
 
         // Espresso will wait for Optimizely to start due to the registered idling resources
-        onView(withId(R.id.text_view_1))
-                .check(matches(withText(context.getString(R.string.main_act_text_view_1_var_1))));
-
         assertTrue(serviceScheduler.isScheduled(dataFileServiceIntent));
 
-        onView(withId(R.id.button_1))      // withId(R.id.my_view) is a ViewMatcher
-                .perform(click());         // click() is a ViewAction
-
-        onView(withId(R.id.text_view_1))
-                .check(matches(withText(context.getString(R.string.secondary_frag_text_view_1_var_1))));
-
-        onView(withId(R.id.button_1))      // withId(R.id.my_view) is a ViewMatcher
-                .perform(click());         // click() is a ViewAction
+        onView(withId(R.id.btn_variation_conversion)) // withId(R.id.my_view) is a ViewMatcher
+                .perform(click()); // click() is a ViewAction
 
         List<Pair<String, String>> events = CountingIdlingResourceManager.getEvents();
-        assertTrue(events.size() == 6);
+        assertTrue(events.size() == 2);
         Iterator<Pair<String, String>> iterator = events.iterator();
         while (iterator.hasNext()) {
             Pair<String, String> event = iterator.next();
             final String url = event.first;
             final String payload = event.second;
-            if (url.equals("https://logx.optimizely.com/log/decision") && payload.contains("7676481120") && payload.contains("7661891902")
-                    || url.equals("https://logx.optimizely.com/log/decision") && payload.contains("7651112186") && payload.contains("7674261140")
-                    || url.equals("https://logx.optimizely.com/log/event") && payload.contains("experiment_0")
-                    || url.equals("https://logx.optimizely.com/log/event") && payload.contains("experiment_1")
-                    || url.equals("https://logx.optimizely.com/log/decision") && payload.contains("7680080715") && payload.contains("7685562539")
-                    || url.equals("https://logx.optimizely.com/log/event") && payload.contains("experiment_2")) {
+            if (url.equals("https://logx.optimizely.com/log/decision") && payload.contains("8126664113") && payload.contains("8146590584")
+                    || url.equals("https://logx.optimizely.com/log/event") && payload.contains("sample_conversion")) {
                 iterator.remove();
             }
         }
@@ -187,7 +175,6 @@ public class MainActivityEspressoTest {
         MyApplication myApplication = (MyApplication) activityTestRule.getActivity().getApplication();
         UserProfile userProfile = myApplication.getOptimizelyManager().getUserProfile();
         // Being in the white list should override user profile
-        assertNull(userProfile.lookup("test_user", "experiment_0"));
-        assertNull(userProfile.lookup("test_user", "experiment_1"));
+        assertNull(userProfile.lookup("test_user", "background_experiment"));
     }
 }
