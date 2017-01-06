@@ -51,6 +51,7 @@ public class ConversionFragment extends Fragment {
             public void onClick(View view) {
                 String userId = myApplication.getAnonUserId();
 
+                // This tracks a conversion event for the event named `sample_conversion`
                 OptimizelyClient optimizely = optimizelyManager.getOptimizely();
                 optimizely.track("sample_conversion", userId);
 

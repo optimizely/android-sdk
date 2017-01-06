@@ -54,9 +54,11 @@ public class SplashScreenActivity extends AppCompatActivity {
 
             @Override
             public void onStart(OptimizelyClient optimizely) {
+                // this is the control variation, it will show if we are not able to determine which variation to bucket the user into
                 Intent intent = new Intent(myApplication.getBaseContext(), ActivationErrorActivity.class);
 
-                // Activate user and start activity based on the variation we get
+                // Activate user and start activity based on the variation we get.
+                // You can pass in any string for the user ID. In this example we just use a convenience method to generate a random one.
                 String userId = myApplication.getAnonUserId();
                 Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId);
 
@@ -65,6 +67,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                 // variation is nullable so we should check for null values
                 if (backgroundVariation != null) {
+                    // Show activity based on the variation the user got bucketed into
                     if (backgroundVariation.getKey().equals("variation_a")) {
                         intent = new Intent(myApplication.getBaseContext(), VariationAActivity.class);
                     } else if (backgroundVariation.getKey().equals("variation_b")) {

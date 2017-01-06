@@ -50,7 +50,8 @@ public class MyApplication extends Application {
     }
     @NonNull
     public String getAnonUserId() {
-        // this creates and persists an anonymous user id, which we need to pass into the activate and track calls
+        // this is a convenience method that creates and persists an anonymous user id,
+        // which we need to pass into the activate and track calls
         SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
         String id = sharedPreferences.getString("userId", null);
         if (id == null) {

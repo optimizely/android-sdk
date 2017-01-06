@@ -15,21 +15,10 @@
  ***************************************************************************/
 package com.optimizely.ab.android.test_app;
 
-import android.content.Intent;
-import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-
-import com.optimizely.ab.android.sdk.OptimizelyManager;
-import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
-import com.optimizely.ab.config.Variation;
+import android.support.v7.app.AppCompatActivity;
 
 public class VariationAActivity extends AppCompatActivity {
-    private OptimizelyManager optimizelyManager;
-    private MyApplication myApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
