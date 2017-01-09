@@ -36,6 +36,6 @@
         android:minLines="3"
         android:textColor="@color/colorPrimary"
         android:textSize="20dp"
-        android:text="Conversion event recorded to Optimizely."
+        android:text="Conversion event sent to Optimizely."
         android:layout_centerVertical="true" />
 </RelativeLayout>
