@@ -56,6 +56,9 @@ public class MyApplication extends Application {
         String id = sharedPreferences.getString("userId", null);
         if (id == null) {
             id = UUID.randomUUID().toString();
+
+            // comment this out to get a brand new user id every time this function is called.
+            // useful for incrementing results page count for QA purposes
             sharedPreferences.edit().putString("userId", id).apply();
         }
         return id;
