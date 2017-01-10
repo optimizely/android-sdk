@@ -89,6 +89,16 @@ public class OptimizelyManager {
         this.logger = logger;
     }
 
+    @NonNull
+    public Long getDataFileDownloadInterval() {
+        return dataFileDownloadInterval;
+    }
+
+    @NonNull
+    public TimeUnit getDataFileDownloadIntervalTimeUnit() {
+        return dataFileDownloadIntervalTimeUnit;
+    }
+
     /**
      * Returns the {@link OptimizelyManager} builder
      *
@@ -605,6 +615,14 @@ public class OptimizelyManager {
          */
         public OptimizelyManager build() {
             final Logger logger = LoggerFactory.getLogger(OptimizelyManager.class);
+
+            // AlarmManager doesn't allow intervals less than 60 seconds
+            if (dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval) < (60 * 1000)) {
+                dataFileDownloadIntervalTimeUnit = TimeUnit.SECONDS;
+                dataFileDownloadInterval = 60L;
+                logger.warn("Minimum datafile polling interval is 60 seconds. " +
+                        "Defaulting to 60 seconds.");
+            }
 
             return new OptimizelyManager(projectId,
                     eventHandlerDispatchInterval,
