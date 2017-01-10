@@ -617,7 +617,7 @@ public class OptimizelyManager {
             final Logger logger = LoggerFactory.getLogger(OptimizelyManager.class);
 
             // AlarmManager doesn't allow intervals less than 60 seconds
-            if (dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval) < 60000) {
+            if (dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval) < (60 * 1000)) {
                 dataFileDownloadIntervalTimeUnit = TimeUnit.SECONDS;
                 dataFileDownloadInterval = 60L;
                 logger.warn("Minimum datafile polling interval is 60 seconds. " +
