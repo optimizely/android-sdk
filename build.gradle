@@ -84,6 +84,12 @@ task testAllModules << {
     logger.info("Running android tests for all modules")
 }
 
-testAllModules.dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
+task testAllModulesTravis << {
+    logger.info("Running android tests for Travis")
+}
+
+testAllModulesTravis.dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
         ':event-handler:connectedAndroidTest', ':event-handler:test',
         ':user-profile:connectedAndroidTest', ':shared:connectedAndroidTest')
+
+testAllModules.dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')

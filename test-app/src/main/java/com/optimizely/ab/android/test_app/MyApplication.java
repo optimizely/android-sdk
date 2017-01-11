@@ -1,18 +1,18 @@
-/**
- * Copyright 2016, Optimizely
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/****************************************************************************
+ * Copyright 2017, Optimizely, Inc. and contributors                        *
+ *                                                                          *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ *                                                                          *
+ *    http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ ***************************************************************************/
 package com.optimizely.ab.android.test_app;
 
 import android.app.Application;
@@ -30,7 +30,10 @@ import java.util.concurrent.TimeUnit;
 
 public class MyApplication extends Application {
 
-    public static final String PROJECT_ID = "7664231436";
+    // Project ID owned by mobile-test@optimizely.com
+    // if you'd like to configure your own experiment please check out https://developers.optimizely.com/x/solutions/sdks/getting-started/index.html?language=android&platform=mobile
+    // to create your own project and experiment. Then just replace your project ID below.
+    public static final String PROJECT_ID = "8136462271";
     private OptimizelyManager optimizelyManager;
 
     public OptimizelyManager getOptimizelyManager() {
@@ -47,10 +50,15 @@ public class MyApplication extends Application {
     }
     @NonNull
     public String getAnonUserId() {
+        // this is a convenience method that creates and persists an anonymous user id,
+        // which we need to pass into the activate and track calls
         SharedPreferences sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
         String id = sharedPreferences.getString("userId", null);
         if (id == null) {
             id = UUID.randomUUID().toString();
+
+            // comment this out to get a brand new user id every time this function is called.
+            // useful for incrementing results page count for QA purposes
             sharedPreferences.edit().putString("userId", id).apply();
         }
         return id;
