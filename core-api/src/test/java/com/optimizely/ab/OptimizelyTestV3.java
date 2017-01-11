@@ -1116,11 +1116,11 @@ public class OptimizelyTestV3 {
     }
 
     /**
-     * Verify that {@link Optimizely#getVariableFloat(String, String, Map, boolean)} returns a float live variable
+     * Verify that {@link Optimizely#getVariableDouble(String, String, Map, boolean)} returns a double live variable
      * value when an proper variable key is provided and dispatches an impression when activateExperiment is true.
      */
     @Test
-    public void getVariableFloat() throws Exception {
+    public void getVariableDouble() throws Exception {
         String datafile = validConfigJsonV3();
         ProjectConfig projectConfig = validProjectConfigV3();
 
@@ -1135,9 +1135,9 @@ public class OptimizelyTestV3 {
             .withBucketing(mockBucketer)
             .build();
 
-        assertThat(optimizely.getVariableFloat("float_variable", "userId",
+        assertThat(optimizely.getVariableDouble("double_variable", "userId",
                                                Collections.singletonMap("browser_type", "chrome"), true),
-                   is(5.3f));
+                   is(5.3));
         verify(mockEventHandler).dispatchEvent(any(LogEvent.class));
     }
 

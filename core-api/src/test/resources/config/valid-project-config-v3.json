@@ -265,8 +265,8 @@
     },
     {
       "id": "4",
-      "key": "float_variable",
-      "type": "float",
+      "key": "double_variable",
+      "type": "double",
       "defaultValue": "13.37",
       "status": "active"
     },

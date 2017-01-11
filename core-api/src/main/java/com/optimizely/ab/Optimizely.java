@@ -354,24 +354,24 @@ public class Optimizely {
         return null;
     }
 
-    public @Nullable Float getVariableFloat(@Nonnull String variableKey,
-                                            @Nonnull String userId,
-                                            boolean activateExperiment) throws UnknownLiveVariableException {
-        return getVariableFloat(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
+    public @Nullable Double getVariableDouble(@Nonnull String variableKey,
+                                              @Nonnull String userId,
+                                              boolean activateExperiment) throws UnknownLiveVariableException {
+        return getVariableDouble(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
-    public @Nullable Float getVariableFloat(@Nonnull String variableKey,
-                                            @Nonnull String userId,
-                                            @Nonnull Map<String, String> attributes,
-                                            boolean activateExperiment)
+    public @Nullable Double getVariableDouble(@Nonnull String variableKey,
+                                              @Nonnull String userId,
+                                              @Nonnull Map<String, String> attributes,
+                                              boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
         if (variableValueString != null) {
             try {
-                return Float.parseFloat(variableValueString);
+                return Double.parseDouble(variableValueString);
             } catch (NumberFormatException e) {
-                logger.error("Variable value \"{}\" for live variable \"{}\" is not a float.", variableValueString,
+                logger.error("Variable value \"{}\" for live variable \"{}\" is not a double.", variableValueString,
                              variableKey);
             }
         }

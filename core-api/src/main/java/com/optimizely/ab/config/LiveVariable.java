@@ -69,8 +69,8 @@ public class LiveVariable implements IdKeyMapped {
         @SerializedName("string")
         STRING ("string"),
 
-        @SerializedName("float")
-        FLOAT ("float");
+        @SerializedName("double")
+        DOUBLE ("double");
 
         private final String variableType;
 
