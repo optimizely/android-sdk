@@ -1,7 +1,3 @@
-plugins {
-    id 'de.fuerstenau.buildconfig' version '1.1.7'
-}
-
 dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jacksonVersion
@@ -16,16 +12,8 @@ dependencies {
     provided group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion, optional
 }
 
-apply plugin: 'de.fuerstenau.buildconfig'
-apply plugin: 'maven-publish'
-
-buildConfig {
-    appName = 'core-api'
-    version = rootProject.version
-}
-
-sourceSets {
-    main {
-        java.srcDir "${buildDir}/gen/buildconfig/src/main/"
-    }
+build << {
+    // add the build version information into a file that'll go into the distribution
+    ext.buildVersion = new File(projectDir, "src/main/resources/optimizely-build-version")
+    buildVersion.text = version
 }

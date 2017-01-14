@@ -33,6 +33,7 @@ import com.optimizely.ab.error.NoOpErrorHandler;
 import com.optimizely.ab.error.RaiseExceptionErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV1;
 import com.optimizely.ab.event.internal.EventBuilderV2;
@@ -695,7 +696,7 @@ public class Optimizely {
             }
 
             if (clientVersion == null) {
-                clientVersion = BuildConfig.VERSION;
+                clientVersion = BuildVersionInfo.VERSION;
             }
 
             if (eventBuilder == null) {

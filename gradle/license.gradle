@@ -2,8 +2,7 @@ subprojects {
     apply plugin: 'license'
     license {
         header rootProject.file('gradle/HEADER')
-        excludes(['**/*.properties', '**/*.txt', '**/*.conf', '**/*.xml', '**/*.json', '**/LogbackVerifier.java',
-                  '**/BuildConfig.java'])
+        excludes(['**/*.properties', '**/*.txt', '**/*.conf', '**/*.xml', '**/*.json', '**/LogbackVerifier.java'])
         ext.year = '2016' // year that the project was created
     }
 }

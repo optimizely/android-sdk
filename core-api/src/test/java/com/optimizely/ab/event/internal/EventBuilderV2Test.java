@@ -18,7 +18,6 @@ package com.optimizely.ab.event.internal;
 
 import com.google.gson.Gson;
 
-import com.optimizely.ab.BuildConfig;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.config.Attribute;
@@ -98,7 +97,7 @@ public class EventBuilderV2Test {
         assertThat(impression.getAccountId(), is(projectConfig.getAccountId()));
         assertThat(impression.getUserFeatures(), is(expectedUserFeatures));
         assertThat(impression.getClientEngine(), is(ClientEngine.JAVA_SDK.getClientEngineValue()));
-        assertThat(impression.getClientVersion(), is(BuildConfig.VERSION));
+        assertThat(impression.getClientVersion(), is(BuildVersionInfo.VERSION));
     }
 
     /**
@@ -211,7 +210,7 @@ public class EventBuilderV2Test {
         assertFalse(conversion.getIsGlobalHoldback());
         assertThat(conversion.getAnonymizeIP(), is(projectConfig.getAnonymizeIP()));
         assertThat(conversion.getClientEngine(), is(ClientEngine.JAVA_SDK.getClientEngineValue()));
-        assertThat(conversion.getClientVersion(), is(BuildConfig.VERSION));
+        assertThat(conversion.getClientVersion(), is(BuildVersionInfo.VERSION));
     }
 
     /**

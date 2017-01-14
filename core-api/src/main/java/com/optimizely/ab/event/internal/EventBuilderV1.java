@@ -16,7 +16,6 @@
  */
 package com.optimizely.ab.event.internal;
 
-import com.optimizely.ab.BuildConfig;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 import com.optimizely.ab.bucketing.Bucketer;
@@ -52,7 +51,7 @@ public class EventBuilderV1 extends EventBuilder {
 
     // offline conversion parameter names and prefixes
     private static final String ACCOUNT_ID_PARAM = "d";
-    private static final String BUILD_VERSION = "java-sdk-" + BuildConfig.VERSION;
+    private static final String BUILD_VERSION = "java-sdk-" + BuildVersionInfo.VERSION;
     private static final String EMPTY_BODY = "";
     private static final String EXPERIMENT_PARAM_PREFIX = "x";
     private static final String GOAL_ID_PARAM = "g";
