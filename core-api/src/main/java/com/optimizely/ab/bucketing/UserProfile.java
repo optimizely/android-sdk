@@ -31,20 +31,20 @@ public interface UserProfile {
      * Called when implementors should save an activation
      *
      * @param userId the user id of the activation
-     * @param experimentKey the experiment key of the activation
-     * @param variationKey the variation key of the activation
+     * @param experimentId the experiment ID of the activation
+     * @param variationId the variation ID of the activation
      * @return true if saving of the record was successful
      */
-    boolean save(String userId, String experimentKey, String variationKey);
+    boolean save(String userId, String experimentId, String variationId);
 
     /**
      * Called by the bucketer to check for a record of the previous activation
      *
      * @param userId the user is id of the next activation
-     * @param experimentKey the experiment id of the next activation
-     * @return the variation key of the next activation, or null if no record exists
+     * @param experimentId the experiment ID of the next activation
+     * @return the variation ID of the next activation, or null if no record exists
      */
-    String lookup(String userId, String experimentKey);
+    String lookup(String userId, String experimentId);
 
     /**
      * Called when user profile should be removed
@@ -53,18 +53,18 @@ public interface UserProfile {
      * deleted.
      *
      * @param userId the user id of the record to remove
-     * @param experimentKey the experiment key of the record to remove
+     * @param experimentId the experiment ID of the record to remove
      * @return true if the record was removed
      */
-    boolean remove(String userId, String experimentKey);
+    boolean remove(String userId, String experimentId);
 
     /**
      * Called by bucketer to get a mapping of all stored records
      *
      * This mapping is needed so that the bucketer can {@link #remove(String, String)} outdated
      * records.
-     * @return a map of userIds to a map of experiment keys to variation keys
+     * @return a map of user IDs to a map of experiment IDs to variation IDs
      */
-    Map<String, Map<String,String>> getAllRecords();
+    Map<String, Map<String, String>> getAllRecords();
 
 }

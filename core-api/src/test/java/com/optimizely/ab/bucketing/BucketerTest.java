@@ -460,14 +460,15 @@ public class BucketerTest {
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
 
-        when(userProfile.save("blah", groupExperiment.getKey(), variation.getKey())).thenReturn(true);
+        when(userProfile.save("blah", groupExperiment.getId(), variation.getId())).thenReturn(true);
 
         assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
 
         logbackVerifier.expectMessage(Level.INFO,
-                "Saved variation \"e2_vtag1\" of experiment \"group_etag2\" for user \"blah\".");
+                String.format("Saved variation \"%s\" of experiment \"%s\" for user \"blah\".", variation.getId(),
+                              groupExperiment.getId()));
 
-        verify(userProfile).save("blah", groupExperiment.getKey(), variation.getKey());
+        verify(userProfile).save("blah", groupExperiment.getId(), variation.getId());
     }
 
     /**
@@ -485,14 +486,15 @@ public class BucketerTest {
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
 
-        when(userProfile.save("blah", groupExperiment.getKey(), variation.getKey())).thenReturn(false);
+        when(userProfile.save("blah", groupExperiment.getId(), variation.getId())).thenReturn(false);
 
         assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
 
         logbackVerifier.expectMessage(Level.WARN,
-                "Failed to save variation \"e2_vtag1\" of experiment \"group_etag2\" for user \"blah\".");
+                String.format("Failed to save variation \"%s\" of experiment \"%s\" for user \"blah\".",
+                              variation.getId(), groupExperiment.getId()));
 
-        verify(userProfile).save("blah", groupExperiment.getKey(), variation.getKey());
+        verify(userProfile).save("blah", groupExperiment.getId(), variation.getId());
     }
 
     /**
@@ -510,7 +512,7 @@ public class BucketerTest {
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
 
-        when(userProfile.lookup("blah", groupExperiment.getKey())).thenReturn(variation.getKey());
+        when(userProfile.lookup("blah", groupExperiment.getId())).thenReturn(variation.getId());
 
         assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
 
@@ -518,7 +520,7 @@ public class BucketerTest {
                 "Returning previously activated variation \"e2_vtag1\" of experiment \"group_etag2\""
                                       + " for user \"blah\" from user profile.");
 
-        verify(userProfile).lookup("blah", groupExperiment.getKey());
+        verify(userProfile).lookup("blah", groupExperiment.getId());
     }
 
     /**
@@ -536,13 +538,13 @@ public class BucketerTest {
         Experiment groupExperiment = groupExperiments.get(0);
         final Variation variation = groupExperiment.getVariations().get(0);
 
-        when(userProfile.lookup("blah", groupExperiment.getKey())).thenReturn(null);
+        when(userProfile.lookup("blah", groupExperiment.getId())).thenReturn(null);
 
         assertThat(algorithm.bucket(groupExperiment, "blah"),  is(variation));
 
         logbackVerifier.expectMessage(Level.INFO, "No previously activated variation of experiment " +
                                       "\"group_etag2\" for user \"blah\" found in user profile.");
-        verify(userProfile).lookup("blah", groupExperiment.getKey());
+        verify(userProfile).lookup("blah", groupExperiment.getId());
     }
 
     /**
