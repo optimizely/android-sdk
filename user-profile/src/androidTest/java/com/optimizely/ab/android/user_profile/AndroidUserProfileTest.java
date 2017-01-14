@@ -80,111 +80,111 @@ public class AndroidUserProfileTest {
     @Test
     public void saveActivation() {
         String userId = "user1";
-        String expKey = "exp1";
-        String varKey = "var1";
-        assertTrue(androidUserProfile.save(userId, expKey, varKey));
+        String expId = "1";
+        String varId = "1";
+        assertTrue(androidUserProfile.save(userId, expId, varId));
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Time out");
         }
-        assertEquals(varKey, androidUserProfile.lookup(userId, expKey));
+        assertEquals(varId, androidUserProfile.lookup(userId, expId));
     }
 
     @Test
     public void saveActivationNullUserId() {
-        assertFalse(androidUserProfile.save(null, "exp1", "var1"));
+        assertFalse(androidUserProfile.save(null, "1", "1"));
         verify(logger).error("Received null userId, unable to save activation");
     }
 
     @Test
-    public void saveActivationNullExperimentKey() {
-        assertFalse(androidUserProfile.save("foo", null, "var1"));
-        verify(logger).error("Received null experiment key, unable to save activation");
+    public void saveActivationNullExperimentId() {
+        assertFalse(androidUserProfile.save("foo", null, "1"));
+        verify(logger).error("Received null experiment ID, unable to save activation");
     }
 
     @Test
-    public void saveActivationNullVariationKey() {
-        assertFalse(androidUserProfile.save("foo", "exp1", null));
-        verify(logger).error("Received null variation key, unable to save activation");
+    public void saveActivationNullVariationId() {
+        assertFalse(androidUserProfile.save("foo", "1", null));
+        verify(logger).error("Received null variation ID, unable to save activation");
     }
 
     @Test
     public void saveActivationEmptyUserId() {
-        assertFalse(androidUserProfile.save("", "exp1", "var1"));
-        verify(logger).error("Received empty user id, unable to save activation");
+        assertFalse(androidUserProfile.save("", "1", "1"));
+        verify(logger).error("Received empty user ID, unable to save activation");
     }
 
     @Test
-    public void saveActivationEmptyExperimentKey() {
-        assertFalse(androidUserProfile.save("foo", "", "var1"));
-        verify(logger).error("Received empty experiment key, unable to save activation");
+    public void saveActivationEmptyExperimentId() {
+        assertFalse(androidUserProfile.save("foo", "", "1"));
+        verify(logger).error("Received empty experiment ID, unable to save activation");
     }
 
     @Test
-    public void saveActivationEmptyVariationKey() {
-        assertFalse(androidUserProfile.save("foo", "exp1", ""));
-        verify(logger).error("Received empty variation key, unable to save activation");
+    public void saveActivationEmptyVariationId() {
+        assertFalse(androidUserProfile.save("foo", "1", ""));
+        verify(logger).error("Received empty variation ID, unable to save activation");
     }
 
     @Test
     public void lookupActivationNullUserId() {
-        assertNull(androidUserProfile.lookup(null, "exp1"));
-        verify(logger).error("Received null user id, unable to lookup activation");
+        assertNull(androidUserProfile.lookup(null, "1"));
+        verify(logger).error("Received null user ID, unable to lookup activation");
     }
 
     @Test
-    public void lookupActivationNullExperimentKey() {
-        assertNull(androidUserProfile.lookup("foo", null));
-        verify(logger).error("Received null experiment key, unable to lookup activation");
+    public void lookupActivationNullExperimentId() {
+        assertNull(androidUserProfile.lookup("1", null));
+        verify(logger).error("Received null experiment ID, unable to lookup activation");
     }
 
     @Test
     public void lookupActivationEmptyUserId() {
-        assertNull(androidUserProfile.lookup("", "exp1"));
-        verify(logger).error("Received empty user id, unable to lookup activation");
+        assertNull(androidUserProfile.lookup("", "1"));
+        verify(logger).error("Received empty user ID, unable to lookup activation");
     }
 
     @Test
-    public void lookupActivationEmptyExperimentKey() {
+    public void lookupActivationEmptyExperimentId() {
         assertNull(androidUserProfile.lookup("foo", ""));
-        verify(logger).error("Received empty experiment key, unable to lookup activation");
+        verify(logger).error("Received empty experiment ID, unable to lookup activation");
     }
 
     @Test
     public void removeExistingActivation() {
-        androidUserProfile.save("user1", "exp1", "var1");
-        assertTrue(androidUserProfile.remove("user1", "exp1"));
-        assertNull(androidUserProfile.lookup("user1", "exp1"));
+        androidUserProfile.save("user1", "1", "1");
+        assertTrue(androidUserProfile.remove("user1", "1"));
+        assertNull(androidUserProfile.lookup("user1", "1"));
     }
 
     @Test
     public void removeNonExistingActivation() {
-        assertFalse(androidUserProfile.remove("user1", "exp1"));
+        assertFalse(androidUserProfile.remove("user1", "1"));
     }
 
     @Test
     public void removeActivationNullUserId() {
-        assertFalse(androidUserProfile.remove(null, "exp1"));
-        verify(logger).error("Received null user id, unable to remove activation");
+        assertFalse(androidUserProfile.remove(null, "1"));
+        verify(logger).error("Received null user ID, unable to remove activation");
     }
 
     @Test
-    public void removeActivationNullExperimentKey() {
+    public void removeActivationNullExperimentId() {
         assertFalse(androidUserProfile.remove("foo", null));
-        verify(logger).error("Received null experiment key, unable to remove activation");
+        verify(logger).error("Received null experiment ID, unable to remove activation");
     }
 
     @Test
     public void removeActivationEmptyUserId() {
-        assertFalse(androidUserProfile.remove("", "exp1"));
-        verify(logger).error("Received empty user id, unable to remove activation");
+        assertFalse(androidUserProfile.remove("", "1"));
+        verify(logger).error("Received empty user ID, unable to remove activation");
     }
 
     @Test
-    public void removeActivationEmptyExperimentKey() {
+    public void removeActivationEmptyExperimentId() {
         assertFalse(androidUserProfile.remove("foo", ""));
-        verify(logger).error("Received empty experiment key, unable to remove activation");
+        verify(logger).error("Received empty experiment ID, unable to remove activation");
     }
 
     @Test
@@ -197,14 +197,14 @@ public class AndroidUserProfileTest {
     @Test
     public void start() throws JSONException {
         androidUserProfile.start();
-        androidUserProfile.save("user1", "exp1", "var1");
-        androidUserProfile.save("user1", "exp2", "var2");
+        androidUserProfile.save("user1", "1", "1");
+        androidUserProfile.save("user1", "2", "2");
 
-        Map<String, String> expKeyToVarKeyMap = new HashMap<>();
-        expKeyToVarKeyMap.put("exp1", "var1");
-        expKeyToVarKeyMap.put("exp2", "var2");
+        Map<String, String> expIdToVarIdMap = new HashMap<>();
+        expIdToVarIdMap.put("1", "1");
+        expIdToVarIdMap.put("2", "2");
         Map<String, Map<String, String>> profileMap = new HashMap<>();
-        profileMap.put("user1", expKeyToVarKeyMap);
+        profileMap.put("user1", expIdToVarIdMap);
 
         assertEquals(profileMap, memoryUserProfileCache);
     }
