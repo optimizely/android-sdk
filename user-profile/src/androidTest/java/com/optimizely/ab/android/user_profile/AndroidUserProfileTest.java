@@ -81,7 +81,7 @@ public class AndroidUserProfileTest {
     public void saveActivation() {
         String userId = "user1";
         String expId = "1";
-        String varId = "1";
+        String varId = "2";
         assertTrue(androidUserProfile.save(userId, expId, varId));
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
@@ -93,67 +93,67 @@ public class AndroidUserProfileTest {
 
     @Test
     public void saveActivationNullUserId() {
-        assertFalse(androidUserProfile.save(null, "1", "1"));
-        verify(logger).error("Received null userId, unable to save activation");
+        assertFalse(androidUserProfile.save(null, "1", "2"));
+        verify(logger).error("Received null userId, unable to save activation.");
     }
 
     @Test
     public void saveActivationNullExperimentId() {
         assertFalse(androidUserProfile.save("foo", null, "1"));
-        verify(logger).error("Received null experiment ID, unable to save activation");
+        verify(logger).error("Received null experiment ID, unable to save activation.");
     }
 
     @Test
     public void saveActivationNullVariationId() {
         assertFalse(androidUserProfile.save("foo", "1", null));
-        verify(logger).error("Received null variation ID, unable to save activation");
+        verify(logger).error("Received null variation ID, unable to save activation.");
     }
 
     @Test
     public void saveActivationEmptyUserId() {
-        assertFalse(androidUserProfile.save("", "1", "1"));
-        verify(logger).error("Received empty user ID, unable to save activation");
+        assertFalse(androidUserProfile.save("", "1", "2"));
+        verify(logger).error("Received empty user ID, unable to save activation.");
     }
 
     @Test
     public void saveActivationEmptyExperimentId() {
         assertFalse(androidUserProfile.save("foo", "", "1"));
-        verify(logger).error("Received empty experiment ID, unable to save activation");
+        verify(logger).error("Received empty experiment ID, unable to save activation.");
     }
 
     @Test
     public void saveActivationEmptyVariationId() {
         assertFalse(androidUserProfile.save("foo", "1", ""));
-        verify(logger).error("Received empty variation ID, unable to save activation");
+        verify(logger).error("Received empty variation ID, unable to save activation.");
     }
 
     @Test
     public void lookupActivationNullUserId() {
         assertNull(androidUserProfile.lookup(null, "1"));
-        verify(logger).error("Received null user ID, unable to lookup activation");
+        verify(logger).error("Received null user ID, unable to lookup activation.");
     }
 
     @Test
     public void lookupActivationNullExperimentId() {
         assertNull(androidUserProfile.lookup("1", null));
-        verify(logger).error("Received null experiment ID, unable to lookup activation");
+        verify(logger).error("Received null experiment ID, unable to lookup activation.");
     }
 
     @Test
     public void lookupActivationEmptyUserId() {
         assertNull(androidUserProfile.lookup("", "1"));
-        verify(logger).error("Received empty user ID, unable to lookup activation");
+        verify(logger).error("Received empty user ID, unable to lookup activation.");
     }
 
     @Test
     public void lookupActivationEmptyExperimentId() {
         assertNull(androidUserProfile.lookup("foo", ""));
-        verify(logger).error("Received empty experiment ID, unable to lookup activation");
+        verify(logger).error("Received empty experiment ID, unable to lookup activation.");
     }
 
     @Test
     public void removeExistingActivation() {
-        androidUserProfile.save("user1", "1", "1");
+        androidUserProfile.save("user1", "1", "2");
         assertTrue(androidUserProfile.remove("user1", "1"));
         assertNull(androidUserProfile.lookup("user1", "1"));
     }
@@ -166,43 +166,43 @@ public class AndroidUserProfileTest {
     @Test
     public void removeActivationNullUserId() {
         assertFalse(androidUserProfile.remove(null, "1"));
-        verify(logger).error("Received null user ID, unable to remove activation");
+        verify(logger).error("Received null user ID, unable to remove activation.");
     }
 
     @Test
     public void removeActivationNullExperimentId() {
         assertFalse(androidUserProfile.remove("foo", null));
-        verify(logger).error("Received null experiment ID, unable to remove activation");
+        verify(logger).error("Received null experiment ID, unable to remove activation.");
     }
 
     @Test
     public void removeActivationEmptyUserId() {
         assertFalse(androidUserProfile.remove("", "1"));
-        verify(logger).error("Received empty user ID, unable to remove activation");
+        verify(logger).error("Received empty user ID, unable to remove activation.");
     }
 
     @Test
     public void removeActivationEmptyExperimentId() {
         assertFalse(androidUserProfile.remove("foo", ""));
-        verify(logger).error("Received empty experiment ID, unable to remove activation");
+        verify(logger).error("Received empty experiment ID, unable to remove activation.");
     }
 
     @Test
     public void startHandlesJSONException() throws IOException {
         assertTrue(cache.save(diskUserProfileCache.getFileName(), "{"));
         androidUserProfile.start();
-        verify(logger).error(eq("Unable to parse user profile cache"), any(JSONException.class));
+        verify(logger).error(eq("Unable to parse user profile cache."), any(JSONException.class));
     }
 
     @Test
     public void start() throws JSONException {
         androidUserProfile.start();
-        androidUserProfile.save("user1", "1", "1");
-        androidUserProfile.save("user1", "2", "2");
+        androidUserProfile.save("user1", "1", "3");
+        androidUserProfile.save("user1", "2", "4");
 
         Map<String, String> expIdToVarIdMap = new HashMap<>();
-        expIdToVarIdMap.put("1", "1");
-        expIdToVarIdMap.put("2", "2");
+        expIdToVarIdMap.put("1", "3");
+        expIdToVarIdMap.put("2", "4");
         Map<String, Map<String, String>> profileMap = new HashMap<>();
         profileMap.put("user1", expIdToVarIdMap);
 

@@ -105,7 +105,7 @@ public class AndroidUserProfile implements UserProfile {
                 }
             }
         } catch (JSONException e) {
-            logger.error("Unable to parse user profile cache", e);
+            logger.error("Unable to parse user profile cache.", e);
         }
     }
 
@@ -116,22 +116,22 @@ public class AndroidUserProfile implements UserProfile {
     @Override
     public boolean save(final String userId, final String experimentId, final String variationId) {
         if (userId == null) {
-            logger.error("Received null userId, unable to save activation");
+            logger.error("Received null userId, unable to save activation.");
             return false;
         } else if (experimentId == null) {
-            logger.error("Received null experiment ID, unable to save activation");
+            logger.error("Received null experiment ID, unable to save activation.");
             return false;
         } else if (variationId == null) {
-            logger.error("Received null variation ID, unable to save activation");
+            logger.error("Received null variation ID, unable to save activation.");
             return false;
         } else if (userId.isEmpty()) {
-            logger.error("Received empty user ID, unable to save activation");
+            logger.error("Received empty user ID, unable to save activation.");
             return false;
         } else if (experimentId.isEmpty()) {
-            logger.error("Received empty experiment ID, unable to save activation");
+            logger.error("Received empty experiment ID, unable to save activation.");
             return false;
         } else if (variationId.isEmpty()) {
-            logger.error("Received empty variation ID, unable to save activation");
+            logger.error("Received empty variation ID, unable to save activation.");
             return false;
         }
 
@@ -147,16 +147,16 @@ public class AndroidUserProfile implements UserProfile {
     @Nullable
     public String lookup(String userId, String experimentId) {
         if (userId == null) {
-            logger.error("Received null user ID, unable to lookup activation");
+            logger.error("Received null user ID, unable to lookup activation.");
             return null;
         } else if (experimentId == null) {
-            logger.error("Received null experiment ID, unable to lookup activation");
+            logger.error("Received null experiment ID, unable to lookup activation.");
             return null;
         } else if (userId.isEmpty()) {
-            logger.error("Received empty user ID, unable to lookup activation");
+            logger.error("Received empty user ID, unable to lookup activation.");
             return null;
         } else if (experimentId.isEmpty()) {
-            logger.error("Received empty experiment ID, unable to lookup activation");
+            logger.error("Received empty experiment ID, unable to lookup activation.");
             return null;
         }
 
@@ -176,16 +176,16 @@ public class AndroidUserProfile implements UserProfile {
     @Override
     public boolean remove(final String userId, final String experimentId) {
         if (userId == null) {
-            logger.error("Received null user id, unable to remove activation");
+            logger.error("Received null user ID, unable to remove activation.");
             return false;
         } else if (experimentId == null) {
-            logger.error("Received null experiment ID, unable to remove activation");
+            logger.error("Received null experiment ID, unable to remove activation.");
             return false;
         } else if (userId.isEmpty()) {
-            logger.error("Received empty user ID, unable to remove activation");
+            logger.error("Received empty user ID, unable to remove activation.");
             return false;
         } else if (experimentId.isEmpty()) {
-            logger.error("Received empty experiment ID, unable to remove activation");
+            logger.error("Received empty experiment ID, unable to remove activation.");
             return false;
         }
 
@@ -242,7 +242,7 @@ public class AndroidUserProfile implements UserProfile {
                     }
                     expIdToVarIdMap.put(experimentId, variationId);
                     memoryUserProfileCache.put(userId, expIdToVarIdMap);
-                    logger.info("Updated in memory user profile");
+                    logger.info("Updated in memory user profile.");
                 }
 
 
@@ -269,7 +269,7 @@ public class AndroidUserProfile implements UserProfile {
                     Map<String, String> expIdToVarIdMap = memoryUserProfileCache.get(userId);
                     if (expIdToVarIdMap != null) {
                         expIdToVarIdMap.remove(experimentId);
-                        logger.info("Removed experimentId: {} variationId: {} record for user: {} from memory", experimentId, variationId, userId);
+                        logger.info("Removed experimentId: {} variationId: {} record for user: {} from memory.", experimentId, variationId, userId);
                     }
                 }
 
@@ -291,9 +291,9 @@ public class AndroidUserProfile implements UserProfile {
                         Map<String, String> expIdToVarIdMap = new ConcurrentHashMap<>();
                         expIdToVarIdMap.put(experimentId, result.first);
                         memoryUserProfileCache.put(userId, expIdToVarIdMap);
-                        logger.error("Restored experimentId: {} variationId: {} record for user: {} to memory", experimentId, result.first, userId);
+                        logger.error("Restored experimentId: {} variationId: {} record for user: {} to memory.", experimentId, result.first, userId);
                     } else {
-                        logger.info("Removed experimentId: {} variationId: {} record for user: {} from disk", experimentId, result.first, userId);
+                        logger.info("Removed experimentId: {} variationId: {} record for user: {} from disk.", experimentId, result.first, userId);
                     }
                 }
             };
