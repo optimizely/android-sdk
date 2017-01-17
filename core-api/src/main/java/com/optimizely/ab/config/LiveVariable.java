@@ -1,5 +1,6 @@
-/*
- *    Copyright 2017, Optimizely
+/**
+ *
+ *    Copyright 2016, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -68,8 +69,8 @@ public class LiveVariable implements IdKeyMapped {
         @SerializedName("string")
         STRING ("string"),
 
-        @SerializedName("float")
-        FLOAT ("float");
+        @SerializedName("double")
+        DOUBLE ("double");
 
         private final String variableType;
 

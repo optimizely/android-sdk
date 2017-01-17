@@ -1,4 +1,14 @@
+## 1.3.0
+
+January 17, 2017
+
+- Add `onEventTracked` listener
+- Change `getVariableFloat` to `getVariableDouble`
+- Persist experiment and variation IDs instead of keys in the `UserProfile`
+
 ## 1.2.0
+
+December 15, 2016
 
 - Change position of `activateExperiment` parameter in the method signatures of `getVariableString`, `getVariableBoolean`, `getVariableInteger`, and `getVariableFloat`
 - Change `UserExperimentRecord` to `UserProfile`
@@ -7,23 +17,33 @@
 
 ## 1.1.0
 
+December 8, 2016
+
 - Add support for live variables
 
 ## 1.0.3
+
+November 28, 2016
 
 - Remove extraneous log message in `AsyncEventHandler`
 - Add `jackson-annotations` as a compiled dependency
 
 ## 1.0.2
 
+October 5, 2016
+
 - Gracefully handle datafile that doesn't contain required fields
 
 ## 1.0.1
+
+October 5, 2016
 
 - Allow for configurability of `clientEngine` and `clientVersion` through `Optimizely.Builder`
 - Remove ppid query string from V1 events
 
 ## 1.0.0
+
+October 3, 2016
 
 - Introduce support for Full Stack projects in Optimizely X with no breaking changes from previous version
 - Update whitelisting to take precedence over audience condition evaluation
@@ -31,9 +51,13 @@
 
 ## 0.1.71
 
+September 19, 2016
+
 - Add support for v2 backend endpoint and datafile
 
 ## 0.1.70
+
+August 29, 2016
 
 - Add a `UserExperimentRecord` interface
     - Implementors will get a chance to save and restore activations during bucketing
@@ -41,5 +65,7 @@
     - Pass implementations to `Optimizely.Builder#withUserExperimentRecord(UserExperimentRecord)` when creating `Optimizely` instances
 
 ## 0.1.68
+
+July 26, 2016
 
 - Beta release of the Java SDK for server-side testing

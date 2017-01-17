@@ -1,5 +1,6 @@
-/*
- *    Copyright 2017, Optimizely
+/**
+ *
+ *    Copyright 2016, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,7 +18,7 @@ package com.optimizely.ab.event.internal.payload;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import com.optimizely.ab.BuildConfig;
+import com.optimizely.ab.event.internal.BuildVersionInfo;
 
 public class Event {
 
@@ -38,7 +39,7 @@ public class Event {
     }
 
     String clientEngine = ClientEngine.JAVA_SDK.getClientEngineValue();
-    String clientVersion = BuildConfig.VERSION;
+    String clientVersion = BuildVersionInfo.VERSION;
 
     public String getClientEngine() {
         return clientEngine;

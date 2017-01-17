@@ -1,5 +1,6 @@
-/*
- *    Copyright 2017, Optimizely
+/**
+ *
+ *    Copyright 2016, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -32,6 +33,7 @@ import com.optimizely.ab.error.NoOpErrorHandler;
 import com.optimizely.ab.error.RaiseExceptionErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV1;
 import com.optimizely.ab.event.internal.EventBuilderV2;
@@ -256,6 +258,9 @@ public class Optimizely {
         } catch (Exception e) {
             logger.error("Unexpected exception in event dispatcher", e);
         }
+
+        notificationBroadcaster.broadcastEventTracked(eventName, userId, attributes, eventValue,
+                conversionEvent);
     }
 
     //======== live variable getters ========//
@@ -350,24 +355,24 @@ public class Optimizely {
         return null;
     }
 
-    public @Nullable Float getVariableFloat(@Nonnull String variableKey,
-                                            @Nonnull String userId,
-                                            boolean activateExperiment) throws UnknownLiveVariableException {
-        return getVariableFloat(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
+    public @Nullable Double getVariableDouble(@Nonnull String variableKey,
+                                              @Nonnull String userId,
+                                              boolean activateExperiment) throws UnknownLiveVariableException {
+        return getVariableDouble(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
-    public @Nullable Float getVariableFloat(@Nonnull String variableKey,
-                                            @Nonnull String userId,
-                                            @Nonnull Map<String, String> attributes,
-                                            boolean activateExperiment)
+    public @Nullable Double getVariableDouble(@Nonnull String variableKey,
+                                              @Nonnull String userId,
+                                              @Nonnull Map<String, String> attributes,
+                                              boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
         if (variableValueString != null) {
             try {
-                return Float.parseFloat(variableValueString);
+                return Double.parseDouble(variableValueString);
             } catch (NumberFormatException e) {
-                logger.error("Variable value \"{}\" for live variable \"{}\" is not a float.", variableValueString,
+                logger.error("Variable value \"{}\" for live variable \"{}\" is not a double.", variableValueString,
                              variableKey);
             }
         }
@@ -691,7 +696,7 @@ public class Optimizely {
             }
 
             if (clientVersion == null) {
-                clientVersion = BuildConfig.VERSION;
+                clientVersion = BuildVersionInfo.VERSION;
             }
 
             if (eventBuilder == null) {
