@@ -12,8 +12,10 @@ dependencies {
     provided group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion, optional
 }
 
-build << {
+task generateVersionFile {
     // add the build version information into a file that'll go into the distribution
     ext.buildVersion = new File(projectDir, "src/main/resources/optimizely-build-version")
     buildVersion.text = version
 }
+
+build.finalizedBy(generateVersionFile)
