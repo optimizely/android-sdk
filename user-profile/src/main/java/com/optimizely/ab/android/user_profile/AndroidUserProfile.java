@@ -189,12 +189,12 @@ public class AndroidUserProfile implements UserProfile {
             return false;
         }
 
-        Map<String, String> expKeyToVarKeyMap = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get(userId);
-        if (expKeyToVarKeyMap == null) {
+        Map<String, String> expIdToVarIdMap = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get(userId);
+        if (expIdToVarIdMap == null) {
             return false;
         }
-        if (expKeyToVarKeyMap.containsKey(experimentId)) { // Don't do anything if the mapping doesn't exist
-            writeThroughCacheTaskFactory.startRemoveCacheTask(userId, experimentId, expKeyToVarKeyMap.get(experimentId));
+        if (expIdToVarIdMap.containsKey(experimentId)) { // Don't do anything if the mapping doesn't exist
+            writeThroughCacheTaskFactory.startRemoveCacheTask(userId, experimentId, expIdToVarIdMap.get(experimentId));
         }
 
         return true;
