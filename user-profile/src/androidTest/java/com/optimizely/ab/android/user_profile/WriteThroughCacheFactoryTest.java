@@ -181,7 +181,7 @@ public class WriteThroughCacheFactoryTest {
     private JSONObject getJsonObject() throws JSONException {
         JSONObject json = new JSONObject();
         JSONObject user1 = new JSONObject();
-        user1.put("exp1", "var1");
+        user1.put("1", "2");
         json.put("user1", user1);
         return json;
     }
