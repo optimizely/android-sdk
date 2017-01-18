@@ -52,7 +52,7 @@ ext {
     min_sdk_version = 10
     target_sdk_version = 24
 
-    java_core_ver = "1.2.0"
+    java_core_ver = "1.3.0"
     android_logger_ver = "1.3.1"
     support_annotations_ver = "24.2.1"
     junit_ver = "4.12"
@@ -84,6 +84,12 @@ task testAllModules << {
     logger.info("Running android tests for all modules")
 }
 
-testAllModules.dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
+task testAllModulesTravis << {
+    logger.info("Running android tests for Travis")
+}
+
+testAllModulesTravis.dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
         ':event-handler:connectedAndroidTest', ':event-handler:test',
         ':user-profile:connectedAndroidTest', ':shared:connectedAndroidTest')
+
+testAllModules.dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')

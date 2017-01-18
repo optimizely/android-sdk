@@ -276,33 +276,34 @@ public class OptimizelyClient {
     }
 
     /**
-     * Get the value of a Float live variable
+     * Get the value of a Double live variable
      * @param variableKey the String key for the variable
      * @param userId the user ID
      * @param activateExperiment the flag denoting whether to activate an experiment or not
-     * @return Float value of the live variable
+     * @return Double value of the live variable
      */
-    public @Nullable Float getVariableFloat(@NonNull String variableKey,
-                                            @NonNull String userId,
-                                            boolean activateExperiment) {
-        return getVariableFloat(variableKey, userId, Collections.<String, String>emptyMap(),
-                                activateExperiment);
+    public @Nullable Double getVariableDouble(@NonNull String variableKey,
+                                              @NonNull String userId,
+                                              boolean activateExperiment) {
+        return getVariableDouble(variableKey, userId, Collections.<String, String>emptyMap(),
+                                 activateExperiment);
     }
 
     /**
-     * Get the value of a Float live variable
+     * Get the value of a Double live variable
      * @param variableKey the String key for the variable
      * @param userId the user ID
      * @param attributes a map of attributes about the user
      * @param activateExperiment the flag denoting whether to activate an experiment or not
-     * @return Float value of the live variable
+     * @return Double value of the live variable
      */
-    public @Nullable Float getVariableFloat(@NonNull String variableKey,
-                                            @NonNull String userId,
-                                            @NonNull Map<String, String> attributes,
-                                            boolean activateExperiment) {
+    public @Nullable Double getVariableDouble(@NonNull String variableKey,
+                                              @NonNull String userId,
+                                              @NonNull Map<String, String> attributes,
+                                              boolean activateExperiment) {
         if (optimizely != null) {
-            return optimizely.getVariableFloat(variableKey, userId, attributes, activateExperiment);
+            return optimizely.getVariableDouble(variableKey, userId, attributes,
+                                                activateExperiment);
         } else {
             logger.warn("Optimizely is not initialized, could not get live variable {} " +
                     "for user {}", variableKey, userId);
