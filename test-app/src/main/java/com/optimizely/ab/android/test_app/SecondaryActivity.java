@@ -14,40 +14,28 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.test_app;
 
-import android.app.Activity;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import com.optimizely.ab.android.sdk.OptimizelyClient;
+import com.optimizely.ab.android.sdk.OptimizelyManager;
+import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 
-import static org.mockito.Mockito.verify;
+public class SecondaryActivity extends AppCompatActivity {
 
-/**
- * Tests for {@link OptimizelyManager.OptlyActivityLifecycleCallbacks}
- */
-@RunWith(MockitoJUnitRunner.class)
-public class OptimizelyManagerOptlyActivityLifecycleCallbacksTest {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_secondary);
 
-    @Mock OptimizelyManager optimizelyManager;
-    @Mock Activity activity;
-    private OptimizelyManager.OptlyActivityLifecycleCallbacks optlyActivityLifecycleCallbacks;
-
-    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    @Before
-    public void setup() {
-        optlyActivityLifecycleCallbacks = new OptimizelyManager.OptlyActivityLifecycleCallbacks(optimizelyManager);
+        // Get Optimizely from the Intent that started this Activity
+        final MyApplication myApplication = (MyApplication) getApplication();
+        final OptimizelyManager optimizelyManager = myApplication.getOptimizelyManager();
+        OptimizelyClient optimizely = optimizelyManager.getOptimizely();
+        CountingIdlingResourceManager.increment(); // For track event
+        optimizely.track("experiment_1", myApplication.getAnonUserId());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    @Test
-    public void onActivityStopped() {
-        optlyActivityLifecycleCallbacks.onActivityStopped(activity);
-        verify(optimizelyManager).stop(activity, optlyActivityLifecycleCallbacks);
-    }
 }
