@@ -53,8 +53,8 @@ public class AndroidUserProfile implements UserProfile {
     @NonNull private final WriteThroughCacheTaskFactory writeThroughCacheTaskFactory;
 
     AndroidUserProfile(@NonNull UserProfileCache diskUserProfileCache,
-                                @NonNull WriteThroughCacheTaskFactory writeThroughCacheTaskFactory,
-                                @NonNull Logger logger) {
+                       @NonNull WriteThroughCacheTaskFactory writeThroughCacheTaskFactory,
+                       @NonNull Logger logger) {
         this.diskUserProfileCache = diskUserProfileCache;
         this.writeThroughCacheTaskFactory = writeThroughCacheTaskFactory;
         this.logger = logger;
@@ -105,7 +105,7 @@ public class AndroidUserProfile implements UserProfile {
                 }
             }
         } catch (JSONException e) {
-            logger.error("Unable to parse user profile cache", e);
+            logger.error("Unable to parse user profile cache.", e);
         }
     }
 
@@ -114,28 +114,28 @@ public class AndroidUserProfile implements UserProfile {
      */
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
-    public boolean save(final String userId, final String experimentKey, final String variationKey) {
+    public boolean save(final String userId, final String experimentId, final String variationId) {
         if (userId == null) {
-            logger.error("Received null userId, unable to save activation");
+            logger.error("Received null userId, unable to save activation.");
             return false;
-        } else if (experimentKey == null) {
-            logger.error("Received null experiment key, unable to save activation");
+        } else if (experimentId == null) {
+            logger.error("Received null experiment ID, unable to save activation.");
             return false;
-        } else if (variationKey == null) {
-            logger.error("Received null variation key, unable to save activation");
+        } else if (variationId == null) {
+            logger.error("Received null variation ID, unable to save activation.");
             return false;
         } else if (userId.isEmpty()) {
-            logger.error("Received empty user id, unable to save activation");
+            logger.error("Received empty user ID, unable to save activation.");
             return false;
-        } else if (experimentKey.isEmpty()) {
-            logger.error("Received empty experiment key, unable to save activation");
+        } else if (experimentId.isEmpty()) {
+            logger.error("Received empty experiment ID, unable to save activation.");
             return false;
-        } else if (variationKey.isEmpty()) {
-            logger.error("Received empty variation key, unable to save activation");
+        } else if (variationId.isEmpty()) {
+            logger.error("Received empty variation ID, unable to save activation.");
             return false;
         }
 
-        writeThroughCacheTaskFactory.startWriteCacheTask(userId, experimentKey, variationKey);
+        writeThroughCacheTaskFactory.startWriteCacheTask(userId, experimentId, variationId);
 
         return true;
     }
@@ -145,28 +145,28 @@ public class AndroidUserProfile implements UserProfile {
      */
     @Override
     @Nullable
-    public String lookup(String userId, String experimentKey) {
+    public String lookup(String userId, String experimentId) {
         if (userId == null) {
-            logger.error("Received null user id, unable to lookup activation");
+            logger.error("Received null user ID, unable to lookup activation.");
             return null;
-        } else if (experimentKey == null) {
-            logger.error("Received null experiment key, unable to lookup activation");
+        } else if (experimentId == null) {
+            logger.error("Received null experiment ID, unable to lookup activation.");
             return null;
         } else if (userId.isEmpty()) {
-            logger.error("Received empty user id, unable to lookup activation");
+            logger.error("Received empty user ID, unable to lookup activation.");
             return null;
-        } else if (experimentKey.isEmpty()) {
-            logger.error("Received empty experiment key, unable to lookup activation");
+        } else if (experimentId.isEmpty()) {
+            logger.error("Received empty experiment ID, unable to lookup activation.");
             return null;
         }
 
         Map<String, String> expIdToVarIdMap = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get(userId);
-        String variationKey = null;
+        String variationId = null;
         if (expIdToVarIdMap != null) {
-            variationKey = expIdToVarIdMap.get(experimentKey);
+            variationId = expIdToVarIdMap.get(experimentId);
         }
 
-        return variationKey;
+        return variationId;
     }
 
     /**
@@ -174,27 +174,27 @@ public class AndroidUserProfile implements UserProfile {
      */
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
-    public boolean remove(final String userId, final String experimentKey) {
+    public boolean remove(final String userId, final String experimentId) {
         if (userId == null) {
-            logger.error("Received null user id, unable to remove activation");
+            logger.error("Received null user ID, unable to remove activation.");
             return false;
-        } else if (experimentKey == null) {
-            logger.error("Received null experiment key, unable to remove activation");
+        } else if (experimentId == null) {
+            logger.error("Received null experiment ID, unable to remove activation.");
             return false;
         } else if (userId.isEmpty()) {
-            logger.error("Received empty user id, unable to remove activation");
+            logger.error("Received empty user ID, unable to remove activation.");
             return false;
-        } else if (experimentKey.isEmpty()) {
-            logger.error("Received empty experiment key, unable to remove activation");
+        } else if (experimentId.isEmpty()) {
+            logger.error("Received empty experiment ID, unable to remove activation.");
             return false;
         }
 
-        Map<String, String> expKeyToVarKeyMap = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get(userId);
-        if (expKeyToVarKeyMap == null) {
+        Map<String, String> expIdToVarIdMap = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get(userId);
+        if (expIdToVarIdMap == null) {
             return false;
         }
-        if (expKeyToVarKeyMap.containsKey(experimentKey)) { // Don't do anything if the mapping doesn't exist
-            writeThroughCacheTaskFactory.startRemoveCacheTask(userId, experimentKey, expKeyToVarKeyMap.get(experimentKey));
+        if (expIdToVarIdMap.containsKey(experimentId)) { // Don't do anything if the mapping doesn't exist
+            writeThroughCacheTaskFactory.startRemoveCacheTask(userId, experimentId, expIdToVarIdMap.get(experimentId));
         }
 
         return true;
@@ -227,11 +227,11 @@ public class AndroidUserProfile implements UserProfile {
         }
 
         @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-        void startWriteCacheTask(final String userId, final String experimentKey, final String variationKey) {
+        void startWriteCacheTask(final String userId, final String experimentId, final String variationId) {
             AsyncTask<Void,Void,Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void[] params) {
-                    return diskUserProfileCache.save(userId, experimentKey, variationKey);
+                    return diskUserProfileCache.save(userId, experimentId, variationId);
                 }
 
                 @Override
@@ -240,20 +240,20 @@ public class AndroidUserProfile implements UserProfile {
                     if (expIdToVarIdMap == null) {
                         expIdToVarIdMap = new ConcurrentHashMap<>();
                     }
-                    expIdToVarIdMap.put(experimentKey, variationKey);
+                    expIdToVarIdMap.put(experimentId, variationId);
                     memoryUserProfileCache.put(userId, expIdToVarIdMap);
-                    logger.info("Updated in memory user profile");
+                    logger.info("Updated in memory user profile.");
                 }
 
 
                 @Override
                 protected void onPostExecute(Boolean success) {
                     if (success) {
-                        logger.info("Persisted user in variation {} for experiment {}.", variationKey, experimentKey);
+                        logger.info("Persisted user in variation {} for experiment {}.", variationId, experimentId);
                     } else {
                         // Remove the activation from the cache since saving failed
-                        memoryUserProfileCache.get(userId).remove(experimentKey);
-                        logger.error("Failed to persist user in variation {} for experiment {}.", variationKey, experimentKey);
+                        memoryUserProfileCache.get(userId).remove(experimentId);
+                        logger.error("Failed to persist user in variation {} for experiment {}.", variationId, experimentId);
                     }
                 }
             };
@@ -261,25 +261,25 @@ public class AndroidUserProfile implements UserProfile {
         }
 
         @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-        void startRemoveCacheTask(final String userId, final String experimentKey, final String variationKey) {
+        void startRemoveCacheTask(final String userId, final String experimentId, final String variationId) {
             AsyncTask<String, Void, Pair<String, Boolean>> task =  new AsyncTask<String, Void, Pair<String, Boolean>>() {
 
                 @Override
                 protected void onPreExecute() {
                     Map<String, String> expIdToVarIdMap = memoryUserProfileCache.get(userId);
                     if (expIdToVarIdMap != null) {
-                        expIdToVarIdMap.remove(experimentKey);
-                        logger.info("Removed experimentKey: {} variationKey: {} record for user: {} from memory", experimentKey, variationKey, userId);
+                        expIdToVarIdMap.remove(experimentId);
+                        logger.info("Removed experimentId: {} variationId: {} record for user: {} from memory.", experimentId, variationId, userId);
                     }
                 }
 
                 @Override
                 protected Pair<String, Boolean> doInBackground(String... params) {
-                    boolean success = diskUserProfileCache.remove(userId, experimentKey);
+                    boolean success = diskUserProfileCache.remove(userId, experimentId);
                     if (success) {
                         return new Pair<>(params[0], true);
                     } else {
-                        // This is the variationKey
+                        // This is the variationId
                         return new Pair<>(params[0], false);
                     }
                 }
@@ -289,15 +289,15 @@ public class AndroidUserProfile implements UserProfile {
                     // Put the mapping back in the write through cache if removing failed
                     if (!result.second) {
                         Map<String, String> expIdToVarIdMap = new ConcurrentHashMap<>();
-                        expIdToVarIdMap.put(experimentKey, result.first);
+                        expIdToVarIdMap.put(experimentId, result.first);
                         memoryUserProfileCache.put(userId, expIdToVarIdMap);
-                        logger.error("Restored experimentKey: {} variationKey: {} record for user: {} to memory", experimentKey, result.first, userId);
+                        logger.error("Restored experimentId: {} variationId: {} record for user: {} to memory.", experimentId, result.first, userId);
                     } else {
-                        logger.info("Removed experimentKey: {} variationKey: {} record for user: {} from disk", experimentKey, result.first, userId);
+                        logger.info("Removed experimentId: {} variationId: {} record for user: {} from disk.", experimentId, result.first, userId);
                     }
                 }
             };
-            task.executeOnExecutor(executor, variationKey);
+            task.executeOnExecutor(executor, variationId);
         }
     }
 

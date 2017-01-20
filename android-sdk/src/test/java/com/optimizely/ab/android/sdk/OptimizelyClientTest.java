@@ -238,19 +238,19 @@ public class OptimizelyClientTest {
     }
 
     @Test
-    public void testGoodGetVariableFloat() {
+    public void testGoodGetVariableDouble() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
-        optimizelyClient.getVariableFloat("test_key", "userId",
-                                          Collections.<String, String>emptyMap(), true);
-        verify(optimizely).getVariableFloat("test_key", "userId",
-                                            Collections.<String, String>emptyMap(), true);
+        optimizelyClient.getVariableDouble("test_key", "userId",
+                                           Collections.<String, String>emptyMap(), true);
+        verify(optimizely).getVariableDouble("test_key", "userId",
+                                             Collections.<String, String>emptyMap(), true);
     }
 
     @Test
-    public void testBadGetVariableFloat() {
+    public void testBadGetVariableDouble() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.getVariableFloat("test_key", "userId",
-                                          Collections.<String, String>emptyMap(), true);
+        optimizelyClient.getVariableDouble("test_key", "userId",
+                                           Collections.<String, String>emptyMap(), true);
         verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
                 "for user {}", "test_key", "userId");
     }
