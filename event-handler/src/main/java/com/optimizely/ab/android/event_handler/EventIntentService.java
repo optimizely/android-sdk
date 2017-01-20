@@ -41,9 +41,9 @@ import org.slf4j.LoggerFactory;
  * @hide
  */
 public class EventIntentService extends IntentService {
-    static final String EXTRA_URL = "com.optimizely.ab.android.EXTRA_URL";
-    static final String EXTRA_REQUEST_BODY = "com.optimizely.ab.android.EXTRA_REQUEST_BODY";
-    static final String EXTRA_INTERVAL = "com.optimizely.ab.android.EXTRA_INTERVAL";
+    public static final String EXTRA_URL = "com.optimizely.ab.android.EXTRA_URL";
+    public static final String EXTRA_REQUEST_BODY = "com.optimizely.ab.android.EXTRA_REQUEST_BODY";
+    public static final String EXTRA_INTERVAL = "com.optimizely.ab.android.EXTRA_INTERVAL";
     Logger logger = LoggerFactory.getLogger(EventIntentService.class);
     @Nullable EventDispatcher eventDispatcher;
 

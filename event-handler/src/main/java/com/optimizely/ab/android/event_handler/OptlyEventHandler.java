@@ -35,12 +35,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class OptlyEventHandler implements EventHandler {
 
-    @NonNull private final Context context;
-    Logger logger = LoggerFactory.getLogger(OptlyEventHandler.class);
-    private long dispatchInterval = -1;
+    @NonNull protected final Context context;
+    protected Logger logger = LoggerFactory.getLogger(OptlyEventHandler.class);
+    protected long dispatchInterval = -1;
 
-
-    private OptlyEventHandler(@NonNull Context context) {
+    protected OptlyEventHandler(@NonNull Context context) {
         this.context = context;
     }
 
