@@ -5,8 +5,6 @@ is also used to run integration tests on using the Android Espresso framework.
 
 ## Experiments Run
 
-The experiments run in this demo app are part of the mobile-test@optimizely.com account.
-
 We run the following experiment:
   - Background change in second activity, which is loaded after the splash screen.
 
@@ -15,12 +13,12 @@ We run the following experiment:
 The SDK is implemented in the following way:
   - The splash screen initializes the Optimizely manager asynchronously. This starts the datafile
   fetch.
-  - Once the datafile is fetched and the Optimizely manager is started, we use grab the `optimizelyClient`
-  from the manager and use it to activate the `background_experiment`. This buckets the user and sends
+  - Once the datafile is fetched and the Optimizely manager is started, we grab the `optimizelyClient`
+  from the manager and use it to activate the experiment named `background_experiment`. This buckets the user and sends
   an impression event.
   - We then use the bucketed variation to determine which activity to show. `VariationAActivity` for
-  `variation_a` and `VariationBActivity` for `variation_b`.
-  - Each of those activities include a `Test Conversion` button.
+  `variation_a`, `VariationBActivity` for `variation_b`, or `ActivationErrorActivity` for the control.
+  - Each of the variation activities includes a `Test Conversion` button.
   - Clicking on that button will call `optimizelyClient.track()` and send a conversion event for the
   event named `sample_conversion`.
   - Then the application will navigate to the conversion page to confirm that a conversion event has
