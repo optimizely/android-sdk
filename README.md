@@ -49,7 +49,7 @@ config common for all modules.
 ### Command Line
 
 1. Clone the repo
-  * `git clone git@github.com:optimizely/optimizely-ab-android-sdk.git`
+  * `git clone git@github.com:optimizely/android-sdk.git`
 3. Create, or use an existing, Optimizely Android project
 4. Build the project (from the project root)
   * `./gradlew assemble`
