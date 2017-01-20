@@ -1,4 +1,14 @@
 # Optimizely Android X SDK Changelog
+### 0.5.0
+
+*Bug Fixes*
+
+- Persist experiment and variation IDs instead of keys in the `AndroidUserProfile`
+
+*Breaking Changes*
+
+- Change live variable getter signature from `getVariableFloat` to `getVariableDouble`
+
 ### 0.4.1
 December 28, 2016
 
@@ -28,6 +38,7 @@ December 8, 2016
 
 ### 0.2.2
 November 30, 2016
+
 *Bug Fixes*
 - Update to java-core 1.0.3 which fixes crashes with Jackson annotations on ICS
 - Use the old SQLiteDatabse constructor for compatibility with ICS
