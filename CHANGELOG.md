@@ -1,9 +1,11 @@
 # Optimizely Android X SDK Changelog
 ### 1.0.0
+January 23, 2017
 
 - GA release
 
 ### 0.5.0
+January 20, 2017
 
 *Bug Fixes*
 
