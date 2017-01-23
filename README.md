@@ -1,4 +1,4 @@
-# optimizely-ab-android-sdk
+# Optimizely Android SDK
 Master<br/> 
 [![Master Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=master)](https://travis-ci.org/optimizely/android-sdk)
 <br/>
@@ -12,11 +12,9 @@ Devel<br/>
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 ## Overview
 
-Our Optimizely X Android solution allows you to easily run experiments anywhere in an Android application, even Services. The solution includes easy-to-use SDKs for experimenting in your code and tracking conversion events in Optimizely.
+This repository houses the Android SDK for Optimizely's Mobile product. To find out more check out the [documentation](https://developers.optimizely.com/x/solutions/sdks/introduction/index.html?language=android&platform=mobile).
 
-To find out more check out the [documentation](https://developers.optimizely.com/x/solutions/sdks/introduction/index.html?language=android&platform=mobile). 
-
-This repo depends on [Optimizely X Java](https://github.com/optimizely/java-sdk).
+This repo depends on the [Optimizely Java SDK](https://github.com/optimizely/java-sdk).
 
 ## Architecture
 
@@ -27,13 +25,13 @@ root declares modules.  The `build.gradle` in the project root has build
 config common for all modules.
 
 1. Android SDK
-  - Users who want all modules should just declare a dependency on this module
+  - Users who want all modules should declare a dependency on this module
   - This is the outer module that depends on all other modules
-  - Handles downloading the Optimizely Data File and building Optimizely objects
+  - Handles downloading the Optimizely datafile and building Optimizely objects
   - Delivers the built Optimizely object to listeners and caches it in memory
 2. Event Handler
-  - Handles dispatching events to the Optimizely Backend
-  - Uses a Service so events can be sent without the app being reopened
+  - Handles dispatching events to the Optimizely backend
+  - Uses a Service so events can be sent without the app being re-opened
   - Persists events in a SQLite3 database
   - Required to be implemented by the Optimizely Java core
 3. User Profile
@@ -51,10 +49,8 @@ config common for all modules.
 ### Command Line
 
 1. Clone the repo
-  * `git clone git@github.com:optimizely/optimizely-ab-android-sdk.git`
-3. Create, or use an existing, Optimizely Custom Project 
-  * put a file in `test-app/src/main/res/values/git_ignored_strings.xml`
-  * Give it this contents `<resources><string name="optly_project_id">{CUSTOM_PROJECT_ID}</string></resources>`
+  * `git clone git@github.com:optimizely/android-sdk.git`
+3. Create, or use an existing, Optimizely Android project
 4. Build the project (from the project root)
   * `./gradlew assemble`
 5. Run tests for all modules
@@ -84,7 +80,7 @@ The default branch is devel.  Feature branch PRs are automatically made against 
 
 Versions are managed via git tags.  Tags can be created from the command line or from the Github UI.
 
-Snapshot builds are made off of the beta branch.  Travis will test all commits to this branch.  When commit is tagged and pushed travis will build, test, *and*, ship the build bintray.  The version name used
+Snapshot builds are made off of the beta branch.  Travis will test all commits to this branch.  When a commit is tagged and pushed, Travis will build, test, *and*, ship the build to Bintray.  The version name used
 is the name of the tag.  For snapshot builds the version should have `-SNAPSHOT` appended.  For example `0.1.2-SNAPSHOT`.  Multiple builds with the same version can be pushed to Bintray when using snapshot versions.
 This keeps the version number from increasing too quickly for beta builds.  Grade and maven ensure that users are on the latest snapshot via timestamps.
 There can be only one git tag per version name so snapshot tags may need to be moved.  For example `git tag -f -a 0.1.2` and `git push -f --tags`.  

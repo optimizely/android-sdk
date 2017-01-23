@@ -69,25 +69,25 @@ public class WriteThroughCacheFactoryTest {
                 new AndroidUserProfile.WriteThroughCacheTaskFactory(diskUserProfileCache,
                         new HashMap<String, Map<String, String>>(), executor, logger);
 
-        writeThroughCacheTaskFactory.startWriteCacheTask("user1", "exp1", "var1");
+        writeThroughCacheTaskFactory.startWriteCacheTask("user1", "1", "2");
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Timed out");
         }
 
-        verify(logger).info("Updated in memory user profile");
+        verify(logger).info("Updated in memory user profile.");
         assertTrue(writeThroughCacheTaskFactory.getMemoryUserProfileCache().containsKey("user1"));
         Map<String, String> activation = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get("user1");
-        assertTrue(activation.containsKey("exp1"));
-        assertEquals("var1", activation.get("exp1"));
+        assertTrue(activation.containsKey("1"));
+        assertEquals("2", activation.get("1"));
 
         final JSONObject json = diskUserProfileCache.load();
         assertTrue(json.has("user1"));
         final JSONObject user1 = json.getJSONObject("user1");
-        assertTrue(user1.has("exp1"));
-        assertEquals("var1", user1.getString("exp1"));
-        verify(logger).info("Persisted user in variation {} for experiment {}.", "var1", "exp1");
+        assertTrue(user1.has("1"));
+        assertEquals("2", user1.getString("1"));
+        verify(logger).info("Persisted user in variation {} for experiment {}.", "2", "1");
 
         cache.delete(diskUserProfileCache.getFileName());
     }
@@ -105,19 +105,19 @@ public class WriteThroughCacheFactoryTest {
 
         when(cache.save(diskUserProfileCache.getFileName(), json.toString())).thenReturn(false);
 
-        writeThroughCacheTaskFactory.startWriteCacheTask("user1", "exp1", "var1");
+        writeThroughCacheTaskFactory.startWriteCacheTask("user1", "1", "2");
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Timed out");
         }
 
-        verify(logger).info("Updated in memory user profile");
+        verify(logger).info("Updated in memory user profile.");
         assertTrue(writeThroughCacheTaskFactory.getMemoryUserProfileCache().containsKey("user1"));
         Map<String, String> activation = writeThroughCacheTaskFactory.getMemoryUserProfileCache().get("user1");
-        assertFalse(activation.containsKey("exp1"));
+        assertFalse(activation.containsKey("1"));
 
-        verify(logger).error("Failed to persist user in variation {} for experiment {}.", "var1", "exp1");
+        verify(logger).error("Failed to persist user in variation {} for experiment {}.", "2", "1");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -129,26 +129,26 @@ public class WriteThroughCacheFactoryTest {
                 new AndroidUserProfile.WriteThroughCacheTaskFactory(diskUserProfileCache,
                         new HashMap<String, Map<String, String>>(), executor, logger);
 
-        diskUserProfileCache.save("user1", "exp1", "var1");
+        diskUserProfileCache.save("user1", "1", "2");
 
         Map<String, String> activation = new HashMap<>();
-        activation.put("exp1", "var1");
+        activation.put("1", "2");
         writeThroughCacheTaskFactory.getMemoryUserProfileCache().put("user1", activation);
 
-        writeThroughCacheTaskFactory.startRemoveCacheTask("user1", "exp1", "var1");
+        writeThroughCacheTaskFactory.startRemoveCacheTask("user1", "1", "2");
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Timed out");
         }
 
-        verify(logger).info("Removed experimentKey: {} variationKey: {} record for user: {} from memory", "exp1", "var1", "user1");
+        verify(logger).info("Removed experimentId: {} variationId: {} record for user: {} from memory.", "1", "2", "user1");
         JSONObject json = diskUserProfileCache.load();
         assertTrue(json.has("user1"));
         json = json.getJSONObject("user1");
-        assertFalse(json.has("exp1"));
-        assertFalse(writeThroughCacheTaskFactory.getMemoryUserProfileCache().get("user1").containsKey("exp1"));
-        verify(logger).info("Removed experimentKey: {} variationKey: {} record for user: {} from disk", "exp1", "var1", "user1");
+        assertFalse(json.has("1"));
+        assertFalse(writeThroughCacheTaskFactory.getMemoryUserProfileCache().get("user1").containsKey("1"));
+        verify(logger).info("Removed experimentId: {} variationId: {} record for user: {} from disk.", "1", "2", "user1");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -163,25 +163,25 @@ public class WriteThroughCacheFactoryTest {
         when(cache.save(diskUserProfileCache.getFileName(), getJsonObject().toString())).thenReturn(false);
 
         Map<String, String> activation = new HashMap<>();
-        activation.put("exp1", "var1");
+        activation.put("1", "2");
         writeThroughCacheTaskFactory.getMemoryUserProfileCache().put("user1", activation);
-        writeThroughCacheTaskFactory.startRemoveCacheTask("user1", "exp1", "var1");
+        writeThroughCacheTaskFactory.startRemoveCacheTask("user1", "1", "2");
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Timed out");
         }
 
-        verify(logger).info("Removed experimentKey: {} variationKey: {} record for user: {} from memory", "exp1", "var1", "user1");
-        verify(logger).error("Restored experimentKey: {} variationKey: {} record for user: {} to memory", "exp1", "var1","user1");
-        assertTrue(writeThroughCacheTaskFactory.getMemoryUserProfileCache().get("user1").containsKey("exp1"));
+        verify(logger).info("Removed experimentId: {} variationId: {} record for user: {} from memory.", "1", "2", "user1");
+        verify(logger).error("Restored experimentId: {} variationId: {} record for user: {} to memory.", "1", "2","user1");
+        assertTrue(writeThroughCacheTaskFactory.getMemoryUserProfileCache().get("user1").containsKey("1"));
     }
 
     @NonNull
     private JSONObject getJsonObject() throws JSONException {
         JSONObject json = new JSONObject();
         JSONObject user1 = new JSONObject();
-        user1.put("exp1", "var1");
+        user1.put("1", "2");
         json.put("user1", user1);
         return json;
     }
