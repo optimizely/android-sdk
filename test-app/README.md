@@ -1,7 +1,9 @@
 # Optimizely X Android SDK Demo App
 
 This module houses the demo app used to demonstrate how to get started with the Android SDK. The app
-is also used to run integration tests on using the Android Espresso framework.
+is also used to run integration tests with the Android Espresso framework.
+
+![Demo App Flow](./images/demo-app-flow.png)
 
 ## Experiments Run
 
