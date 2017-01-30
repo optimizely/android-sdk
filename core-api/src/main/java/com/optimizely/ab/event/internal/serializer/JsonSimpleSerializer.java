@@ -56,6 +56,11 @@ class JsonSimpleSerializer implements Serializer {
         jsonObject.put("userFeatures", serializeFeatures(impression.getUserFeatures()));
         jsonObject.put("clientEngine", impression.getClientEngine());
         jsonObject.put("clientVersion", impression.getClientVersion());
+        jsonObject.put("revision", impression.getRevision());
+
+        if (impression.getSessionId() != null) {
+            jsonObject.put("sessionId", impression.getSessionId());
+        }
 
         return jsonObject;
     }
@@ -76,6 +81,11 @@ class JsonSimpleSerializer implements Serializer {
         jsonObject.put("anonymizeIP", conversion.getAnonymizeIP());
         jsonObject.put("clientEngine", conversion.getClientEngine());
         jsonObject.put("clientVersion", conversion.getClientVersion());
+        jsonObject.put("revision", conversion.getRevision());
+
+        if (conversion.getSessionId() != null) {
+            jsonObject.put("sessionId", conversion.getSessionId());
+        }
 
         return jsonObject;
     }
@@ -121,6 +131,7 @@ class JsonSimpleSerializer implements Serializer {
     private JSONObject serializeLayerState(LayerState layerState) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("layerId", layerState.getLayerId());
+        jsonObject.put("revision", layerState.getRevision());
         jsonObject.put("decision", serializeDecision(layerState.getDecision()));
         jsonObject.put("actionTriggered", layerState.getActionTriggered());
 

@@ -22,5 +22,6 @@
   ],
   "clientEngine": "java-sdk",
   "clientVersion": "0.1.1",
+  "sessionId": "sessionid",
   "revision": "1"
 }

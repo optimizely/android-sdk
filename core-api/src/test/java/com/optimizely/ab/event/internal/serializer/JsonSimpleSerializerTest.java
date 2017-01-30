@@ -28,9 +28,13 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateConversion;
-import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateImpression;
 import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateConversionJson;
+import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateConversionWithSessionId;
+import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateConversionWithSessionIdJson;
+import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateImpression;
 import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateImpressionJson;
+import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateImpressionWithSessionId;
+import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateImpressionWithSessionIdJson;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -51,11 +55,31 @@ public class JsonSimpleSerializerTest {
     }
 
     @Test
+    public void serializeImpressionWithSessionId() throws IOException, ParseException {
+        Impression impression = generateImpressionWithSessionId();
+        // can't compare JSON strings since orders could vary so compare JSONObjects instead
+        JSONObject actual = (JSONObject)parser.parse(serializer.serialize(impression));
+        JSONObject expected = (JSONObject)parser.parse(generateImpressionWithSessionIdJson());
+
+        assertThat(actual, is(expected));
+    }
+
+    @Test
     public void serializeConversion() throws IOException, ParseException {
         Conversion conversion = generateConversion();
         // can't compare JSON strings since orders could vary so compare JSONObjects instead
         JSONObject actual = (JSONObject)parser.parse(serializer.serialize(conversion));
         JSONObject expected = (JSONObject)parser.parse(generateConversionJson());
+
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void serializeConversionWithSessionId() throws IOException, ParseException {
+        Conversion conversion = generateConversionWithSessionId();
+        // can't compare JSON strings since orders could vary so compare JSONObjects instead
+        JSONObject actual = (JSONObject)parser.parse(serializer.serialize(conversion));
+        JSONObject expected = (JSONObject)parser.parse(generateConversionWithSessionIdJson());
 
         assertThat(actual, is(expected));
     }

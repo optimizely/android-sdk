@@ -119,7 +119,20 @@ public class Optimizely {
 
     public @Nullable Variation activate(@Nonnull String experimentKey,
                                         @Nonnull String userId,
+                                        @CheckForNull String sessionId) throws UnknownExperimentException {
+        return activate(experimentKey, userId, Collections.<String, String>emptyMap(), sessionId);
+    }
+
+    public @Nullable Variation activate(@Nonnull String experimentKey,
+                                        @Nonnull String userId,
                                         @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
+        return activate(experimentKey, userId, attributes, null);
+    }
+
+    public @Nullable Variation activate(@Nonnull String experimentKey,
+                                        @Nonnull String userId,
+                                        @Nonnull Map<String, String> attributes,
+                                        @CheckForNull String sessionId) throws UnknownExperimentException {
 
         if (!validateUserId(userId)) {
             logger.info("Not activating user for experiment \"{}\".", experimentKey);
@@ -135,7 +148,7 @@ public class Optimizely {
             return null;
         }
 
-        return activate(currentConfig, experiment, userId, attributes);
+        return activate(currentConfig, experiment, userId, attributes, sessionId);
     }
 
     public @Nullable Variation activate(@Nonnull Experiment experiment,
@@ -145,17 +158,32 @@ public class Optimizely {
 
     public @Nullable Variation activate(@Nonnull Experiment experiment,
                                         @Nonnull String userId,
+                                        @CheckForNull String sessionId) {
+        return activate(experiment, userId, Collections.<String, String>emptyMap(), sessionId);
+    }
+
+    public @Nullable Variation activate(@Nonnull Experiment experiment,
+                                        @Nonnull String userId,
                                         @Nonnull Map<String, String> attributes) {
+
+        return activate(experiment, userId, attributes, null);
+    }
+
+    public @Nullable Variation activate(@Nonnull Experiment experiment,
+                                        @Nonnull String userId,
+                                        @Nonnull Map<String, String> attributes,
+                                        @CheckForNull String sessionId) {
 
         ProjectConfig currentConfig = getProjectConfig();
 
-        return activate(currentConfig, experiment, userId, attributes);
+        return activate(currentConfig, experiment, userId, attributes, sessionId);
     }
 
     private @Nullable Variation activate(@Nonnull ProjectConfig projectConfig,
                                          @Nonnull Experiment experiment,
                                          @Nonnull String userId,
-                                         @Nonnull Map<String, String> attributes) {
+                                         @Nonnull Map<String, String> attributes,
+                                         @CheckForNull String sessionId) {
         // determine whether all the given attributes are present in the project config. If not, filter out the unknown
         // attributes.
         attributes = filterAttributes(projectConfig, attributes);
@@ -173,8 +201,8 @@ public class Optimizely {
         }
 
         if (experiment.isRunning()) {
-            LogEvent impressionEvent =
-                    eventBuilder.createImpressionEvent(projectConfig, experiment, variation, userId, attributes);
+            LogEvent impressionEvent = eventBuilder.createImpressionEvent(projectConfig, experiment, variation, userId,
+                                                                          attributes, sessionId);
             logger.info("Activating user \"{}\" in experiment \"{}\".", userId, experiment.getKey());
             logger.debug(
                 "Dispatching impression event to URL {} with params {} and payload \"{}\".",
@@ -197,13 +225,26 @@ public class Optimizely {
 
     public void track(@Nonnull String eventName,
                       @Nonnull String userId) throws UnknownEventTypeException {
-        track(eventName, userId, Collections.<String, String>emptyMap(), null);
+        track(eventName, userId, Collections.<String, String>emptyMap(), null, null);
+    }
+
+    public void track(@Nonnull String eventName,
+                      @Nonnull String userId,
+                      @CheckForNull String sessionId) throws UnknownEventTypeException {
+        track(eventName, userId, Collections.<String, String>emptyMap(), null, sessionId);
     }
 
     public void track(@Nonnull String eventName,
                       @Nonnull String userId,
                       @Nonnull Map<String, String> attributes) throws UnknownEventTypeException {
-        track(eventName, userId, attributes, null);
+        track(eventName, userId, attributes, null, null);
+    }
+
+    public void track(@Nonnull String eventName,
+                      @Nonnull String userId,
+                      @Nonnull Map<String, String> attributes,
+                      @CheckForNull String sessionId) throws UnknownEventTypeException {
+        track(eventName, userId, attributes, null, sessionId);
     }
 
     public void track(@Nonnull String eventName,
@@ -214,15 +255,31 @@ public class Optimizely {
 
     public void track(@Nonnull String eventName,
                       @Nonnull String userId,
+                      long eventValue,
+                      @CheckForNull String sessionId) throws UnknownEventTypeException {
+        track(eventName, userId, Collections.<String, String>emptyMap(), eventValue, sessionId);
+    }
+
+    public void track(@Nonnull String eventName,
+                      @Nonnull String userId,
                       @Nonnull Map<String, String> attributes,
                       long eventValue) throws UnknownEventTypeException {
-        track(eventName, userId, attributes, (Long)eventValue);
+        track(eventName, userId, attributes, (Long)eventValue, null);
+    }
+
+    public void track(@Nonnull String eventName,
+                      @Nonnull String userId,
+                      @Nonnull Map<String, String> attributes,
+                      long eventValue,
+                      @CheckForNull String sessionId) throws UnknownEventTypeException {
+        track(eventName, userId, attributes, (Long)eventValue, sessionId);
     }
 
     private void track(@Nonnull String eventName,
                        @Nonnull String userId,
                        @Nonnull Map<String, String> attributes,
-                       @CheckForNull Long eventValue) throws UnknownEventTypeException {
+                       @CheckForNull Long eventValue,
+                       @CheckForNull String sessionId) throws UnknownEventTypeException {
 
         ProjectConfig currentConfig = getProjectConfig();
 
@@ -238,16 +295,9 @@ public class Optimizely {
         attributes = filterAttributes(currentConfig, attributes);
 
         // create the conversion event request parameters, then dispatch
-        LogEvent conversionEvent;
-        if (eventValue == null) {
-            conversionEvent = eventBuilder.createConversionEvent(currentConfig, bucketer, userId,
-                                                                 eventType.getId(), eventType.getKey(),
-                                                                 attributes);
-        } else {
-            conversionEvent = eventBuilder.createConversionEvent(currentConfig, bucketer, userId,
-                                                                 eventType.getId(), eventType.getKey(), attributes,
-                                                                 eventValue);
-        }
+        LogEvent conversionEvent = eventBuilder.createConversionEvent(currentConfig, bucketer, userId,
+                                                                      eventType.getId(), eventType.getKey(), attributes,
+                                                                      eventValue, sessionId);
 
         if (conversionEvent == null) {
             logger.info("There are no valid experiments for event \"{}\" to track.", eventName);
@@ -265,7 +315,7 @@ public class Optimizely {
         }
 
         notificationBroadcaster.broadcastEventTracked(eventName, userId, attributes, eventValue,
-                conversionEvent);
+                                                      conversionEvent);
     }
 
     //======== live variable getters ========//

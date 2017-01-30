@@ -40,6 +40,8 @@ public class SerializerTestUtils {
     private static final String variationId = "4";
     private static final boolean isLayerHoldback = false;
     private static final String experimentId = "5";
+    private static final String sessionId = "sessionid";
+    private static final String revision = "1";
     private static final Decision decision = new Decision(variationId, isLayerHoldback, experimentId);
 
     private static final String featureId = "6";
@@ -52,7 +54,7 @@ public class SerializerTestUtils {
 
     private static final boolean actionTriggered = true;
     private static final List<LayerState> layerStates =
-            Collections.singletonList(new LayerState(layerId, decision, actionTriggered));
+            Collections.singletonList(new LayerState(layerId, revision, decision, actionTriggered));
 
     private static final String eventEntityId = "7";
     private static final String eventName = "testevent";
@@ -74,6 +76,14 @@ public class SerializerTestUtils {
         impression.setUserFeatures(userFeatures);
         impression.setClientVersion("0.1.1");
         impression.setAnonymizeIP(true);
+        impression.setRevision(revision);
+
+        return impression;
+    }
+
+    static Impression generateImpressionWithSessionId() {
+        Impression impression = generateImpression();
+        impression.setSessionId(sessionId);
 
         return impression;
     }
@@ -93,6 +103,14 @@ public class SerializerTestUtils {
         conversion.setIsGlobalHoldback(isGlobalHoldback);
         conversion.setClientVersion("0.1.1");
         conversion.setAnonymizeIP(true);
+        conversion.setRevision(revision);
+
+        return conversion;
+    }
+
+    static Conversion generateConversionWithSessionId() {
+        Conversion conversion = generateConversion();
+        conversion.setSessionId(sessionId);
 
         return conversion;
     }
@@ -102,8 +120,20 @@ public class SerializerTestUtils {
         return impressionJson.replaceAll("\\s+", "");
     }
 
+    static String generateImpressionWithSessionIdJson() throws IOException {
+        String impressionJson = Resources.toString(Resources.getResource("serializer/impression-session-id.json"),
+                                                   Charsets.UTF_8);
+        return impressionJson.replaceAll("\\s+", "");
+    }
+
     static String generateConversionJson() throws IOException {
         String conversionJson = Resources.toString(Resources.getResource("serializer/conversion.json"), Charsets.UTF_8);
+        return conversionJson.replaceAll("\\s+", "");
+    }
+
+    static String generateConversionWithSessionIdJson() throws IOException {
+        String conversionJson = Resources.toString(Resources.getResource("serializer/conversion-session-id.json"),
+                                                   Charsets.UTF_8);
         return conversionJson.replaceAll("\\s+", "");
     }
 }

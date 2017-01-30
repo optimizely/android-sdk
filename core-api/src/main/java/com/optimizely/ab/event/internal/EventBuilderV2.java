@@ -76,7 +76,8 @@ public class EventBuilderV2 extends EventBuilder {
                                           @Nonnull Experiment activatedExperiment,
                                           @Nonnull Variation variation,
                                           @Nonnull String userId,
-                                          @Nonnull Map<String, String> attributes) {
+                                          @Nonnull Map<String, String> attributes,
+                                          @CheckForNull String sessionId) {
 
         Impression impressionPayload = new Impression();
         impressionPayload.setVisitorId(userId);
@@ -96,6 +97,8 @@ public class EventBuilderV2 extends EventBuilder {
         impressionPayload.setClientEngine(clientEngine);
         impressionPayload.setClientVersion(clientVersion);
         impressionPayload.setAnonymizeIP(projectConfig.getAnonymizeIP());
+        impressionPayload.setRevision(projectConfig.getRevision());
+        impressionPayload.setSessionId(sessionId);
 
         String payload = this.serializer.serialize(impressionPayload);
         return new LogEvent(RequestMethod.POST, IMPRESSION_ENDPOINT, Collections.<String, String>emptyMap(), payload);
@@ -107,7 +110,8 @@ public class EventBuilderV2 extends EventBuilder {
                                           @Nonnull String eventId,
                                           @Nonnull String eventName,
                                           @Nonnull Map<String, String> attributes,
-                                          @CheckForNull Long eventValue) {
+                                          @CheckForNull Long eventValue,
+                                          @CheckForNull String sessionId) {
 
         Conversion conversionPayload = new Conversion();
         conversionPayload.setVisitorId(userId);
@@ -137,6 +141,9 @@ public class EventBuilderV2 extends EventBuilder {
         conversionPayload.setAnonymizeIP(projectConfig.getAnonymizeIP());
         conversionPayload.setClientEngine(clientEngine);
         conversionPayload.setClientVersion(clientVersion);
+        conversionPayload.setRevision(projectConfig.getRevision());
+        conversionPayload.setSessionId(sessionId);
+
 
         String payload = this.serializer.serialize(conversionPayload);
         return new LogEvent(RequestMethod.POST, CONVERSION_ENDPOINT, Collections.<String, String>emptyMap(), payload);
@@ -203,7 +210,8 @@ public class EventBuilderV2 extends EventBuilder {
                     Variation bucketedVariation = bucketer.bucket(experiment, userId);
                     if (bucketedVariation != null) {
                         Decision decision = new Decision(bucketedVariation.getId(), false, experiment.getId());
-                        layerStates.add(new LayerState(experiment.getLayerId(), decision, true));
+                        layerStates.add(
+                                new LayerState(experiment.getLayerId(), projectConfig.getRevision(), decision, true));
                     }
                 } else {
                     logger.info(

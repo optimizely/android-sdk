@@ -104,6 +104,7 @@ public class EventBuilderV2Test {
         assertThat(impression.getUserFeatures(), is(expectedUserFeatures));
         assertThat(impression.getClientEngine(), is(ClientEngine.JAVA_SDK.getClientEngineValue()));
         assertThat(impression.getClientVersion(), is(BuildVersionInfo.VERSION));
+        assertNull(impression.getSessionId());
     }
 
     /**
@@ -153,6 +154,27 @@ public class EventBuilderV2Test {
     }
 
     /**
+     * Verify that passing a non-null session ID to
+     * {@link EventBuilder#createImpressionEvent(ProjectConfig, Experiment, Variation, String, Map, String)} properly
+     * constructs an impression payload with the session ID specified.
+     */
+    @Test
+    public void createImpressionEventWithSessionId() throws Exception {
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        Experiment activatedExperiment = projectConfig.getExperiments().get(0);
+        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        Attribute attribute = projectConfig.getAttributes().get(0);
+        String userId = "userId";
+        Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
+        String sessionId = "sessionid";
+
+        LogEvent impressionEvent = builder.createImpressionEvent(projectConfig, activatedExperiment, bucketedVariation,
+                                                                 userId, attributeMap, sessionId);
+        Impression impression = gson.fromJson(impressionEvent.getBody(), Impression.class);
+        assertThat(impression.getSessionId(), is(sessionId));
+    }
+
+    /**
      * Verify {@link Conversion} event creation
      */
     @Test
@@ -185,7 +207,7 @@ public class EventBuilderV2Test {
             if (experimentIds.contains(experiment.getId()) &&
                     ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId, attributeMap)) {
                 verify(mockBucketAlgorithm).bucket(experiment, userId);
-                LayerState layerState = new LayerState(experiment.getLayerId(),
+                LayerState layerState = new LayerState(experiment.getLayerId(), projectConfig.getRevision(),
                         new Decision(experiment.getVariations().get(0).getId(), false, experiment.getId()), true);
                 expectedLayerStates.add(layerState);
             } else {
@@ -397,5 +419,34 @@ public class EventBuilderV2Test {
         // only 1 experiment uses the event and it has a "Launched" status so the bucket map is empty and the returned
         // event will be null
         assertNull(conversionEvent);
+    }
+
+    /**
+     * Verify that passing a non-null session ID to
+     * {@link EventBuilder#createConversionEvent(ProjectConfig, Bucketer, String, String, String, Map, Long, String)}
+     * properly constructs an impression payload with the session ID specified.
+     */
+    @Test
+    public void createConversionEventWithSessionId() throws Exception {
+        EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_SDK, "0.0.0");
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        Attribute attribute = projectConfig.getAttributes().get(0);
+        EventType eventType = projectConfig.getEventTypes().get(0);
+        String userId = "userId";
+        String sessionId = "sessionid";
+
+        Bucketer mockBucketAlgorithm = mock(Bucketer.class);
+        for (Experiment experiment : projectConfig.getExperiments()) {
+            when(mockBucketAlgorithm.bucket(experiment, userId))
+                .thenReturn(experiment.getVariations().get(0));
+        }
+
+        Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
+                                                                 eventType.getId(), eventType.getKey(), attributeMap,
+                                                                 null, sessionId);
+
+        Conversion conversion = gson.fromJson(conversionEvent.getBody(), Conversion.class);
+        assertThat(conversion.getSessionId(), is(sessionId));
     }
 }

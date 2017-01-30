@@ -29,11 +29,20 @@ import java.util.Map;
 
 public abstract class EventBuilder {
 
+    public LogEvent createImpressionEvent(@Nonnull ProjectConfig projectConfig,
+                                          @Nonnull Experiment activatedExperiment,
+                                          @Nonnull Variation variation,
+                                          @Nonnull String userId,
+                                          @Nonnull Map<String, String> attributes) {
+        return createImpressionEvent(projectConfig, activatedExperiment, variation, userId, attributes, null);
+    }
+
     public abstract LogEvent createImpressionEvent(@Nonnull ProjectConfig projectConfig,
                                                    @Nonnull Experiment activatedExperiment,
                                                    @Nonnull Variation variation,
                                                    @Nonnull String userId,
-                                                   @Nonnull Map<String, String> attributes);
+                                                   @Nonnull Map<String, String> attributes,
+                                                   @CheckForNull String sessionId);
 
     public LogEvent createConversionEvent(@Nonnull ProjectConfig projectConfig,
                                           @Nonnull Bucketer bucketer,
@@ -41,7 +50,7 @@ public abstract class EventBuilder {
                                           @Nonnull String eventId,
                                           @Nonnull String eventName,
                                           @Nonnull Map<String, String> attributes) {
-        return createConversionEvent(projectConfig, bucketer, userId, eventId, eventName, attributes, null);
+        return createConversionEvent(projectConfig, bucketer, userId, eventId, eventName, attributes, null, null);
     }
 
     public LogEvent createConversionEvent(@Nonnull ProjectConfig projectConfig,
@@ -51,14 +60,16 @@ public abstract class EventBuilder {
                                           @Nonnull String eventName,
                                           @Nonnull Map<String, String> attributes,
                                           long eventValue) {
-        return createConversionEvent(projectConfig, bucketer, userId, eventId, eventName, attributes, (Long)eventValue);
+        return createConversionEvent(projectConfig, bucketer, userId, eventId, eventName, attributes, (Long)eventValue,
+                                     null);
     }
 
-    abstract LogEvent createConversionEvent(@Nonnull ProjectConfig projectConfig,
-                                            @Nonnull Bucketer bucketer,
-                                            @Nonnull String userId,
-                                            @Nonnull String eventId,
-                                            @Nonnull String eventName,
-                                            @Nonnull Map<String, String> attributes,
-                                            @CheckForNull Long eventValue);
+    public abstract LogEvent createConversionEvent(@Nonnull ProjectConfig projectConfig,
+                                                   @Nonnull Bucketer bucketer,
+                                                   @Nonnull String userId,
+                                                   @Nonnull String eventId,
+                                                   @Nonnull String eventName,
+                                                   @Nonnull Map<String, String> attributes,
+                                                   @CheckForNull Long eventValue,
+                                                   @CheckForNull String sessionId);
 }

@@ -32,12 +32,23 @@ public class Conversion extends Event {
     private List<Feature> eventFeatures;
     private boolean isGlobalHoldback;
     private boolean anonymizeIP;
+    private String sessionId;
+    private String revision;
 
     public Conversion() { }
 
     public Conversion(String visitorId, long timestamp, String projectId, String accountId, List<Feature> userFeatures,
                       List<LayerState> layerStates, String eventEntityId, String eventName,
-                      List<EventMetric> eventMetrics, List<Feature> eventFeatures, boolean isGlobalHoldback, boolean anonymizeIP) {
+                      List<EventMetric> eventMetrics, List<Feature> eventFeatures, boolean isGlobalHoldback,
+                      String revision, boolean anonymizeIP) {
+        this(visitorId, timestamp, projectId, accountId, userFeatures, layerStates, eventEntityId, eventName,
+             eventMetrics, eventFeatures, isGlobalHoldback, anonymizeIP, revision, null);
+    }
+
+    public Conversion(String visitorId, long timestamp, String projectId, String accountId, List<Feature> userFeatures,
+                      List<LayerState> layerStates, String eventEntityId, String eventName,
+                      List<EventMetric> eventMetrics, List<Feature> eventFeatures, boolean isGlobalHoldback,
+                      boolean anonymizeIP, String revision, String sessionId) {
         this.visitorId = visitorId;
         this.timestamp = timestamp;
         this.projectId = projectId;
@@ -50,6 +61,8 @@ public class Conversion extends Event {
         this.eventFeatures = eventFeatures;
         this.isGlobalHoldback = isGlobalHoldback;
         this.anonymizeIP = anonymizeIP;
+        this.revision = revision;
+        this.sessionId = sessionId;
     }
 
     public String getVisitorId() {
@@ -144,27 +157,44 @@ public class Conversion extends Event {
 
     public void setAnonymizeIP(boolean anonymizeIP) { this.anonymizeIP = anonymizeIP; }
 
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
+
     @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof Conversion))
-            return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
-        if (!super.equals(other))
-            return false;
+        Conversion that = (Conversion) o;
 
-        Conversion otherConversion = (Conversion)other;
-
-        return timestamp == otherConversion.timestamp &&
-               isGlobalHoldback == otherConversion.isGlobalHoldback &&
-               visitorId.equals(otherConversion.visitorId) &&
-               projectId.equals(otherConversion.projectId) &&
-               accountId.equals(otherConversion.accountId) &&
-               userFeatures.equals(otherConversion.userFeatures) &&
-               layerStates.equals(otherConversion.layerStates) &&
-               eventEntityId.equals(otherConversion.eventEntityId) &&
-               eventName.equals(otherConversion.eventName) &&
-               eventMetrics.equals(otherConversion.eventMetrics) &&
-               eventFeatures.equals(otherConversion.eventFeatures);
+        if (timestamp != that.timestamp) return false;
+        if (isGlobalHoldback != that.isGlobalHoldback) return false;
+        if (anonymizeIP != that.anonymizeIP) return false;
+        if (!visitorId.equals(that.visitorId)) return false;
+        if (!projectId.equals(that.projectId)) return false;
+        if (!accountId.equals(that.accountId)) return false;
+        if (!userFeatures.equals(that.userFeatures)) return false;
+        if (!layerStates.equals(that.layerStates)) return false;
+        if (!eventEntityId.equals(that.eventEntityId)) return false;
+        if (!eventName.equals(that.eventName)) return false;
+        if (!eventMetrics.equals(that.eventMetrics)) return false;
+        if (!eventFeatures.equals(that.eventFeatures)) return false;
+        if (sessionId != null ? !sessionId.equals(that.sessionId) : that.sessionId != null) return false;
+        return revision.equals(that.revision);
     }
 
     @Override
@@ -181,6 +211,9 @@ public class Conversion extends Event {
         result = 31 * result + eventMetrics.hashCode();
         result = 31 * result + eventFeatures.hashCode();
         result = 31 * result + (isGlobalHoldback ? 1 : 0);
+        result = 31 * result + (anonymizeIP ? 1 : 0);
+        result = 31 * result + (sessionId != null ? sessionId.hashCode() : 0);
+        result = 31 * result + revision.hashCode();
         return result;
     }
 
@@ -199,7 +232,8 @@ public class Conversion extends Event {
                 ", eventFeatures=" + eventFeatures +
                 ", isGlobalHoldback=" + isGlobalHoldback +
                 ", anonymizeIP=" + anonymizeIP +
-                ", clientEngine='" + clientEngine +
-                ", clientVersion='" + clientVersion + '}';
+                ", sessionId='" + sessionId + '\'' +
+                ", revision='" + revision + '\'' +
+                '}';
     }
 }
