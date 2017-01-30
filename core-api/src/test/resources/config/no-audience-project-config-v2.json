@@ -51,6 +51,28 @@
         "entityId": "279",
         "endOfRange": 9000
       }]
+    },
+    {
+      "id": "119",
+      "key": "etag3",
+      "status": "Launched",
+      "layerId": "3",
+      "audienceIds": [],
+      "variations": [{
+        "id": "280",
+        "key": "vtag5"
+      }, {
+        "id": "281",
+        "key": "vtag6"
+      }],
+      "forcedVariations": {},
+      "trafficAllocation": [{
+        "entityId": "280",
+        "endOfRange": 5000
+      }, {
+        "entityId": "281",
+        "endOfRange": 10000
+      }]
     }
   ],
   "groups": [],
@@ -82,6 +104,13 @@
       "experimentIds": [
         "118",
         "223"
+      ]
+    },
+    {
+      "id": "100",
+      "key": "launched_exp_event",
+      "experimentIds": [
+        "119"
       ]
     }
   ]

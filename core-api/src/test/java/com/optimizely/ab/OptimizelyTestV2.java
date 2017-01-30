@@ -669,6 +669,37 @@ public class OptimizelyTestV2 {
         optimizely.activate(experiment.getKey(), "userId");
     }
 
+    /**
+     * Verify that {@link Optimizely#activate(String, String)} doesn't dispatch an event for an experiment with a
+     * "Launched" status.
+     */
+    @Test
+    public void activateLaunchedExperimentDoesNotDispatchEvent() throws Exception {
+        String datafile = noAudienceProjectConfigJsonV2();
+        ProjectConfig projectConfig = noAudienceProjectConfigV2();
+        Experiment launchedExperiment = projectConfig.getExperiments().get(2);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withBucketing(mockBucketer)
+            .withConfig(projectConfig)
+            .build();
+
+        Variation expectedVariation = launchedExperiment.getVariations().get(0);
+
+        when(mockBucketer.bucket(launchedExperiment, "userId"))
+            .thenReturn(launchedExperiment.getVariations().get(0));
+
+        logbackVerifier.expectMessage(Level.INFO,
+                                      "Experiment has \"Launched\" status so not dispatching event during activation.");
+        Variation variation = optimizely.activate(launchedExperiment.getKey(), "userId");
+
+        assertNotNull(variation);
+        assertThat(variation.getKey(), is(expectedVariation.getKey()));
+
+        // verify that we did NOT dispatch an event
+        verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
+    }
+
     //======== track tests ========//
 
     /**
@@ -951,6 +982,26 @@ public class OptimizelyTestV2 {
 
         logbackVerifier.expectMessage(Level.ERROR, "Unexpected exception in event dispatcher");
         optimizely.track(eventType.getKey(), "userId");
+    }
+
+    /**
+     * Verify that {@link Optimizely#track(String, String)} doesn't make a dispatch for an event being used by a
+     * single experiment with a "Launched" status.
+     */
+    @Test
+    public void trackLaunchedExperimentDoesNotDispatchEvent() throws Exception {
+        String datafile = noAudienceProjectConfigJsonV2();
+        ProjectConfig projectConfig = noAudienceProjectConfigV2();
+        EventType eventType = projectConfig.getEventTypes().get(3);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withConfig(projectConfig)
+            .build();
+
+        optimizely.track(eventType.getKey(), "userId");
+
+        // verify that we did NOT dispatch an event
+        verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
     }
 
     //======== getVariation tests ========//

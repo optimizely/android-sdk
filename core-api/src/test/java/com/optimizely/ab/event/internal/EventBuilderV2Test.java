@@ -16,6 +16,7 @@
  */
 package com.optimizely.ab.event.internal;
 
+import ch.qos.logback.classic.Level;
 import com.google.gson.Gson;
 
 import com.optimizely.ab.bucketing.Bucketer;
@@ -33,8 +34,10 @@ import com.optimizely.ab.event.internal.payload.EventMetric;
 import com.optimizely.ab.event.internal.payload.Feature;
 import com.optimizely.ab.event.internal.payload.Impression;
 import com.optimizely.ab.event.internal.payload.LayerState;
+import com.optimizely.ab.internal.LogbackVerifier;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -57,6 +60,9 @@ import static org.mockito.Mockito.when;
  * Test for {@link EventBuilderV2}
  */
 public class EventBuilderV2Test {
+
+    @Rule
+    public LogbackVerifier logbackVerifier = new LogbackVerifier();
 
     private Gson gson = new Gson();
     private EventBuilderV2 builder = new EventBuilderV2();
@@ -363,5 +369,33 @@ public class EventBuilderV2Test {
 
         assertThat(conversion.getClientEngine(), is(ClientEngine.ANDROID_SDK.getClientEngineValue()));
         assertThat(conversion.getClientVersion(), is("0.0.0"));
+    }
+
+    /**
+     * Verify that {@link EventBuilderV2} doesn't add experiments with a "Launched" status to the bucket map
+     */
+    @Test
+    public void createConversionEventForEventUsingLaunchedExperiment() throws Exception {
+        EventBuilderV2 builder = new EventBuilderV2();
+        ProjectConfig projectConfig = ProjectConfigTestUtils.noAudienceProjectConfigV2();
+        EventType eventType = projectConfig.getEventTypes().get(3);
+        String userId = "userId";
+
+        Bucketer mockBucketAlgorithm = mock(Bucketer.class);
+        for (Experiment experiment : projectConfig.getExperiments()) {
+            when(mockBucketAlgorithm.bucket(experiment, userId))
+                .thenReturn(experiment.getVariations().get(0));
+        }
+
+        logbackVerifier.expectMessage(Level.INFO,
+                "Not tracking event \"launched_exp_event\" for experiment \"etag3\" because experiment has status " +
+                "\"Launched\".");
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
+                                                                 eventType.getId(), eventType.getKey(),
+                                                                 Collections.<String, String>emptyMap());
+
+        // only 1 experiment uses the event and it has a "Launched" status so the bucket map is empty and the returned
+        // event will be null
+        assertNull(conversionEvent);
     }
 }

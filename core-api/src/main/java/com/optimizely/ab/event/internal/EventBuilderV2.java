@@ -199,10 +199,16 @@ public class EventBuilderV2 extends EventBuilder {
         for (Experiment experiment : allExperiments) {
             if (experimentIds.contains(experiment.getId()) &&
                     ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId, attributes)) {
-                Variation bucketedVariation = bucketer.bucket(experiment, userId);
-                if (bucketedVariation != null) {
-                    Decision decision = new Decision(bucketedVariation.getId(), false, experiment.getId());
-                    layerStates.add(new LayerState(experiment.getLayerId(), decision, true));
+                if (experiment.isRunning()) {
+                    Variation bucketedVariation = bucketer.bucket(experiment, userId);
+                    if (bucketedVariation != null) {
+                        Decision decision = new Decision(bucketedVariation.getId(), false, experiment.getId());
+                        layerStates.add(new LayerState(experiment.getLayerId(), decision, true));
+                    }
+                } else {
+                    logger.info(
+                        "Not tracking event \"{}\" for experiment \"{}\" because experiment has status \"Launched\".",
+                        eventKey, experiment.getKey());
                 }
             }
         }

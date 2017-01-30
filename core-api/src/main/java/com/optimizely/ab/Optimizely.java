@@ -172,18 +172,23 @@ public class Optimizely {
             return null;
         }
 
-        LogEvent impressionEvent =
-                eventBuilder.createImpressionEvent(projectConfig, experiment, variation, userId, attributes);
-        logger.info("Activating user \"{}\" in experiment \"{}\".", userId, experiment.getKey());
-        logger.debug("Dispatching impression event to URL {} with params {} and payload \"{}\".",
-                     impressionEvent.getEndpointUrl(), impressionEvent.getRequestParams(), impressionEvent.getBody());
-        try {
-            eventHandler.dispatchEvent(impressionEvent);
-        } catch (Exception e) {
-            logger.error("Unexpected exception in event dispatcher", e);
-        }
+        if (experiment.isRunning()) {
+            LogEvent impressionEvent =
+                    eventBuilder.createImpressionEvent(projectConfig, experiment, variation, userId, attributes);
+            logger.info("Activating user \"{}\" in experiment \"{}\".", userId, experiment.getKey());
+            logger.debug(
+                "Dispatching impression event to URL {} with params {} and payload \"{}\".",
+                impressionEvent.getEndpointUrl(), impressionEvent.getRequestParams(), impressionEvent.getBody());
+            try {
+                eventHandler.dispatchEvent(impressionEvent);
+            } catch (Exception e) {
+                logger.error("Unexpected exception in event dispatcher", e);
+            }
 
-        notificationBroadcaster.broadcastExperimentActivated(experiment, userId, attributes, variation);
+            notificationBroadcaster.broadcastExperimentActivated(experiment, userId, attributes, variation);
+        } else {
+            logger.info("Experiment has \"Launched\" status so not dispatching event during activation.");
+        }
 
         return variation;
     }
