@@ -1,3 +1,11 @@
+## 1.4.0
+
+January 30, 2017
+
+- Add `sessionId` parameter to `activate` and `track` and include in event payload
+- Append datafile `revision` to event payload
+- Add support for "Launched" experiment status
+
 ## 1.3.0
 
 January 17, 2017
