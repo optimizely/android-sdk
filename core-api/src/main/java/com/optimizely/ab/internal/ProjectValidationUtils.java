@@ -42,7 +42,7 @@ public final class ProjectValidationUtils {
      */
     public static boolean validatePreconditions(ProjectConfig projectConfig, Experiment experiment, String userId,
                                                 Map<String, String> attributes) {
-        if (!experiment.isRunning()) {
+        if (!experiment.isActive()) {
             logger.info("Experiment \"{}\" is not running.", experiment.getKey(), userId);
             return false;
         }

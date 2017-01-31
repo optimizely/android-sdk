@@ -68,6 +68,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -121,7 +122,7 @@ public class OptimizelyTestV1 {
         testParams.put("test", "params");
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createImpressionEvent(projectConfig, activatedExperiment, bucketedVariation, "userId",
-                                                    testUserAttributes))
+                                                    testUserAttributes, null))
             .thenReturn(logEventToDispatch);
 
         when(mockBucketer.bucket(activatedExperiment, "userId"))
@@ -250,7 +251,7 @@ public class OptimizelyTestV1 {
         testParams.put("test", "params");
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createImpressionEvent(eq(projectConfig), eq(activatedExperiment), eq(bucketedVariation),
-                                                    eq("userId"), eq(testUserAttributes)))
+                                                    eq("userId"), eq(testUserAttributes), isNull(String.class)))
             .thenReturn(logEventToDispatch);
 
         when(mockBucketer.bucket(activatedExperiment, "userId"))
@@ -339,7 +340,8 @@ public class OptimizelyTestV1 {
         testParams.put("test", "params");
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createImpressionEvent(eq(projectConfig), eq(activatedExperiment), eq(bucketedVariation),
-                                                    eq("userId"), anyMapOf(String.class, String.class)))
+                                                    eq("userId"), anyMapOf(String.class, String.class),
+                                                    isNull(String.class)))
             .thenReturn(logEventToDispatch);
 
         when(mockBucketer.bucket(activatedExperiment, "userId"))
@@ -359,7 +361,8 @@ public class OptimizelyTestV1 {
                                                        eq(activatedExperiment),
                                                        eq(bucketedVariation),
                                                        eq("userId"),
-                                                       attributeCaptor.capture());
+                                                       attributeCaptor.capture(),
+                                                       isNull(String.class));
 
         Map<String, String> actualValue = attributeCaptor.getValue();
         assertThat(actualValue, hasEntry(attribute.getKey(), "attributeValue"));
@@ -400,7 +403,8 @@ public class OptimizelyTestV1 {
         testParams.put("test", "params");
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createImpressionEvent(eq(projectConfig), eq(activatedExperiment), eq(bucketedVariation),
-                                                    eq("userId"), anyMapOf(String.class, String.class)))
+                                                    eq("userId"), anyMapOf(String.class, String.class),
+                                                    isNull(String.class)))
             .thenReturn(logEventToDispatch);
 
         when(mockBucketer.bucket(activatedExperiment, "userId"))
@@ -422,7 +426,8 @@ public class OptimizelyTestV1 {
 
         // verify that the event builder was called with the expected attributes
         verify(mockEventBuilder).createImpressionEvent(eq(projectConfig), eq(activatedExperiment),
-                                                       eq(bucketedVariation), eq("userId"), attributeCaptor.capture());
+                                                       eq(bucketedVariation), eq("userId"), attributeCaptor.capture(),
+                                                       isNull(String.class));
 
         Map<String, String> actualValue = attributeCaptor.getValue();
         assertThat(actualValue, not(hasKey("unknownAttribute")));
@@ -789,7 +794,8 @@ public class OptimizelyTestV1 {
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
                                                     eq(eventType.getId()), eq(eventType.getKey()),
-                                                    anyMapOf(String.class, String.class)))
+                                                    anyMapOf(String.class, String.class), isNull(Long.class),
+                                                    isNull(String.class)))
             .thenReturn(logEventToDispatch);
 
         logbackVerifier.expectMessage(Level.INFO, "Tracking event \"clicked_cart\" for user \"userId\".");
@@ -804,8 +810,9 @@ public class OptimizelyTestV1 {
 
         // verify that the event builder was called with the expected attributes
         verify(mockEventBuilder).createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
-                                                        eq(eventType.getId()), eq(eventType.getKey()),
-                                                        attributeCaptor.capture());
+                                                       eq(eventType.getId()), eq(eventType.getKey()),
+                                                       attributeCaptor.capture(), isNull(Long.class),
+                                                       isNull(String.class));
 
         Map<String, String> actualValue = attributeCaptor.getValue();
         assertThat(actualValue, hasEntry(attribute.getKey(), "attributeValue"));
@@ -841,7 +848,8 @@ public class OptimizelyTestV1 {
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
                                                     eq(eventType.getId()), eq(eventType.getKey()),
-                                                    anyMapOf(String.class, String.class)))
+                                                    anyMapOf(String.class, String.class), isNull(Long.class),
+                                                    isNull(String.class)))
             .thenReturn(logEventToDispatch);
 
         logbackVerifier.expectMessage(Level.INFO, "Tracking event \"clicked_cart\" for user \"userId\".");
@@ -858,7 +866,8 @@ public class OptimizelyTestV1 {
         // verify that the event builder was called with the expected attributes
         verify(mockEventBuilder).createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
                                                        eq(eventType.getId()), eq(eventType.getKey()),
-                                                       attributeCaptor.capture());
+                                                       attributeCaptor.capture(), isNull(Long.class),
+                                                       isNull(String.class));
 
         Map<String, String> actualValue = attributeCaptor.getValue();
         assertThat(actualValue, not(hasKey("unknownAttribute")));
@@ -891,7 +900,8 @@ public class OptimizelyTestV1 {
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
                                                     eq(eventType.getId()), eq(eventType.getKey()),
-                                                    eq(Collections.<String, String>emptyMap()), eq(revenue)))
+                                                    eq(Collections.<String, String>emptyMap()), eq(revenue),
+                                                    isNull(String.class)))
             .thenReturn(logEventToDispatch);
 
         // call track
@@ -904,7 +914,7 @@ public class OptimizelyTestV1 {
         verify(mockEventBuilder).createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
                                                        eq(eventType.getId()), eq(eventType.getKey()),
                                                        eq(Collections.<String, String>emptyMap()),
-                                                       revenueCaptor.capture());
+                                                       revenueCaptor.capture(), isNull(String.class));
 
         Long actualValue = revenueCaptor.getValue();
         assertThat(actualValue, is(revenue));

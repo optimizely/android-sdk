@@ -67,7 +67,8 @@ public class EventBuilderV1 extends EventBuilder {
                                           @Nonnull Experiment activatedExperiment,
                                           @Nonnull Variation variation,
                                           @Nonnull String userId,
-                                          @Nonnull Map<String, String> attributes) {
+                                          @Nonnull Map<String, String> attributes,
+                                          @CheckForNull String sessionId) {
 
         Map<String, String> requestParams = new HashMap<String, String>();
         addCommonRequestParams(requestParams, projectConfig, userId, attributes);
@@ -78,13 +79,14 @@ public class EventBuilderV1 extends EventBuilder {
                             String.format(ENDPOINT_FORMAT, projectConfig.getProjectId()), requestParams, EMPTY_BODY);
     }
 
-    LogEvent createConversionEvent(@Nonnull ProjectConfig projectConfig,
-                                   @Nonnull Bucketer bucketer,
-                                   @Nonnull String userId,
-                                   @Nonnull String eventId,
-                                   @Nonnull String eventName,
-                                   @Nonnull Map<String, String> attributes,
-                                   @CheckForNull Long eventValue) {
+    public LogEvent createConversionEvent(@Nonnull ProjectConfig projectConfig,
+                                          @Nonnull Bucketer bucketer,
+                                          @Nonnull String userId,
+                                          @Nonnull String eventId,
+                                          @Nonnull String eventName,
+                                          @Nonnull Map<String, String> attributes,
+                                          @CheckForNull Long eventValue,
+                                          @CheckForNull String sessionId) {
 
         Map<String, String> requestParams = new HashMap<String, String>();
         List<Experiment> addedExperiments =

@@ -19,13 +19,15 @@ package com.optimizely.ab.event.internal.payload;
 public class LayerState {
 
     private String layerId;
+    private String revision;
     private Decision decision;
     private boolean actionTriggered;
 
     public LayerState() { }
 
-    public LayerState(String layerId, Decision decision, boolean actionTriggered) {
+    public LayerState(String layerId, String revision, Decision decision, boolean actionTriggered) {
         this.layerId = layerId;
+        this.revision = revision;
         this.decision = decision;
         this.actionTriggered = actionTriggered;
     }
@@ -36,6 +38,14 @@ public class LayerState {
 
     public void setLayerId(String layerId) {
         this.layerId = layerId;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public void setRevision(String revision) {
+        this.revision = revision;
     }
 
     public Decision getDecision() {
@@ -55,21 +65,24 @@ public class LayerState {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof LayerState))
-            return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        LayerState otherLayerState = (LayerState)other;
+        LayerState that = (LayerState) o;
 
-        return layerId.equals(otherLayerState.getLayerId()) &&
-               decision.equals(otherLayerState.getDecision()) &&
-               actionTriggered == otherLayerState.getActionTriggered();
+        if (actionTriggered != that.actionTriggered) return false;
+        if (!layerId.equals(that.layerId)) return false;
+        if (!revision.equals(that.revision)) return false;
+        return decision.equals(that.decision);
+
     }
 
     @Override
     public int hashCode() {
-        int result = layerId != null ? layerId.hashCode() : 0;
-        result = 31 * result + (decision != null ? decision.hashCode() : 0);
+        int result = layerId.hashCode();
+        result = 31 * result + revision.hashCode();
+        result = 31 * result + decision.hashCode();
         result = 31 * result + (actionTriggered ? 1 : 0);
         return result;
     }

@@ -68,6 +68,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -121,8 +122,8 @@ public class OptimizelyTestV2 {
         testParams.put("test", "params");
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createImpressionEvent(projectConfig, activatedExperiment, bucketedVariation, "userId",
-                testUserAttributes))
-                .thenReturn(logEventToDispatch);
+                                                    testUserAttributes, null))
+            .thenReturn(logEventToDispatch);
 
         when(mockBucketer.bucket(activatedExperiment, "userId"))
                 .thenReturn(bucketedVariation);
@@ -250,8 +251,8 @@ public class OptimizelyTestV2 {
         testParams.put("test", "params");
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createImpressionEvent(eq(projectConfig), eq(activatedExperiment), eq(bucketedVariation),
-                eq("userId"), eq(testUserAttributes)))
-                .thenReturn(logEventToDispatch);
+                                                    eq("userId"), eq(testUserAttributes), isNull(String.class)))
+            .thenReturn(logEventToDispatch);
 
         when(mockBucketer.bucket(activatedExperiment, "userId"))
                 .thenReturn(bucketedVariation);
@@ -339,8 +340,9 @@ public class OptimizelyTestV2 {
         testParams.put("test", "params");
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createImpressionEvent(eq(projectConfig), eq(activatedExperiment), eq(bucketedVariation),
-                eq("userId"), anyMapOf(String.class, String.class)))
-                .thenReturn(logEventToDispatch);
+                                                    eq("userId"), anyMapOf(String.class, String.class),
+                                                    isNull(String.class)))
+            .thenReturn(logEventToDispatch);
 
         when(mockBucketer.bucket(activatedExperiment, "userId"))
                 .thenReturn(bucketedVariation);
@@ -355,11 +357,9 @@ public class OptimizelyTestV2 {
 
         // setup the attribute map captor (so we can verify its content)
         ArgumentCaptor<Map> attributeCaptor = ArgumentCaptor.forClass(Map.class);
-        verify(mockEventBuilder).createImpressionEvent(eq(projectConfig),
-                eq(activatedExperiment),
-                eq(bucketedVariation),
-                eq("userId"),
-                attributeCaptor.capture());
+        verify(mockEventBuilder).createImpressionEvent(eq(projectConfig), eq(activatedExperiment),
+                                                       eq(bucketedVariation), eq("userId"), attributeCaptor.capture(),
+                                                       isNull(String.class));
 
         Map<String, String> actualValue = attributeCaptor.getValue();
         assertThat(actualValue, hasEntry(attribute.getKey(), "attributeValue"));
@@ -400,8 +400,9 @@ public class OptimizelyTestV2 {
         testParams.put("test", "params");
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createImpressionEvent(eq(projectConfig), eq(activatedExperiment), eq(bucketedVariation),
-                eq("userId"), anyMapOf(String.class, String.class)))
-                .thenReturn(logEventToDispatch);
+                                                    eq("userId"), anyMapOf(String.class, String.class),
+                                                    isNull(String.class)))
+            .thenReturn(logEventToDispatch);
 
         when(mockBucketer.bucket(activatedExperiment, "userId"))
                 .thenReturn(bucketedVariation);
@@ -422,7 +423,8 @@ public class OptimizelyTestV2 {
 
         // verify that the event builder was called with the expected attributes
         verify(mockEventBuilder).createImpressionEvent(eq(projectConfig), eq(activatedExperiment),
-                eq(bucketedVariation), eq("userId"), attributeCaptor.capture());
+                                                       eq(bucketedVariation), eq("userId"), attributeCaptor.capture(),
+                                                       isNull(String.class));
 
         Map<String, String> actualValue = attributeCaptor.getValue();
         assertThat(actualValue, not(hasKey("unknownAttribute")));
@@ -669,6 +671,72 @@ public class OptimizelyTestV2 {
         optimizely.activate(experiment.getKey(), "userId");
     }
 
+    /**
+     * Verify that {@link Optimizely#activate(String, String)} doesn't dispatch an event for an experiment with a
+     * "Launched" status.
+     */
+    @Test
+    public void activateLaunchedExperimentDoesNotDispatchEvent() throws Exception {
+        String datafile = noAudienceProjectConfigJsonV2();
+        ProjectConfig projectConfig = noAudienceProjectConfigV2();
+        Experiment launchedExperiment = projectConfig.getExperiments().get(2);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withBucketing(mockBucketer)
+            .withConfig(projectConfig)
+            .build();
+
+        Variation expectedVariation = launchedExperiment.getVariations().get(0);
+
+        when(mockBucketer.bucket(launchedExperiment, "userId"))
+            .thenReturn(launchedExperiment.getVariations().get(0));
+
+        logbackVerifier.expectMessage(Level.INFO,
+                                      "Experiment has \"Launched\" status so not dispatching event during activation.");
+        Variation variation = optimizely.activate(launchedExperiment.getKey(), "userId");
+
+        assertNotNull(variation);
+        assertThat(variation.getKey(), is(expectedVariation.getKey()));
+
+        // verify that we did NOT dispatch an event
+        verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
+    }
+
+    /**
+     * Verify that {@link Optimizely#activate(String, String, String)} passes the session ID to
+     * {@link EventBuilder#createImpressionEvent(ProjectConfig, Experiment, Variation, String, Map, String)}
+     */
+    @Test
+    public void activateWithSessionId() throws Exception {
+        String datafile = noAudienceProjectConfigJsonV2();
+        ProjectConfig projectConfig = noAudienceProjectConfigV2();
+        Experiment experiment = projectConfig.getExperiments().get(0);
+
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+
+        when(mockEventBuilder.createImpressionEvent(eq(projectConfig), any(Experiment.class), any(Variation.class),
+                                                    eq("userId"), eq(Collections.<String, String>emptyMap()),
+                                                    eq("test_session_id")))
+            .thenReturn(logEventToDispatch);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withConfig(projectConfig)
+            .withEventBuilder(mockEventBuilder)
+            .build();
+
+        optimizely.activate(experiment.getKey(), "userId", "test_session_id");
+
+        // verify that the event builder was called with the expected attributes
+        verify(mockEventBuilder).createImpressionEvent(eq(projectConfig), any(Experiment.class),
+                                                       any(Variation.class), eq("userId"),
+                                                       eq(Collections.<String, String>emptyMap()),
+                                                       eq("test_session_id"));
+    }
+
     //======== track tests ========//
 
     /**
@@ -789,7 +857,8 @@ public class OptimizelyTestV2 {
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
                                                     eq(eventType.getId()), eq(eventType.getKey()),
-                                                    anyMapOf(String.class, String.class)))
+                                                    anyMapOf(String.class, String.class), isNull(Long.class),
+                                                    isNull(String.class)))
             .thenReturn(logEventToDispatch);
 
         logbackVerifier.expectMessage(Level.INFO, "Tracking event \"clicked_cart\" for user \"userId\".");
@@ -804,8 +873,9 @@ public class OptimizelyTestV2 {
 
         // verify that the event builder was called with the expected attributes
         verify(mockEventBuilder).createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
-                eq(eventType.getId()), eq(eventType.getKey()),
-                attributeCaptor.capture());
+                                                       eq(eventType.getId()), eq(eventType.getKey()),
+                                                       attributeCaptor.capture(), isNull(Long.class),
+                                                       isNull(String.class));
 
         Map<String, String> actualValue = attributeCaptor.getValue();
         assertThat(actualValue, hasEntry(attribute.getKey(), "attributeValue"));
@@ -840,9 +910,10 @@ public class OptimizelyTestV2 {
         testParams.put("test", "params");
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
-                eq(eventType.getId()), eq(eventType.getKey()),
-                anyMapOf(String.class, String.class)))
-                .thenReturn(logEventToDispatch);
+                                                    eq(eventType.getId()), eq(eventType.getKey()),
+                                                    anyMapOf(String.class, String.class), isNull(Long.class),
+                                                    isNull(String.class)))
+            .thenReturn(logEventToDispatch);
 
         logbackVerifier.expectMessage(Level.INFO, "Tracking event \"clicked_cart\" for user \"userId\".");
         logbackVerifier.expectMessage(Level.WARN, "Attribute(s) [unknownAttribute] not in the datafile.");
@@ -857,8 +928,9 @@ public class OptimizelyTestV2 {
 
         // verify that the event builder was called with the expected attributes
         verify(mockEventBuilder).createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
-                eq(eventType.getId()), eq(eventType.getKey()),
-                attributeCaptor.capture());
+                                                       eq(eventType.getId()), eq(eventType.getKey()),
+                                                       attributeCaptor.capture(), isNull(Long.class),
+                                                       isNull(String.class));
 
         Map<String, String> actualValue = attributeCaptor.getValue();
         assertThat(actualValue, not(hasKey("unknownAttribute")));
@@ -890,9 +962,10 @@ public class OptimizelyTestV2 {
         testParams.put("test", "params");
         LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
         when(mockEventBuilder.createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
-                eq(eventType.getId()), eq(eventType.getKey()),
-                eq(Collections.<String, String>emptyMap()), eq(revenue)))
-                .thenReturn(logEventToDispatch);
+                                                    eq(eventType.getId()), eq(eventType.getKey()),
+                                                    eq(Collections.<String, String>emptyMap()), eq(revenue),
+                                                    isNull(String.class)))
+            .thenReturn(logEventToDispatch);
 
         // call track
         optimizely.track(eventType.getKey(), "userId", revenue);
@@ -902,9 +975,9 @@ public class OptimizelyTestV2 {
 
         // verify that the event builder was called with the expected revenue
         verify(mockEventBuilder).createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
-                eq(eventType.getId()), eq(eventType.getKey()),
-                eq(Collections.<String, String>emptyMap()),
-                revenueCaptor.capture());
+                                                       eq(eventType.getId()), eq(eventType.getKey()),
+                                                       eq(Collections.<String, String>emptyMap()),
+                                                       revenueCaptor.capture(), isNull(String.class));
 
         Long actualValue = revenueCaptor.getValue();
         assertThat(actualValue, is(revenue));
@@ -951,6 +1024,65 @@ public class OptimizelyTestV2 {
 
         logbackVerifier.expectMessage(Level.ERROR, "Unexpected exception in event dispatcher");
         optimizely.track(eventType.getKey(), "userId");
+    }
+
+    /**
+     * Verify that {@link Optimizely#track(String, String)} doesn't make a dispatch for an event being used by a
+     * single experiment with a "Launched" status.
+     */
+    @Test
+    public void trackLaunchedExperimentDoesNotDispatchEvent() throws Exception {
+        String datafile = noAudienceProjectConfigJsonV2();
+        ProjectConfig projectConfig = noAudienceProjectConfigV2();
+        EventType eventType = projectConfig.getEventTypes().get(3);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withConfig(projectConfig)
+            .build();
+
+        optimizely.track(eventType.getKey(), "userId");
+
+        // verify that we did NOT dispatch an event
+        verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
+    }
+
+    /**
+     * Verify that {@link Optimizely#track(String, String, String)} passes the session ID to
+     * {@link EventBuilder#createConversionEvent(ProjectConfig, Bucketer, String, String, String, Map, Long, String)}
+     */
+    @Test
+    public void trackEventWithSessionId() throws Exception {
+        String datafile = noAudienceProjectConfigJsonV2();
+        ProjectConfig projectConfig = noAudienceProjectConfigV2();
+        EventType eventType = projectConfig.getEventTypes().get(0);
+
+        // setup a mock event builder to return expected conversion params
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
+            .withBucketing(mockBucketer)
+            .withEventBuilder(mockEventBuilder)
+            .withConfig(projectConfig)
+            .withErrorHandler(mockErrorHandler)
+            .build();
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
+                                                    eq(eventType.getId()), eq(eventType.getKey()),
+                                                    eq(Collections.<String, String>emptyMap()), isNull(Long.class),
+                                                    eq("test_session_id")))
+            .thenReturn(logEventToDispatch);
+
+        // call track
+        optimizely.track(eventType.getKey(), "userId", "test_session_id");
+
+        // verify that the event builder was called with the expected attributes
+        verify(mockEventBuilder).createConversionEvent(eq(projectConfig), eq(mockBucketer), eq("userId"),
+                                                       eq(eventType.getId()), eq(eventType.getKey()),
+                                                       eq(Collections.<String, String>emptyMap()), isNull(Long.class),
+                                                       eq("test_session_id"));
     }
 
     //======== getVariation tests ========//

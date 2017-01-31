@@ -295,6 +295,14 @@ public final class ProjectConfigTestUtils {
                            Collections.<String, String>emptyMap(),
                            asList(new TrafficAllocation("278", 4500),
                                   new TrafficAllocation("279", 9000)),
+                           ""),
+            new Experiment("119", "etag3", "Launched", "3",
+                           Collections.<String>emptyList(),
+                           asList(new Variation("280", "vtag5"),
+                                  new Variation("281", "vtag6")),
+                           Collections.<String, String>emptyMap(),
+                           asList(new TrafficAllocation("280", 5000),
+                                  new TrafficAllocation("281", 10000)),
                            "")
         );
 
@@ -304,7 +312,8 @@ public final class ProjectConfigTestUtils {
         List<String> multipleExperimentIds = asList("118", "223");
         List<EventType> events = asList(new EventType("971", "clicked_cart", singleExperimentId),
                                         new EventType("098", "Total Revenue", singleExperimentId),
-                                        new EventType("099", "clicked_purchase", multipleExperimentIds));
+                                        new EventType("099", "clicked_purchase", multipleExperimentIds),
+                                        new EventType("100", "launched_exp_event", singletonList("119")));
 
         return new ProjectConfig("789", "1234", "2", "42", Collections.<Group>emptyList(), experiments, attributes,
                                  events, Collections.<Audience>emptyList());

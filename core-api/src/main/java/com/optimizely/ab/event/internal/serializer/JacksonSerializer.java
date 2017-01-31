@@ -16,6 +16,7 @@
  */
 package com.optimizely.ab.event.internal.serializer;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,6 +27,7 @@ class JacksonSerializer implements Serializer {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public <T extends Event> String serialize(T payload) {
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         try {
             return mapper.writeValueAsString(payload);
         } catch (JsonProcessingException e) {

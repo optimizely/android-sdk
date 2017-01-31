@@ -240,7 +240,7 @@ public class Bucketer {
                 for (Map.Entry<String,Map<String,String>> record : records.entrySet()) {
                     for (String experimentId : record.getValue().keySet()) {
                         Experiment experiment = projectConfig.getExperimentIdMapping().get(experimentId);
-                        if (experiment == null || !experiment.isRunning()) {
+                        if (experiment == null || !experiment.isActive()) {
                             userProfile.remove(record.getKey(), experimentId);
                         }
                     }

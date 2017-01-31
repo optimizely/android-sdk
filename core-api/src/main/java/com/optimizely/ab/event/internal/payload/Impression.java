@@ -29,11 +29,21 @@ public class Impression extends Event {
     private String accountId;
     private List<Feature> userFeatures;
     private boolean anonymizeIP;
+    private String sessionId;
+    private String revision;
 
     public Impression() { }
 
     public Impression(String visitorId, long timestamp, boolean isGlobalHoldback, String projectId, Decision decision,
-                      String layerId, String accountId, List<Feature> userFeatures, boolean anonymizeIP) {
+                      String layerId, String accountId, List<Feature> userFeatures, boolean anonymizeIP,
+                      String revision) {
+        this(visitorId, timestamp, isGlobalHoldback, projectId, decision, layerId, accountId, userFeatures,
+             anonymizeIP, revision, null);
+    }
+
+    public Impression(String visitorId, long timestamp, boolean isGlobalHoldback, String projectId, Decision decision,
+                      String layerId, String accountId, List<Feature> userFeatures, boolean anonymizeIP,
+                      String revision, String sessionId) {
         this.visitorId = visitorId;
         this.timestamp = timestamp;
         this.isGlobalHoldback = isGlobalHoldback;
@@ -43,6 +53,8 @@ public class Impression extends Event {
         this.accountId = accountId;
         this.userFeatures = userFeatures;
         this.anonymizeIP = anonymizeIP;
+        this.revision = revision;
+        this.sessionId = sessionId;
     }
 
     public String getVisitorId() {
@@ -117,24 +129,42 @@ public class Impression extends Event {
         this.anonymizeIP = anonymizeIP;
     }
 
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
+
     @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof Impression))
-            return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
-        if (!super.equals(other))
-            return false;
+        Impression that = (Impression) o;
 
-        Impression otherImpression = (Impression)other;
+        if (timestamp != that.timestamp) return false;
+        if (isGlobalHoldback != that.isGlobalHoldback) return false;
+        if (anonymizeIP != that.anonymizeIP) return false;
+        if (!visitorId.equals(that.visitorId)) return false;
+        if (!projectId.equals(that.projectId)) return false;
+        if (!decision.equals(that.decision)) return false;
+        if (!layerId.equals(that.layerId)) return false;
+        if (!accountId.equals(that.accountId)) return false;
+        if (!userFeatures.equals(that.userFeatures)) return false;
+        if (sessionId != null ? !sessionId.equals(that.sessionId) : that.sessionId != null) return false;
+        return revision.equals(that.revision);
 
-        return timestamp == otherImpression.timestamp &&
-               isGlobalHoldback == otherImpression.isGlobalHoldback &&
-               visitorId.equals(otherImpression.visitorId) &&
-               projectId.equals(otherImpression.projectId) &&
-               decision.equals(otherImpression.decision) &&
-               layerId.equals(otherImpression.layerId) &&
-               accountId.equals(otherImpression.accountId) &&
-               userFeatures.equals(otherImpression.userFeatures);
     }
 
     @Override
@@ -148,6 +178,9 @@ public class Impression extends Event {
         result = 31 * result + layerId.hashCode();
         result = 31 * result + accountId.hashCode();
         result = 31 * result + userFeatures.hashCode();
+        result = 31 * result + (anonymizeIP ? 1 : 0);
+        result = 31 * result + (sessionId != null ? sessionId.hashCode() : 0);
+        result = 31 * result + revision.hashCode();
         return result;
     }
 
@@ -157,13 +190,14 @@ public class Impression extends Event {
                 "visitorId='" + visitorId + '\'' +
                 ", timestamp=" + timestamp +
                 ", isGlobalHoldback=" + isGlobalHoldback +
-                ", anonymizeIP=" + anonymizeIP +
                 ", projectId='" + projectId + '\'' +
                 ", decision=" + decision +
                 ", layerId='" + layerId + '\'' +
                 ", accountId='" + accountId + '\'' +
                 ", userFeatures=" + userFeatures +
-                ", clientEngine='" + clientEngine +
-                ", clientVersion='" + clientVersion + '}';
+                ", anonymizeIP=" + anonymizeIP +
+                ", sessionId='" + sessionId + '\'' +
+                ", revision='" + revision + '\'' +
+                '}';
     }
 }

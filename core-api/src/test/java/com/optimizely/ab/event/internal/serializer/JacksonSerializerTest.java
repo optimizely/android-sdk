@@ -26,9 +26,13 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateConversion;
-import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateImpression;
 import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateConversionJson;
+import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateConversionWithSessionId;
+import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateConversionWithSessionIdJson;
+import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateImpression;
 import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateImpressionJson;
+import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateImpressionWithSessionId;
+import static com.optimizely.ab.event.internal.serializer.SerializerTestUtils.generateImpressionWithSessionIdJson;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -49,11 +53,31 @@ public class JacksonSerializerTest {
     }
 
     @Test
+    public void serializeImpressionWithSessionId() throws IOException {
+        Impression impression = generateImpressionWithSessionId();
+        // can't compare JSON strings since orders could vary so compare objects instead
+        Impression actual = mapper.readValue(serializer.serialize(impression), Impression.class);
+        Impression expected = mapper.readValue(generateImpressionWithSessionIdJson(), Impression.class);
+
+        assertThat(actual, is(expected));
+    }
+
+    @Test
     public void serializeConversion() throws IOException {
         Conversion conversion = generateConversion();
         // can't compare JSON strings since orders could vary so compare objects instead
         Conversion actual = mapper.readValue(serializer.serialize(conversion), Conversion.class);
         Conversion expected = mapper.readValue(generateConversionJson(), Conversion.class);
+
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void serializeConversionWithSessionId() throws IOException {
+        Conversion conversion = generateConversionWithSessionId();
+        // can't compare JSON strings since orders could vary so compare objects instead
+        Conversion actual = mapper.readValue(serializer.serialize(conversion), Conversion.class);
+        Conversion expected = mapper.readValue(generateConversionWithSessionIdJson(), Conversion.class);
 
         assertThat(actual, is(expected));
     }
