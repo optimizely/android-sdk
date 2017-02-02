@@ -25,6 +25,7 @@ import com.optimizely.ab.config.audience.OrCondition;
 import com.optimizely.ab.config.audience.UserAttribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.Experiment.ExperimentStatus;
 import com.optimizely.ab.config.Group;
 import com.optimizely.ab.config.LiveVariable;
 import com.optimizely.ab.config.LiveVariableUsageInstance;
@@ -101,7 +102,8 @@ final class JsonConfigParser implements ConfigParser {
             JSONObject experimentObject = (JSONObject)obj;
             String id = experimentObject.getString("id");
             String key = experimentObject.getString("key");
-            String status = experimentObject.getString("status");
+            String status = experimentObject.isNull("status") ?
+                    ExperimentStatus.NOT_STARTED.toString() : experimentObject.getString("status");
             String layerId = experimentObject.has("layerId") ? experimentObject.getString("layerId") : null;
 
             JSONArray audienceIdsJson = experimentObject.getJSONArray("audienceIds");

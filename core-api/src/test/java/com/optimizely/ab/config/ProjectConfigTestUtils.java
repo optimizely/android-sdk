@@ -197,6 +197,14 @@ public final class ProjectConfigTestUtils {
                            Collections.singletonMap("testUser3", "vtag3"),
                            asList(new TrafficAllocation("278", 4500),
                                   new TrafficAllocation("279", 9000)),
+                           ""),
+            new Experiment("119", "etag3", "Not started", null,
+                           singletonList("100"),
+                           asList(new Variation("280", "vtag5"),
+                                  new Variation("281", "vtag6")),
+                           Collections.singletonMap("testUser4", "vtag5"),
+                           asList(new TrafficAllocation("280", 4500),
+                                  new TrafficAllocation("281", 9000)),
                            "")
         );
 

@@ -56,6 +56,32 @@
         "entityId": "279",
         "endOfRange": 9000
       }]
+    },
+    {
+      "id": "119",
+      "key": "etag3",
+      "status": null,
+      "layerId": "2",
+      "audienceIds": [
+        "100"
+      ],
+      "variations": [{
+        "id": "280",
+        "key": "vtag5"
+      }, {
+        "id": "281",
+        "key": "vtag6"
+      }],
+      "forcedVariations": {
+        "testUser4": "vtag5"
+      },
+      "trafficAllocation": [{
+        "entityId": "280",
+        "endOfRange": 4500
+      }, {
+        "entityId": "281",
+        "endOfRange": 9000
+      }]
     }
   ],
   "groups": [{

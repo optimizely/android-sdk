@@ -1,3 +1,9 @@
+## 1.4.1
+
+February 1, 2017
+
+- Default `null` status in datafile to `Not started`
+
 ## 1.4.0
 
 January 31, 2017
