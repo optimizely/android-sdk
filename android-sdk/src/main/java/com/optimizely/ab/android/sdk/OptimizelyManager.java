@@ -43,6 +43,7 @@ import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.parser.ConfigParseException;
+import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.internal.payload.Event;
 import com.optimizely.ab.android.user_profile.AndroidUserProfile;
 
@@ -67,6 +68,7 @@ public class OptimizelyManager {
     @NonNull private final TimeUnit eventHandlerDispatchIntervalTimeUnit;
     @NonNull private final Long dataFileDownloadInterval;
     @NonNull private final TimeUnit dataFileDownloadIntervalTimeUnit;
+    @Nullable private final EventHandler eventHandler;
     @NonNull private final Executor executor;
     @NonNull private final Logger logger;
     @Nullable private DataFileServiceConnection dataFileServiceConnection;
@@ -78,6 +80,7 @@ public class OptimizelyManager {
                       @NonNull TimeUnit eventHandlerDispatchIntervalTimeUnit,
                       @NonNull Long dataFileDownloadInterval,
                       @NonNull TimeUnit dataFileDownloadIntervalTimeUnit,
+                      @Nullable EventHandler eventHandler,
                       @NonNull Executor executor,
                       @NonNull Logger logger) {
         this.projectId = projectId;
@@ -85,6 +88,7 @@ public class OptimizelyManager {
         this.eventHandlerDispatchIntervalTimeUnit = eventHandlerDispatchIntervalTimeUnit;
         this.dataFileDownloadInterval = dataFileDownloadInterval;
         this.dataFileDownloadIntervalTimeUnit = dataFileDownloadIntervalTimeUnit;
+        this.eventHandler = eventHandler;
         this.executor = executor;
         this.logger = logger;
     }
@@ -378,8 +382,14 @@ public class OptimizelyManager {
     }
 
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserProfile userProfile) throws ConfigParseException {
-        OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
-        eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+        EventHandler eventHandler;
+        if (this.eventHandler == null) {
+            OptlyEventHandler optlyEventHandler = OptlyEventHandler.getInstance(context);
+            optlyEventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+            eventHandler = optlyEventHandler;
+        } else {
+            eventHandler = this.eventHandler;
+        }
         Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
                 .withUserProfile(userProfile)
                 .withClientEngine(Event.ClientEngine.ANDROID_SDK)
@@ -575,6 +585,7 @@ public class OptimizelyManager {
         @NonNull private TimeUnit dataFileDownloadIntervalTimeUnit = TimeUnit.DAYS;
         @NonNull private Long eventHandlerDispatchInterval = 1L;
         @NonNull private TimeUnit eventHandlerDispatchIntervalTimeUnit = TimeUnit.DAYS;
+        @Nullable private EventHandler eventHandler;
 
         Builder(@NonNull String projectId) {
             this.projectId = projectId;
@@ -608,6 +619,11 @@ public class OptimizelyManager {
             return this;
         }
 
+        public Builder withCustomEventHandler(EventHandler eventHandler) {
+            this.eventHandler = eventHandler;
+            return this;
+        }
+
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          *
@@ -629,6 +645,7 @@ public class OptimizelyManager {
                     eventHandlerDispatchIntervalTimeUnit,
                     dataFileDownloadInterval,
                     dataFileDownloadIntervalTimeUnit,
+                    eventHandler,
                     Executors.newSingleThreadExecutor(),
                     logger);
 
