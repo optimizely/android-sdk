@@ -17,12 +17,12 @@
 package com.optimizely.ab.android.sdk;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
+
+import static com.optimizely.ab.android.shared.OptlyStorage.CUSTOM_DATAFILE_URL;
 
 /**
  * Service that handles loading the datafile from cache or downloads it from the CDN
@@ -69,7 +71,7 @@ public class DataFileService extends Service {
                         new Cache(getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
                         LoggerFactory.getLogger(DataFileCache.class));
 
-                String datafileUrl = getDatafileUrl(projectId);
+                String datafileUrl = getDatafileUrl(this, projectId);
                 DataFileLoader dataFileLoader = new DataFileLoader(this, dataFileClient, dataFileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DataFileLoader.class));
                 dataFileLoader.getDataFile(datafileUrl, null);
                 BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
@@ -112,6 +114,17 @@ public class DataFileService extends Service {
         return isBound;
     }
 
+    public static @NonNull String getDatafileUrl(@NonNull Context context, @NonNull String projectId) {
+        // TODO Pull out a DatafileUrlCache class, although this overload should work
+        OptlyStorage optlyStorage = new OptlyStorage(context);
+        String datafileUrl = optlyStorage.getString(CUSTOM_DATAFILE_URL, null);
+        if (datafileUrl == null) {
+            return getDatafileUrl(projectId);
+        } else {
+            return datafileUrl;
+        }
+    }
+
     public static @NonNull String getDatafileUrl(@NonNull String projectId) {
         return String.format(FORMAT_VERSIONED_CDN_URL, projectId, DATAFILE_VERSION);
     }
@@ -122,7 +135,7 @@ public class DataFileService extends Service {
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void getDataFile(String projectId, DataFileLoader dataFileLoader, DataFileLoadedListener loadedListener) {
-        String datafileUrl = getDatafileUrl(projectId);
+        String datafileUrl = getDatafileUrl(this, projectId);
         dataFileLoader.getDataFile(datafileUrl, loadedListener);
     }
 

@@ -75,6 +75,7 @@ public class MyApplication extends Application {
         optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
                 .withEventHandlerDispatchInterval(3, TimeUnit.MINUTES)
                 .withDataFileDownloadInterval(30, TimeUnit.MINUTES)
+//                .withCustomDatafileUrl("http://www.customdatafile.com")
                 .build();
     }
 }

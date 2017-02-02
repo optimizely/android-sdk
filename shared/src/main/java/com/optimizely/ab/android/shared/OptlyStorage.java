@@ -27,6 +27,7 @@ import android.support.annotation.NonNull;
 public class OptlyStorage {
 
     private static final String PREFS_NAME = "optly";
+    public static final String CUSTOM_DATAFILE_URL = "customDatafileUrl";
 
     @NonNull private Context context;
 
@@ -60,6 +61,18 @@ public class OptlyStorage {
      */
     public long getLong(String key, long defaultValue) {
         return getReadablePrefs().getLong(key, defaultValue);
+    }
+
+    public void saveString(String key, String value) {
+        getWritablePrefs().putString(key, value).apply();
+    }
+
+    public void remove(String key) {
+        getWritablePrefs().remove(key);
+    }
+
+    public String getString(String key, String defaultValue) {
+        return getReadablePrefs().getString(key, defaultValue);
     }
 
     private SharedPreferences.Editor getWritablePrefs() {

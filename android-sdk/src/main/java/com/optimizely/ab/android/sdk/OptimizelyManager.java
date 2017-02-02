@@ -67,6 +67,7 @@ public class OptimizelyManager {
     @NonNull private final TimeUnit eventHandlerDispatchIntervalTimeUnit;
     @NonNull private final Long dataFileDownloadInterval;
     @NonNull private final TimeUnit dataFileDownloadIntervalTimeUnit;
+    @Nullable private final String customDatafileUrl;
     @NonNull private final Executor executor;
     @NonNull private final Logger logger;
     @Nullable private DataFileServiceConnection dataFileServiceConnection;
@@ -78,6 +79,7 @@ public class OptimizelyManager {
                       @NonNull TimeUnit eventHandlerDispatchIntervalTimeUnit,
                       @NonNull Long dataFileDownloadInterval,
                       @NonNull TimeUnit dataFileDownloadIntervalTimeUnit,
+                      @Nullable String customDatafileUrl,
                       @NonNull Executor executor,
                       @NonNull Logger logger) {
         this.projectId = projectId;
@@ -85,6 +87,7 @@ public class OptimizelyManager {
         this.eventHandlerDispatchIntervalTimeUnit = eventHandlerDispatchIntervalTimeUnit;
         this.dataFileDownloadInterval = dataFileDownloadInterval;
         this.dataFileDownloadIntervalTimeUnit = dataFileDownloadIntervalTimeUnit;
+        this.customDatafileUrl = customDatafileUrl;
         this.executor = executor;
         this.logger = logger;
     }
@@ -97,6 +100,10 @@ public class OptimizelyManager {
     @NonNull
     public TimeUnit getDataFileDownloadIntervalTimeUnit() {
         return dataFileDownloadIntervalTimeUnit;
+    }
+
+    @Nullable String getCustomDatafileUrl() {
+        return customDatafileUrl;
     }
 
     /**
@@ -503,8 +510,16 @@ public class OptimizelyManager {
             DataFileService.LocalBinder binder = (DataFileService.LocalBinder) service;
             final DataFileService dataFileService = binder.getService();
             if (dataFileService != null) {
+                OptlyStorage optlyStorage = new OptlyStorage(dataFileService.getApplicationContext());
+                String customDatafileUrl = optimizelyManager.getCustomDatafileUrl();
+                if (customDatafileUrl != null) {
+                    optlyStorage.saveString(OptlyStorage.CUSTOM_DATAFILE_URL, customDatafileUrl);
+                } else {
+                    optlyStorage.remove(OptlyStorage.CUSTOM_DATAFILE_URL);
+                }
+
                 DataFileClient dataFileClient = new DataFileClient(
-                        new Client(new OptlyStorage(dataFileService.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
+                        new Client(optlyStorage, LoggerFactory.getLogger(OptlyStorage.class)),
                         LoggerFactory.getLogger(DataFileClient.class));
 
                 DataFileCache dataFileCache = new DataFileCache(
@@ -575,6 +590,7 @@ public class OptimizelyManager {
         @NonNull private TimeUnit dataFileDownloadIntervalTimeUnit = TimeUnit.DAYS;
         @NonNull private Long eventHandlerDispatchInterval = 1L;
         @NonNull private TimeUnit eventHandlerDispatchIntervalTimeUnit = TimeUnit.DAYS;
+        @Nullable private String customDatafileUrl;
 
         Builder(@NonNull String projectId) {
             this.projectId = projectId;
@@ -608,6 +624,11 @@ public class OptimizelyManager {
             return this;
         }
 
+        public Builder withCustomDatafileUrl(String customDatafileUrl) {
+            this.customDatafileUrl = customDatafileUrl;
+            return this;
+        }
+
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          *
@@ -629,6 +650,7 @@ public class OptimizelyManager {
                     eventHandlerDispatchIntervalTimeUnit,
                     dataFileDownloadInterval,
                     dataFileDownloadIntervalTimeUnit,
+                    customDatafileUrl,
                     Executors.newSingleThreadExecutor(),
                     logger);
 
