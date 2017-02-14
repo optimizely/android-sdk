@@ -20,10 +20,12 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
+import android.app.UiModeManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -380,9 +382,16 @@ public class OptimizelyManager {
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserProfile userProfile) throws ConfigParseException {
         OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
         eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+
+        UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+        Event.ClientEngine clientEngine = Event.ClientEngine.ANDROID_SDK;
+        if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
+            clientEngine = Event.ClientEngine.ANDROID_TV_SDK;
+        }
+
         Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
                 .withUserProfile(userProfile)
-                .withClientEngine(Event.ClientEngine.ANDROID_SDK)
+                .withClientEngine(clientEngine)
                 .withClientVersion(BuildConfig.CLIENT_VERSION)
                 .build();
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
