@@ -136,7 +136,7 @@ public class EventBuilderV2Test {
      * events being sent with the overriden values.
      */
     @Test
-    public void createImpressionEventCustomClientEngineClientVersion() throws Exception {
+    public void createImpressionEventAndroidClientEngineClientVersion() throws Exception {
         EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_SDK, "0.0.0");
         ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
         Experiment activatedExperiment = projectConfig.getExperiments().get(0);
@@ -151,6 +151,29 @@ public class EventBuilderV2Test {
 
         assertThat(impression.getClientEngine(), is(ClientEngine.ANDROID_SDK.getClientEngineValue()));
         assertThat(impression.getClientVersion(), is("0.0.0"));
+    }
+
+    /**
+     * Verify that supplying {@link EventBuilderV2} with a custom Android TV client engine and client version
+     * results in impression events being sent with the overriden values.
+     */
+    @Test
+    public void createImpressionEventAndroidTVClientEngineClientVersion() throws Exception {
+        String clientVersion = "0.0.0";
+        EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_TV_SDK, clientVersion);
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        Experiment activatedExperiment = projectConfig.getExperiments().get(0);
+        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        Attribute attribute = projectConfig.getAttributes().get(0);
+        String userId = "userId";
+        Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
+
+        LogEvent impressionEvent = builder.createImpressionEvent(projectConfig, activatedExperiment, bucketedVariation,
+                                                                 userId, attributeMap);
+        Impression impression = gson.fromJson(impressionEvent.getBody(), Impression.class);
+
+        assertThat(impression.getClientEngine(), is(ClientEngine.ANDROID_TV_SDK.getClientEngineValue()));
+        assertThat(impression.getClientVersion(), is(clientVersion));
     }
 
     /**
@@ -370,7 +393,7 @@ public class EventBuilderV2Test {
      * events being sent with the overriden values.
      */
     @Test
-    public void createConversionEventCustomClientEngineClientVersion() throws Exception {
+    public void createConversionEventAndroidClientEngineClientVersion() throws Exception {
         EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_SDK, "0.0.0");
         ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
         Attribute attribute = projectConfig.getAttributes().get(0);
@@ -391,6 +414,35 @@ public class EventBuilderV2Test {
 
         assertThat(conversion.getClientEngine(), is(ClientEngine.ANDROID_SDK.getClientEngineValue()));
         assertThat(conversion.getClientVersion(), is("0.0.0"));
+    }
+
+    /**
+     * Verify that supplying {@link EventBuilderV2} with a Android TV client engine and client version results in
+     * conversion events being sent with the overriden values.
+     */
+    @Test
+    public void createConversionEventAndroidTVClientEngineClientVersion() throws Exception {
+        String clientVersion = "0.0.0";
+        EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_TV_SDK, clientVersion);
+        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        Attribute attribute = projectConfig.getAttributes().get(0);
+        EventType eventType = projectConfig.getEventTypes().get(0);
+        String userId = "userId";
+
+        Bucketer mockBucketAlgorithm = mock(Bucketer.class);
+        for (Experiment experiment : projectConfig.getExperiments()) {
+            when(mockBucketAlgorithm.bucket(experiment, userId))
+                    .thenReturn(experiment.getVariations().get(0));
+        }
+
+        Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
+                                                                 eventType.getId(), eventType.getKey(), attributeMap);
+
+        Conversion conversion = gson.fromJson(conversionEvent.getBody(), Conversion.class);
+
+        assertThat(conversion.getClientEngine(), is(ClientEngine.ANDROID_TV_SDK.getClientEngineValue()));
+        assertThat(conversion.getClientVersion(), is(clientVersion));
     }
 
     /**

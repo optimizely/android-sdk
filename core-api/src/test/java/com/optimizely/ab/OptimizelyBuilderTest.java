@@ -130,12 +130,21 @@ public class OptimizelyBuilderTest {
     }
 
     @Test
-    public void withCustomClientEngine() throws Exception {
+    public void withAndroidSDKClientEngine() throws Exception {
         Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
             .withClientEngine(ClientEngine.ANDROID_SDK)
             .build();
 
         assertThat(((EventBuilderV2)optimizelyClient.eventBuilder).clientEngine, is(ClientEngine.ANDROID_SDK));
+    }
+
+    @Test
+    public void withAndroidTVSDKClientEngine() throws Exception {
+        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
+            .withClientEngine(ClientEngine.ANDROID_TV_SDK)
+            .build();
+
+        assertThat(((EventBuilderV2)optimizelyClient.eventBuilder).clientEngine, is(ClientEngine.ANDROID_TV_SDK));
     }
 
     @Test

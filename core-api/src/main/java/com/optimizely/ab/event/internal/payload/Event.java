@@ -24,7 +24,8 @@ public class Event {
 
     public enum ClientEngine {
         JAVA_SDK ("java-sdk"),
-        ANDROID_SDK ("android-sdk");
+        ANDROID_SDK ("android-sdk"),
+        ANDROID_TV_SDK ("android-tv-sdk");
 
         private final String clientEngineValue;
 
