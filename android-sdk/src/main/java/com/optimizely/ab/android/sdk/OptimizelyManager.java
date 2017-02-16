@@ -20,12 +20,10 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
-import android.app.UiModeManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -383,7 +381,7 @@ public class OptimizelyManager {
         OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
         eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
 
-        Event.ClientEngine clientEngine = getClientEngineFromContext(context);
+        Event.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
         Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
                 .withUserProfile(userProfile)
@@ -406,17 +404,6 @@ public class OptimizelyManager {
                     "version {}", Build.VERSION.SDK_INT, Build.VERSION_CODES.ICE_CREAM_SANDWICH);
             return false;
         }
-    }
-
-    @VisibleForTesting
-    public Event.ClientEngine getClientEngineFromContext(@NonNull Context context) {
-        UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
-
-        if (uiModeManager != null && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
-            return Event.ClientEngine.ANDROID_TV_SDK;
-        }
-
-        return Event.ClientEngine.ANDROID_SDK;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
