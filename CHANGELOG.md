@@ -1,3 +1,9 @@
+## 1.5.0
+
+February 16, 2017
+
+- Support Android TV SDK client engine
+
 ## 1.4.1
 
 February 1, 2017
