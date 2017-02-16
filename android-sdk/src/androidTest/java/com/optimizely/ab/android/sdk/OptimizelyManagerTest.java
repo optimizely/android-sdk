@@ -16,8 +16,10 @@
 
 package com.optimizely.ab.android.sdk;
 
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
@@ -26,6 +28,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.AndroidUserProfile;
+import com.optimizely.ab.event.internal.payload.Event;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -215,5 +218,24 @@ public class OptimizelyManagerTest {
         } catch (InterruptedException e) {
             fail("Timed out");
         }
+    }
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR2)
+    @Test
+    public void testGetClientEngineFromContextAndroidTV() {
+        Context context = mock(Context.class);
+        UiModeManager uiModeManager = mock(UiModeManager.class);
+        when(context.getSystemService(Context.UI_MODE_SERVICE)).thenReturn(uiModeManager);
+        when(uiModeManager.getCurrentModeType()).thenReturn(Configuration.UI_MODE_TYPE_TELEVISION);
+        assertEquals(Event.ClientEngine.ANDROID_TV_SDK, optimizelyManager.getClientEngineFromContext(context));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR2)
+    @Test
+    public void testGetClientEngineFromContextAndroid() {
+        Context context = mock(Context.class);
+        UiModeManager uiModeManager = mock(UiModeManager.class);
+        when(context.getSystemService(Context.UI_MODE_SERVICE)).thenReturn(uiModeManager);
+        when(uiModeManager.getCurrentModeType()).thenReturn(Configuration.UI_MODE_TYPE_NORMAL);
+        assertEquals(Event.ClientEngine.ANDROID_SDK, optimizelyManager.getClientEngineFromContext(context));
     }
 }

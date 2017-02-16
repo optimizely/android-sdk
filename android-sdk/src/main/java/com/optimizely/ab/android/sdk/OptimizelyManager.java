@@ -408,7 +408,8 @@ public class OptimizelyManager {
         }
     }
 
-    private Event.ClientEngine getClientEngineFromContext(@NonNull Context context) {
+    @VisibleForTesting
+    public Event.ClientEngine getClientEngineFromContext(@NonNull Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
 
         if (uiModeManager != null && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
