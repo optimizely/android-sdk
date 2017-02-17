@@ -21,15 +21,18 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.event.internal.payload.Event;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(AndroidJUnit4.class)
 public class OptimizelyClientEngineTest {
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR2)
     @Test
