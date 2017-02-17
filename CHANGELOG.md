@@ -3,6 +3,8 @@
 February 17, 2017
 
 - Support Android TV SDK client engine
+- Update to java-core 1.5.0 (https://github.com/optimizely/java-sdk/blob/master/CHANGELOG.md#150)
+
 
 ### 1.0.0
 January 23, 2017
