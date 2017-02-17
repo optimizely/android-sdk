@@ -380,9 +380,12 @@ public class OptimizelyManager {
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserProfile userProfile) throws ConfigParseException {
         OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
         eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+
+        Event.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
+
         Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
                 .withUserProfile(userProfile)
-                .withClientEngine(Event.ClientEngine.ANDROID_SDK)
+                .withClientEngine(clientEngine)
                 .withClientVersion(BuildConfig.CLIENT_VERSION)
                 .build();
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
