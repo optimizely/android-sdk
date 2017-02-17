@@ -1,4 +1,9 @@
 # Optimizely Android X SDK Changelog
+### 1.1.0
+February 17, 2017
+
+- Support Android TV SDK client engine
+
 ### 1.0.0
 January 23, 2017
 
