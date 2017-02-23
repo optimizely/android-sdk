@@ -24,8 +24,17 @@ import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.event.internal.payload.Event;
 
+/**
+ * This class manages client engine value of the Event depending on current mode of UI.
+ */
 public class OptimizelyClientEngine {
 
+    /**
+     * Get client engine value for current UI mode type
+     *
+     * @param context any valid Android {@link Context}
+     * @return String value of client engine
+     */
     @VisibleForTesting
     public static Event.ClientEngine getClientEngineFromContext(@NonNull Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
