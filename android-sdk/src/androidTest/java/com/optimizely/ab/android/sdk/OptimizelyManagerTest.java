@@ -99,6 +99,42 @@ public class OptimizelyManagerTest {
     }
 
     @Test
+    public void initializeWithEmptyDatafile() {
+        Context context = mock(Context.class);
+        Context appContext = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getPackageName()).thenReturn("com.optly");
+
+        String emptyString = "";
+
+        optimizelyManager.initialize(context, emptyString);
+    }
+
+    @Test
+    public void initializeWithMalformedDatafile() {
+        Context context = mock(Context.class);
+        Context appContext = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getPackageName()).thenReturn("com.optly");
+
+        String emptyString = "malformed data";
+
+        optimizelyManager.initialize(context, emptyString);
+    }
+
+    @Test
+    public void initializeWithNullDatafile() {
+        Context context = mock(Context.class);
+        Context appContext = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getPackageName()).thenReturn("com.optly");
+
+        String emptyString = null;
+
+        optimizelyManager.initialize(context, emptyString);
+    }
+
+    @Test
     public void stop() {
         Context context = mock(Context.class);
         Context appContext = mock(Context.class);

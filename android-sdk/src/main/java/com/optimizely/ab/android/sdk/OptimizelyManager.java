@@ -378,6 +378,11 @@ public class OptimizelyManager {
     }
 
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserProfile userProfile) throws ConfigParseException {
+
+        if (dataFile == null || dataFile.length() == 0) {
+            throw new ConfigParseException("Unable to parse null or empty datafile.");
+        }
+
         OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
         eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
 
