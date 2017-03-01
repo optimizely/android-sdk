@@ -26,6 +26,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.AndroidUserProfile;
+import com.optimizely.ab.config.parser.ConfigParseException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -108,6 +109,7 @@ public class OptimizelyManagerTest {
         String emptyString = "";
 
         optimizelyManager.initialize(context, emptyString);
+        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
     }
 
     @Test
@@ -120,6 +122,7 @@ public class OptimizelyManagerTest {
         String emptyString = "malformed data";
 
         optimizelyManager.initialize(context, emptyString);
+        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
     }
 
     @Test
@@ -132,6 +135,7 @@ public class OptimizelyManagerTest {
         String emptyString = null;
 
         optimizelyManager.initialize(context, emptyString);
+        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
     }
 
     @Test
