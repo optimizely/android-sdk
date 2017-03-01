@@ -18,6 +18,7 @@ package com.optimizely.ab.config.parser;
 
 import com.optimizely.ab.config.ProjectConfig;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -85,5 +86,28 @@ public class JacksonConfigParserTest {
 
         JacksonConfigParser parser = new JacksonConfigParser();
         parser.parseProjectConfig("{\"valid\": \"json\"}");
+    }
+
+    /**
+     * Verify that empty string JSON results in a {@link ConfigParseException} being thrown.
+     */
+    @Test
+    public void emptyJsonExceptionWrapping() throws Exception {
+        thrown.expect(ConfigParseException.class);
+
+        JacksonConfigParser parser = new JacksonConfigParser();
+        parser.parseProjectConfig("");
+    }
+
+    /**
+     * Verify that null JSON results in a {@link ConfigParseException} being thrown.
+     */
+    @Test
+    @SuppressFBWarnings(value="NP_NONNULL_PARAM_VIOLATION", justification="Testing nullness contract violation")
+    public void nullJsonExceptionWrapping() throws Exception {
+        thrown.expect(ConfigParseException.class);
+
+        JacksonConfigParser parser = new JacksonConfigParser();
+        parser.parseProjectConfig(null);
     }
 }

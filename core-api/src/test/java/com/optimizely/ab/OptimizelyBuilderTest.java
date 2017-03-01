@@ -164,6 +164,19 @@ public class OptimizelyBuilderTest {
         assertThat(((EventBuilderV2)optimizelyClient.eventBuilder).clientVersion, is("0.0.0"));
     }
 
+    @SuppressFBWarnings(value="NP_NONNULL_PARAM_VIOLATION", justification="Testing nullness contract violation")
+    @Test
+    public void builderThrowsConfigParseExceptionForNullDatafile() throws Exception {
+        thrown.expect(ConfigParseException.class);
+        Optimizely.builder(null, mockEventHandler).build();
+    }
+
+    @Test
+    public void builderThrowsConfigParseExceptionForEmptyDatafile() throws Exception {
+        thrown.expect(ConfigParseException.class);
+        Optimizely.builder("", mockEventHandler).build();
+    }
+
     @Test
     public void builderThrowsConfigParseExceptionForInvalidDatafile() throws Exception {
         thrown.expect(ConfigParseException.class);

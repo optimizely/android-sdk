@@ -498,6 +498,13 @@ public class Optimizely {
      * @return a {@link ProjectConfig} instance given a json string
      */
     private static ProjectConfig getProjectConfig(String datafile) throws ConfigParseException {
+        if (datafile == null) {
+            throw new ConfigParseException("Unable to parse null datafile.");
+        }
+        if (datafile.length() == 0) {
+            throw new ConfigParseException("Unable to parse empty datafile.");
+        }
+
         return DefaultConfigParser.getInstance().parseProjectConfig(datafile);
     }
 
