@@ -17,6 +17,6 @@
 #}
 
 -keepnames class com.google.gson.Gson
--keepnames class com.fasterxml.jackson.databind.ObjectMappe
+-keepnames class com.fasterxml.jackson.databind.ObjectMapper
 -keepnames class org.json.simple.JSONObject
 -keepnames class org.json.JSONObject
