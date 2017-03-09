@@ -15,3 +15,8 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keepnames class com.google.gson.Gson
+-keepnames class com.fasterxml.jackson.databind.ObjectMappe
+-keepnames class org.json.simple.JSONObject
+-keepnames class org.json.JSONObject
