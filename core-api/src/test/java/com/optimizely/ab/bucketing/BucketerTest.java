@@ -16,6 +16,7 @@
  */
 package com.optimizely.ab.bucketing;
 
+import ch.qos.logback.classic.Level;
 import com.optimizely.ab.bucketing.internal.MurmurHash3;
 import com.optimizely.ab.categories.ExhaustiveTest;
 import com.optimizely.ab.config.Experiment;
@@ -23,7 +24,8 @@ import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.TrafficAllocation;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.internal.LogbackVerifier;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -35,9 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import ch.qos.logback.classic.Level;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static org.hamcrest.CoreMatchers.is;
@@ -79,6 +78,7 @@ public class BucketerTest {
     @Test
     @Category(ExhaustiveTest.class)
     public void generateBucketValueDistribution() throws Exception {
+        Assume.assumeTrue(Boolean.valueOf(System.getenv("CI")));
         long lowerHalfCount = 0;
         long totalCount = 0;
         int outOfRangeCount = 0;
