@@ -3,6 +3,7 @@ subprojects {
     license {
         header rootProject.file('gradle/HEADER')
         excludes(['**/*.properties', '**/*.txt', '**/*.conf', '**/*.xml', '**/*.json', '**/LogbackVerifier.java'])
-        ext.year = '2016' // year that the project was created
+        ext.start_year = '2016' // year that the project was created
+        ext.end_year = Calendar.getInstance().get(Calendar.YEAR)
     }
 }

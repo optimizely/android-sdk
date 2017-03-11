@@ -1,6 +1,6 @@
 /**
  *
- *    Copyright 2016, Optimizely and contributors
+ *    Copyright 2016-2017, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import com.optimizely.ab.event.internal.payload.Impression;
 import com.optimizely.ab.event.internal.payload.LayerState;
 import com.optimizely.ab.event.internal.serializer.DefaultJsonSerializer;
 import com.optimizely.ab.event.internal.serializer.Serializer;
+import com.optimizely.ab.internal.EventTagUtils;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 
 import org.slf4j.Logger;
@@ -76,8 +77,7 @@ public class EventBuilderV2 extends EventBuilder {
                                           @Nonnull Experiment activatedExperiment,
                                           @Nonnull Variation variation,
                                           @Nonnull String userId,
-                                          @Nonnull Map<String, String> attributes,
-                                          @CheckForNull String sessionId) {
+                                          @Nonnull Map<String, String> attributes) {
 
         Impression impressionPayload = new Impression();
         impressionPayload.setVisitorId(userId);
@@ -93,12 +93,11 @@ public class EventBuilderV2 extends EventBuilder {
 
         impressionPayload.setLayerId(activatedExperiment.getLayerId());
         impressionPayload.setAccountId(projectConfig.getAccountId());
-        impressionPayload.setUserFeatures(createFeatures(attributes, projectConfig));
+        impressionPayload.setUserFeatures(createUserFeatures(attributes, projectConfig));
         impressionPayload.setClientEngine(clientEngine);
         impressionPayload.setClientVersion(clientVersion);
         impressionPayload.setAnonymizeIP(projectConfig.getAnonymizeIP());
         impressionPayload.setRevision(projectConfig.getRevision());
-        impressionPayload.setSessionId(sessionId);
 
         String payload = this.serializer.serialize(impressionPayload);
         return new LogEvent(RequestMethod.POST, IMPRESSION_ENDPOINT, Collections.<String, String>emptyMap(), payload);
@@ -110,15 +109,14 @@ public class EventBuilderV2 extends EventBuilder {
                                           @Nonnull String eventId,
                                           @Nonnull String eventName,
                                           @Nonnull Map<String, String> attributes,
-                                          @CheckForNull Long eventValue,
-                                          @CheckForNull String sessionId) {
+                                          @Nonnull Map<String, ?> eventTags) {
 
         Conversion conversionPayload = new Conversion();
         conversionPayload.setVisitorId(userId);
         conversionPayload.setTimestamp(System.currentTimeMillis());
         conversionPayload.setProjectId(projectConfig.getProjectId());
         conversionPayload.setAccountId(projectConfig.getAccountId());
-        conversionPayload.setUserFeatures(createFeatures(attributes, projectConfig));
+        conversionPayload.setUserFeatures(createUserFeatures(attributes, projectConfig));
 
         List<LayerState> layerStates = createLayerStates(projectConfig, bucketer, userId, eventName, attributes);
         if (layerStates.isEmpty()) {
@@ -129,6 +127,7 @@ public class EventBuilderV2 extends EventBuilder {
         conversionPayload.setEventEntityId(eventId);
         conversionPayload.setEventName(eventName);
 
+        Long eventValue = EventTagUtils.getRevenueValue(eventTags);
         if (eventValue != null) {
             conversionPayload.setEventMetrics(
                     Collections.singletonList(new EventMetric(EventMetric.REVENUE_METRIC_TYPE, eventValue)));
@@ -142,8 +141,7 @@ public class EventBuilderV2 extends EventBuilder {
         conversionPayload.setClientEngine(clientEngine);
         conversionPayload.setClientVersion(clientVersion);
         conversionPayload.setRevision(projectConfig.getRevision());
-        conversionPayload.setSessionId(sessionId);
-
+        conversionPayload.setEventFeatures(createEventFeatures(eventTags));
 
         String payload = this.serializer.serialize(conversionPayload);
         return new LogEvent(RequestMethod.POST, CONVERSION_ENDPOINT, Collections.<String, String>emptyMap(), payload);
@@ -155,7 +153,7 @@ public class EventBuilderV2 extends EventBuilder {
      * @param attributes the {@code {attributeKey -> value}} mapping
      * @param projectConfig the current project config
      */
-    private List<Feature> createFeatures(Map<String, String> attributes, ProjectConfig projectConfig) {
+    private List<Feature> createUserFeatures(Map<String, String> attributes, ProjectConfig projectConfig) {
         Map<String, Attribute> attributeKeyMapping = projectConfig.getAttributeKeyMapping();
         List<Feature> features = new ArrayList<Feature>();
 
@@ -172,6 +170,21 @@ public class EventBuilderV2 extends EventBuilder {
                                      attributeEntry.getValue(), true));
         }
 
+        return features;
+    }
+
+    /**
+     * Helper method to generate {@link Feature} objects from the given {@code {eventTagKey-> value}} mapping.
+     *
+     * @param eventTags the {@code {eventTagKey -> value}} mapping
+     */
+    private List<Feature> createEventFeatures(Map<String, ?> eventTags) {
+        List<Feature> features = new ArrayList<Feature>();
+
+        for (Map.Entry<String, ?> eventTagEntry : eventTags.entrySet()) {
+            String eventTagKey = eventTagEntry.getKey();
+            features.add(new Feature("", eventTagKey, Feature.EVENT_FEATURE_TYPE, eventTagEntry.getValue(), false));
+        }
         return features;
     }
 

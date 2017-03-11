@@ -1,6 +1,6 @@
 /**
  *
- *    Copyright 2016, Optimizely and contributors
+ *    Copyright 2016-2017, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,16 +19,17 @@ package com.optimizely.ab.event.internal.payload;
 public class Feature {
 
     public static final String CUSTOM_ATTRIBUTE_FEATURE_TYPE = "custom";
+    public static final String EVENT_FEATURE_TYPE = "custom";
 
     private String id;
     private String name;
     private String type;
-    private String value;
+    private Object value;
     private boolean shouldIndex;
 
     public Feature() { }
 
-    public Feature(String id, String name, String type, String value, boolean shouldIndex) {
+    public Feature(String id, String name, String type, Object value, boolean shouldIndex) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -60,7 +61,7 @@ public class Feature {
         this.type = type;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
