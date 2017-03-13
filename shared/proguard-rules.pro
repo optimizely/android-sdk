@@ -20,3 +20,5 @@
 -keepnames class com.fasterxml.jackson.databind.ObjectMapper
 -keepnames class org.json.simple.JSONObject
 -keepnames class org.json.JSONObject
+
+-keep class com.optimizely.ab.** { *; }
