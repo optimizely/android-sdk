@@ -135,6 +135,7 @@ public class OptimizelyClient {
      * @param eventName the name of the event
      * @param userId the user id
      * @param attributes a map of attributes about the user
+     * @param eventTags a map of metadata associated with the event
      */
     public void track(@NonNull String eventName,
                       @NonNull String userId,
