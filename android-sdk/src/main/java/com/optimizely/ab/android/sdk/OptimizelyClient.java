@@ -134,6 +134,26 @@ public class OptimizelyClient {
      * Track an event for a user
      * @param eventName the name of the event
      * @param userId the user id
+     * @param attributes a map of attributes about the user
+     */
+    public void track(@NonNull String eventName,
+                      @NonNull String userId,
+                      @NonNull Map<String, String> attributes,
+                      @NonNull Map<String, ?> eventTags) throws UnknownEventTypeException {
+        if (optimizely != null) {
+            optimizely.track(eventName, userId, attributes, eventTags);
+
+        } else {
+            logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
+                    " with attributes and event tags", eventName, userId);
+        }
+    }
+
+    /**
+     * Track an event for a user
+     * @deprecated see {@link Optimizely#track(String, String, Map, Map)} and pass in revenue values as event tags instead.
+     * @param eventName the name of the event
+     * @param userId the user id
      * @param eventValue a value to tie to the event
      */
     public void track(@NonNull String eventName,
@@ -150,6 +170,7 @@ public class OptimizelyClient {
     /**
      * Track an event for a user with attributes and a value
      * @see Optimizely#track(String, String, Map, Long)
+     * @deprecated see {@link Optimizely#track(String, String, Map, Map)} and pass in revenue values as event tags instead.
      * @param eventName the String name of the event
      * @param userId the String user id
      * @param attributes the attributes of the event

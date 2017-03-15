@@ -140,6 +140,17 @@ public class OptimizelyClientTest {
     }
 
     @Test
+    public void testTrackWithEventTags() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        final HashMap<String, String> attributes = new HashMap<>();
+        attributes.put("foo", "bar");
+        final HashMap<String, Object> eventTags = new HashMap<>();
+        eventTags.put("foo", 843);
+        optimizelyClient.track("event1", "1", attributes, eventTags);
+        verify(optimizely).track("event1", "1", attributes, eventTags);
+    }
+
+    @Test
     public void testGoodGetVariation1() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         optimizelyClient.getVariation("1", "1");
