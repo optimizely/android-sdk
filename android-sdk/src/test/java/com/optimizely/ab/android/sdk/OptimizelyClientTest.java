@@ -141,7 +141,7 @@ public class OptimizelyClientTest {
 
     @Test
     public void testTrackWithEventTags() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         final HashMap<String, String> attributes = new HashMap<>();
         attributes.put("foo", "bar");
         final HashMap<String, Object> eventTags = new HashMap<>();
