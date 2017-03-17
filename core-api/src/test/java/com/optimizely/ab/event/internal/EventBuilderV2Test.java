@@ -1,6 +1,6 @@
 /**
  *
- *    Copyright 2016, Optimizely and contributors
+ *    Copyright 2016-2017, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -37,16 +37,19 @@ import com.optimizely.ab.event.internal.payload.LayerState;
 import com.optimizely.ab.internal.LogbackVerifier;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 
+import com.optimizely.ab.internal.ReservedEventKey;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.closeTo;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
@@ -177,27 +180,6 @@ public class EventBuilderV2Test {
     }
 
     /**
-     * Verify that passing a non-null session ID to
-     * {@link EventBuilder#createImpressionEvent(ProjectConfig, Experiment, Variation, String, Map, String)} properly
-     * constructs an impression payload with the session ID specified.
-     */
-    @Test
-    public void createImpressionEventWithSessionId() throws Exception {
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
-        Experiment activatedExperiment = projectConfig.getExperiments().get(0);
-        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
-        Attribute attribute = projectConfig.getAttributes().get(0);
-        String userId = "userId";
-        Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
-        String sessionId = "sessionid";
-
-        LogEvent impressionEvent = builder.createImpressionEvent(projectConfig, activatedExperiment, bucketedVariation,
-                                                                 userId, attributeMap, sessionId);
-        Impression impression = gson.fromJson(impressionEvent.getBody(), Impression.class);
-        assertThat(impression.getSessionId(), is(sessionId));
-    }
-
-    /**
      * Verify {@link Conversion} event creation
      */
     @Test
@@ -221,8 +203,11 @@ public class EventBuilderV2Test {
         }
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
+        Map<String, Object> eventTagMap = new HashMap<String, Object>();
+        eventTagMap.put("boolean_param", false);
+        eventTagMap.put("string_param", "123");
         LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
-                                                                 eventType.getId(), eventType.getKey(), attributeMap);
+                                                                 eventType.getId(), eventType.getKey(), attributeMap, eventTagMap);
 
         List<LayerState> expectedLayerStates = new ArrayList<LayerState>();
 
@@ -252,12 +237,21 @@ public class EventBuilderV2Test {
         Feature feature = new Feature(attribute.getId(), attribute.getKey(), Feature.CUSTOM_ATTRIBUTE_FEATURE_TYPE,
                                       "value", true);
         List<Feature> expectedUserFeatures = Collections.singletonList(feature);
+
+        // Event Features
+        List<Feature> expectedEventFeatures = new ArrayList<Feature>();
+        expectedEventFeatures.add(new Feature("", "boolean_param", Feature.EVENT_FEATURE_TYPE,
+                false, false));
+        expectedEventFeatures.add(new Feature("", "string_param", Feature.EVENT_FEATURE_TYPE,
+                "123", false));
+
         assertThat(conversion.getUserFeatures(), is(expectedUserFeatures));
         assertThat(conversion.getLayerStates(), is(expectedLayerStates));
         assertThat(conversion.getEventEntityId(), is(eventType.getId()));
         assertThat(conversion.getEventName(), is(eventType.getKey()));
         assertThat(conversion.getEventMetrics(), is(Collections.<EventMetric>emptyList()));
-        assertThat(conversion.getEventFeatures(), is(Collections.<Feature>emptyList()));
+        assertTrue(conversion.getEventFeatures().containsAll(expectedEventFeatures));
+        assertTrue(expectedEventFeatures.containsAll(conversion.getEventFeatures()));
         assertFalse(conversion.getIsGlobalHoldback());
         assertThat(conversion.getAnonymizeIP(), is(projectConfig.getAnonymizeIP()));
         assertThat(conversion.getClientEngine(), is(ClientEngine.JAVA_SDK.getClientEngineValue()));
@@ -285,9 +279,11 @@ public class EventBuilderV2Test {
         }
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
+        Map<String, Object> eventTagMap = new HashMap<String, Object>();
+        eventTagMap.put(ReservedEventKey.REVENUE.toString(), revenue);
         LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, "userId",
                                                                  eventType.getId(), eventType.getKey(), attributeMap,
-                                                                 revenue);
+                                                                 eventTagMap);
 
         Conversion conversion = gson.fromJson(conversionEvent.getBody(), Conversion.class);
 
@@ -471,34 +467,5 @@ public class EventBuilderV2Test {
         // only 1 experiment uses the event and it has a "Launched" status so the bucket map is empty and the returned
         // event will be null
         assertNull(conversionEvent);
-    }
-
-    /**
-     * Verify that passing a non-null session ID to
-     * {@link EventBuilder#createConversionEvent(ProjectConfig, Bucketer, String, String, String, Map, Long, String)}
-     * properly constructs an impression payload with the session ID specified.
-     */
-    @Test
-    public void createConversionEventWithSessionId() throws Exception {
-        EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_SDK, "0.0.0");
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
-        Attribute attribute = projectConfig.getAttributes().get(0);
-        EventType eventType = projectConfig.getEventTypes().get(0);
-        String userId = "userId";
-        String sessionId = "sessionid";
-
-        Bucketer mockBucketAlgorithm = mock(Bucketer.class);
-        for (Experiment experiment : projectConfig.getExperiments()) {
-            when(mockBucketAlgorithm.bucket(experiment, userId))
-                .thenReturn(experiment.getVariations().get(0));
-        }
-
-        Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
-                                                                 eventType.getId(), eventType.getKey(), attributeMap,
-                                                                 null, sessionId);
-
-        Conversion conversion = gson.fromJson(conversionEvent.getBody(), Conversion.class);
-        assertThat(conversion.getSessionId(), is(sessionId));
     }
 }

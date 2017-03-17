@@ -1,6 +1,6 @@
 /**
  *
- *    Copyright 2016, Optimizely and contributors
+ *    Copyright 2016-2017, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 
+import com.optimizely.ab.internal.ReservedEventKey;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -162,9 +163,10 @@ public class EventBuilderV1Test {
         }
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
+        Map<String, Long> eventTagsMap = Collections.singletonMap(ReservedEventKey.REVENUE.toString(), revenue);
         LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, "userId",
                                                                  eventType.getId(), eventType.getKey(), attributeMap,
-                                                                 revenue);
+                                                                 eventTagsMap);
         Map<String, String> requestParams = conversionEvent.getRequestParams();
 
         // we're not going to verify everything, just revenue and the associated goals

@@ -1,6 +1,6 @@
 /**
  *
- *    Copyright 2016, Optimizely and contributors
+ *    Copyright 2016-2017, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -33,6 +33,12 @@ final class GsonConfigParser implements ConfigParser {
 
     @Override
     public ProjectConfig parseProjectConfig(@Nonnull String json) throws ConfigParseException {
+        if (json == null) {
+            throw new ConfigParseException("Unable to parse null json.");
+        }
+        if (json.length() == 0) {
+            throw new ConfigParseException("Unable to parse empty json.");
+        }
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(ProjectConfig.class, new ProjectConfigGsonDeserializer())
             .registerTypeAdapter(Audience.class, new AudienceGsonDeserializer())

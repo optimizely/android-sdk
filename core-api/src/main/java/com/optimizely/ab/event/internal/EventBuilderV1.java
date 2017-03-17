@@ -1,6 +1,6 @@
 /**
  *
- *    Copyright 2016, Optimizely and contributors
+ *    Copyright 2016-2017, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.optimizely.ab.event.internal;
 
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.internal.EventTagUtils;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.config.Attribute;
@@ -67,8 +68,7 @@ public class EventBuilderV1 extends EventBuilder {
                                           @Nonnull Experiment activatedExperiment,
                                           @Nonnull Variation variation,
                                           @Nonnull String userId,
-                                          @Nonnull Map<String, String> attributes,
-                                          @CheckForNull String sessionId) {
+                                          @Nonnull Map<String, String> attributes) {
 
         Map<String, String> requestParams = new HashMap<String, String>();
         addCommonRequestParams(requestParams, projectConfig, userId, attributes);
@@ -85,8 +85,7 @@ public class EventBuilderV1 extends EventBuilder {
                                           @Nonnull String eventId,
                                           @Nonnull String eventName,
                                           @Nonnull Map<String, String> attributes,
-                                          @CheckForNull Long eventValue,
-                                          @CheckForNull String sessionId) {
+                                          @Nonnull Map<String, ?> eventTags) {
 
         Map<String, String> requestParams = new HashMap<String, String>();
         List<Experiment> addedExperiments =
@@ -96,6 +95,7 @@ public class EventBuilderV1 extends EventBuilder {
             return null;
         }
 
+        Long eventValue = EventTagUtils.getRevenueValue(eventTags);
         addCommonRequestParams(requestParams, projectConfig, userId, attributes);
         addConversionGoal(requestParams, projectConfig, eventId, eventName, eventValue);
 

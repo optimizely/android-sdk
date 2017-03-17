@@ -1,6 +1,6 @@
 /**
  *
- *    Copyright 2016, Optimizely and contributors
+ *    Copyright 2016-2017, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.optimizely.ab.config.parser;
 
 import com.optimizely.ab.config.ProjectConfig;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -85,5 +86,26 @@ public class JsonSimpleConfigParserTest {
 
         JsonSimpleConfigParser parser = new JsonSimpleConfigParser();
         parser.parseProjectConfig("{\"valid\": \"json\"}");
+    }
+    /**
+     * Verify that empty string JSON results in a {@link ConfigParseException} being thrown.
+     */
+    @Test
+    public void emptyJsonExceptionWrapping() throws Exception {
+        thrown.expect(ConfigParseException.class);
+
+        JsonSimpleConfigParser parser = new JsonSimpleConfigParser();
+        parser.parseProjectConfig("");
+    }
+    /**
+     * Verify that null JSON results in a {@link ConfigParseException} being thrown.
+     */
+    @Test
+    @SuppressFBWarnings(value="NP_NONNULL_PARAM_VIOLATION", justification="Testing nullness contract violation")
+    public void nullJsonExceptionWrapping() throws Exception {
+        thrown.expect(ConfigParseException.class);
+
+        JsonSimpleConfigParser parser = new JsonSimpleConfigParser();
+        parser.parseProjectConfig(null);
     }
 }

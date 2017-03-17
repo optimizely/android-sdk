@@ -1,3 +1,12 @@
+## 1.6.0
+
+March 17, 2017
+
+- Add event tags to `track` API and include in the event payload
+- Deprecates the `eventValue` parameter from the `track` method. Should use event tags to pass in event value instead
+- Gracefully handle a null attributes parameter
+- Gracefully handle a null/empty datafile when using the Gson parser
+
 ## 1.5.0
 
 February 16, 2017

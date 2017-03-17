@@ -14,24 +14,19 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.optimizely.ab;
+package com.optimizely.ab.internal;
 
-import com.optimizely.ab.config.Experiment;
-import com.optimizely.ab.config.ProjectConfig;
+public enum ReservedEventKey {
+    REVENUE("revenue");
 
-/**
- * Exception thrown when attempting to use/refer to an {@link Experiment} that isn't present in the current
- * {@link ProjectConfig}.
- * <p>
- * This may occur if code changes are made prior to the experiment being setup in the Optimizely application.
- */
-public class UnknownExperimentException extends OptimizelyRuntimeException {
+    private final String key;
 
-    public UnknownExperimentException(String message) {
-        super(message);
+    ReservedEventKey(String key) {
+        this.key = key;
     }
 
-    public UnknownExperimentException(String message, Throwable cause) {
-        super(message, cause);
+    @Override
+    public String toString() {
+        return key;
     }
 }
