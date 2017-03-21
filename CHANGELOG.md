@@ -1,4 +1,11 @@
 # Optimizely Android X SDK Changelog
+### 1.2.0
+March 20, 2017
+
+- Add event tags to the `track` API
+- Deprecated `eventValue` parameter from the `track` API. Use event tags to pass in event value instead
+- Update to java-core 1.6.0 (https://github.com/optimizely/java-sdk/blob/master/CHANGELOG.md#160)
+
 ### 1.1.0
 February 17, 2017
 
