@@ -26,12 +26,11 @@ import com.optimizely.ab.config.Variation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Default Optimizely bucketing algorithm that evenly distributes users using the Murmur3 hash of some provided
@@ -46,8 +45,7 @@ import javax.annotation.concurrent.Immutable;
 public class Bucketer {
 
     private final ProjectConfig projectConfig;
-
-    @Nullable private final UserProfile userProfile;
+    private final UserProfile userProfile;
 
     private static final Logger logger = LoggerFactory.getLogger(Bucketer.class);
 
@@ -112,27 +110,6 @@ public class Bucketer {
         String experimentKey = experiment.getKey();
         String combinedBucketId = userId + experimentId;
 
-        // If a user profile instance is present then check it for a saved variation
-        if (userProfile != null) {
-            String variationId = userProfile.lookup(userId, experimentId);
-            if (variationId != null) {
-                Variation savedVariation = projectConfig
-                    .getExperimentIdMapping()
-                    .get(experimentId)
-                    .getVariationIdToVariationMap()
-                    .get(variationId);
-                logger.info("Returning previously activated variation \"{}\" of experiment \"{}\" "
-                            + "for user \"{}\" from user profile.",
-                            savedVariation.getKey(), experimentKey, userId);
-                // A variation is stored for this combined bucket id
-                return savedVariation;
-            } else {
-                logger.info("No previously activated variation of experiment \"{}\" "
-                            + "for user \"{}\" found in user profile.",
-                            experimentKey, userId);
-            }
-        }
-
         List<TrafficAllocation> trafficAllocations = experiment.getTrafficAllocation();
 
         int hashCode = MurmurHash3.murmurhash3_x86_32(combinedBucketId, 0, combinedBucketId.length(), MURMUR_HASH_SEED);
@@ -146,18 +123,6 @@ public class Bucketer {
             logger.info("User \"{}\" is in variation \"{}\" of experiment \"{}\".", userId, variationKey,
                         experimentKey);
 
-            // If a user profile is present give it a variation to store
-            if (userProfile != null) {
-                boolean saved = userProfile.save(userId, experimentId, bucketedVariationId);
-                if (saved) {
-                    logger.info("Saved variation \"{}\" of experiment \"{}\" for user \"{}\".",
-                                bucketedVariationId, experimentId, userId);
-                } else {
-                    logger.warn("Failed to save variation \"{}\" of experiment \"{}\" for user \"{}\".",
-                                bucketedVariationId, experimentId, userId);
-                }
-            }
-
             return bucketedVariation;
         }
 
@@ -169,6 +134,7 @@ public class Bucketer {
     public @Nullable Variation bucket(@Nonnull Experiment experiment,
                                       @Nonnull String userId) {
 
+        // ---------- Check whitelist ----------
         // if a user has a forced variation mapping, return the respective variation
         Map<String, String> userIdToVariationKeyMap = experiment.getUserIdToVariationKeyMap();
         if (userIdToVariationKeyMap.containsKey(userId)) {
@@ -178,12 +144,37 @@ public class Bucketer {
                 logger.info("User \"{}\" is forced in variation \"{}\".", userId, forcedVariationKey);
             } else {
                 logger.error("Variation \"{}\" is not in the datafile. Not activating user \"{}\".", forcedVariationKey,
-                             userId);
+                        userId);
             }
 
             return forcedVariation;
         }
 
+        // ---------- Check User Profile for Sticky Bucketing ----------
+        // If a user profile instance is present then check it for a saved variation
+        String experimentId = experiment.getId();
+        String experimentKey = experiment.getKey();
+        if (userProfile != null) {
+            String variationId = userProfile.lookup(userId, experimentId);
+            if (variationId != null) {
+                Variation savedVariation = projectConfig
+                        .getExperimentIdMapping()
+                        .get(experimentId)
+                        .getVariationIdToVariationMap()
+                        .get(variationId);
+                logger.info("Returning previously activated variation \"{}\" of experiment \"{}\" "
+                                + "for user \"{}\" from user profile.",
+                        savedVariation.getKey(), experimentKey, userId);
+                // A variation is stored for this combined bucket id
+                return savedVariation;
+            } else {
+                logger.info("No previously activated variation of experiment \"{}\" "
+                                + "for user \"{}\" found in user profile.",
+                        experimentKey, userId);
+            }
+        }
+
+        // ---------- Bucket User ----------
         String groupId = experiment.getGroupId();
         // check whether the experiment belongs to a group
         if (!groupId.isEmpty()) {
@@ -198,16 +189,32 @@ public class Bucketer {
                 // don't perform further bucketing within the experiment
                 if (!bucketedExperiment.getId().equals(experiment.getId())) {
                     logger.info("User \"{}\" is not in experiment \"{}\" of group {}.", userId, experiment.getKey(),
-                                experimentGroup.getId());
+                            experimentGroup.getId());
                     return null;
                 }
 
                 logger.info("User \"{}\" is in experiment \"{}\" of group {}.", userId, experiment.getKey(),
-                            experimentGroup.getId());
+                        experimentGroup.getId());
             }
         }
 
-        return bucketToVariation(experiment, userId);
+        Variation bucketedVariation = bucketToVariation(experiment, userId);
+
+        // ---------- Save Variation to User Profile ----------
+        // If a user profile is present give it a variation to store
+        if (userProfile != null && bucketedVariation != null) {
+            String bucketedVariationId = bucketedVariation.getId();
+            boolean saved = userProfile.save(userId, experimentId, bucketedVariationId);
+            if (saved) {
+                logger.info("Saved variation \"{}\" of experiment \"{}\" for user \"{}\".",
+                        bucketedVariationId, experimentId, userId);
+            } else {
+                logger.warn("Failed to save variation \"{}\" of experiment \"{}\" for user \"{}\".",
+                        bucketedVariationId, experimentId, userId);
+            }
+        }
+
+        return bucketedVariation;
     }
 
     //======== Helper methods ========//
@@ -224,28 +231,5 @@ public class Bucketer {
         return (int)Math.floor(MAX_TRAFFIC_VALUE * ratio);
     }
 
-    @Nullable
-    public UserProfile getUserProfile() {
-        return userProfile;
-    }
 
-    /**
-     * Gives implementations of {@link UserProfile} a chance to remove records
-     * of experiments that are deleted or not running.
-     */
-    public void cleanUserProfiles() {
-        if (userProfile != null) {
-            Map<String, Map<String,String>> records = userProfile.getAllRecords();
-            if (records != null) {
-                for (Map.Entry<String,Map<String,String>> record : records.entrySet()) {
-                    for (String experimentId : record.getValue().keySet()) {
-                        Experiment experiment = projectConfig.getExperimentIdMapping().get(experimentId);
-                        if (experiment == null || !experiment.isActive()) {
-                            userProfile.remove(record.getKey(), experimentId);
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

@@ -113,14 +113,14 @@ public class EventBuilderV1Test {
         }
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm,
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null,
                                                                  userId, eventType.getId(),
                                                                  eventType.getKey(), attributeMap);
         Map<String, String> requestParams = conversionEvent.getRequestParams();
 
         for (Experiment experiment : allExperiments) {
             if (experimentIds.contains(experiment.getId()) &&
-                    ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId, attributeMap)) {
+                    ProjectValidationUtils.validatePreconditions(projectConfig, null, experiment, userId, attributeMap)) {
                 verify(mockBucketAlgorithm).bucket(experiment, userId);
             } else {
                 verify(mockBucketAlgorithm, never()).bucket(experiment, userId);
@@ -164,7 +164,7 @@ public class EventBuilderV1Test {
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
         Map<String, Long> eventTagsMap = Collections.singletonMap(ReservedEventKey.REVENUE.toString(), revenue);
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, "userId",
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, "userId",
                                                                  eventType.getId(), eventType.getKey(), attributeMap,
                                                                  eventTagsMap);
         Map<String, String> requestParams = conversionEvent.getRequestParams();
@@ -201,7 +201,7 @@ public class EventBuilderV1Test {
 
         // the audience for the experiments is "NOT firefox" so this user shouldn't satisfy audience conditions
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "firefox");
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, userId,
                                                                  eventType.getId(), eventType.getKey(), attributeMap);
 
         assertNull(conversionEvent);
@@ -250,13 +250,13 @@ public class EventBuilderV1Test {
 
         // attributes are empty so user won't be in the audience for experiment using the event, but bucketing
         // will still take place
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, userId,
                                                                  eventType.getId(), eventType.getKey(),
                                                                  Collections.<String, String>emptyMap());
 
         for (Experiment experiment : projectConfig.getExperiments()) {
             if (experimentIds.contains(experiment.getId()) &&
-                    ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId,
+                    ProjectValidationUtils.validatePreconditions(projectConfig, null, experiment, userId,
                                                                  Collections.<String, String>emptyMap())) {
                 verify(mockBucketAlgorithm).bucket(experiment, userId);
             } else {
@@ -285,7 +285,7 @@ public class EventBuilderV1Test {
                 .thenReturn(experiment.getVariations().get(0));
         }
 
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, userId,
+        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, userId,
                                                                  eventType.getId(), eventType.getKey(),
                                                                  Collections.<String, String>emptyMap());
 
@@ -323,7 +323,7 @@ public class EventBuilderV1Test {
 
         for (Experiment experiment : allExperiments) {
             if (experimentIds.contains(experiment.getId()) &&
-                    ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId, attributes)) {
+                    ProjectValidationUtils.validatePreconditions(projectConfig, null, experiment, userId, attributes)) {
                 assertThat(requestParams,
                         hasEntry("x" + experiment.getId(), experiment.getVariations().get(0).getId()));
             } else {

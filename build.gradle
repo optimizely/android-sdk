@@ -19,6 +19,7 @@ plugins {
 
 allprojects {
     group = 'com.optimizely.ab'
+    apply plugin: 'idea'
 }
 
 apply from: 'gradle/license.gradle'

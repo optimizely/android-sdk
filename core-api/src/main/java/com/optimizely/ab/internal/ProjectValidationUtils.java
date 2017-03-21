@@ -16,12 +16,14 @@
  */
 package com.optimizely.ab.internal;
 
+import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.audience.Condition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 
@@ -40,14 +42,20 @@ public final class ProjectValidationUtils {
      * @param attributes the attributes of the user
      * @return whether the pre-conditions are satisfied
      */
-    public static boolean validatePreconditions(ProjectConfig projectConfig, Experiment experiment, String userId,
+    public static boolean validatePreconditions(ProjectConfig projectConfig, UserProfile userProfile,
+                                                Experiment experiment, @Nonnull String userId,
                                                 Map<String, String> attributes) {
+
         if (!experiment.isActive()) {
             logger.info("Experiment \"{}\" is not running.", experiment.getKey(), userId);
             return false;
         }
 
         if (experiment.getUserIdToVariationKeyMap().containsKey(userId)) {
+            return true;
+        }
+
+        if (userProfile != null && userProfile.lookup(userId, experiment.getId()) != null) {
             return true;
         }
 

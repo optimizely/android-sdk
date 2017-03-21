@@ -19,6 +19,7 @@ package com.optimizely.ab;
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.bucketing.UserProfile;
+import com.optimizely.ab.internal.UserProfileUtils;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -94,22 +95,25 @@ public class Optimizely {
     @VisibleForTesting final EventHandler eventHandler;
     @VisibleForTesting final ErrorHandler errorHandler;
     @VisibleForTesting final NotificationBroadcaster notificationBroadcaster = new NotificationBroadcaster();
+    @Nullable private final UserProfile userProfile;
 
     private Optimizely(@Nonnull ProjectConfig projectConfig,
                        @Nonnull Bucketer bucketer,
                        @Nonnull EventHandler eventHandler,
                        @Nonnull EventBuilder eventBuilder,
-                       @Nonnull ErrorHandler errorHandler) {
+                       @Nonnull ErrorHandler errorHandler,
+                       @Nullable UserProfile userProfile) {
         this.projectConfig = projectConfig;
         this.bucketer = bucketer;
         this.eventHandler = eventHandler;
         this.eventBuilder = eventBuilder;
         this.errorHandler = errorHandler;
+        this.userProfile = userProfile;
     }
 
     // Do work here that should be done once per Optimizely lifecycle
     @VisibleForTesting void initialize() {
-        bucketer.cleanUserProfiles();
+        UserProfileUtils.cleanUserProfiles(userProfile, projectConfig);
     }
 
     //======== activate calls ========//
@@ -162,13 +166,8 @@ public class Optimizely {
         // attributes.
         attributes = filterAttributes(projectConfig, attributes);
 
-        if (!ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId, attributes)) {
-            logger.info("Not activating user \"{}\" for experiment \"{}\".", userId, experiment.getKey());
-            return null;
-        }
-
         // bucket the user to the given experiment and dispatch an impression event
-        Variation variation = bucketer.bucket(experiment, userId);
+        Variation variation = getVariation(projectConfig, experiment, attributes, userId);
         if (variation == null) {
             logger.info("Not activating user \"{}\" for experiment \"{}\".", userId, experiment.getKey());
             return null;
@@ -255,7 +254,7 @@ public class Optimizely {
         }
 
         // create the conversion event request parameters, then dispatch
-        LogEvent conversionEvent = eventBuilder.createConversionEvent(currentConfig, bucketer, userId,
+        LogEvent conversionEvent = eventBuilder.createConversionEvent(currentConfig, bucketer, userProfile, userId,
                                                                       eventType.getId(), eventType.getKey(), attributes,
                                                                       eventTags);
 
@@ -440,7 +439,7 @@ public class Optimizely {
                                             @Nonnull Map<String, String> attributes,
                                             @Nonnull String userId) {
 
-        if (!ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId, attributes)) {
+        if (!ProjectValidationUtils.validatePreconditions(projectConfig, userProfile, experiment, userId, attributes)) {
             return null;
         }
 
@@ -467,6 +466,12 @@ public class Optimizely {
 
         return DefaultConfigParser.getInstance().parseProjectConfig(datafile);
     }
+
+    @Nullable
+    public UserProfile getUserProfile() {
+        return userProfile;
+    }
+
 
     //======== Notification listeners ========//
 
@@ -739,7 +744,7 @@ public class Optimizely {
                 errorHandler = new NoOpErrorHandler();
             }
 
-            Optimizely optimizely = new Optimizely(projectConfig, bucketer, eventHandler, eventBuilder, errorHandler);
+            Optimizely optimizely = new Optimizely(projectConfig, bucketer, eventHandler, eventBuilder, errorHandler, userProfile);
             optimizely.initialize();
             return optimizely;
         }

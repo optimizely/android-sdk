@@ -16,6 +16,7 @@
  */
 package com.optimizely.ab.event.internal;
 
+import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.internal.EventTagUtils;
 import com.optimizely.ab.internal.ProjectValidationUtils;
@@ -36,6 +37,7 @@ import java.util.Map;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static com.optimizely.ab.event.LogEvent.RequestMethod;
 
@@ -81,6 +83,7 @@ public class EventBuilderV1 extends EventBuilder {
 
     public LogEvent createConversionEvent(@Nonnull ProjectConfig projectConfig,
                                           @Nonnull Bucketer bucketer,
+                                          @Nullable UserProfile userProfile,
                                           @Nonnull String userId,
                                           @Nonnull String eventId,
                                           @Nonnull String eventName,
@@ -89,7 +92,7 @@ public class EventBuilderV1 extends EventBuilder {
 
         Map<String, String> requestParams = new HashMap<String, String>();
         List<Experiment> addedExperiments =
-                addExperimentBucketMap(requestParams, projectConfig, bucketer, userId, eventName, attributes);
+                addExperimentBucketMap(requestParams, projectConfig, bucketer, userProfile, userId, eventName, attributes);
 
         if (addedExperiments.isEmpty()) {
             return null;
@@ -162,7 +165,7 @@ public class EventBuilderV1 extends EventBuilder {
      * @param attributes the user's attributes
      */
     private List<Experiment> addExperimentBucketMap(Map<String, String> requestParams, ProjectConfig projectConfig,
-                                                    Bucketer bucketer, String userId, String goalKey,
+                                                    Bucketer bucketer, UserProfile userProfile, String userId, String goalKey,
                                                     Map<String, String> attributes) {
         List<Experiment> allExperiments = projectConfig.getExperiments();
         List<String> experimentIds = projectConfig.getExperimentIdsForGoal(goalKey);
@@ -170,7 +173,7 @@ public class EventBuilderV1 extends EventBuilder {
 
         for (Experiment experiment : allExperiments) {
             if (experimentIds.contains(experiment.getId()) &&
-                    ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId, attributes)) {
+                    ProjectValidationUtils.validatePreconditions(projectConfig, userProfile, experiment, userId, attributes)) {
                 Variation bucketedVariation = bucketer.bucket(experiment, userId);
                 if (bucketedVariation != null) {
                     requestParams.put(EXPERIMENT_PARAM_PREFIX + experiment.getId(), bucketedVariation.getId());

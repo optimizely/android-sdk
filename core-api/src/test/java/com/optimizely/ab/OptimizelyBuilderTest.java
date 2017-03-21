@@ -17,6 +17,8 @@
 package com.optimizely.ab;
 
 import com.optimizely.ab.bucketing.UserProfile;
+import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
@@ -25,7 +27,8 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -33,24 +36,39 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.util.Collections;
 
+import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV2;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV1;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV1;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV3;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV1;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link Optimizely#builder(String, EventHandler)}.
  */
 @SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 public class OptimizelyBuilderTest {
+
+
+    private static final String userId = "userId";
+    private static String noAudienceDatafile;
+    private static ProjectConfig noAudienceProjectConfig;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        noAudienceDatafile = noAudienceProjectConfigJsonV2();
+        noAudienceProjectConfig = noAudienceProjectConfigV2();
+    }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -118,7 +136,7 @@ public class OptimizelyBuilderTest {
             .withUserProfile(userProfile)
             .build();
 
-        assertThat(optimizelyClient.bucketer.getUserProfile(), is(userProfile));
+        assertThat(optimizelyClient.getUserProfile(), is(userProfile));
     }
 
     @Test
@@ -181,5 +199,27 @@ public class OptimizelyBuilderTest {
     public void builderThrowsConfigParseExceptionForInvalidDatafile() throws Exception {
         thrown.expect(ConfigParseException.class);
         Optimizely.builder("{invalidDatafile}", mockEventHandler).build();
+    }
+
+    /**
+     * Check that the user profile is cleaned of variations that have been removed from the datafile.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings
+    @Test public void userProfileIsCleanedOnClientInitialization() throws ConfigParseException {
+        Experiment experiment = noAudienceProjectConfig.getExperiments().get(0);
+
+        UserProfile userProfile = mock(UserProfile.class);
+        when(userProfile.getAllRecords()).thenReturn(Collections.singletonMap(userId,
+                Collections.singletonMap(experiment.getId(),
+                        "variationId")));
+
+        Optimizely.builder(noAudienceDatafile, mockEventHandler)
+            .withConfig(noAudienceProjectConfig)
+            .withUserProfile(userProfile)
+            .build();
+
+        verify(userProfile).getAllRecords();
+        verify(userProfile).remove(userId, experiment.getId());
     }
 }
