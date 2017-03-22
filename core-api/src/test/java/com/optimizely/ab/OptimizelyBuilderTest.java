@@ -40,10 +40,8 @@ import java.util.Collections;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigV2;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV1;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV3;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV1;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -86,14 +84,6 @@ public class OptimizelyBuilderTest {
             .build();
 
         assertThat(optimizelyClient.eventHandler, is(mockEventHandler));
-    }
-
-    @Test
-    public void projectConfigV1() throws Exception {
-        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV1(), mockEventHandler)
-                .build();
-
-        ProjectConfigTestUtils.verifyProjectConfig(optimizelyClient.getProjectConfig(), validProjectConfigV1());
     }
 
     @Test

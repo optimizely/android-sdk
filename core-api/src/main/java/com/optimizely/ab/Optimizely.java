@@ -19,7 +19,6 @@ package com.optimizely.ab;
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.bucketing.UserProfile;
-import com.optimizely.ab.internal.UserProfileUtils;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -36,28 +35,26 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilder;
-import com.optimizely.ab.event.internal.EventBuilderV1;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 import com.optimizely.ab.internal.EventTagUtils;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 import com.optimizely.ab.internal.ReservedEventKey;
-import com.optimizely.ab.notification.NotificationListener;
+import com.optimizely.ab.internal.UserProfileUtils;
 import com.optimizely.ab.notification.NotificationBroadcaster;
-
+import com.optimizely.ab.notification.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Top-level container class for Optimizely functionality.
@@ -464,7 +461,14 @@ public class Optimizely {
             throw new ConfigParseException("Unable to parse empty datafile.");
         }
 
-        return DefaultConfigParser.getInstance().parseProjectConfig(datafile);
+        ProjectConfig projectConfig = DefaultConfigParser.getInstance().parseProjectConfig(datafile);
+
+        if (projectConfig.getVersion().equals("1")) {
+            throw new ConfigParseException("This version of the Java SDK does not support version 1 datafiles. " +
+                    "Please use a version 2 or 3 datafile with this SDK.");
+        }
+
+        return projectConfig;
     }
 
     @Nullable
@@ -733,11 +737,7 @@ public class Optimizely {
             }
 
             if (eventBuilder == null) {
-                if (projectConfig.getVersion().equals(ProjectConfig.Version.V1.toString())) {
-                    eventBuilder = new EventBuilderV1();
-                } else {
-                    eventBuilder = new EventBuilderV2(clientEngine, clientVersion);
-                }
+                eventBuilder = new EventBuilderV2(clientEngine, clientVersion);
             }
 
             if (errorHandler == null) {

@@ -182,7 +182,7 @@ public class ProjectConfigTest {
     }
 
     /**
-     * Asserts that anonymizeIP is set to false if not explicitly passed into the constructor (in the case of V1 or V2
+     * Asserts that anonymizeIP is set to false if not explicitly passed into the constructor (in the case of V2
      * projects).
      * @throws Exception
      */

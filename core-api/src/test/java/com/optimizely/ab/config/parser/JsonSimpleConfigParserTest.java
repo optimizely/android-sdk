@@ -23,8 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV1;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV1;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV3;
@@ -38,15 +36,6 @@ public class JsonSimpleConfigParserTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
-    @Test
-    public void parseProjectConfigV1() throws Exception {
-        JsonSimpleConfigParser parser = new JsonSimpleConfigParser();
-        ProjectConfig actual = parser.parseProjectConfig(validConfigJsonV1());
-        ProjectConfig expected = validProjectConfigV1();
-
-        verifyProjectConfig(actual, expected);
-    }
 
     @Test
     public void parseProjectConfigV2() throws Exception {
