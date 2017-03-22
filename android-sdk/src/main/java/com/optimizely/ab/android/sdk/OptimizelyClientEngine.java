@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2017, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -16,18 +16,34 @@
 
 package com.optimizely.ab.android.sdk;
 
-import android.app.Activity;
+import android.app.UiModeManager;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
+
+import com.optimizely.ab.event.internal.payload.Event;
 
 /**
- * Listens for new instances of {@link OptimizelyClient} that are built after calling
- * {@link OptimizelyManager#initialize(Activity, OptimizelyStartListener)} or {@link OptimizelyManager#initialize(Context, OptimizelyStartListener)}
+ * This class manages client engine value of the Event depending on current mode of UI.
  */
-public interface OptimizelyStartListener {
+public class OptimizelyClientEngine {
+
     /**
-     * Receives a started {@link OptimizelyClient} instances
+     * Get client engine value for current UI mode type
      *
-     * @param optimizely an {@link OptimizelyClient} that is started
+     * @param context any valid Android {@link Context}
+     * @return String value of client engine
      */
-    void onStart(OptimizelyClient optimizely);
+    @VisibleForTesting
+    public static Event.ClientEngine getClientEngineFromContext(@NonNull Context context) {
+        UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+
+        if (uiModeManager != null && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
+            return Event.ClientEngine.ANDROID_TV_SDK;
+        }
+
+        return Event.ClientEngine.ANDROID_SDK;
+    }
+
 }

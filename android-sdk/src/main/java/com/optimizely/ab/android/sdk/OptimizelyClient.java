@@ -1,18 +1,18 @@
-/*
- * Copyright 2016, Optimizely
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/****************************************************************************
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ *                                                                          *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ *                                                                          *
+ *    http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ ***************************************************************************/
 
 package com.optimizely.ab.android.sdk;
 
@@ -134,6 +134,27 @@ public class OptimizelyClient {
      * Track an event for a user
      * @param eventName the name of the event
      * @param userId the user id
+     * @param attributes a map of attributes about the user
+     * @param eventTags a map of metadata associated with the event
+     */
+    public void track(@NonNull String eventName,
+                      @NonNull String userId,
+                      @NonNull Map<String, String> attributes,
+                      @NonNull Map<String, ?> eventTags) throws UnknownEventTypeException {
+        if (optimizely != null) {
+            optimizely.track(eventName, userId, attributes, eventTags);
+
+        } else {
+            logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
+                    " with attributes and event tags", eventName, userId);
+        }
+    }
+
+    /**
+     * Track an event for a user
+     * @deprecated see {@link Optimizely#track(String, String, Map, Map)} and pass in revenue values as event tags instead.
+     * @param eventName the name of the event
+     * @param userId the user id
      * @param eventValue a value to tie to the event
      */
     public void track(@NonNull String eventName,
@@ -150,6 +171,7 @@ public class OptimizelyClient {
     /**
      * Track an event for a user with attributes and a value
      * @see Optimizely#track(String, String, Map, Long)
+     * @deprecated see {@link Optimizely#track(String, String, Map, Map)} and pass in revenue values as event tags instead.
      * @param eventName the String name of the event
      * @param userId the String user id
      * @param attributes the attributes of the event
