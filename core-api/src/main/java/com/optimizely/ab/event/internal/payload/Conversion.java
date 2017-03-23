@@ -20,20 +20,20 @@ import java.util.List;
 
 public class Conversion extends Event {
 
-    private String visitorId;
-    private long timestamp;
-    private String projectId;
-    private String accountId;
-    private List<Feature> userFeatures;
-    private List<LayerState> layerStates;
-    private String eventEntityId;
-    private String eventName;
-    private List<EventMetric> eventMetrics;
-    private List<Feature> eventFeatures;
-    private boolean isGlobalHoldback;
-    private boolean anonymizeIP;
-    private String sessionId;
-    private String revision;
+    private String              accountId;
+    private boolean             anonymizeIP;
+    private String              eventEntityId;
+    private List<Feature>       eventFeatures;
+    private List<EventMetric>   eventMetrics;
+    private String              eventName;
+    private boolean             isGlobalHoldback;
+    private List<LayerState>    layerStates;
+    private String              projectId;
+    private String              revision;
+    private String              sessionId;
+    private long                timestamp;
+    private List<Feature>       userFeatures;
+    private String              visitorId;
 
     public Conversion() { }
 
@@ -42,27 +42,27 @@ public class Conversion extends Event {
                       List<EventMetric> eventMetrics, List<Feature> eventFeatures, boolean isGlobalHoldback,
                       String revision, boolean anonymizeIP) {
         this(visitorId, timestamp, projectId, accountId, userFeatures, layerStates, eventEntityId, eventName,
-             eventMetrics, eventFeatures, isGlobalHoldback, anonymizeIP, revision, null);
+                eventMetrics, eventFeatures, isGlobalHoldback, anonymizeIP, revision, null);
     }
 
     public Conversion(String visitorId, long timestamp, String projectId, String accountId, List<Feature> userFeatures,
                       List<LayerState> layerStates, String eventEntityId, String eventName,
                       List<EventMetric> eventMetrics, List<Feature> eventFeatures, boolean isGlobalHoldback,
                       boolean anonymizeIP, String revision, String sessionId) {
-        this.visitorId = visitorId;
-        this.timestamp = timestamp;
-        this.projectId = projectId;
         this.accountId = accountId;
-        this.userFeatures = userFeatures;
-        this.layerStates = layerStates;
-        this.eventEntityId = eventEntityId;
-        this.eventName = eventName;
-        this.eventMetrics = eventMetrics;
-        this.eventFeatures = eventFeatures;
-        this.isGlobalHoldback = isGlobalHoldback;
         this.anonymizeIP = anonymizeIP;
+        this.eventEntityId = eventEntityId;
+        this.eventFeatures = eventFeatures;
+        this.eventMetrics = eventMetrics;
+        this.eventName = eventName;
+        this.isGlobalHoldback = isGlobalHoldback;
+        this.layerStates = layerStates;
+        this.projectId = projectId;
         this.revision = revision;
         this.sessionId = sessionId;
+        this.timestamp = timestamp;
+        this.userFeatures = userFeatures;
+        this.visitorId = visitorId;
     }
 
     public String getVisitorId() {
@@ -220,20 +220,20 @@ public class Conversion extends Event {
     @Override
     public String toString() {
         return "Conversion{" +
-                "visitorId='" + visitorId + '\'' +
-                ", timestamp=" + timestamp +
-                ", projectId='" + projectId + '\'' +
-                ", accountId='" + accountId + '\'' +
-                ", userFeatures=" + userFeatures +
-                ", layerStates=" + layerStates +
-                ", eventEntityId='" + eventEntityId + '\'' +
-                ", eventName='" + eventName + '\'' +
-                ", eventMetrics=" + eventMetrics +
-                ", eventFeatures=" + eventFeatures +
-                ", isGlobalHoldback=" + isGlobalHoldback +
+                "accountId='" + accountId + '\'' +
                 ", anonymizeIP=" + anonymizeIP +
-                ", sessionId='" + sessionId + '\'' +
+                ", eventEntityId='" + eventEntityId + '\'' +
+                ", eventFeatures=" + eventFeatures +
+                ", eventMetrics=" + eventMetrics +
+                ", eventName='" + eventName + '\'' +
+                ", isGlobalHoldback=" + isGlobalHoldback +
+                ", layerStates=" + layerStates +
+                ", projectId='" + projectId + '\'' +
                 ", revision='" + revision + '\'' +
+                ", sessionId='" + sessionId + '\'' +
+                ", timestamp=" + timestamp +
+                ", userFeatures=" + userFeatures +
+                ", visitorId='" + visitorId + '\'' +
                 '}';
     }
 }
