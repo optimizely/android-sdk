@@ -26,6 +26,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.AndroidUserProfile;
+import com.optimizely.ab.config.parser.ConfigParseException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -96,6 +97,45 @@ public class OptimizelyManagerTest {
 
         Intent intent = captor.getValue();
         assertTrue(intent.getComponent().getShortClassName().contains("DataFileService"));
+    }
+
+    @Test
+    public void initializeWithEmptyDatafile() {
+        Context context = mock(Context.class);
+        Context appContext = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getPackageName()).thenReturn("com.optly");
+
+        String emptyString = "";
+
+        optimizelyManager.initialize(context, emptyString);
+        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
+    }
+
+    @Test
+    public void initializeWithMalformedDatafile() {
+        Context context = mock(Context.class);
+        Context appContext = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getPackageName()).thenReturn("com.optly");
+
+        String emptyString = "malformed data";
+
+        optimizelyManager.initialize(context, emptyString);
+        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
+    }
+
+    @Test
+    public void initializeWithNullDatafile() {
+        Context context = mock(Context.class);
+        Context appContext = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getPackageName()).thenReturn("com.optly");
+
+        String emptyString = null;
+
+        optimizelyManager.initialize(context, emptyString);
+        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
     }
 
     @Test
