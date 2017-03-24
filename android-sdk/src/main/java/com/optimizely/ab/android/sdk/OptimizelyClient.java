@@ -40,7 +40,7 @@ import java.util.Map;
  * Optimizely through this interface checking for null is not required.  If Optimizely is null warnings
  * will be logged.
  */
-public class OptimizelyClient {
+public class  OptimizelyClient {
 
     private final Logger logger;
 
@@ -170,7 +170,7 @@ public class OptimizelyClient {
 
     /**
      * Track an event for a user with attributes and a value
-     * @see Optimizely#track(String, String, Map, Long)
+     * @see Optimizely#track(String, String, Map, long)
      * @deprecated see {@link Optimizely#track(String, String, Map, Map)} and pass in revenue values as event tags instead.
      * @param eventName the String name of the event
      * @param userId the String user id
