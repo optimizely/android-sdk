@@ -40,7 +40,7 @@ import java.util.Map;
  * Optimizely through this interface checking for null is not required.  If Optimizely is null warnings
  * will be logged.
  */
-public class  OptimizelyClient {
+public class OptimizelyClient {
 
     private final Logger logger;
 
