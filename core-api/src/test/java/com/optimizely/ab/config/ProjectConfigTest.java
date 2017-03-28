@@ -61,28 +61,32 @@ public class ProjectConfigTest {
     }
 
     /**
-     * Asserts that getExperimentIdsForGoal returns the respective experiment ids for experiments using a goal,
-     * provided that the goal parameter is valid.
+     * Asserts that {@link ProjectConfig#getExperimentsForEventKey(String)}
+     * returns the respective experiment ids for experiments using an event,
+     * provided that the event parameter is valid.
      */
     @Test
-    public void verifyGetExperimentIdsForValidGoal() throws Exception {
-        List<String> expectedSingleExperimentId = asList("223");
-        List<String> actualSingleExperimentId = projectConfig.getExperimentIdsForGoal("clicked_cart");
-        assertThat(actualSingleExperimentId, is(expectedSingleExperimentId));
+    public void verifyGetExperimentsForValidEvent() throws Exception {
+        Experiment experiment223 = projectConfig.getExperimentIdMapping().get("223");
+        Experiment experiment118 = projectConfig.getExperimentIdMapping().get("118");
+        List<Experiment> expectedSingleExperiment = asList(experiment223);
+        List<Experiment> actualSingleExperiment = projectConfig.getExperimentsForEventKey("clicked_cart");
+        assertThat(actualSingleExperiment, is(expectedSingleExperiment));
 
-        List<String> expectedMultipleExperimentIds = asList("118", "223");
-        List<String> actualMultipleExperimentIds = projectConfig.getExperimentIdsForGoal("clicked_purchase");
-        assertThat(actualMultipleExperimentIds, is(expectedMultipleExperimentIds));
+        List<Experiment> expectedMultipleExperiments = asList(experiment118, experiment223);
+        List<Experiment> actualMultipleExperiments = projectConfig.getExperimentsForEventKey("clicked_purchase");
+        assertThat(actualMultipleExperiments, is(expectedMultipleExperiments));
     }
 
     /**
-     * Asserts that getExperimentIdsForGoal returns an empty List given an invalid goal parameter.
+     * Asserts that {@link ProjectConfig#getExperimentsForEventKey(String)} returns an empty List
+     * when given an invalid event key.
      */
     @Test
-    public void verifyGetExperimentIdsForInvalidGoal() throws Exception {
-        List<String> expectedExperimentIds = Collections.emptyList();
-        List<String> actualExperimentIds = projectConfig.getExperimentIdsForGoal("a_fake_goal");
-        assertThat(actualExperimentIds, is(expectedExperimentIds));
+    public void verifyGetExperimentsForInvalidEvent() throws Exception {
+        List<Experiment> expectedExperiments = Collections.emptyList();
+        List<Experiment> actualExperiments = projectConfig.getExperimentsForEventKey("a_fake_event");
+        assertThat(actualExperiments, is(expectedExperiments));
     }
 
     /**

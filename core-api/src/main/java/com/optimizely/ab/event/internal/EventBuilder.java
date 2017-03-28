@@ -16,18 +16,12 @@
  */
 package com.optimizely.ab.event.internal;
 
-import com.optimizely.ab.bucketing.Bucketer;
-import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.LogEvent;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import java.util.Collections;
 import java.util.Map;
 
 public abstract class EventBuilder {
@@ -38,19 +32,8 @@ public abstract class EventBuilder {
                                                    @Nonnull String userId,
                                                    @Nonnull Map<String, String> attributes);
 
-    public LogEvent createConversionEvent(@Nonnull ProjectConfig projectConfig,
-                                          @Nonnull Bucketer bucketer,
-                                          @Nullable UserProfile userProfile,
-                                          @Nonnull String userId,
-                                          @Nonnull String eventId,
-                                          @Nonnull String eventName,
-                                          @Nonnull Map<String, String> attributes) {
-        return createConversionEvent(projectConfig, bucketer, userProfile, userId, eventId, eventName, attributes, Collections.<String, String>emptyMap());
-    }
-
     public abstract LogEvent createConversionEvent(@Nonnull ProjectConfig projectConfig,
-                                                   @Nonnull Bucketer bucketer,
-                                                   @Nullable UserProfile userProfile,
+                                                   @Nonnull Map<Experiment, Variation> experimentVariationMap,
                                                    @Nonnull String userId,
                                                    @Nonnull String eventId,
                                                    @Nonnull String eventName,

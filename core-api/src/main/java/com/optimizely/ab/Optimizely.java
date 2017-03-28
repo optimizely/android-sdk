@@ -159,6 +159,7 @@ public class Optimizely {
                                          @Nonnull Experiment experiment,
                                          @Nonnull String userId,
                                          @Nonnull Map<String, String> attributes) {
+
         // determine whether all the given attributes are present in the project config. If not, filter out the unknown
         // attributes.
         attributes = filterAttributes(projectConfig, attributes);
@@ -225,9 +226,9 @@ public class Optimizely {
     }
 
     public void track(@Nonnull String eventName,
-                       @Nonnull String userId,
-                       @Nonnull Map<String, String> attributes,
-                       @Nonnull Map<String, ?> eventTags) throws UnknownEventTypeException {
+                      @Nonnull String userId,
+                      @Nonnull Map<String, String> attributes,
+                      @Nonnull Map<String, ?> eventTags) throws UnknownEventTypeException {
 
         ProjectConfig currentConfig = getProjectConfig();
 
@@ -250,11 +251,31 @@ public class Optimizely {
             eventValue = EventTagUtils.getRevenueValue(eventTags);
         }
 
-        // create the conversion event request parameters, then dispatch
-        LogEvent conversionEvent = eventBuilder.createConversionEvent(currentConfig, bucketer, userProfile, userId,
-                                                                      eventType.getId(), eventType.getKey(), attributes,
-                                                                      eventTags);
+        List<Experiment> experimentsForEvent = projectConfig.getExperimentsForEventKey(eventName);
+        Map<Experiment, Variation> experimentVariationMap = new HashMap<Experiment, Variation>(experimentsForEvent.size());
+        for (Experiment experiment : experimentsForEvent) {
+            if (experiment.isRunning()) {
+                Variation variation = getVariation(currentConfig, experiment, attributes, userId);
+                if (variation != null) {
+                    experimentVariationMap.put(experiment, variation);
+                }
+            } else {
+                logger.info(
+                        "Not tracking event \"{}\" for experiment \"{}\" because experiment has status \"Launched\".",
+                        eventType.getKey(), experiment.getKey());
+            }
+        }
 
+        // create the conversion event request parameters, then dispatch
+        LogEvent conversionEvent = eventBuilder.createConversionEvent(
+                projectConfig,
+                experimentVariationMap,
+                userId,
+                eventType.getId(),
+                eventType.getKey(),
+                attributes,
+                eventTags);
+        
         if (conversionEvent == null) {
             logger.info("There are no valid experiments for event \"{}\" to track.", eventName);
             logger.info("Not tracking event \"{}\" for user \"{}\".", eventName, userId);
@@ -415,7 +436,6 @@ public class Optimizely {
     public @Nullable Variation getVariation(@Nonnull String experimentKey,
                                             @Nonnull String userId,
                                             @Nonnull Map<String, String> attributes) {
-
         if (!validateUserId(userId)) {
             return null;
         }
@@ -435,6 +455,10 @@ public class Optimizely {
                                             @Nonnull Experiment experiment,
                                             @Nonnull Map<String, String> attributes,
                                             @Nonnull String userId) {
+
+        // determine whether all the given attributes are present in the project config. If not, filter out the unknown
+        // attributes.
+        attributes = filterAttributes(projectConfig, attributes);
 
         if (!ProjectValidationUtils.validatePreconditions(projectConfig, userProfile, experiment, userId, attributes)) {
             return null;

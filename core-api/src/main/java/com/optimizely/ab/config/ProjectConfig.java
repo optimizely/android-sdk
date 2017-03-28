@@ -17,16 +17,14 @@
 package com.optimizely.ab.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.audience.Condition;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.concurrent.Immutable;
 
 /**
  * Represents the Optimizely Project configuration.
@@ -165,10 +163,16 @@ public class ProjectConfig {
         return experiments;
     }
 
-    public List<String> getExperimentIdsForGoal(String goalKey) {
-        EventType goal;
-        if ((goal = eventNameMapping.get(goalKey)) != null) {
-            return goal.getExperimentIds();
+    public List<Experiment> getExperimentsForEventKey(String eventKey) {
+        EventType event = eventNameMapping.get(eventKey);
+        if (event != null) {
+            List<String> experimentIds = event.getExperimentIds();
+            List<Experiment> experiments = new ArrayList<Experiment>(experimentIds.size());
+            for (String experimentId : experimentIds) {
+                experiments.add(experimentIdMapping.get(experimentId));
+            }
+
+            return experiments;
         }
 
         return Collections.emptyList();

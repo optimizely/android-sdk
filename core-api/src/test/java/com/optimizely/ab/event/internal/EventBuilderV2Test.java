@@ -16,14 +16,13 @@
  */
 package com.optimizely.ab.event.internal;
 
-import ch.qos.logback.classic.Level;
 import com.google.gson.Gson;
 import com.optimizely.ab.bucketing.Bucketer;
+import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
-import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.payload.Conversion;
@@ -33,18 +32,20 @@ import com.optimizely.ab.event.internal.payload.EventMetric;
 import com.optimizely.ab.event.internal.payload.Feature;
 import com.optimizely.ab.event.internal.payload.Impression;
 import com.optimizely.ab.event.internal.payload.LayerState;
-import com.optimizely.ab.internal.LogbackVerifier;
 import com.optimizely.ab.internal.ProjectValidationUtils;
 import com.optimizely.ab.internal.ReservedEventKey;
-import org.junit.Rule;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.closeTo;
 import static org.junit.Assert.assertFalse;
@@ -62,11 +63,16 @@ import static org.mockito.Mockito.when;
  */
 public class EventBuilderV2Test {
 
-    @Rule
-    public LogbackVerifier logbackVerifier = new LogbackVerifier();
-
     private Gson gson = new Gson();
     private EventBuilderV2 builder = new EventBuilderV2();
+
+    private static String userId = "userId";
+    private static ProjectConfig validProjectConfig;
+
+    @BeforeClass
+    public static void setUp() throws IOException {
+        validProjectConfig = validProjectConfigV2();
+    }
 
     /**
      * Verify {@link Impression} event creation
@@ -74,7 +80,7 @@ public class EventBuilderV2Test {
     @Test
     public void createImpressionEvent() throws Exception {
         // use the "valid" project config and its associated experiment, variation, and attributes
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        ProjectConfig projectConfig = validProjectConfigV2();
         Experiment activatedExperiment = projectConfig.getExperiments().get(0);
         Variation bucketedVariation = activatedExperiment.getVariations().get(0);
         Attribute attribute = projectConfig.getAttributes().get(0);
@@ -115,7 +121,7 @@ public class EventBuilderV2Test {
     @Test
     public void createImpressionEventIgnoresUnknownAttributes() throws Exception {
         // use the "valid" project config and its associated experiment, variation, and attributes
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        ProjectConfig projectConfig = validProjectConfigV2();
         Experiment activatedExperiment = projectConfig.getExperiments().get(0);
         Variation bucketedVariation = activatedExperiment.getVariations().get(0);
 
@@ -139,7 +145,7 @@ public class EventBuilderV2Test {
     @Test
     public void createImpressionEventAndroidClientEngineClientVersion() throws Exception {
         EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_SDK, "0.0.0");
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        ProjectConfig projectConfig = validProjectConfigV2();
         Experiment activatedExperiment = projectConfig.getExperiments().get(0);
         Variation bucketedVariation = activatedExperiment.getVariations().get(0);
         Attribute attribute = projectConfig.getAttributes().get(0);
@@ -162,7 +168,7 @@ public class EventBuilderV2Test {
     public void createImpressionEventAndroidTVClientEngineClientVersion() throws Exception {
         String clientVersion = "0.0.0";
         EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_TV_SDK, clientVersion);
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        ProjectConfig projectConfig = validProjectConfigV2();
         Experiment activatedExperiment = projectConfig.getExperiments().get(0);
         Variation bucketedVariation = activatedExperiment.getVariations().get(0);
         Attribute attribute = projectConfig.getAttributes().get(0);
@@ -183,15 +189,14 @@ public class EventBuilderV2Test {
     @Test
     public void createConversionEvent() throws Exception {
         // use the "valid" project config and its associated experiment, variation, and attributes
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
-        Attribute attribute = projectConfig.getAttributes().get(0);
-        EventType eventType = projectConfig.getEventTypes().get(0);
+        Attribute attribute = validProjectConfig.getAttributes().get(0);
+        EventType eventType = validProjectConfig.getEventTypes().get(0);
         String userId = "userId";
 
         Bucketer mockBucketAlgorithm = mock(Bucketer.class);
 
-        List<Experiment> allExperiments = projectConfig.getExperiments();
-        List<String> experimentIds = projectConfig.getExperimentIdsForGoal(eventType.getKey());
+        List<Experiment> allExperiments = validProjectConfig.getExperiments();
+        List<Experiment> experimentsForEventKey = validProjectConfig.getExperimentsForEventKey(eventType.getKey());
 
         // Bucket to the first variation for all experiments. However, only a subset of the experiments will actually
         // call the bucket function.
@@ -204,20 +209,29 @@ public class EventBuilderV2Test {
         Map<String, Object> eventTagMap = new HashMap<String, Object>();
         eventTagMap.put("boolean_param", false);
         eventTagMap.put("string_param", "123");
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, userId,
-                                                                 eventType.getId(), eventType.getKey(), attributeMap, eventTagMap);
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockBucketAlgorithm,
+                null,
+                eventType.getKey(),
+                userId,
+                attributeMap);
+        LogEvent conversionEvent = builder.createConversionEvent(
+                validProjectConfig,
+                experimentVariationMap,
+                userId,
+                eventType.getId(),
+                eventType.getKey(),
+                attributeMap,
+                eventTagMap);
 
         List<LayerState> expectedLayerStates = new ArrayList<LayerState>();
 
-        for (Experiment experiment : allExperiments) {
-            if (experimentIds.contains(experiment.getId()) &&
-                    ProjectValidationUtils.validatePreconditions(projectConfig, null, experiment, userId, attributeMap)) {
-                verify(mockBucketAlgorithm).bucket(experiment, userId);
-                LayerState layerState = new LayerState(experiment.getLayerId(), projectConfig.getRevision(),
+        for (Experiment experiment : experimentsForEventKey) {
+            if (ProjectValidationUtils.validatePreconditions(validProjectConfig, null, experiment, userId, attributeMap)) {
+                LayerState layerState = new LayerState(experiment.getLayerId(), validProjectConfig.getRevision(),
                         new Decision(experiment.getVariations().get(0).getId(), false, experiment.getId()), true);
                 expectedLayerStates.add(layerState);
-            } else {
-                verify(mockBucketAlgorithm, never()).bucket(experiment, userId);
             }
         }
 
@@ -229,8 +243,8 @@ public class EventBuilderV2Test {
         // verify payload information
         assertThat(conversion.getVisitorId(), is(userId));
         assertThat((double)conversion.getTimestamp(), closeTo((double)System.currentTimeMillis(), 60.0));
-        assertThat(conversion.getProjectId(), is(projectConfig.getProjectId()));
-        assertThat(conversion.getAccountId(), is(projectConfig.getAccountId()));
+        assertThat(conversion.getProjectId(), is(validProjectConfig.getProjectId()));
+        assertThat(conversion.getAccountId(), is(validProjectConfig.getAccountId()));
 
         Feature feature = new Feature(attribute.getId(), attribute.getKey(), Feature.CUSTOM_ATTRIBUTE_FEATURE_TYPE,
                                       "value", true);
@@ -251,7 +265,7 @@ public class EventBuilderV2Test {
         assertTrue(conversion.getEventFeatures().containsAll(expectedEventFeatures));
         assertTrue(expectedEventFeatures.containsAll(conversion.getEventFeatures()));
         assertFalse(conversion.getIsGlobalHoldback());
-        assertThat(conversion.getAnonymizeIP(), is(projectConfig.getAnonymizeIP()));
+        assertThat(conversion.getAnonymizeIP(), is(validProjectConfig.getAnonymizeIP()));
         assertThat(conversion.getClientEngine(), is(ClientEngine.JAVA_SDK.getClientEngineValue()));
         assertThat(conversion.getClientVersion(), is(BuildVersionInfo.VERSION));
     }
@@ -264,22 +278,28 @@ public class EventBuilderV2Test {
         long revenue = 1234L;
 
         // use the "valid" project config and its associated experiment, variation, and attributes
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
-        Attribute attribute = projectConfig.getAttributes().get(0);
-        EventType eventType = projectConfig.getEventTypes().get(0);
+        Attribute attribute = validProjectConfig.getAttributes().get(0);
+        EventType eventType = validProjectConfig.getEventTypes().get(0);
 
         Bucketer mockBucketAlgorithm = mock(Bucketer.class);
 
         // Bucket to the first variation for all experiments.
-        for (Experiment experiment : projectConfig.getExperiments()) {
-            when(mockBucketAlgorithm.bucket(experiment, "userId"))
+        for (Experiment experiment : validProjectConfig.getExperiments()) {
+            when(mockBucketAlgorithm.bucket(experiment, userId))
                 .thenReturn(experiment.getVariations().get(0));
         }
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
         Map<String, Object> eventTagMap = new HashMap<String, Object>();
         eventTagMap.put(ReservedEventKey.REVENUE.toString(), revenue);
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, "userId",
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockBucketAlgorithm,
+                null,
+                eventType.getKey(),
+                userId,
+                attributeMap);
+        LogEvent conversionEvent = builder.createConversionEvent(validProjectConfig, experimentVariationMap, userId,
                                                                  eventType.getId(), eventType.getKey(), attributeMap,
                                                                  eventTagMap);
 
@@ -295,23 +315,30 @@ public class EventBuilderV2Test {
      */
     @Test
     public void createConversionParamsUserNotInAudience() throws Exception {
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
-        Attribute attribute = projectConfig.getAttributes().get(0);
-        EventType eventType = projectConfig.getEventTypes().get(2);
+        Attribute attribute = validProjectConfig.getAttributes().get(0);
+        EventType eventType = validProjectConfig.getEventTypes().get(2);
         String userId = "userId";
 
         Bucketer mockBucketAlgorithm = mock(Bucketer.class);
 
         // Bucket to the first variation for all experiments.
-        for (Experiment experiment : projectConfig.getExperiments()) {
+        for (Experiment experiment : validProjectConfig.getExperiments()) {
             when(mockBucketAlgorithm.bucket(experiment, userId))
                 .thenReturn(experiment.getVariations().get(0));
         }
 
         // the audience for the experiments is "NOT firefox" so this user shouldn't satisfy audience conditions
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "firefox");
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, userId,
-                                                                 eventType.getId(), eventType.getKey(), attributeMap);
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockBucketAlgorithm,
+                null,
+                eventType.getKey(),
+                userId,
+                attributeMap);
+        LogEvent conversionEvent = builder.createConversionEvent(validProjectConfig, experimentVariationMap, userId,
+                                                                 eventType.getId(), eventType.getKey(), attributeMap,
+                Collections.<String, Object>emptyMap());
 
         assertNull(conversionEvent);
     }
@@ -322,33 +349,32 @@ public class EventBuilderV2Test {
      */
     @Test
     public void createConversionEventForcedVariationBucketingPrecedesAudienceEval() {
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
-        EventType eventType = projectConfig.getEventTypes().get(0);
+        EventType eventType = validProjectConfig.getEventTypes().get(0);
         String userId = "testUser1";
 
-        List<String> experimentIds = projectConfig.getExperimentIdsForGoal(eventType.getKey());
-
         Bucketer mockBucketAlgorithm = mock(Bucketer.class);
-        for (Experiment experiment : projectConfig.getExperiments()) {
+        for (Experiment experiment : validProjectConfig.getExperiments()) {
             when(mockBucketAlgorithm.bucket(experiment, userId))
                 .thenReturn(experiment.getVariations().get(0));
         }
 
         // attributes are empty so user won't be in the audience for experiment using the event, but bucketing
         // will still take place
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, userId,
-                                                                 eventType.getId(), eventType.getKey(),
-                                                                 Collections.<String, String>emptyMap());
-
-        for (Experiment experiment : projectConfig.getExperiments()) {
-            if (experimentIds.contains(experiment.getId()) &&
-                    ProjectValidationUtils.validatePreconditions(projectConfig, null, experiment, userId,
-                                                                 Collections.<String, String>emptyMap())) {
-                verify(mockBucketAlgorithm).bucket(experiment, userId);
-            } else {
-                verify(mockBucketAlgorithm, never()).bucket(experiment, userId);
-            }
-        }
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockBucketAlgorithm,
+                null,
+                eventType.getKey(),
+                userId,
+                Collections.<String, String>emptyMap());
+        LogEvent conversionEvent = builder.createConversionEvent(
+                validProjectConfig,
+                experimentVariationMap,
+                userId,
+                eventType.getId(),
+                eventType.getKey(),
+                Collections.<String, String>emptyMap(),
+                Collections.<String, Object>emptyMap());
 
         Conversion conversion = gson.fromJson(conversionEvent.getBody(), Conversion.class);
         // 1 experiment uses the event
@@ -361,21 +387,32 @@ public class EventBuilderV2Test {
      */
     @Test
     public void createConversionEventExperimentStatusPrecedesForcedVariation() {
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
-        EventType eventType = projectConfig.getEventTypes().get(3);
+        EventType eventType = validProjectConfig.getEventTypes().get(3);
         String userId = "userId";
 
         Bucketer mockBucketAlgorithm = mock(Bucketer.class);
-        for (Experiment experiment : projectConfig.getExperiments()) {
+        for (Experiment experiment : validProjectConfig.getExperiments()) {
             when(mockBucketAlgorithm.bucket(experiment, userId))
                 .thenReturn(experiment.getVariations().get(0));
         }
 
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, userId,
-                                                                 eventType.getId(), eventType.getKey(),
-                                                                 Collections.<String, String>emptyMap());
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockBucketAlgorithm,
+                null,
+                eventType.getKey(),
+                userId,
+                Collections.<String, String>emptyMap());
+        LogEvent conversionEvent = builder.createConversionEvent(
+                validProjectConfig,
+                experimentVariationMap,
+                userId,
+                eventType.getId(),
+                eventType.getKey(),
+                Collections.<String, String>emptyMap(),
+                Collections.<String, Object>emptyMap());
 
-        for (Experiment experiment : projectConfig.getExperiments()) {
+        for (Experiment experiment : validProjectConfig.getExperiments()) {
             verify(mockBucketAlgorithm, never()).bucket(experiment, userId);
         }
 
@@ -389,20 +426,31 @@ public class EventBuilderV2Test {
     @Test
     public void createConversionEventAndroidClientEngineClientVersion() throws Exception {
         EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_SDK, "0.0.0");
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
-        Attribute attribute = projectConfig.getAttributes().get(0);
-        EventType eventType = projectConfig.getEventTypes().get(0);
-        String userId = "userId";
+        Attribute attribute = validProjectConfig.getAttributes().get(0);
+        EventType eventType = validProjectConfig.getEventTypes().get(0);
 
         Bucketer mockBucketAlgorithm = mock(Bucketer.class);
-        for (Experiment experiment : projectConfig.getExperiments()) {
+        for (Experiment experiment : validProjectConfig.getExperiments()) {
             when(mockBucketAlgorithm.bucket(experiment, userId))
                     .thenReturn(experiment.getVariations().get(0));
         }
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, userId,
-                                                                 eventType.getId(), eventType.getKey(), attributeMap);
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockBucketAlgorithm,
+                null,
+                eventType.getKey(),
+                userId,
+                attributeMap);
+        LogEvent conversionEvent = builder.createConversionEvent(
+                validProjectConfig,
+                experimentVariationMap,
+                userId,
+                eventType.getId(),
+                eventType.getKey(),
+                attributeMap,
+                Collections.<String, Object>emptyMap());
 
         Conversion conversion = gson.fromJson(conversionEvent.getBody(), Conversion.class);
 
@@ -418,7 +466,7 @@ public class EventBuilderV2Test {
     public void createConversionEventAndroidTVClientEngineClientVersion() throws Exception {
         String clientVersion = "0.0.0";
         EventBuilderV2 builder = new EventBuilderV2(ClientEngine.ANDROID_TV_SDK, clientVersion);
-        ProjectConfig projectConfig = ProjectConfigTestUtils.validProjectConfigV2();
+        ProjectConfig projectConfig = validProjectConfigV2();
         Attribute attribute = projectConfig.getAttributes().get(0);
         EventType eventType = projectConfig.getEventTypes().get(0);
         String userId = "userId";
@@ -430,40 +478,46 @@ public class EventBuilderV2Test {
         }
 
         Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "value");
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, userId,
-                                                                 eventType.getId(), eventType.getKey(), attributeMap);
+        List<Experiment> experimentList = projectConfig.getExperimentsForEventKey(eventType.getKey());
+        Map<Experiment, Variation> experimentVariationMap = new HashMap<Experiment, Variation>(experimentList.size());
+        for (Experiment experiment : experimentList) {
+            experimentVariationMap.put(experiment, experiment.getVariations().get(0));
+        }
 
+        LogEvent conversionEvent = builder.createConversionEvent(
+                projectConfig,
+                experimentVariationMap,
+                userId,
+                eventType.getId(),
+                eventType.getKey(),
+                attributeMap,
+                Collections.<String, Object>emptyMap());
         Conversion conversion = gson.fromJson(conversionEvent.getBody(), Conversion.class);
 
         assertThat(conversion.getClientEngine(), is(ClientEngine.ANDROID_TV_SDK.getClientEngineValue()));
         assertThat(conversion.getClientVersion(), is(clientVersion));
     }
 
-    /**
-     * Verify that {@link EventBuilderV2} doesn't add experiments with a "Launched" status to the bucket map
-     */
-    @Test
-    public void createConversionEventForEventUsingLaunchedExperiment() throws Exception {
-        EventBuilderV2 builder = new EventBuilderV2();
-        ProjectConfig projectConfig = ProjectConfigTestUtils.noAudienceProjectConfigV2();
-        EventType eventType = projectConfig.getEventTypes().get(3);
-        String userId = "userId";
+    //========== helper methods =========//
+    public static Map<Experiment, Variation> createExperimentVariationMap(ProjectConfig projectConfig,
+                                                                          Bucketer bucketer,
+                                                                          UserProfile userProfile,
+                                                                          String eventName,
+                                                                          String userId,
+                                                                          @Nullable Map<String, String> attributes) {
 
-        Bucketer mockBucketAlgorithm = mock(Bucketer.class);
-        for (Experiment experiment : projectConfig.getExperiments()) {
-            when(mockBucketAlgorithm.bucket(experiment, userId))
-                .thenReturn(experiment.getVariations().get(0));
+        List<Experiment> eventExperiments = projectConfig.getExperimentsForEventKey(eventName);
+        Map<Experiment, Variation> experimentVariationMap = new HashMap<Experiment, Variation>(eventExperiments.size());
+        for (Experiment experiment : eventExperiments) {
+            if (ProjectValidationUtils.validatePreconditions(projectConfig, userProfile, experiment, userId, attributes)
+                    && experiment.isRunning()) {
+                Variation variation = bucketer.bucket(experiment, userId);
+                if (variation != null) {
+                    experimentVariationMap.put(experiment, variation);
+                }
+            }
         }
 
-        logbackVerifier.expectMessage(Level.INFO,
-                "Not tracking event \"launched_exp_event\" for experiment \"etag3\" because experiment has status " +
-                "\"Launched\".");
-        LogEvent conversionEvent = builder.createConversionEvent(projectConfig, mockBucketAlgorithm, null, userId,
-                                                                 eventType.getId(), eventType.getKey(),
-                                                                 Collections.<String, String>emptyMap());
-
-        // only 1 experiment uses the event and it has a "Launched" status so the bucket map is empty and the returned
-        // event will be null
-        assertNull(conversionEvent);
+        return experimentVariationMap;
     }
 }
