@@ -55,7 +55,7 @@ public class OptimizelyClientTest {
     public void testBadActivation1() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
         optimizelyClient.activate("1", "1");
-        verify(logger).warn("Optimizely is not initialized, can't activate experiment {} " +
+        verify(logger).warn("Optimizely is not initialized, could not activate experiment {} " +
                 "for user {}", "1", "1");
     }
 
@@ -71,7 +71,7 @@ public class OptimizelyClientTest {
     public void testBadActivation2() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
         optimizelyClient.activate("1", "1", new HashMap<String, String>());
-        verify(logger).warn("Optimizely is not initialized, can't activate experiment {} " +
+        verify(logger).warn("Optimizely is not initialized, could not activate experiment {} " +
                 "for user {} with attributes", "1", "1");
     }
 
@@ -180,6 +180,20 @@ public class OptimizelyClientTest {
         optimizelyClient.getVariation("1", "1", attributes);
         verify(logger).warn("Optimizely is not initialized, could not get variation for experiment {} " +
                 "for user {} with attributes", "1", "1");
+    }
+
+    @Test
+    public void testGoodGetProjectConfig() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        optimizelyClient.getProjectConfig();
+        verify(optimizely).getProjectConfig();
+    }
+
+    @Test
+    public void testBadGetProjectConfig() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        optimizelyClient.getProjectConfig();
+        verify(logger).warn("Optimizely is not initialized, could not get project config");
     }
 
     @Test
