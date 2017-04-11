@@ -23,6 +23,7 @@ import android.support.annotation.Nullable;
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.UnknownEventTypeException;
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.notification.NotificationListener;
 
@@ -60,10 +61,10 @@ public class OptimizelyClient {
      */
     public @Nullable Variation activate(@NonNull String experimentKey,
                                         @NonNull String userId) {
-        if (optimizely != null) {
+        if (isValid()) {
             return optimizely.activate(experimentKey, userId);
         } else {
-            logger.warn("Optimizely is not initialized, can't activate experiment {} for user {}",
+            logger.warn("Optimizely is not initialized, could not activate experiment {} for user {}",
                     experimentKey, userId);
             return null;
         }
@@ -81,11 +82,24 @@ public class OptimizelyClient {
     public @Nullable Variation activate(@NonNull String experimentKey,
                                         @NonNull String userId,
                                         @NonNull Map<String, String> attributes) {
-        if (optimizely != null) {
+        if (isValid()) {
             return optimizely.activate(experimentKey, userId, attributes);
         } else {
-            logger.warn("Optimizely is not initialized, can't activate experiment {} for user {} " +
+            logger.warn("Optimizely is not initialized, could not activate experiment {} for user {} " +
                     "with attributes", experimentKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the {@link ProjectConfig} instance
+     * @return the current {@link ProjectConfig} instance
+     */
+    public @Nullable ProjectConfig getProjectConfig() {
+        if (isValid()) {
+            return optimizely.getProjectConfig();
+        } else {
+            logger.warn("Optimizely is not initialized, could not get project config");
             return null;
         }
     }
@@ -105,7 +119,7 @@ public class OptimizelyClient {
      */
     public void track(@NonNull String eventName,
                       @NonNull String userId) {
-        if (optimizely != null) {
+        if (isValid()) {
             optimizely.track(eventName, userId);
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}", eventName, userId);
@@ -121,7 +135,7 @@ public class OptimizelyClient {
     public void track(@NonNull String eventName,
                       @NonNull String userId,
                       @NonNull Map<String, String> attributes) throws UnknownEventTypeException {
-        if (optimizely != null) {
+        if (isValid()) {
             optimizely.track(eventName, userId, attributes);
 
         } else {
@@ -141,7 +155,7 @@ public class OptimizelyClient {
                       @NonNull String userId,
                       @NonNull Map<String, String> attributes,
                       @NonNull Map<String, ?> eventTags) throws UnknownEventTypeException {
-        if (optimizely != null) {
+        if (isValid()) {
             optimizely.track(eventName, userId, attributes, eventTags);
 
         } else {
@@ -160,7 +174,7 @@ public class OptimizelyClient {
     public void track(@NonNull String eventName,
                       @NonNull String userId,
                       long eventValue) throws UnknownEventTypeException {
-        if (optimizely != null) {
+        if (isValid()) {
             optimizely.track(eventName, userId, eventValue);
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
@@ -181,7 +195,7 @@ public class OptimizelyClient {
                       @NonNull String userId,
                       @NonNull Map<String, String> attributes,
                       long eventValue) {
-        if (optimizely != null) {
+        if (isValid()) {
             optimizely.track(eventName, userId, attributes, eventValue);
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
@@ -215,7 +229,7 @@ public class OptimizelyClient {
                                               @NonNull String userId,
                                               @NonNull Map<String, String> attributes,
                                               boolean activateExperiment) {
-        if (optimizely != null) {
+        if (isValid()) {
             return optimizely.getVariableString(variableKey, userId, attributes,
                                                 activateExperiment);
         } else {
@@ -251,7 +265,7 @@ public class OptimizelyClient {
                                                 @NonNull String userId,
                                                 @NonNull Map<String, String> attributes,
                                                 boolean activateExperiment) {
-        if (optimizely != null) {
+        if (isValid()) {
             return optimizely.getVariableBoolean(variableKey, userId, attributes,
                                                  activateExperiment);
         } else {
@@ -287,7 +301,7 @@ public class OptimizelyClient {
                                                 @NonNull String userId,
                                                 @NonNull Map<String, String> attributes,
                                                 boolean activateExperiment) {
-        if (optimizely != null) {
+        if (isValid()) {
             return optimizely.getVariableInteger(variableKey, userId, attributes,
                                                  activateExperiment);
         } else {
@@ -323,7 +337,7 @@ public class OptimizelyClient {
                                               @NonNull String userId,
                                               @NonNull Map<String, String> attributes,
                                               boolean activateExperiment) {
-        if (optimizely != null) {
+        if (isValid()) {
             return optimizely.getVariableDouble(variableKey, userId, attributes,
                                                 activateExperiment);
         } else {
@@ -343,7 +357,7 @@ public class OptimizelyClient {
     @SuppressWarnings("WeakerAccess")
     public @Nullable Variation getVariation(@NonNull String experimentKey,
                                             @NonNull String userId) {
-        if (optimizely != null) {
+        if (isValid()) {
             return optimizely.getVariation(experimentKey, userId);
         } else {
             logger.warn("Optimizely is not initialized, could not get variation for experiment {} " +
@@ -364,7 +378,7 @@ public class OptimizelyClient {
     public @Nullable Variation getVariation(@NonNull String experimentKey,
                                             @NonNull String userId,
                                             @NonNull Map<String, String> attributes) {
-        if (optimizely != null) {
+        if (isValid()) {
             return optimizely.getVariation(experimentKey, userId, attributes);
         } else {
             logger.warn("Optimizely is not initialized, could not get variation for experiment {} " +
@@ -385,7 +399,7 @@ public class OptimizelyClient {
      * @param listener listener to add
      */
     public void addNotificationListener(@NonNull NotificationListener listener) {
-        if (optimizely != null) {
+        if (isValid()) {
             optimizely.addNotificationListener(listener);
         } else {
             logger.warn("Optimizely is not initialized, could not add notification listener");
@@ -398,7 +412,7 @@ public class OptimizelyClient {
      * @param listener listener to remove
      */
     public void removeNotificationListener(@NonNull NotificationListener listener) {
-        if (optimizely != null) {
+        if (isValid()) {
             optimizely.removeNotificationListener(listener);
         } else {
             logger.warn("Optimizely is not initialized, could not remove notification listener");
@@ -409,7 +423,7 @@ public class OptimizelyClient {
      * Remove all {@link NotificationListener} instances.
      */
     public void clearNotificationListeners() {
-        if (optimizely != null) {
+        if (isValid()) {
             optimizely.clearNotificationListeners();
         } else {
             logger.warn("Optimizely is not initialized, could not clear notification listeners");
