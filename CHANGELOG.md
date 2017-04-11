@@ -1,4 +1,9 @@
 # Optimizely Android X SDK Changelog
+### 1.3.0
+April 12, 2017
+
+- Add getter for `ProjectConfig`
+
 ### 1.2.0
 March 20, 2017
 
