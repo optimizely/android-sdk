@@ -184,7 +184,6 @@ public class OptimizelyClient {
 
     /**
      * Track an event for a user with attributes and a value
-     * @see Optimizely#track(String, String, Map, Long)
      * @deprecated see {@link Optimizely#track(String, String, Map, Map)} and pass in revenue values as event tags instead.
      * @param eventName the String name of the event
      * @param userId the String user id
