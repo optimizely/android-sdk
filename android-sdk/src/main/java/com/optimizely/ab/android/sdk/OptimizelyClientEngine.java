@@ -20,7 +20,6 @@ import android.app.UiModeManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.event.internal.payload.Event;
 
@@ -35,7 +34,6 @@ public class OptimizelyClientEngine {
      * @param context any valid Android {@link Context}
      * @return String value of client engine
      */
-    @VisibleForTesting
     public static Event.ClientEngine getClientEngineFromContext(@NonNull Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
 
