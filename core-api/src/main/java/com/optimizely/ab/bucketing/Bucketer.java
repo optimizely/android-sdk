@@ -131,48 +131,15 @@ public class Bucketer {
         return null;
     }
 
+    /**
+     * Assign a {@link Variation} of an {@link Experiment} to a user based on hashed value from murmurhash3.
+     * @param experiment The Experiment in which the user is to be bucketed.
+     * @param userId User Identifier
+     * @return Variation the user is bucketed into or null.
+     */
     public @Nullable Variation bucket(@Nonnull Experiment experiment,
                                       @Nonnull String userId) {
-
-        // ---------- Check whitelist ----------
-        // if a user has a forced variation mapping, return the respective variation
-        Map<String, String> userIdToVariationKeyMap = experiment.getUserIdToVariationKeyMap();
-        if (userIdToVariationKeyMap.containsKey(userId)) {
-            String forcedVariationKey = userIdToVariationKeyMap.get(userId);
-            Variation forcedVariation = experiment.getVariationKeyToVariationMap().get(forcedVariationKey);
-            if (forcedVariation != null) {
-                logger.info("User \"{}\" is forced in variation \"{}\".", userId, forcedVariationKey);
-            } else {
-                logger.error("Variation \"{}\" is not in the datafile. Not activating user \"{}\".", forcedVariationKey,
-                        userId);
-            }
-
-            return forcedVariation;
-        }
-
-        // ---------- Check User Profile for Sticky Bucketing ----------
-        // If a user profile instance is present then check it for a saved variation
         String experimentId = experiment.getId();
-        String experimentKey = experiment.getKey();
-        if (userProfile != null) {
-            String variationId = userProfile.lookup(userId, experimentId);
-            if (variationId != null) {
-                Variation savedVariation = projectConfig
-                        .getExperimentIdMapping()
-                        .get(experimentId)
-                        .getVariationIdToVariationMap()
-                        .get(variationId);
-                logger.info("Returning previously activated variation \"{}\" of experiment \"{}\" "
-                                + "for user \"{}\" from user profile.",
-                        savedVariation.getKey(), experimentKey, userId);
-                // A variation is stored for this combined bucket id
-                return savedVariation;
-            } else {
-                logger.info("No previously activated variation of experiment \"{}\" "
-                                + "for user \"{}\" found in user profile.",
-                        experimentKey, userId);
-            }
-        }
 
         // ---------- Bucket User ----------
         String groupId = experiment.getGroupId();
@@ -215,6 +182,67 @@ public class Bucketer {
         }
 
         return bucketedVariation;
+    }
+
+    /**
+     * Get the variation the user has been whitelisted into.
+     * @param experiment {@link Experiment} in which user is to be bucketed.
+     * @param userId User Identifier
+     * @return null if the user is not whitelisted into any variation
+     *      {@link Variation} the user is bucketed into if the user has a specified whitelisted variation.
+     */
+    public @Nullable Variation getForcedVariation(@Nonnull Experiment experiment, @Nonnull String userId) {
+        // if a user has a forced variation mapping, return the respective variation
+        Map<String, String> userIdToVariationKeyMap = experiment.getUserIdToVariationKeyMap();
+        if (userIdToVariationKeyMap.containsKey(userId)) {
+            String forcedVariationKey = userIdToVariationKeyMap.get(userId);
+            Variation forcedVariation = experiment.getVariationKeyToVariationMap().get(forcedVariationKey);
+            if (forcedVariation != null) {
+                logger.info("User \"{}\" is forced in variation \"{}\".", userId, forcedVariationKey);
+            } else {
+                logger.error("Variation \"{}\" is not in the datafile. Not activating user \"{}\".", forcedVariationKey,
+                        userId);
+            }
+
+            return forcedVariation;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the {@link Variation} that has been stored for the user in the {@link UserProfile} implementation.
+     * @param experiment {@link Experiment} in which the user was bucketed.
+     * @param userId User Identifier
+     * @return null if the {@link UserProfile} implementation is null or the user was not previously bucketed.
+     *      else return the {@link Variation} the user was previously bucketed into.
+     */
+    public @Nullable Variation getStoredVariation(@Nonnull Experiment experiment, @Nonnull String userId) {
+        // ---------- Check User Profile for Sticky Bucketing ----------
+        // If a user profile instance is present then check it for a saved variation
+        String experimentId = experiment.getId();
+        String experimentKey = experiment.getKey();
+        if (userProfile != null) {
+            String variationId = userProfile.lookup(userId, experimentId);
+            if (variationId != null) {
+                Variation savedVariation = projectConfig
+                        .getExperimentIdMapping()
+                        .get(experimentId)
+                        .getVariationIdToVariationMap()
+                        .get(variationId);
+                logger.info("Returning previously activated variation \"{}\" of experiment \"{}\" "
+                                + "for user \"{}\" from user profile.",
+                        savedVariation.getKey(), experimentKey, userId);
+                // A variation is stored for this combined bucket id
+                return savedVariation;
+            } else {
+                logger.info("No previously activated variation of experiment \"{}\" "
+                                + "for user \"{}\" found in user profile.",
+                        experimentKey, userId);
+            }
+        }
+
+        return null;
     }
 
     //======== Helper methods ========//

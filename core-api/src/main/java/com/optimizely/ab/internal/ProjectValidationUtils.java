@@ -51,19 +51,6 @@ public final class ProjectValidationUtils {
             return false;
         }
 
-        if (experiment.getUserIdToVariationKeyMap().containsKey(userId)) {
-            return true;
-        }
-
-        if (userProfile != null && userProfile.lookup(userId, experiment.getId()) != null) {
-            return true;
-        }
-
-        if (!isUserInExperiment(projectConfig, experiment, attributes)) {
-            logger.info("User \"{}\" does not meet conditions to be in experiment \"{}\".", userId, experiment.getKey());
-            return false;
-        }
-
         return true;
     }
 
@@ -75,7 +62,7 @@ public final class ProjectValidationUtils {
      * @param attributes the attributes of the user
      * @return whether the user meets the criteria for the experiment
      */
-    private static boolean isUserInExperiment(ProjectConfig projectConfig, Experiment experiment,
+    public static boolean isUserInExperiment(ProjectConfig projectConfig, Experiment experiment,
                                               Map<String, String> attributes) {
         List<String> experimentAudienceIds = experiment.getAudienceIds();
 

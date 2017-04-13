@@ -19,6 +19,7 @@ package com.optimizely.ab;
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.ImmutableMap;
 import com.optimizely.ab.bucketing.Bucketer;
+import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -26,6 +27,7 @@ import com.optimizely.ab.config.LiveVariableUsageInstance;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.TrafficAllocation;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.error.NoOpErrorHandler;
 import com.optimizely.ab.error.RaiseExceptionErrorHandler;
@@ -64,6 +66,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -74,6 +77,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -1423,6 +1427,28 @@ public class OptimizelyTestV3 {
         verify(client.eventHandler).dispatchEvent(eq(conversionEvent));
     }
 
+    /**
+     * Verify that an event is not dispatched if a user doesn't satisfy audience conditions for an experiment.
+     */
+    @Test
+    public void trackDoesNotSendEventWhenUserDoesNotSatisfyAudiences() throws Exception {
+        Attribute attribute = validProjectConfig.getAttributes().get(0);
+        EventType eventType = validProjectConfig.getEventTypes().get(2);
+
+        // the audience for the experiments is "NOT firefox" so this user shouldn't satisfy audience conditions
+        Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "firefox");
+
+        Optimizely client = Optimizely.builder(noAudienceDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build();
+
+        logbackVerifier.expectMessage(Level.INFO, "There are no valid experiments for event \"" + eventType.getKey()
+                + "\" to track.");
+
+        client.track(eventType.getKey(), genericUserId, attributeMap);
+        verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
+    }
+
     //======== live variable getters tests ========//
 
     /**
@@ -1767,6 +1793,36 @@ public class OptimizelyTestV3 {
     }
 
     /**
+     * Verify that {@link Optimizely#getVariation(Experiment, String, Map)}
+     * gives precedence to user profile over audience evaluation.
+     */
+    @Test
+    public void getVariationEvaluatesUserProfileBeforeAudienceTargeting() throws ConfigParseException {
+        Experiment experiment = validProjectConfig.getExperiments().get(0);
+        Variation storedVariation = experiment.getVariations().get(0);
+        String userProfileUserId = "userProfileId";
+
+        UserProfile mockedUserProfile = mock(UserProfile.class);
+        when(mockedUserProfile.lookup(userProfileUserId, experiment.getId())).thenReturn(storedVariation.getId());
+
+        Optimizely client = Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .withUserProfile(mockedUserProfile)
+                .build();
+        assertNotNull(client);
+
+        // ensure that normal users still get excluded from the experiment when they fail audience evaluation
+        assertNull(client.getVariation(experiment, genericUserId, Collections.<String, String>emptyMap()));
+
+        logbackVerifier.expectMessage(Level.INFO,
+                "User \"" + genericUserId + "\" does not meet conditions to be in experiment \""
+                        + experiment.getKey() + "\".");
+
+        // ensure that a user with a saved user profile, sees the same variation regardless of audience evaluation
+        assertEquals(storedVariation, client.getVariation(experiment, userProfileUserId, Collections.<String, String>emptyMap()));
+    }
+
+    /**
      * Verify that {@link Optimizely#getVariation(String, String)} handles the case where an unknown experiment
      * (i.e., not in the config) is passed through and a {@link RaiseExceptionErrorHandler} is provided.
      */
@@ -1849,21 +1905,27 @@ public class OptimizelyTestV3 {
      * over audience evaluation.
      */
     @Test
-    public void getVariationForcedVariationPrecedesAudienceEvaluation() throws Exception {
+    public void getVariationForcedVariationPrecedesAudienceEval() throws Exception {
+        Bucketer bucketer = spy(new Bucketer(validProjectConfig));
         Experiment experiment = validProjectConfig.getExperiments().get(0);
         Variation expectedVariation = experiment.getVariations().get(0);
+        String whitelistedUserId = "testUser1";
 
         Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-            .withConfig(validProjectConfig)
-            .build();
+                .withBucketing(bucketer)
+                .withConfig(validProjectConfig)
+                .build();
 
         // user excluded without audiences and whitelisting
         assertNull(optimizely.getVariation(experiment.getKey(), genericUserId));
 
-        logbackVerifier.expectMessage(Level.INFO, "User \"testUser1\" is forced in variation \"vtag1\".");
+        logbackVerifier.expectMessage(Level.INFO, "User \"" + whitelistedUserId + "\" is forced in variation \"vtag1\".");
 
         // no attributes provided for a experiment that has an audience
-        assertThat(optimizely.getVariation(experiment.getKey(), "testUser1"), is(expectedVariation));
+        assertThat(optimizely.getVariation(experiment.getKey(), whitelistedUserId), is(expectedVariation));
+
+        verify(bucketer).getForcedVariation(experiment, whitelistedUserId);
+        verify(bucketer, never()).getStoredVariation(experiment, whitelistedUserId);
     }
 
     /**

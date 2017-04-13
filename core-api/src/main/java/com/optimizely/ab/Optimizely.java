@@ -464,7 +464,26 @@ public class Optimizely {
             return null;
         }
 
-        return bucketer.bucket(experiment, userId);
+        Variation variation;
+
+        // check for whitelisting
+        variation = bucketer.getForcedVariation(experiment, userId);
+        if (variation != null) {
+            return variation;
+        }
+
+        // check if user exists in user profile
+        variation = bucketer.getStoredVariation(experiment, userId);
+        if (variation != null) {
+            return variation;
+        }
+
+        if (ProjectValidationUtils.isUserInExperiment(projectConfig, experiment, attributes)) {
+            return bucketer.bucket(experiment, userId);
+        }
+        logger.info("User \"{}\" does not meet conditions to be in experiment \"{}\".", userId, experiment.getKey());
+
+        return null;
     }
 
     /**

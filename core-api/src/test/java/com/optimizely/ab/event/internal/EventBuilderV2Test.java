@@ -311,39 +311,6 @@ public class EventBuilderV2Test {
     }
 
     /**
-     * Verify that a {@link LayerState} isn't created if a user doesn't satisfy audience conditions for an experiment.
-     */
-    @Test
-    public void createConversionParamsUserNotInAudience() throws Exception {
-        Attribute attribute = validProjectConfig.getAttributes().get(0);
-        EventType eventType = validProjectConfig.getEventTypes().get(2);
-        String userId = "userId";
-
-        Bucketer mockBucketAlgorithm = mock(Bucketer.class);
-
-        // Bucket to the first variation for all experiments.
-        for (Experiment experiment : validProjectConfig.getExperiments()) {
-            when(mockBucketAlgorithm.bucket(experiment, userId))
-                .thenReturn(experiment.getVariations().get(0));
-        }
-
-        // the audience for the experiments is "NOT firefox" so this user shouldn't satisfy audience conditions
-        Map<String, String> attributeMap = Collections.singletonMap(attribute.getKey(), "firefox");
-        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
-                validProjectConfig,
-                mockBucketAlgorithm,
-                null,
-                eventType.getKey(),
-                userId,
-                attributeMap);
-        LogEvent conversionEvent = builder.createConversionEvent(validProjectConfig, experimentVariationMap, userId,
-                                                                 eventType.getId(), eventType.getKey(), attributeMap,
-                Collections.<String, Object>emptyMap());
-
-        assertNull(conversionEvent);
-    }
-
-    /**
      * Verify that precedence is given to forced variation bucketing over audience evaluation when constructing a
      * conversion event.
      */
@@ -496,6 +463,29 @@ public class EventBuilderV2Test {
 
         assertThat(conversion.getClientEngine(), is(ClientEngine.ANDROID_TV_SDK.getClientEngineValue()));
         assertThat(conversion.getClientVersion(), is(clientVersion));
+    }
+
+    /**
+     * Verify that supplying an empty Experiment Variation map to
+     * {@link EventBuilderV2#createConversionEvent(ProjectConfig, Map, String, String, String, Map, Map)}
+     * returns a null {@link LogEvent}.
+     */
+    @Test
+    public void createConversionEventReturnsNullWhenExperimentVariationMapIsEmpty() {
+        EventType eventType = validProjectConfig.getEventTypes().get(0);
+        EventBuilderV2 builder = new EventBuilderV2();
+
+        LogEvent conversionEvent = builder.createConversionEvent(
+                validProjectConfig,
+                Collections.<Experiment, Variation>emptyMap(),
+                userId,
+                eventType.getId(),
+                eventType.getKey(),
+                Collections.<String, String>emptyMap(),
+                Collections.<String, String>emptyMap()
+        );
+
+        assertNull(conversionEvent);
     }
 
     //========== helper methods =========//

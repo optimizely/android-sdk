@@ -21,7 +21,6 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
-import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.BeforeClass;
@@ -41,8 +40,6 @@ import static com.optimizely.ab.internal.ProjectValidationUtils.validatePrecondi
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ProjectValidationUtilsTestV2 {
 
@@ -95,32 +92,4 @@ public class ProjectValidationUtilsTestV2 {
                 experiment, "testUser3", null));
     }
 
-    /**
-     * Verify that
-     * {@link ProjectValidationUtils#validatePreconditions(ProjectConfig, UserProfile, Experiment, String, Map)}
-     * gives precedence to user profile over audience evaluation.
-     */
-    @Test
-    public void validatePreconditionsUserProfilePrecedesAudienceEvaluation() throws Exception {
-        Experiment experiment = projectConfig.getExperiments().get(0);
-        Variation storedVariation = experiment.getVariations().get(0);
-        String userProfileUserId = "userProfileId";
-        String normalUserId = "normalUserId";
-
-        UserProfile mockedUserProfile = mock(UserProfile.class);
-        when(mockedUserProfile.lookup(userProfileUserId, experiment.getId())).thenReturn(storedVariation.getId());
-
-        Optimizely client = Optimizely.builder(datafile, mockEventHandler)
-                .withUserProfile(mockedUserProfile)
-                .build();
-        assertNotNull(client);
-
-        // ensure that normal users still get excluded from the experiment when they fail audience evaluation
-        assertFalse(ProjectValidationUtils.validatePreconditions(projectConfig, mockedUserProfile, experiment,
-                normalUserId, Collections.<String, String>emptyMap()));
-
-        // ensure that a user with a saved user profile, sees the same variation regardless of audience evaluation
-        assertTrue(ProjectValidationUtils.validatePreconditions(projectConfig, mockedUserProfile, experiment,
-                userProfileUserId, Collections.<String, String>emptyMap()));
-    }
 }
