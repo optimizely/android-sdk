@@ -374,21 +374,30 @@ public class OptimizelyManager {
                 }
             }
         };
-        initUserProfileTask.executeOnExecutor(executor);
+        try {
+            initUserProfileTask.executeOnExecutor(executor);
+        } catch (Exception e) {
+            logger.error("Unable to initialize the user profile while injecting Optimizely.", e);
+        }
     }
 
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserProfile userProfile) throws ConfigParseException {
-        OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
-        eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+        try {
+            OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
+            eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
 
-        Event.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
+            Event.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
-        Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
-                .withUserProfile(userProfile)
-                .withClientEngine(clientEngine)
-                .withClientVersion(BuildConfig.CLIENT_VERSION)
-                .build();
-        return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
+            Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
+                    .withUserProfile(userProfile)
+                    .withClientEngine(clientEngine)
+                    .withClientVersion(BuildConfig.CLIENT_VERSION)
+                    .build();
+            return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
+        } catch (Exception e) {
+            logger.error("Unable to build optimizely instance.", e);
+            return optimizelyClient;
+        }
     }
 
     @VisibleForTesting
