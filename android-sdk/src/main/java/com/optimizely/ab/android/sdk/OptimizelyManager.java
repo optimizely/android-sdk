@@ -379,7 +379,7 @@ public class OptimizelyManager {
         try {
             initUserProfileTask.executeOnExecutor(executor);
         } catch (Exception e) {
-            logger.error("Unable to initialize the user profile while injecting Optimizely.", e);
+            logger.error("Unable to initialize the user profile while injecting Optimizely", e);
         }
     }
 
