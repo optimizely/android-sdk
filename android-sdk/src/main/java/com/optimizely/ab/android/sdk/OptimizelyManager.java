@@ -153,6 +153,8 @@ public class OptimizelyManager {
             optimizelyClient = buildOptimizely(context, datafile, userProfile);
         } catch (ConfigParseException e) {
             logger.error("Unable to parse compiled data file", e);
+        } catch (Exception e) {
+            logger.error("Unable to build OptimizelyClient instance", e);
         }
 
 
@@ -369,7 +371,7 @@ public class OptimizelyManager {
                     } else {
                         logger.info("No listener to send Optimizely to");
                     }
-                } catch (ConfigParseException e) {
+                } catch (Exception e) {
                     logger.error("Unable to build optimizely instance", e);
                 }
             }
@@ -382,22 +384,17 @@ public class OptimizelyManager {
     }
 
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserProfile userProfile) throws ConfigParseException {
-        try {
-            OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
-            eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+        OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
+        eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
 
-            Event.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
+        Event.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
-            Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
-                    .withUserProfile(userProfile)
-                    .withClientEngine(clientEngine)
-                    .withClientVersion(BuildConfig.CLIENT_VERSION)
-                    .build();
-            return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
-        } catch (Exception e) {
-            logger.error("Unable to build optimizely instance.", e);
-            return optimizelyClient;
-        }
+        Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
+                .withUserProfile(userProfile)
+                .withClientEngine(clientEngine)
+                .withClientVersion(BuildConfig.CLIENT_VERSION)
+                .build();
+        return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
     }
 
     @VisibleForTesting
