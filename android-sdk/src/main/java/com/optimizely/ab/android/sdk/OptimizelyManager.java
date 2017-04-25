@@ -153,6 +153,8 @@ public class OptimizelyManager {
             optimizelyClient = buildOptimizely(context, datafile, userProfile);
         } catch (ConfigParseException e) {
             logger.error("Unable to parse compiled data file", e);
+        } catch (Exception e) {
+            logger.error("Unable to build OptimizelyClient instance", e);
         }
 
 
@@ -369,12 +371,16 @@ public class OptimizelyManager {
                     } else {
                         logger.info("No listener to send Optimizely to");
                     }
-                } catch (ConfigParseException e) {
+                } catch (Exception e) {
                     logger.error("Unable to build optimizely instance", e);
                 }
             }
         };
-        initUserProfileTask.executeOnExecutor(executor);
+        try {
+            initUserProfileTask.executeOnExecutor(executor);
+        } catch (Exception e) {
+            logger.error("Unable to initialize the user profile while injecting Optimizely", e);
+        }
     }
 
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserProfile userProfile) throws ConfigParseException {
