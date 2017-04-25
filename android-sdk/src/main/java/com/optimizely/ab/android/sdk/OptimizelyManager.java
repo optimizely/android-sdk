@@ -41,10 +41,10 @@ import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.android.user_profile.AndroidUserProfile;
 import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.internal.payload.Event;
-import com.optimizely.ab.android.user_profile.AndroidUserProfile;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -153,8 +153,9 @@ public class OptimizelyManager {
             optimizelyClient = buildOptimizely(context, datafile, userProfile);
         } catch (ConfigParseException e) {
             logger.error("Unable to parse compiled data file", e);
+        } catch (Exception e) {
+            logger.error("Unable to build OptimizelyClient instance", e);
         }
-
 
         // After instantiating the OptimizelyClient, we will begin the datafile sync so that next time
         // the user can instantiate with the latest datafile
@@ -369,12 +370,16 @@ public class OptimizelyManager {
                     } else {
                         logger.info("No listener to send Optimizely to");
                     }
-                } catch (ConfigParseException e) {
+                } catch (Exception e) {
                     logger.error("Unable to build optimizely instance", e);
                 }
             }
         };
-        initUserProfileTask.executeOnExecutor(executor);
+        try {
+            initUserProfileTask.executeOnExecutor(executor);
+        } catch (Exception e) {
+            logger.error("Unable to initialize the user profile while injecting Optimizely", e);
+        }
     }
 
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserProfile userProfile) throws ConfigParseException {
@@ -617,7 +622,13 @@ public class OptimizelyManager {
          * @return a {@link Builder} instance
          */
         public OptimizelyManager build() {
-            final Logger logger = LoggerFactory.getLogger(OptimizelyManager.class);
+            Logger logger;
+            try {
+                logger = LoggerFactory.getLogger(OptimizelyManager.class);
+            } catch (Exception e) {
+                logger = LoggerFactory.getLogger("Optly.androidSdk");
+                logger.error("Unable to generate logger from class");
+            }
 
             // AlarmManager doesn't allow intervals less than 60 seconds
             if (dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval) < (60 * 1000)) {
@@ -634,7 +645,6 @@ public class OptimizelyManager {
                     dataFileDownloadIntervalTimeUnit,
                     Executors.newSingleThreadExecutor(),
                     logger);
-
         }
     }
 }

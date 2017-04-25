@@ -120,7 +120,11 @@ public class OptimizelyClient {
     public void track(@NonNull String eventName,
                       @NonNull String userId) {
         if (isValid()) {
-            optimizely.track(eventName, userId);
+            try {
+                optimizely.track(eventName, userId);
+            } catch (Exception e) {
+                logger.error("Unable to track event", e);
+            }
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}", eventName, userId);
         }
@@ -139,8 +143,8 @@ public class OptimizelyClient {
             optimizely.track(eventName, userId, attributes);
 
         } else {
-            logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
-                    " with attributes", eventName, userId);
+            logger.warn("Optimizely is not initialized, could not track event {} for user {} with attributes",
+                    eventName, userId);
         }
     }
 

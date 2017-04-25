@@ -1,4 +1,9 @@
 # Optimizely Android X SDK Changelog
+### 1.3.1
+April 25, 2017
+
+- Handle exceptions in top-level APIs
+
 ### 1.3.0
 April 12, 2017
 

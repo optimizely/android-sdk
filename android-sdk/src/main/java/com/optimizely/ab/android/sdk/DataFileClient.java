@@ -84,7 +84,7 @@ class DataFileClient {
                         logger.error("Unexpected response from data file cdn, status: {}", status);
                         return null;
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     logger.error("Error making request", e);
                     return null;
                 } finally {
