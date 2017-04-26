@@ -8,7 +8,6 @@ buildscript {
 
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
-        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:latest.release'
     }
 }
 
@@ -22,7 +21,6 @@ allprojects {
     apply plugin: 'idea'
 }
 
-apply from: 'gradle/license.gradle'
 apply from: 'gradle/publish.gradle'
 
 allprojects {
