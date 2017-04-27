@@ -1,6 +1,6 @@
 /**
  *
- *    Copyright 2016-2017, Optimizely and contributors
+ *    Copyright 2017, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  */
 package com.optimizely.ab.internal;
 
-import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.audience.Condition;
@@ -27,31 +26,22 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 
-@Deprecated
-public final class ProjectValidationUtils {
+public final class ExperimentUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProjectValidationUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentUtils.class);
 
-    private ProjectValidationUtils() {}
+    private ExperimentUtils() {}
 
     /**
      * Helper method to validate all pre-conditions before bucketing a user.
      *
-     * @param projectConfig the current projectConfig
      * @param experiment the experiment we are validating pre-conditions for
-     * @param userId the ID of the user
-     * @param attributes the attributes of the user
      * @return whether the pre-conditions are satisfied
      */
-    @Deprecated
-    public static boolean validatePreconditions(ProjectConfig projectConfig, UserProfile userProfile,
-                                                Experiment experiment, @Nonnull String userId,
-                                                Map<String, String> attributes) {
-
-        logger.info("ProjectValidationUtils#validatePreconditions is now deprecated. Please use ExperimentUtils.isExperimentActive");
+    public static boolean isExperimentActive(@Nonnull Experiment experiment) {
 
         if (!experiment.isActive()) {
-            logger.info("Experiment \"{}\" is not running.", experiment.getKey(), userId);
+            logger.info("Experiment \"{}\" is not running.", experiment.getKey());
             return false;
         }
 
@@ -66,11 +56,9 @@ public final class ProjectValidationUtils {
      * @param attributes the attributes of the user
      * @return whether the user meets the criteria for the experiment
      */
-    @Deprecated
-    public static boolean isUserInExperiment(ProjectConfig projectConfig, Experiment experiment,
-                                              Map<String, String> attributes) {
-        logger.info("ProjectValidationUtils#isUserInExperiment is now deprecated. Please use ExperimentUtils.isUserInExperiment");
-
+    public static boolean isUserInExperiment(@Nonnull ProjectConfig projectConfig,
+                                             @Nonnull Experiment experiment,
+                                             @Nonnull Map<String, String> attributes) {
         List<String> experimentAudienceIds = experiment.getAudienceIds();
 
         // if there are no audiences, ALL users should be part of the experiment

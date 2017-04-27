@@ -32,7 +32,7 @@ import com.optimizely.ab.event.internal.payload.EventMetric;
 import com.optimizely.ab.event.internal.payload.Feature;
 import com.optimizely.ab.event.internal.payload.Impression;
 import com.optimizely.ab.event.internal.payload.LayerState;
-import com.optimizely.ab.internal.ProjectValidationUtils;
+import com.optimizely.ab.internal.ExperimentUtils;
 import com.optimizely.ab.internal.ReservedEventKey;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -228,7 +228,7 @@ public class EventBuilderV2Test {
         List<LayerState> expectedLayerStates = new ArrayList<LayerState>();
 
         for (Experiment experiment : experimentsForEventKey) {
-            if (ProjectValidationUtils.validatePreconditions(validProjectConfig, null, experiment, userId, attributeMap)) {
+            if (ExperimentUtils.isExperimentActive(experiment)) {
                 LayerState layerState = new LayerState(experiment.getLayerId(), validProjectConfig.getRevision(),
                         new Decision(experiment.getVariations().get(0).getId(), false, experiment.getId()), true);
                 expectedLayerStates.add(layerState);
@@ -499,7 +499,7 @@ public class EventBuilderV2Test {
         List<Experiment> eventExperiments = projectConfig.getExperimentsForEventKey(eventName);
         Map<Experiment, Variation> experimentVariationMap = new HashMap<Experiment, Variation>(eventExperiments.size());
         for (Experiment experiment : eventExperiments) {
-            if (ProjectValidationUtils.validatePreconditions(projectConfig, userProfile, experiment, userId, attributes)
+            if (ExperimentUtils.isExperimentActive(experiment)
                     && experiment.isRunning()) {
                 Variation variation = bucketer.bucket(experiment, userId);
                 if (variation != null) {

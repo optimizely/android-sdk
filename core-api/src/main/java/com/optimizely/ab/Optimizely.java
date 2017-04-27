@@ -38,7 +38,7 @@ import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 import com.optimizely.ab.internal.EventTagUtils;
-import com.optimizely.ab.internal.ProjectValidationUtils;
+import com.optimizely.ab.internal.ExperimentUtils;
 import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.internal.UserProfileUtils;
 import com.optimizely.ab.notification.NotificationBroadcaster;
@@ -460,7 +460,7 @@ public class Optimizely {
         // attributes.
         attributes = filterAttributes(projectConfig, attributes);
 
-        if (!ProjectValidationUtils.validatePreconditions(projectConfig, userProfile, experiment, userId, attributes)) {
+        if (!ExperimentUtils.isExperimentActive(experiment)) {
             return null;
         }
 
@@ -478,7 +478,7 @@ public class Optimizely {
             return variation;
         }
 
-        if (ProjectValidationUtils.isUserInExperiment(projectConfig, experiment, attributes)) {
+        if (ExperimentUtils.isUserInExperiment(projectConfig, experiment, attributes)) {
             return bucketer.bucket(experiment, userId);
         }
         logger.info("User \"{}\" does not meet conditions to be in experiment \"{}\".", userId, experiment.getKey());

@@ -36,7 +36,7 @@ import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.internal.LogbackVerifier;
-import com.optimizely.ab.internal.ProjectValidationUtils;
+import com.optimizely.ab.internal.ExperimentUtils;
 import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.notification.NotificationListener;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -761,15 +761,13 @@ public class OptimizelyTestV3 {
                     .thenReturn(experiment.getVariations().get(0));
         }
 
-        Map<String, String> emptyAttributes = Collections.emptyMap();
-
         // call track
         optimizely.track(eventType.getKey(), "userId");
 
         // verify that the bucketing algorithm was called only on experiments corresponding to the specified goal.
         List<Experiment> experimentsForEvent = noAudienceProjectConfig.getExperimentsForEventKey(eventType.getKey());
         for (Experiment experiment : allExperiments) {
-            if (ProjectValidationUtils.validatePreconditions(noAudienceProjectConfig, null, experiment, "userId", emptyAttributes) &&
+            if (ExperimentUtils.isExperimentActive(experiment) &&
                     experimentsForEvent.contains(experiment)) {
                 verify(mockBucketer).bucket(experiment, "userId");
             } else {
