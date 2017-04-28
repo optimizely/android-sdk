@@ -451,10 +451,10 @@ public class Optimizely {
         return getVariation(currentConfig, experiment, attributes, userId);
     }
 
-    public @Nullable Variation getVariation(@Nonnull ProjectConfig projectConfig,
-                                            @Nonnull Experiment experiment,
-                                            @Nonnull Map<String, String> attributes,
-                                            @Nonnull String userId) {
+    private @Nullable Variation getVariation(@Nonnull ProjectConfig projectConfig,
+                                             @Nonnull Experiment experiment,
+                                             @Nonnull Map<String, String> attributes,
+                                             @Nonnull String userId) {
 
         // determine whether all the given attributes are present in the project config. If not, filter out the unknown
         // attributes.
