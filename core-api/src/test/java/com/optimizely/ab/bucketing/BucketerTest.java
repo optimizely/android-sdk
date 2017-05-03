@@ -26,7 +26,6 @@ import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.internal.LogbackVerifier;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Assume;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -35,42 +34,19 @@ import org.junit.rules.ExpectedException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigV3;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link Bucketer}.
  */
 @SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 public class BucketerTest {
-
-    private static final String genericUserId = "genericUserId";
-    private static final String userProfileId = "userProfileId";
-    private static final String whitelistedUserId = "testUser1";
-    private static ProjectConfig validProjectConfig;
-    private static ProjectConfig noAudienceProjectConfig;
-    private static Experiment whitelistedExperiment;
-    private static Variation whitelistedVariation;
-
-    @BeforeClass
-    public static void setUp() throws Exception {
-        validProjectConfig = validProjectConfigV3();
-        noAudienceProjectConfig = noAudienceProjectConfigV3();
-        whitelistedExperiment = validProjectConfig.getExperimentIdMapping().get("223");
-        whitelistedVariation = whitelistedExperiment.getVariationKeyToVariationMap().get("vtag1");
-    }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -86,7 +62,7 @@ public class BucketerTest {
         Bucketer algorithm = new Bucketer(validProjectConfigV2());
         int actual = algorithm.generateBucketValue(-1);
         assertTrue("generated bucket value is not in range: " + actual,
-                   actual > 0 && actual < Bucketer.MAX_TRAFFIC_VALUE);
+                actual > 0 && actual < Bucketer.MAX_TRAFFIC_VALUE);
     }
 
     /**
@@ -116,7 +92,7 @@ public class BucketerTest {
 
         // verify that all values are in the expected range and that 50% of the values are in the lower half
         assertThat(outOfRangeCount, is(0));
-        assertThat(Math.round(((double)lowerHalfCount/totalCount) * 100), is(50L));
+        assertThat(Math.round(((double) lowerHalfCount / totalCount) * 100), is(50L));
     }
 
     /**
@@ -149,7 +125,7 @@ public class BucketerTest {
         assertThat(algorithm.generateBucketValue(hashCode), is(5439));
 
         combinedBucketId = "a very very very very very very very very very very very very very very very long ppd " +
-                           "string" + experimentId;
+                "string" + experimentId;
         hashCode = MurmurHash3.murmurhash3_x86_32(combinedBucketId, 0, combinedBucketId.length(), MURMUR_HASH_SEED);
         assertThat(algorithm.generateBucketValue(hashCode), is(6128));
     }
@@ -163,21 +139,21 @@ public class BucketerTest {
 
         // create an experiment with 4 variations using ranges: [0 -> 999, 1000 -> 4999, 5000 -> 5999, 6000 -> 9999]
         List<Variation> variations = Arrays.asList(
-            new Variation("1", "var1"),
-            new Variation("2", "var2"),
-            new Variation("3", "var3"),
-            new Variation("4", "var4")
+                new Variation("1", "var1"),
+                new Variation("2", "var2"),
+                new Variation("3", "var3"),
+                new Variation("4", "var4")
         );
 
         List<TrafficAllocation> trafficAllocations = Arrays.asList(
-            new TrafficAllocation("1", 1000),
-            new TrafficAllocation("2", 5000),
-            new TrafficAllocation("3", 6000),
-            new TrafficAllocation("4", 10000)
+                new TrafficAllocation("1", 1000),
+                new TrafficAllocation("2", 5000),
+                new TrafficAllocation("3", 6000),
+                new TrafficAllocation("4", 10000)
         );
 
         Experiment experiment = new Experiment("1234", "exp_key", "Running", "1", audienceIds, variations,
-                                               Collections.<String, String>emptyMap(), trafficAllocations, "");
+                Collections.<String, String>emptyMap(), trafficAllocations, "");
 
         final AtomicInteger bucketValue = new AtomicInteger();
         Bucketer algorithm = mockBucketAlgorithm(bucketValue);
@@ -213,15 +189,15 @@ public class BucketerTest {
         List<String> audienceIds = Collections.emptyList();
 
         List<Variation> variations = Collections.singletonList(
-            new Variation("1", "var1")
+                new Variation("1", "var1")
         );
 
         List<TrafficAllocation> trafficAllocations = Collections.singletonList(
-            new TrafficAllocation("1", 999)
+                new TrafficAllocation("1", 999)
         );
 
         Experiment experiment = new Experiment("1234", "exp_key", "Running", "1", audienceIds, variations,
-                                               Collections.<String, String>emptyMap(), trafficAllocations, "");
+                Collections.<String, String>emptyMap(), trafficAllocations, "");
 
         final AtomicInteger bucketValue = new AtomicInteger();
         Bucketer algorithm = mockBucketAlgorithm(bucketValue);
@@ -241,64 +217,9 @@ public class BucketerTest {
         assertNull(algorithm.bucket(experiment, "blah"));
     }
 
-    //========= white list tests ========/
-
-    /**
-     * Test {@link Bucketer#getForcedVariation(Experiment, String)} correctly returns a whitelisted variation.
-     */
-    @Test
-    public void getForcedVariationReturnsForcedVariation() {
-        Bucketer bucketer = new Bucketer(validProjectConfig);
-
-        logbackVerifier.expectMessage(Level.INFO, "User \"" + whitelistedUserId + "\" is forced in variation \""
-         + whitelistedVariation.getKey() + "\".");
-        assertEquals(whitelistedVariation, bucketer.getForcedVariation(whitelistedExperiment, whitelistedUserId));
-    }
-
-    /**
-     * Verify that {@link Bucketer#getForcedVariation(Experiment, String)} returns null
-     * when an invalid variation key is found in the forced variations mapping.
-     */
-    @Test
-    public void getForcedVariationWithInvalidVariation() throws Exception {
-        String userId = "testUser1";
-        String invalidVariationKey = "invalidVarKey";
-
-        final AtomicInteger bucketValue = new AtomicInteger();
-        Bucketer algorithm = mockBucketAlgorithm(bucketValue);
-
-        List<Variation> variations = Collections.singletonList(
-                new Variation("1", "var1")
-        );
-
-        List<TrafficAllocation> trafficAllocations = Collections.singletonList(
-                new TrafficAllocation("1", 1000)
-        );
-
-        Map<String, String> userIdToVariationKeyMap = Collections.singletonMap(userId, invalidVariationKey);
-
-        Experiment experiment = new Experiment("1234", "exp_key", "Running", "1", Collections.<String>emptyList(),
-                variations, userIdToVariationKeyMap, trafficAllocations);
-
-        logbackVerifier.expectMessage(
-                Level.ERROR,
-                "Variation \"" + invalidVariationKey + "\" is not in the datafile. Not activating user \"" + userId + "\".");
-
-        bucketValue.set(0);
-        assertNull(algorithm.getForcedVariation(experiment, userId));
-    }
-
-    /**
-     * Verify that {@link Bucketer#getForcedVariation(Experiment, String)} returns null when user is not whitelisted.
-     */
-    @Test
-    public void getForcedVariationReturnsNullWhenUserIsNotWhitelisted() throws Exception {
-        Bucketer bucketer = new Bucketer(validProjectConfig);
-
-        assertNull(bucketer.getForcedVariation(whitelistedExperiment, genericUserId));
-    }
 
     //========== Tests for Grouped experiments ==========//
+
     /**
      * Verify that {@link Bucketer#bucket(Experiment, String)} returns the proper variation when a user is
      * in the group experiment.
@@ -313,11 +234,11 @@ public class BucketerTest {
         List<Experiment> groupExperiments = projectConfig.getGroups().get(0).getExperiments();
         Experiment groupExperiment = groupExperiments.get(0);
         logbackVerifier.expectMessage(Level.DEBUG,
-                                      "Assigned bucket 3000 to user \"blah\" during experiment bucketing.");
+                "Assigned bucket 3000 to user \"blah\" during experiment bucketing.");
         logbackVerifier.expectMessage(Level.INFO, "User \"blah\" is in experiment \"group_etag2\" of group 42.");
         logbackVerifier.expectMessage(Level.DEBUG, "Assigned bucket 3000 to user \"blah\" during variation bucketing.");
         logbackVerifier.expectMessage(Level.INFO,
-                                      "User \"blah\" is in variation \"e2_vtag1\" of experiment \"group_etag2\".");
+                "User \"blah\" is in variation \"e2_vtag1\" of experiment \"group_etag2\".");
         assertThat(algorithm.bucket(groupExperiment, "blah"), is(groupExperiment.getVariations().get(0)));
     }
 
@@ -337,9 +258,9 @@ public class BucketerTest {
         // the user should be bucketed to a different experiment than the one provided, resulting in no variation being
         // returned.
         logbackVerifier.expectMessage(Level.DEBUG,
-                                      "Assigned bucket 3000 to user \"blah\" during experiment bucketing.");
+                "Assigned bucket 3000 to user \"blah\" during experiment bucketing.");
         logbackVerifier.expectMessage(Level.INFO,
-                                      "User \"blah\" is not in experiment \"group_etag1\" of group 42");
+                "User \"blah\" is not in experiment \"group_etag1\" of group 42");
         assertNull(algorithm.bucket(groupExperiment, "blah"));
     }
 
@@ -397,119 +318,17 @@ public class BucketerTest {
         Experiment groupExperiment = groupExperiments.get(0);
 
         logbackVerifier.expectMessage(Level.INFO,
-                                      "User \"blah\" is not in any variation of experiment \"overlapping_etag1\".");
+                "User \"blah\" is not in any variation of experiment \"overlapping_etag1\".");
 
         assertNull(algorithm.bucket(groupExperiment, "blah"));
     }
 
-    //======== User Profile tests =========//
-
-    /**
-     * Verify that {@link Bucketer#getStoredVariation(Experiment, String)} returns a variation that is
-     * stored in the provided {@link UserProfile}.
-     */
-    @SuppressFBWarnings
-    @Test
-    public void bucketReturnsVariationStoredInUserProfile() throws Exception {
-        final Experiment experiment = noAudienceProjectConfig.getExperiments().get(0);
-        final Variation storedVariation = experiment.getVariations().get(0);
-
-        UserProfile userProfile = mock(UserProfile.class);
-        when(userProfile.lookup(userProfileId, experiment.getId())).thenReturn(storedVariation.getId());
-
-        Bucketer bucketer = new Bucketer(noAudienceProjectConfig, userProfile);
-
-        logbackVerifier.expectMessage(Level.INFO,
-                "Returning previously activated variation \"" + storedVariation.getKey() + "\" of experiment \"" + experiment.getKey() + "\""
-                        + " for user \"" + userProfileId + "\" from user profile.");
-
-        // ensure user with an entry in the user profile is bucketed into the corresponding stored variation
-        assertEquals(storedVariation, bucketer.getStoredVariation(experiment, userProfileId));
-
-        verify(userProfile).lookup(userProfileId, experiment.getId());
-    }
-
-    /**
-     * Verify that {@link Bucketer#getStoredVariation(Experiment, String)} returns null and logs properly
-     * when there is no stored variation for that user in that @{link Experiment} in the {@link UserProfile}.
-     */
-    @Test
-    public void getStoredVariationLogsWhenLookupReturnsNull() {
-        final String userId = "someUser";
-
-        final AtomicInteger bucketValue = new AtomicInteger();
-        UserProfile userProfile = mock(UserProfile.class);
-        Bucketer bucketer= BucketerTest.mockBucketAlgorithm(bucketValue, noAudienceProjectConfig, userProfile);
-        final Experiment experiment = noAudienceProjectConfig.getExperiments().get(0);
-
-        when(userProfile.lookup(userId, experiment.getId())).thenReturn(null);
-
-        logbackVerifier.expectMessage(Level.INFO, "No previously activated variation of experiment " +
-                "\"" + experiment.getKey() + "\" for user \"" +userId + "\" found in user profile.");
-
-        assertNull(bucketer.getStoredVariation(experiment, userId));
-    }
-
-    /**
-     * Verify that {@link Bucketer#bucket(Experiment,String)} saves a variation of an experiment for a user
-     * when a {@link UserProfile} is present.
-     */
-    @SuppressFBWarnings
-    @Test
-    public void bucketSavesActivationWithUserProfile() throws Exception {
-        final String userId = "someUser";
-
-        final AtomicInteger bucketValue = new AtomicInteger();
-        UserProfile userProfile = mock(UserProfile.class);
-        Bucketer bucketer= BucketerTest.mockBucketAlgorithm(bucketValue, noAudienceProjectConfig, userProfile);
-
-        bucketValue.set(3000);
-
-        final Experiment experiment = noAudienceProjectConfig.getExperiments().get(0);
-        final Variation variation = experiment.getVariations().get(0);
-
-        when(userProfile.save(userId, experiment.getId(), variation.getId())).thenReturn(true);
-
-        assertThat(bucketer.bucket(experiment, userId),  is(variation));
-        logbackVerifier.expectMessage(Level.INFO,
-                String.format("Saved variation \"%s\" of experiment \"%s\" for user \"" + userId + "\".", variation.getId(),
-                        experiment.getId()));
-
-        verify(userProfile).save(userId, experiment.getId(), variation.getId());
-    }
-
-    /**
-     * Verify that {@link Bucketer#bucket(Experiment,String)} logs correctly
-     * when a {@link UserProfile} is present but fails to save an activation.
-     */
-    @Test
-    public void bucketLogsCorrectlyWhenUserProfileFailsToSave() throws Exception {
-        final String userId = "someUser";
-
-        final AtomicInteger bucketValue = new AtomicInteger();
-        UserProfile userProfile = mock(UserProfile.class);
-        Bucketer bucketer = BucketerTest.mockBucketAlgorithm(bucketValue, noAudienceProjectConfig, userProfile);
-
-        bucketValue.set(3000);
-
-        final Experiment experiment = noAudienceProjectConfig.getExperiments().get(0);
-        final Variation variation = experiment.getVariations().get(0);
-
-        when(userProfile.lookup(userId, experiment.getId())).thenReturn(null);
-        when(userProfile.save(userId, experiment.getId(), variation.getId())).thenReturn(false);
-
-        assertThat(bucketer.bucket(experiment, userId),  is(variation));
-
-        logbackVerifier.expectMessage(Level.WARN,
-                String.format("Failed to save variation \"%s\" of experiment \"%s\" for user \"" + userId + "\".", variation.getId(),
-                        experiment.getId()));
-
-        verify(userProfile).save(userId, experiment.getId(), variation.getId());
-    }
 
     //======== Helper methods ========//
+
     /**
      * Sets up a mock algorithm that returns an expected bucket value.
+     *
      * @param bucketValue the expected bucket value holder
      * @return the mock bucket algorithm
      */
@@ -520,42 +339,5 @@ public class BucketerTest {
                 return bucketValue.get();
             }
         };
-    }
-
-    /**
-     * Sets up a mock algorithm that returns an expected bucket value.
-     *
-     * Includes a composed {@link UserProfile} mock instance
-     *
-     * @param bucketValue the expected bucket value holder
-     * @param userProfile the userProfile to be used by the bucketer
-     * @return the mock bucket algorithm
-     */
-    private static Bucketer mockBucketAlgorithm(final AtomicInteger bucketValue, final ProjectConfig projectConfig, final UserProfile userProfile) {
-        return new Bucketer(projectConfig, userProfile) {
-            @Override
-            int generateBucketValue(int hashCode) {
-                return bucketValue.get();
-            }
-        };
-    }
-
-    /**
-     * Returns a bucket value that would make the bucketer bucket the user into the specified variation
-     * @param experiment The experiment to bucket the user into.
-     * @param variation The variation to bucket the user into.
-     * @return A number [0,10000) if the variation has valid traffic allocation within the experiment.
-     *      Else returns -1 if invalid.
-     */
-    private static int bucketValueForVariationOfExperiment(Experiment experiment, Variation variation) {
-        if (experiment.getVariations().contains(variation)) {
-            for (TrafficAllocation trafficAllocation : experiment.getTrafficAllocation()) {
-                if (trafficAllocation.getEntityId().equals(variation.getId())) {
-                    return trafficAllocation.getEndOfRange() - 1;
-                }
-            }
-        }
-
-        return -1;
     }
 }

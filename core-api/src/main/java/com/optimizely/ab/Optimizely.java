@@ -18,6 +18,7 @@ package com.optimizely.ab;
 
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
+import com.optimizely.ab.bucketing.DecisionService;
 import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
@@ -38,7 +39,6 @@ import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 import com.optimizely.ab.internal.EventTagUtils;
-import com.optimizely.ab.internal.ExperimentUtils;
 import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.internal.UserProfileUtils;
 import com.optimizely.ab.notification.NotificationBroadcaster;
@@ -86,7 +86,7 @@ public class Optimizely {
 
     private static final Logger logger = LoggerFactory.getLogger(Optimizely.class);
 
-    @VisibleForTesting final Bucketer bucketer;
+    @VisibleForTesting final DecisionService decisionService;
     @VisibleForTesting final EventBuilder eventBuilder;
     @VisibleForTesting final ProjectConfig projectConfig;
     @VisibleForTesting final EventHandler eventHandler;
@@ -95,13 +95,13 @@ public class Optimizely {
     @Nullable private final UserProfile userProfile;
 
     private Optimizely(@Nonnull ProjectConfig projectConfig,
-                       @Nonnull Bucketer bucketer,
+                       @Nonnull DecisionService decisionService,
                        @Nonnull EventHandler eventHandler,
                        @Nonnull EventBuilder eventBuilder,
                        @Nonnull ErrorHandler errorHandler,
                        @Nullable UserProfile userProfile) {
         this.projectConfig = projectConfig;
-        this.bucketer = bucketer;
+        this.decisionService = decisionService;
         this.eventHandler = eventHandler;
         this.eventBuilder = eventBuilder;
         this.errorHandler = errorHandler;
@@ -109,20 +109,23 @@ public class Optimizely {
     }
 
     // Do work here that should be done once per Optimizely lifecycle
-    @VisibleForTesting void initialize() {
+    @VisibleForTesting
+    void initialize() {
         UserProfileUtils.cleanUserProfiles(userProfile, projectConfig);
     }
 
     //======== activate calls ========//
 
-    public @Nullable Variation activate(@Nonnull String experimentKey,
-                                        @Nonnull String userId) throws UnknownExperimentException {
+    public @Nullable
+    Variation activate(@Nonnull String experimentKey,
+                       @Nonnull String userId) throws UnknownExperimentException {
         return activate(experimentKey, userId, Collections.<String, String>emptyMap());
     }
 
-    public @Nullable Variation activate(@Nonnull String experimentKey,
-                                        @Nonnull String userId,
-                                        @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
+    public @Nullable
+    Variation activate(@Nonnull String experimentKey,
+                       @Nonnull String userId,
+                       @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
 
         if (!validateUserId(userId)) {
             logger.info("Not activating user for experiment \"{}\".", experimentKey);
@@ -141,50 +144,57 @@ public class Optimizely {
         return activate(currentConfig, experiment, userId, attributes);
     }
 
-    public @Nullable Variation activate(@Nonnull Experiment experiment,
-                                        @Nonnull String userId) {
+    public @Nullable
+    Variation activate(@Nonnull Experiment experiment,
+                       @Nonnull String userId) {
         return activate(experiment, userId, Collections.<String, String>emptyMap());
     }
 
-    public @Nullable Variation activate(@Nonnull Experiment experiment,
-                                        @Nonnull String userId,
-                                        @Nonnull Map<String, String> attributes) {
+    public @Nullable
+    Variation activate(@Nonnull Experiment experiment,
+                       @Nonnull String userId,
+                       @Nonnull Map<String, String> attributes) {
 
         ProjectConfig currentConfig = getProjectConfig();
 
         return activate(currentConfig, experiment, userId, attributes);
     }
 
-    private @Nullable Variation activate(@Nonnull ProjectConfig projectConfig,
-                                         @Nonnull Experiment experiment,
-                                         @Nonnull String userId,
-                                         @Nonnull Map<String, String> attributes) {
+    private @Nullable
+    Variation activate(@Nonnull ProjectConfig projectConfig,
+                       @Nonnull Experiment experiment,
+                       @Nonnull String userId,
+                       @Nonnull Map<String, String> attributes) {
 
         // determine whether all the given attributes are present in the project config. If not, filter out the unknown
         // attributes.
-        attributes = filterAttributes(projectConfig, attributes);
+        Map<String, String> filteredAttributes = filterAttributes(projectConfig, attributes);
 
         // bucket the user to the given experiment and dispatch an impression event
-        Variation variation = getVariation(projectConfig, experiment, attributes, userId);
+        Variation variation = decisionService.getVariation(experiment, userId, filteredAttributes);
         if (variation == null) {
             logger.info("Not activating user \"{}\" for experiment \"{}\".", userId, experiment.getKey());
             return null;
         }
 
         if (experiment.isRunning()) {
-            LogEvent impressionEvent = eventBuilder.createImpressionEvent(projectConfig, experiment, variation, userId,
-                                                                          attributes);
+            LogEvent impressionEvent = eventBuilder.createImpressionEvent(
+                    projectConfig,
+                    experiment,
+                    variation,
+                    userId,
+                    filteredAttributes);
             logger.info("Activating user \"{}\" in experiment \"{}\".", userId, experiment.getKey());
             logger.debug(
-                "Dispatching impression event to URL {} with params {} and payload \"{}\".",
-                impressionEvent.getEndpointUrl(), impressionEvent.getRequestParams(), impressionEvent.getBody());
+                    "Dispatching impression event to URL {} with params {} and payload \"{}\".",
+                    impressionEvent.getEndpointUrl(), impressionEvent.getRequestParams(), impressionEvent.getBody());
             try {
                 eventHandler.dispatchEvent(impressionEvent);
             } catch (Exception e) {
                 logger.error("Unexpected exception in event dispatcher", e);
             }
 
-            notificationBroadcaster.broadcastExperimentActivated(experiment, userId, attributes, variation);
+            notificationBroadcaster.broadcastExperimentActivated(experiment, userId, filteredAttributes, variation);
         } else {
             logger.info("Experiment has \"Launched\" status so not dispatching event during activation.");
         }
@@ -241,7 +251,7 @@ public class Optimizely {
 
         // determine whether all the given attributes are present in the project config. If not, filter out the unknown
         // attributes.
-        attributes = filterAttributes(currentConfig, attributes);
+        Map<String, String> filteredAttributes = filterAttributes(currentConfig, attributes);
 
         Long eventValue = null;
         if (eventTags == null) {
@@ -255,7 +265,7 @@ public class Optimizely {
         Map<Experiment, Variation> experimentVariationMap = new HashMap<Experiment, Variation>(experimentsForEvent.size());
         for (Experiment experiment : experimentsForEvent) {
             if (experiment.isRunning()) {
-                Variation variation = getVariation(currentConfig, experiment, attributes, userId);
+                Variation variation = decisionService.getVariation(experiment, userId, filteredAttributes);
                 if (variation != null) {
                     experimentVariationMap.put(experiment, variation);
                 }
@@ -273,9 +283,9 @@ public class Optimizely {
                 userId,
                 eventType.getId(),
                 eventType.getKey(),
-                attributes,
+                filteredAttributes,
                 eventTags);
-        
+
         if (conversionEvent == null) {
             logger.info("There are no valid experiments for event \"{}\" to track.", eventName);
             logger.info("Not tracking event \"{}\" for user \"{}\".", eventName, userId);
@@ -284,29 +294,31 @@ public class Optimizely {
 
         logger.info("Tracking event \"{}\" for user \"{}\".", eventName, userId);
         logger.debug("Dispatching conversion event to URL {} with params {} and payload \"{}\".",
-                     conversionEvent.getEndpointUrl(), conversionEvent.getRequestParams(), conversionEvent.getBody());
+                conversionEvent.getEndpointUrl(), conversionEvent.getRequestParams(), conversionEvent.getBody());
         try {
             eventHandler.dispatchEvent(conversionEvent);
         } catch (Exception e) {
             logger.error("Unexpected exception in event dispatcher", e);
         }
 
-        notificationBroadcaster.broadcastEventTracked(eventName, userId, attributes, eventValue,
-                                                      conversionEvent);
+        notificationBroadcaster.broadcastEventTracked(eventName, userId, filteredAttributes, eventValue,
+                conversionEvent);
     }
 
     //======== live variable getters ========//
 
-    public @Nullable String getVariableString(@Nonnull String variableKey,
-                                              @Nonnull String userId,
-                                              boolean activateExperiment) throws UnknownLiveVariableException {
+    public @Nullable
+    String getVariableString(@Nonnull String variableKey,
+                             @Nonnull String userId,
+                             boolean activateExperiment) throws UnknownLiveVariableException {
         return getVariableString(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
-    public @Nullable String getVariableString(@Nonnull String variableKey,
-                                              @Nonnull String userId,
-                                              @Nonnull Map<String, String> attributes,
-                                              boolean activateExperiment)
+    public @Nullable
+    String getVariableString(@Nonnull String variableKey,
+                             @Nonnull String userId,
+                             @Nonnull Map<String, String> attributes,
+                             boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         LiveVariable variable = getLiveVariableOrThrow(projectConfig, variableKey);
@@ -342,16 +354,18 @@ public class Optimizely {
         return variable.getDefaultValue();
     }
 
-    public @Nullable Boolean getVariableBoolean(@Nonnull String variableKey,
-                                                @Nonnull String userId,
-                                                boolean activateExperiment) throws UnknownLiveVariableException {
+    public @Nullable
+    Boolean getVariableBoolean(@Nonnull String variableKey,
+                               @Nonnull String userId,
+                               boolean activateExperiment) throws UnknownLiveVariableException {
         return getVariableBoolean(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
-    public @Nullable Boolean getVariableBoolean(@Nonnull String variableKey,
-                                                @Nonnull String userId,
-                                                @Nonnull Map<String, String> attributes,
-                                                boolean activateExperiment)
+    public @Nullable
+    Boolean getVariableBoolean(@Nonnull String variableKey,
+                               @Nonnull String userId,
+                               @Nonnull Map<String, String> attributes,
+                               boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
@@ -362,16 +376,18 @@ public class Optimizely {
         return null;
     }
 
-    public @Nullable Integer getVariableInteger(@Nonnull String variableKey,
-                                                @Nonnull String userId,
-                                                boolean activateExperiment) throws UnknownLiveVariableException {
+    public @Nullable
+    Integer getVariableInteger(@Nonnull String variableKey,
+                               @Nonnull String userId,
+                               boolean activateExperiment) throws UnknownLiveVariableException {
         return getVariableInteger(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
-    public @Nullable Integer getVariableInteger(@Nonnull String variableKey,
-                                                @Nonnull String userId,
-                                                @Nonnull Map<String, String> attributes,
-                                                boolean activateExperiment)
+    public @Nullable
+    Integer getVariableInteger(@Nonnull String variableKey,
+                               @Nonnull String userId,
+                               @Nonnull Map<String, String> attributes,
+                               boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
@@ -380,23 +396,25 @@ public class Optimizely {
                 return Integer.parseInt(variableValueString);
             } catch (NumberFormatException e) {
                 logger.error("Variable value \"{}\" for live variable \"{}\" is not an integer.", variableValueString,
-                             variableKey);
+                        variableKey);
             }
         }
 
         return null;
     }
 
-    public @Nullable Double getVariableDouble(@Nonnull String variableKey,
-                                              @Nonnull String userId,
-                                              boolean activateExperiment) throws UnknownLiveVariableException {
+    public @Nullable
+    Double getVariableDouble(@Nonnull String variableKey,
+                             @Nonnull String userId,
+                             boolean activateExperiment) throws UnknownLiveVariableException {
         return getVariableDouble(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
-    public @Nullable Double getVariableDouble(@Nonnull String variableKey,
-                                              @Nonnull String userId,
-                                              @Nonnull Map<String, String> attributes,
-                                              boolean activateExperiment)
+    public @Nullable
+    Double getVariableDouble(@Nonnull String variableKey,
+                             @Nonnull String userId,
+                             @Nonnull Map<String, String> attributes,
+                             boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
@@ -405,7 +423,7 @@ public class Optimizely {
                 return Double.parseDouble(variableValueString);
             } catch (NumberFormatException e) {
                 logger.error("Variable value \"{}\" for live variable \"{}\" is not a double.", variableValueString,
-                             variableKey);
+                        variableKey);
             }
         }
 
@@ -414,28 +432,34 @@ public class Optimizely {
 
     //======== getVariation calls ========//
 
-    public @Nullable Variation getVariation(@Nonnull Experiment experiment,
-                                            @Nonnull String userId) throws UnknownExperimentException {
+    public @Nullable
+    Variation getVariation(@Nonnull Experiment experiment,
+                           @Nonnull String userId) throws UnknownExperimentException {
 
         return getVariation(experiment, userId, Collections.<String, String>emptyMap());
     }
 
-    public @Nullable Variation getVariation(@Nonnull Experiment experiment,
-                                            @Nonnull String userId,
-                                            @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
+    public @Nullable
+    Variation getVariation(@Nonnull Experiment experiment,
+                           @Nonnull String userId,
+                           @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
 
-        return getVariation(getProjectConfig(), experiment, attributes, userId);
+        Map<String, String> filteredAttributes = filterAttributes(projectConfig, attributes);
+
+        return decisionService.getVariation(experiment, userId, filteredAttributes);
     }
 
-    public @Nullable Variation getVariation(@Nonnull String experimentKey,
-                                            @Nonnull String userId) throws UnknownExperimentException{
+    public @Nullable
+    Variation getVariation(@Nonnull String experimentKey,
+                           @Nonnull String userId) throws UnknownExperimentException {
 
         return getVariation(experimentKey, userId, Collections.<String, String>emptyMap());
     }
 
-    public @Nullable Variation getVariation(@Nonnull String experimentKey,
-                                            @Nonnull String userId,
-                                            @Nonnull Map<String, String> attributes) {
+    public @Nullable
+    Variation getVariation(@Nonnull String experimentKey,
+                           @Nonnull String userId,
+                           @Nonnull Map<String, String> attributes) {
         if (!validateUserId(userId)) {
             return null;
         }
@@ -448,42 +472,9 @@ public class Optimizely {
             return null;
         }
 
-        return getVariation(currentConfig, experiment, attributes, userId);
-    }
+        Map<String, String> filteredAttributes = filterAttributes(projectConfig, attributes);
 
-    private @Nullable Variation getVariation(@Nonnull ProjectConfig projectConfig,
-                                             @Nonnull Experiment experiment,
-                                             @Nonnull Map<String, String> attributes,
-                                             @Nonnull String userId) {
-
-        // determine whether all the given attributes are present in the project config. If not, filter out the unknown
-        // attributes.
-        attributes = filterAttributes(projectConfig, attributes);
-
-        if (!ExperimentUtils.isExperimentActive(experiment)) {
-            return null;
-        }
-
-        Variation variation;
-
-        // check for whitelisting
-        variation = bucketer.getForcedVariation(experiment, userId);
-        if (variation != null) {
-            return variation;
-        }
-
-        // check if user exists in user profile
-        variation = bucketer.getStoredVariation(experiment, userId);
-        if (variation != null) {
-            return variation;
-        }
-
-        if (ExperimentUtils.isUserInExperiment(projectConfig, experiment, attributes)) {
-            return bucketer.bucket(experiment, userId);
-        }
-        logger.info("User \"{}\" does not meet conditions to be in experiment \"{}\".", userId, experiment.getKey());
-
-        return null;
+        return decisionService.getVariation(experiment,userId,filteredAttributes);
     }
 
     /**
@@ -711,18 +702,29 @@ public class Optimizely {
 
         private String datafile;
         private Bucketer bucketer;
-        private UserProfile userProfile;
+        private DecisionService decisionService;
         private ErrorHandler errorHandler;
         private EventHandler eventHandler;
         private EventBuilder eventBuilder;
         private ClientEngine clientEngine;
         private String clientVersion;
         private ProjectConfig projectConfig;
+        private UserProfile userProfile;
 
         public Builder(@Nonnull String datafile,
                        @Nonnull EventHandler eventHandler) {
             this.datafile = datafile;
             this.eventHandler = eventHandler;
+        }
+
+        protected Builder withBucketing(Bucketer bucketer) {
+            this.bucketer = bucketer;
+            return this;
+        }
+
+        protected Builder withDecisionService(DecisionService decisionService) {
+            this.decisionService = decisionService;
+            return this;
         }
 
         public Builder withErrorHandler(ErrorHandler errorHandler) {
@@ -745,11 +747,6 @@ public class Optimizely {
             return this;
         }
 
-        protected Builder withBucketing(Bucketer bucketer) {
-            this.bucketer = bucketer;
-            return this;
-        }
-
         protected Builder withEventBuilder(EventBuilder eventBuilder) {
             this.eventBuilder = eventBuilder;
             return this;
@@ -766,9 +763,8 @@ public class Optimizely {
                 projectConfig = Optimizely.getProjectConfig(datafile);
             }
 
-            // use the default bucketer and event builder, if no overrides were provided
             if (bucketer == null) {
-                bucketer = new Bucketer(projectConfig, userProfile);
+                bucketer = new Bucketer(projectConfig);
             }
 
             if (clientEngine == null) {
@@ -779,6 +775,10 @@ public class Optimizely {
                 clientVersion = BuildVersionInfo.VERSION;
             }
 
+            if (decisionService == null) {
+                decisionService = new DecisionService(bucketer, projectConfig, userProfile);
+            }
+
             if (eventBuilder == null) {
                 eventBuilder = new EventBuilderV2(clientEngine, clientVersion);
             }
@@ -787,7 +787,7 @@ public class Optimizely {
                 errorHandler = new NoOpErrorHandler();
             }
 
-            Optimizely optimizely = new Optimizely(projectConfig, bucketer, eventHandler, eventBuilder, errorHandler, userProfile);
+            Optimizely optimizely = new Optimizely(projectConfig, decisionService, eventHandler, eventBuilder, errorHandler, userProfile);
             optimizely.initialize();
             return optimizely;
         }
