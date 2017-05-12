@@ -85,13 +85,28 @@ public class OptlyEventHandler implements EventHandler {
         }
 
         Intent intent = new Intent(context, EventIntentService.class);
+        intent.setAction(EventIntentService.ACTION_STORE);
         intent.putExtra(EventIntentService.EXTRA_URL, logEvent.getEndpointUrl());
         intent.putExtra(EventIntentService.EXTRA_REQUEST_BODY, logEvent.getBody());
+        context.startService(intent);
+        logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
+    }
+
+    public void schedule() {
+        Intent intent = new Intent(context, EventIntentService.class);
+        intent.setAction(EventIntentService.ACTION_SCHEDULE);
         if (dispatchInterval != -1) {
             intent.putExtra(EventIntentService.EXTRA_INTERVAL, dispatchInterval);
         }
         context.startService(intent);
-        logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
+        logger.info("Sent schedule intent to the event handler service");
+    }
 
+    public void flush() {
+        Intent intent = new Intent(context, EventIntentService.class);
+        intent.setAction(EventIntentService.ACTION_FLUSH);
+
+        context.startService(intent);
+        logger.info("Sent flush intent to the event handler service");
     }
 }

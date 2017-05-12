@@ -23,6 +23,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
+import com.google.gson.Gson;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
@@ -44,6 +45,9 @@ public class EventIntentService extends IntentService {
     static final String EXTRA_URL = "com.optimizely.ab.android.EXTRA_URL";
     static final String EXTRA_REQUEST_BODY = "com.optimizely.ab.android.EXTRA_REQUEST_BODY";
     static final String EXTRA_INTERVAL = "com.optimizely.ab.android.EXTRA_INTERVAL";
+    static final String ACTION_FLUSH = "com.optimizely.ab.android.ACTION_FLUSH";
+    static final String ACTION_STORE = "com.optimizely.ab.android.ACTION_STORE";
+    static final String ACTION_SCHEDULE = "com.optimizely.ab.android.ACTION_SCHEDULE";
     Logger logger = LoggerFactory.getLogger(EventIntentService.class);
     @Nullable EventDispatcher eventDispatcher;
 
@@ -68,7 +72,9 @@ public class EventIntentService extends IntentService {
                 (AlarmManager) getSystemService(ALARM_SERVICE),
                 new ServiceScheduler.PendingIntentFactory(this),
                 LoggerFactory.getLogger(ServiceScheduler.class));
-        eventDispatcher = new EventDispatcher(this, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
+        Gson gson = new Gson();
+        eventDispatcher = new EventDispatcher(this, optlyStorage, eventDAO, eventClient,
+                serviceScheduler, gson, LoggerFactory.getLogger(EventDispatcher.class));
     }
 
     /**
@@ -85,7 +91,13 @@ public class EventIntentService extends IntentService {
 
         if (eventDispatcher != null) {
             logger.info("Handled intent");
-            eventDispatcher.dispatch(intent);
+            if (intent.getAction().equals(ACTION_STORE)) {
+                eventDispatcher.store(intent);
+            } else if (intent.getAction().equals(ACTION_FLUSH)) {
+                eventDispatcher.flush();
+            } else if (intent.getAction().equals(ACTION_SCHEDULE)) {
+                eventDispatcher.schedule(intent);
+            }
         } else {
             logger.warn("Unable to create dependencies needed by intent handler");
         }

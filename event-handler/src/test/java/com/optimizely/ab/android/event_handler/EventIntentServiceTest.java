@@ -62,7 +62,7 @@ public class EventIntentServiceTest {
         EventDispatcher eventDispatcher = mock(EventDispatcher.class);
         service.eventDispatcher = eventDispatcher;
         service.onHandleIntent(intent);
-        verify(eventDispatcher).dispatch(intent);
+        verify(eventDispatcher).store(intent);
         verify(logger).info("Handled intent");
     }
 }

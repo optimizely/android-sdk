@@ -44,6 +44,7 @@ import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.AndroidUserProfile;
 import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.parser.ConfigParseException;
+import com.optimizely.ab.event.internal.EventBuilderV3;
 import com.optimizely.ab.event.internal.payload.Event;
 
 import org.json.JSONObject;
@@ -52,6 +53,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -72,6 +75,7 @@ public class OptimizelyManager {
     @Nullable private DataFileServiceConnection dataFileServiceConnection;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
     @Nullable private UserProfile userProfile;
+    @Nullable private OptlyEventHandler eventHandler;
 
     OptimizelyManager(@NonNull String projectId,
                       @NonNull Long eventHandlerDispatchInterval,
@@ -271,6 +275,7 @@ public class OptimizelyManager {
      *
      * @param context any {@link Context} instance
      */
+    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @SuppressWarnings("WeakerAccess")
     public void stop(@NonNull Context context) {
         if (!isAndroidVersionSupported()) {
@@ -282,6 +287,10 @@ public class OptimizelyManager {
         }
 
         this.optimizelyStartListener = null;
+
+        if (eventHandler != null && OptlyActivityLifecycleCallbacks.isSessionOver()) {
+            eventHandler.flush();
+        }
     }
 
     /**
@@ -383,15 +392,18 @@ public class OptimizelyManager {
     }
 
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull UserProfile userProfile) throws ConfigParseException {
-        OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
+        eventHandler = OptlyEventHandler.getInstance(context);
         eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+        eventHandler.schedule();
 
         Event.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
+        // TODO Android SDK should not have manually link EventBuilder once Project Config version is incremented in the data file
         Optimizely optimizely = Optimizely.builder(dataFile, eventHandler)
                 .withUserProfile(userProfile)
                 .withClientEngine(clientEngine)
                 .withClientVersion(BuildConfig.CLIENT_VERSION)
+                .withEventBuilder(new EventBuilderV3())
                 .build();
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
     }
@@ -415,6 +427,7 @@ public class OptimizelyManager {
     static class OptlyActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
 
         @NonNull private OptimizelyManager optimizelyManager;
+        static List<Activity> startedActivities = new LinkedList<>();
 
         OptlyActivityLifecycleCallbacks(@NonNull OptimizelyManager optimizelyManager) {
             this.optimizelyManager = optimizelyManager;
@@ -435,7 +448,7 @@ public class OptimizelyManager {
          */
         @Override
         public void onActivityStarted(Activity activity) {
-            // NO-OP
+            startedActivities.add(activity);
         }
 
         /**
@@ -462,6 +475,7 @@ public class OptimizelyManager {
          */
         @Override
         public void onActivityStopped(Activity activity) {
+            startedActivities.remove(activity);
             optimizelyManager.stop(activity, this);
         }
 
@@ -481,6 +495,10 @@ public class OptimizelyManager {
         @Override
         public void onActivityDestroyed(Activity activity) {
             // NO-OP
+        }
+
+        public static boolean isSessionOver() {
+            return startedActivities.isEmpty();
         }
     }
 
@@ -556,6 +574,7 @@ public class OptimizelyManager {
          * @hide
          * @see ServiceConnection#onServiceDisconnected(ComponentName)
          */
+        @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             bound = false;
