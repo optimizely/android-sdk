@@ -16,7 +16,8 @@
  */
 package com.optimizely.ab;
 
-import com.optimizely.ab.bucketing.UserProfile;
+import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.ProjectConfigTestUtils;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
@@ -25,7 +26,8 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -33,13 +35,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV1;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV1;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV2;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV3;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -51,6 +51,17 @@ import static org.mockito.Mockito.mock;
  */
 @SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 public class OptimizelyBuilderTest {
+
+
+    private static final String userId = "userId";
+    private static String noAudienceDatafile;
+    private static ProjectConfig noAudienceProjectConfig;
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        noAudienceDatafile = noAudienceProjectConfigJsonV2();
+        noAudienceProjectConfig = noAudienceProjectConfigV2();
+    }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -68,14 +79,6 @@ public class OptimizelyBuilderTest {
             .build();
 
         assertThat(optimizelyClient.eventHandler, is(mockEventHandler));
-    }
-
-    @Test
-    public void projectConfigV1() throws Exception {
-        Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV1(), mockEventHandler)
-                .build();
-
-        ProjectConfigTestUtils.verifyProjectConfig(optimizelyClient.getProjectConfig(), validProjectConfigV1());
     }
 
     @Test
@@ -112,13 +115,13 @@ public class OptimizelyBuilderTest {
     }
 
     @Test
-    public void withUserProfile() throws Exception {
-        UserProfile userProfile = mock(UserProfile.class);
+    public void withUserProfileService() throws Exception {
+        UserProfileService userProfileService = mock(UserProfileService.class);
         Optimizely optimizelyClient = Optimizely.builder(validConfigJsonV2(), mockEventHandler)
-            .withUserProfile(userProfile)
+            .withUserProfileService(userProfileService)
             .build();
 
-        assertThat(optimizelyClient.bucketer.getUserProfile(), is(userProfile));
+        assertThat(optimizelyClient.getUserProfileService(), is(userProfileService));
     }
 
     @Test

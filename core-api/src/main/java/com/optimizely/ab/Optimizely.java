@@ -1,24 +1,24 @@
-/**
- *
- *    Copyright 2016-2017, Optimizely and contributors
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
+/****************************************************************************
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ *                                                                          *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ *                                                                          *
+ *    http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ ***************************************************************************/
 package com.optimizely.ab;
 
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
-import com.optimizely.ab.bucketing.UserProfile;
+import com.optimizely.ab.bucketing.DecisionService;
+import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -35,28 +35,24 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilder;
-import com.optimizely.ab.event.internal.EventBuilderV1;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 import com.optimizely.ab.internal.EventTagUtils;
-import com.optimizely.ab.internal.ProjectValidationUtils;
 import com.optimizely.ab.internal.ReservedEventKey;
-import com.optimizely.ab.notification.NotificationListener;
 import com.optimizely.ab.notification.NotificationBroadcaster;
-
+import com.optimizely.ab.notification.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Top-level container class for Optimizely functionality.
@@ -88,40 +84,46 @@ public class Optimizely {
 
     private static final Logger logger = LoggerFactory.getLogger(Optimizely.class);
 
-    @VisibleForTesting final Bucketer bucketer;
+    @VisibleForTesting final DecisionService decisionService;
     @VisibleForTesting final EventBuilder eventBuilder;
     @VisibleForTesting final ProjectConfig projectConfig;
     @VisibleForTesting final EventHandler eventHandler;
     @VisibleForTesting final ErrorHandler errorHandler;
     @VisibleForTesting final NotificationBroadcaster notificationBroadcaster = new NotificationBroadcaster();
+    @Nullable private final UserProfileService userProfileService;
 
     private Optimizely(@Nonnull ProjectConfig projectConfig,
-                       @Nonnull Bucketer bucketer,
+                       @Nonnull DecisionService decisionService,
                        @Nonnull EventHandler eventHandler,
                        @Nonnull EventBuilder eventBuilder,
-                       @Nonnull ErrorHandler errorHandler) {
+                       @Nonnull ErrorHandler errorHandler,
+                       @Nullable UserProfileService userProfileService) {
         this.projectConfig = projectConfig;
-        this.bucketer = bucketer;
+        this.decisionService = decisionService;
         this.eventHandler = eventHandler;
         this.eventBuilder = eventBuilder;
         this.errorHandler = errorHandler;
+        this.userProfileService = userProfileService;
     }
 
     // Do work here that should be done once per Optimizely lifecycle
-    @VisibleForTesting void initialize() {
-        bucketer.cleanUserProfiles();
+    @VisibleForTesting
+    void initialize() {
+
     }
 
     //======== activate calls ========//
 
-    public @Nullable Variation activate(@Nonnull String experimentKey,
-                                        @Nonnull String userId) throws UnknownExperimentException {
+    public @Nullable
+    Variation activate(@Nonnull String experimentKey,
+                       @Nonnull String userId) throws UnknownExperimentException {
         return activate(experimentKey, userId, Collections.<String, String>emptyMap());
     }
 
-    public @Nullable Variation activate(@Nonnull String experimentKey,
-                                        @Nonnull String userId,
-                                        @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
+    public @Nullable
+    Variation activate(@Nonnull String experimentKey,
+                       @Nonnull String userId,
+                       @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
 
         if (!validateUserId(userId)) {
             logger.info("Not activating user for experiment \"{}\".", experimentKey);
@@ -140,54 +142,57 @@ public class Optimizely {
         return activate(currentConfig, experiment, userId, attributes);
     }
 
-    public @Nullable Variation activate(@Nonnull Experiment experiment,
-                                        @Nonnull String userId) {
+    public @Nullable
+    Variation activate(@Nonnull Experiment experiment,
+                       @Nonnull String userId) {
         return activate(experiment, userId, Collections.<String, String>emptyMap());
     }
 
-    public @Nullable Variation activate(@Nonnull Experiment experiment,
-                                        @Nonnull String userId,
-                                        @Nonnull Map<String, String> attributes) {
+    public @Nullable
+    Variation activate(@Nonnull Experiment experiment,
+                       @Nonnull String userId,
+                       @Nonnull Map<String, String> attributes) {
 
         ProjectConfig currentConfig = getProjectConfig();
 
         return activate(currentConfig, experiment, userId, attributes);
     }
 
-    private @Nullable Variation activate(@Nonnull ProjectConfig projectConfig,
-                                         @Nonnull Experiment experiment,
-                                         @Nonnull String userId,
-                                         @Nonnull Map<String, String> attributes) {
+    private @Nullable
+    Variation activate(@Nonnull ProjectConfig projectConfig,
+                       @Nonnull Experiment experiment,
+                       @Nonnull String userId,
+                       @Nonnull Map<String, String> attributes) {
+
         // determine whether all the given attributes are present in the project config. If not, filter out the unknown
         // attributes.
-        attributes = filterAttributes(projectConfig, attributes);
-
-        if (!ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId, attributes)) {
-            logger.info("Not activating user \"{}\" for experiment \"{}\".", userId, experiment.getKey());
-            return null;
-        }
+        Map<String, String> filteredAttributes = filterAttributes(projectConfig, attributes);
 
         // bucket the user to the given experiment and dispatch an impression event
-        Variation variation = bucketer.bucket(experiment, userId);
+        Variation variation = decisionService.getVariation(experiment, userId, filteredAttributes);
         if (variation == null) {
             logger.info("Not activating user \"{}\" for experiment \"{}\".", userId, experiment.getKey());
             return null;
         }
 
         if (experiment.isRunning()) {
-            LogEvent impressionEvent = eventBuilder.createImpressionEvent(projectConfig, experiment, variation, userId,
-                                                                          attributes);
+            LogEvent impressionEvent = eventBuilder.createImpressionEvent(
+                    projectConfig,
+                    experiment,
+                    variation,
+                    userId,
+                    filteredAttributes);
             logger.info("Activating user \"{}\" in experiment \"{}\".", userId, experiment.getKey());
             logger.debug(
-                "Dispatching impression event to URL {} with params {} and payload \"{}\".",
-                impressionEvent.getEndpointUrl(), impressionEvent.getRequestParams(), impressionEvent.getBody());
+                    "Dispatching impression event to URL {} with params {} and payload \"{}\".",
+                    impressionEvent.getEndpointUrl(), impressionEvent.getRequestParams(), impressionEvent.getBody());
             try {
                 eventHandler.dispatchEvent(impressionEvent);
             } catch (Exception e) {
                 logger.error("Unexpected exception in event dispatcher", e);
             }
 
-            notificationBroadcaster.broadcastExperimentActivated(experiment, userId, attributes, variation);
+            notificationBroadcaster.broadcastExperimentActivated(experiment, userId, filteredAttributes, variation);
         } else {
             logger.info("Experiment has \"Launched\" status so not dispatching event during activation.");
         }
@@ -229,9 +234,9 @@ public class Optimizely {
     }
 
     public void track(@Nonnull String eventName,
-                       @Nonnull String userId,
-                       @Nonnull Map<String, String> attributes,
-                       @Nonnull Map<String, ?> eventTags) throws UnknownEventTypeException {
+                      @Nonnull String userId,
+                      @Nonnull Map<String, String> attributes,
+                      @Nonnull Map<String, ?> eventTags) throws UnknownEventTypeException {
 
         ProjectConfig currentConfig = getProjectConfig();
 
@@ -244,7 +249,7 @@ public class Optimizely {
 
         // determine whether all the given attributes are present in the project config. If not, filter out the unknown
         // attributes.
-        attributes = filterAttributes(currentConfig, attributes);
+        Map<String, String> filteredAttributes = filterAttributes(currentConfig, attributes);
 
         Long eventValue = null;
         if (eventTags == null) {
@@ -254,10 +259,30 @@ public class Optimizely {
             eventValue = EventTagUtils.getRevenueValue(eventTags);
         }
 
+        List<Experiment> experimentsForEvent = projectConfig.getExperimentsForEventKey(eventName);
+        Map<Experiment, Variation> experimentVariationMap = new HashMap<Experiment, Variation>(experimentsForEvent.size());
+        for (Experiment experiment : experimentsForEvent) {
+            if (experiment.isRunning()) {
+                Variation variation = decisionService.getVariation(experiment, userId, filteredAttributes);
+                if (variation != null) {
+                    experimentVariationMap.put(experiment, variation);
+                }
+            } else {
+                logger.info(
+                        "Not tracking event \"{}\" for experiment \"{}\" because experiment has status \"Launched\".",
+                        eventType.getKey(), experiment.getKey());
+            }
+        }
+
         // create the conversion event request parameters, then dispatch
-        LogEvent conversionEvent = eventBuilder.createConversionEvent(currentConfig, bucketer, userId,
-                                                                      eventType.getId(), eventType.getKey(), attributes,
-                                                                      eventTags);
+        LogEvent conversionEvent = eventBuilder.createConversionEvent(
+                projectConfig,
+                experimentVariationMap,
+                userId,
+                eventType.getId(),
+                eventType.getKey(),
+                filteredAttributes,
+                eventTags);
 
         if (conversionEvent == null) {
             logger.info("There are no valid experiments for event \"{}\" to track.", eventName);
@@ -267,29 +292,31 @@ public class Optimizely {
 
         logger.info("Tracking event \"{}\" for user \"{}\".", eventName, userId);
         logger.debug("Dispatching conversion event to URL {} with params {} and payload \"{}\".",
-                     conversionEvent.getEndpointUrl(), conversionEvent.getRequestParams(), conversionEvent.getBody());
+                conversionEvent.getEndpointUrl(), conversionEvent.getRequestParams(), conversionEvent.getBody());
         try {
             eventHandler.dispatchEvent(conversionEvent);
         } catch (Exception e) {
             logger.error("Unexpected exception in event dispatcher", e);
         }
 
-        notificationBroadcaster.broadcastEventTracked(eventName, userId, attributes, eventValue,
-                                                      conversionEvent);
+        notificationBroadcaster.broadcastEventTracked(eventName, userId, filteredAttributes, eventValue,
+                conversionEvent);
     }
 
     //======== live variable getters ========//
 
-    public @Nullable String getVariableString(@Nonnull String variableKey,
-                                              @Nonnull String userId,
-                                              boolean activateExperiment) throws UnknownLiveVariableException {
+    public @Nullable
+    String getVariableString(@Nonnull String variableKey,
+                             @Nonnull String userId,
+                             boolean activateExperiment) throws UnknownLiveVariableException {
         return getVariableString(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
-    public @Nullable String getVariableString(@Nonnull String variableKey,
-                                              @Nonnull String userId,
-                                              @Nonnull Map<String, String> attributes,
-                                              boolean activateExperiment)
+    public @Nullable
+    String getVariableString(@Nonnull String variableKey,
+                             @Nonnull String userId,
+                             @Nonnull Map<String, String> attributes,
+                             boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         LiveVariable variable = getLiveVariableOrThrow(projectConfig, variableKey);
@@ -325,16 +352,18 @@ public class Optimizely {
         return variable.getDefaultValue();
     }
 
-    public @Nullable Boolean getVariableBoolean(@Nonnull String variableKey,
-                                                @Nonnull String userId,
-                                                boolean activateExperiment) throws UnknownLiveVariableException {
+    public @Nullable
+    Boolean getVariableBoolean(@Nonnull String variableKey,
+                               @Nonnull String userId,
+                               boolean activateExperiment) throws UnknownLiveVariableException {
         return getVariableBoolean(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
-    public @Nullable Boolean getVariableBoolean(@Nonnull String variableKey,
-                                                @Nonnull String userId,
-                                                @Nonnull Map<String, String> attributes,
-                                                boolean activateExperiment)
+    public @Nullable
+    Boolean getVariableBoolean(@Nonnull String variableKey,
+                               @Nonnull String userId,
+                               @Nonnull Map<String, String> attributes,
+                               boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
@@ -345,16 +374,18 @@ public class Optimizely {
         return null;
     }
 
-    public @Nullable Integer getVariableInteger(@Nonnull String variableKey,
-                                                @Nonnull String userId,
-                                                boolean activateExperiment) throws UnknownLiveVariableException {
+    public @Nullable
+    Integer getVariableInteger(@Nonnull String variableKey,
+                               @Nonnull String userId,
+                               boolean activateExperiment) throws UnknownLiveVariableException {
         return getVariableInteger(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
-    public @Nullable Integer getVariableInteger(@Nonnull String variableKey,
-                                                @Nonnull String userId,
-                                                @Nonnull Map<String, String> attributes,
-                                                boolean activateExperiment)
+    public @Nullable
+    Integer getVariableInteger(@Nonnull String variableKey,
+                               @Nonnull String userId,
+                               @Nonnull Map<String, String> attributes,
+                               boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
@@ -363,23 +394,25 @@ public class Optimizely {
                 return Integer.parseInt(variableValueString);
             } catch (NumberFormatException e) {
                 logger.error("Variable value \"{}\" for live variable \"{}\" is not an integer.", variableValueString,
-                             variableKey);
+                        variableKey);
             }
         }
 
         return null;
     }
 
-    public @Nullable Double getVariableDouble(@Nonnull String variableKey,
-                                              @Nonnull String userId,
-                                              boolean activateExperiment) throws UnknownLiveVariableException {
+    public @Nullable
+    Double getVariableDouble(@Nonnull String variableKey,
+                             @Nonnull String userId,
+                             boolean activateExperiment) throws UnknownLiveVariableException {
         return getVariableDouble(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
-    public @Nullable Double getVariableDouble(@Nonnull String variableKey,
-                                              @Nonnull String userId,
-                                              @Nonnull Map<String, String> attributes,
-                                              boolean activateExperiment)
+    public @Nullable
+    Double getVariableDouble(@Nonnull String variableKey,
+                             @Nonnull String userId,
+                             @Nonnull Map<String, String> attributes,
+                             boolean activateExperiment)
             throws UnknownLiveVariableException {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
@@ -388,7 +421,7 @@ public class Optimizely {
                 return Double.parseDouble(variableValueString);
             } catch (NumberFormatException e) {
                 logger.error("Variable value \"{}\" for live variable \"{}\" is not a double.", variableValueString,
-                             variableKey);
+                        variableKey);
             }
         }
 
@@ -397,29 +430,34 @@ public class Optimizely {
 
     //======== getVariation calls ========//
 
-    public @Nullable Variation getVariation(@Nonnull Experiment experiment,
-                                            @Nonnull String userId) throws UnknownExperimentException {
+    public @Nullable
+    Variation getVariation(@Nonnull Experiment experiment,
+                           @Nonnull String userId) throws UnknownExperimentException {
 
         return getVariation(experiment, userId, Collections.<String, String>emptyMap());
     }
 
-    public @Nullable Variation getVariation(@Nonnull Experiment experiment,
-                                            @Nonnull String userId,
-                                            @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
+    public @Nullable
+    Variation getVariation(@Nonnull Experiment experiment,
+                           @Nonnull String userId,
+                           @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
 
-        return getVariation(getProjectConfig(), experiment, attributes, userId);
+        Map<String, String> filteredAttributes = filterAttributes(projectConfig, attributes);
+
+        return decisionService.getVariation(experiment, userId, filteredAttributes);
     }
 
-    public @Nullable Variation getVariation(@Nonnull String experimentKey,
-                                            @Nonnull String userId) throws UnknownExperimentException{
+    public @Nullable
+    Variation getVariation(@Nonnull String experimentKey,
+                           @Nonnull String userId) throws UnknownExperimentException {
 
         return getVariation(experimentKey, userId, Collections.<String, String>emptyMap());
     }
 
-    public @Nullable Variation getVariation(@Nonnull String experimentKey,
-                                            @Nonnull String userId,
-                                            @Nonnull Map<String, String> attributes) {
-
+    public @Nullable
+    Variation getVariation(@Nonnull String experimentKey,
+                           @Nonnull String userId,
+                           @Nonnull Map<String, String> attributes) {
         if (!validateUserId(userId)) {
             return null;
         }
@@ -432,19 +470,9 @@ public class Optimizely {
             return null;
         }
 
-        return getVariation(currentConfig, experiment, attributes, userId);
-    }
+        Map<String, String> filteredAttributes = filterAttributes(projectConfig, attributes);
 
-    public @Nullable Variation getVariation(@Nonnull ProjectConfig projectConfig,
-                                            @Nonnull Experiment experiment,
-                                            @Nonnull Map<String, String> attributes,
-                                            @Nonnull String userId) {
-
-        if (!ProjectValidationUtils.validatePreconditions(projectConfig, experiment, userId, attributes)) {
-            return null;
-        }
-
-        return bucketer.bucket(experiment, userId);
+        return decisionService.getVariation(experiment,userId,filteredAttributes);
     }
 
     /**
@@ -465,7 +493,19 @@ public class Optimizely {
             throw new ConfigParseException("Unable to parse empty datafile.");
         }
 
-        return DefaultConfigParser.getInstance().parseProjectConfig(datafile);
+        ProjectConfig projectConfig = DefaultConfigParser.getInstance().parseProjectConfig(datafile);
+
+        if (projectConfig.getVersion().equals("1")) {
+            throw new ConfigParseException("This version of the Java SDK does not support version 1 datafiles. " +
+                    "Please use a version 2 or 3 datafile with this SDK.");
+        }
+
+        return projectConfig;
+    }
+
+    @Nullable
+    public UserProfileService getUserProfileService() {
+        return userProfileService;
     }
 
     //======== Notification listeners ========//
@@ -659,13 +699,14 @@ public class Optimizely {
 
         private String datafile;
         private Bucketer bucketer;
-        private UserProfile userProfile;
+        private DecisionService decisionService;
         private ErrorHandler errorHandler;
         private EventHandler eventHandler;
         private EventBuilder eventBuilder;
         private ClientEngine clientEngine;
         private String clientVersion;
         private ProjectConfig projectConfig;
+        private UserProfileService userProfileService;
 
         public Builder(@Nonnull String datafile,
                        @Nonnull EventHandler eventHandler) {
@@ -673,13 +714,23 @@ public class Optimizely {
             this.eventHandler = eventHandler;
         }
 
+        protected Builder withBucketing(Bucketer bucketer) {
+            this.bucketer = bucketer;
+            return this;
+        }
+
+        protected Builder withDecisionService(DecisionService decisionService) {
+            this.decisionService = decisionService;
+            return this;
+        }
+
         public Builder withErrorHandler(ErrorHandler errorHandler) {
             this.errorHandler = errorHandler;
             return this;
         }
 
-        public Builder withUserProfile(UserProfile userProfile) {
-            this.userProfile = userProfile;
+        public Builder withUserProfileService(UserProfileService userProfileService) {
+            this.userProfileService = userProfileService;
             return this;
         }
 
@@ -690,11 +741,6 @@ public class Optimizely {
 
         public Builder withClientVersion(String clientVersion) {
             this.clientVersion = clientVersion;
-            return this;
-        }
-
-        protected Builder withBucketing(Bucketer bucketer) {
-            this.bucketer = bucketer;
             return this;
         }
 
@@ -714,9 +760,8 @@ public class Optimizely {
                 projectConfig = Optimizely.getProjectConfig(datafile);
             }
 
-            // use the default bucketer and event builder, if no overrides were provided
             if (bucketer == null) {
-                bucketer = new Bucketer(projectConfig, userProfile);
+                bucketer = new Bucketer(projectConfig);
             }
 
             if (clientEngine == null) {
@@ -727,19 +772,20 @@ public class Optimizely {
                 clientVersion = BuildVersionInfo.VERSION;
             }
 
+
             if (eventBuilder == null) {
-                if (projectConfig.getVersion().equals(ProjectConfig.Version.V1.toString())) {
-                    eventBuilder = new EventBuilderV1();
-                } else {
-                    eventBuilder = new EventBuilderV2(clientEngine, clientVersion);
-                }
+                eventBuilder = new EventBuilderV2(clientEngine, clientVersion);
             }
 
             if (errorHandler == null) {
                 errorHandler = new NoOpErrorHandler();
             }
 
-            Optimizely optimizely = new Optimizely(projectConfig, bucketer, eventHandler, eventBuilder, errorHandler);
+            if (decisionService == null) {
+                decisionService = new DecisionService(bucketer, errorHandler, projectConfig, userProfileService);
+            }
+
+            Optimizely optimizely = new Optimizely(projectConfig, decisionService, eventHandler, eventBuilder, errorHandler, userProfileService);
             optimizely.initialize();
             return optimizely;
         }

@@ -1,70 +1,83 @@
-/**
- *
- *    Copyright 2016-2017, Optimizely and contributors
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
+/****************************************************************************
+ * Copyright 2017, Optimizely, Inc. and contributors                        *
+ *                                                                          *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ *                                                                          *
+ *    http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ ***************************************************************************/
 package com.optimizely.ab.bucketing;
 
+import javax.annotation.Nonnull;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * Gives implementors a chance to override {@link Bucketer} bucketing on subsequent activations.
- *
- * Overriding bucketing for subsequent activations is useful in order to prevent changes to
- * user experience after changing traffic allocations.  Also, this interface gives users
- * a hook to keep track of activation history.
+ * A class representing a user's profile.
  */
-public interface UserProfile {
+public class UserProfile {
 
     /**
-     * Called when implementors should save an activation
-     *
-     * @param userId the user id of the activation
-     * @param experimentId the experiment ID of the activation
-     * @param variationId the variation ID of the activation
-     * @return true if saving of the record was successful
+     * A user's ID.
      */
-    boolean save(String userId, String experimentId, String variationId);
+    @Nonnull
+    public final String userId;
+    /**
+     * The bucketing experimentBucketMap of the user.
+     */
+    @Nonnull
+    public final Map<String, Decision> experimentBucketMap;
 
     /**
-     * Called by the bucketer to check for a record of the previous activation
+     * Construct a User Profile instance from explicit components.
      *
-     * @param userId the user is id of the next activation
-     * @param experimentId the experiment ID of the next activation
-     * @return the variation ID of the next activation, or null if no record exists
+     * @param userId              The ID of the user.
+     * @param experimentBucketMap The bucketing experimentBucketMap of the user.
      */
-    String lookup(String userId, String experimentId);
+    public UserProfile(@Nonnull String userId, @Nonnull Map<String, Decision> experimentBucketMap) {
+        this.userId = userId;
+        this.experimentBucketMap = experimentBucketMap;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserProfile that = (UserProfile) o;
+
+        if (!userId.equals(that.userId)) return false;
+        return experimentBucketMap.equals(that.experimentBucketMap);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = userId.hashCode();
+        result = 31 * result + experimentBucketMap.hashCode();
+        return result;
+    }
 
     /**
-     * Called when user profile should be removed
+     * Convert a User Profile instance to a Map.
      *
-     * Records should be removed when an experiment is not running or when an experiment has been
-     * deleted.
-     *
-     * @param userId the user id of the record to remove
-     * @param experimentId the experiment ID of the record to remove
-     * @return true if the record was removed
+     * @return A map representation of the user profile instance.
      */
-    boolean remove(String userId, String experimentId);
-
-    /**
-     * Called by bucketer to get a mapping of all stored records
-     *
-     * This mapping is needed so that the bucketer can {@link #remove(String, String)} outdated
-     * records.
-     * @return a map of user IDs to a map of experiment IDs to variation IDs
-     */
-    Map<String, Map<String, String>> getAllRecords();
-
+    Map<String, Object> toMap() {
+        Map<String, Object> userProfileMap = new HashMap<String, Object>(2);
+        userProfileMap.put(UserProfileService.userIdKey, userId);
+        Map<String, Map<String, String>> decisionsMap = new HashMap<String, Map<String, String>>(experimentBucketMap.size());
+        for (Entry<String, Decision> decisionEntry : experimentBucketMap.entrySet()) {
+            decisionsMap.put(decisionEntry.getKey(), decisionEntry.getValue().toMap());
+        }
+        userProfileMap.put(UserProfileService.experimentBucketMapKey, decisionsMap);
+        return userProfileMap;
+    }
 }

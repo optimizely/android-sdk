@@ -22,14 +22,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-
 import com.optimizely.ab.config.Attribute;
-import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Group;
 import com.optimizely.ab.config.LiveVariable;
 import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.audience.Audience;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -73,7 +72,7 @@ public class ProjectConfigGsonDeserializer implements JsonDeserializer<ProjectCo
             context.deserialize(jsonObject.get("audiences").getAsJsonArray(), audienceType);
 
         boolean anonymizeIP = false;
-        // live variables should be null if using V1
+        // live variables should be null if using V2
         List<LiveVariable> liveVariables = null;
         if (version.equals(ProjectConfig.Version.V3.toString())) {
             Type liveVariablesType = new TypeToken<List<LiveVariable>>() {}.getType();
