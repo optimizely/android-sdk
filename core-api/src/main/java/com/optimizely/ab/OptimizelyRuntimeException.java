@@ -23,6 +23,10 @@ public class OptimizelyRuntimeException extends RuntimeException {
 
     public OptimizelyRuntimeException() { }
 
+    public OptimizelyRuntimeException(Exception exception) {
+        super(exception);
+    }
+
     public OptimizelyRuntimeException(String message) {
         super(message);
     }

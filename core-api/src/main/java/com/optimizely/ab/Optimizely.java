@@ -1,25 +1,24 @@
-/**
- *
- *    Copyright 2016-2017, Optimizely and contributors
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
+/****************************************************************************
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ *                                                                          *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ *                                                                          *
+ *    http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ ***************************************************************************/
 package com.optimizely.ab;
 
 import com.optimizely.ab.annotations.VisibleForTesting;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.bucketing.DecisionService;
-import com.optimizely.ab.bucketing.UserProfile;
+import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -40,7 +39,6 @@ import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 import com.optimizely.ab.internal.EventTagUtils;
 import com.optimizely.ab.internal.ReservedEventKey;
-import com.optimizely.ab.internal.UserProfileUtils;
 import com.optimizely.ab.notification.NotificationBroadcaster;
 import com.optimizely.ab.notification.NotificationListener;
 import org.slf4j.Logger;
@@ -92,26 +90,26 @@ public class Optimizely {
     @VisibleForTesting final EventHandler eventHandler;
     @VisibleForTesting final ErrorHandler errorHandler;
     @VisibleForTesting final NotificationBroadcaster notificationBroadcaster = new NotificationBroadcaster();
-    @Nullable private final UserProfile userProfile;
+    @Nullable private final UserProfileService userProfileService;
 
     private Optimizely(@Nonnull ProjectConfig projectConfig,
                        @Nonnull DecisionService decisionService,
                        @Nonnull EventHandler eventHandler,
                        @Nonnull EventBuilder eventBuilder,
                        @Nonnull ErrorHandler errorHandler,
-                       @Nullable UserProfile userProfile) {
+                       @Nullable UserProfileService userProfileService) {
         this.projectConfig = projectConfig;
         this.decisionService = decisionService;
         this.eventHandler = eventHandler;
         this.eventBuilder = eventBuilder;
         this.errorHandler = errorHandler;
-        this.userProfile = userProfile;
+        this.userProfileService = userProfileService;
     }
 
     // Do work here that should be done once per Optimizely lifecycle
     @VisibleForTesting
     void initialize() {
-        UserProfileUtils.cleanUserProfiles(userProfile, projectConfig);
+
     }
 
     //======== activate calls ========//
@@ -506,10 +504,9 @@ public class Optimizely {
     }
 
     @Nullable
-    public UserProfile getUserProfile() {
-        return userProfile;
+    public UserProfileService getUserProfileService() {
+        return userProfileService;
     }
-
 
     //======== Notification listeners ========//
 
@@ -709,7 +706,7 @@ public class Optimizely {
         private ClientEngine clientEngine;
         private String clientVersion;
         private ProjectConfig projectConfig;
-        private UserProfile userProfile;
+        private UserProfileService userProfileService;
 
         public Builder(@Nonnull String datafile,
                        @Nonnull EventHandler eventHandler) {
@@ -732,8 +729,8 @@ public class Optimizely {
             return this;
         }
 
-        public Builder withUserProfile(UserProfile userProfile) {
-            this.userProfile = userProfile;
+        public Builder withUserProfileService(UserProfileService userProfileService) {
+            this.userProfileService = userProfileService;
             return this;
         }
 
@@ -775,9 +772,6 @@ public class Optimizely {
                 clientVersion = BuildVersionInfo.VERSION;
             }
 
-            if (decisionService == null) {
-                decisionService = new DecisionService(bucketer, projectConfig, userProfile);
-            }
 
             if (eventBuilder == null) {
                 eventBuilder = new EventBuilderV2(clientEngine, clientVersion);
@@ -787,7 +781,11 @@ public class Optimizely {
                 errorHandler = new NoOpErrorHandler();
             }
 
-            Optimizely optimizely = new Optimizely(projectConfig, decisionService, eventHandler, eventBuilder, errorHandler, userProfile);
+            if (decisionService == null) {
+                decisionService = new DecisionService(bucketer, errorHandler, projectConfig, userProfileService);
+            }
+
+            Optimizely optimizely = new Optimizely(projectConfig, decisionService, eventHandler, eventBuilder, errorHandler, userProfileService);
             optimizely.initialize();
             return optimizely;
         }

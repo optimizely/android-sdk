@@ -18,7 +18,6 @@ package com.optimizely.ab.event.internal;
 
 import com.google.gson.Gson;
 import com.optimizely.ab.bucketing.Bucketer;
-import com.optimizely.ab.bucketing.UserProfile;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -212,7 +211,6 @@ public class EventBuilderV2Test {
         Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
                 validProjectConfig,
                 mockBucketAlgorithm,
-                null,
                 eventType.getKey(),
                 userId,
                 attributeMap);
@@ -295,7 +293,6 @@ public class EventBuilderV2Test {
         Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
                 validProjectConfig,
                 mockBucketAlgorithm,
-                null,
                 eventType.getKey(),
                 userId,
                 attributeMap);
@@ -330,7 +327,6 @@ public class EventBuilderV2Test {
         Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
                 validProjectConfig,
                 mockBucketAlgorithm,
-                null,
                 eventType.getKey(),
                 userId,
                 Collections.<String, String>emptyMap());
@@ -366,7 +362,6 @@ public class EventBuilderV2Test {
         Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
                 validProjectConfig,
                 mockBucketAlgorithm,
-                null,
                 eventType.getKey(),
                 userId,
                 Collections.<String, String>emptyMap());
@@ -406,7 +401,6 @@ public class EventBuilderV2Test {
         Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
                 validProjectConfig,
                 mockBucketAlgorithm,
-                null,
                 eventType.getKey(),
                 userId,
                 attributeMap);
@@ -491,7 +485,6 @@ public class EventBuilderV2Test {
     //========== helper methods =========//
     public static Map<Experiment, Variation> createExperimentVariationMap(ProjectConfig projectConfig,
                                                                           Bucketer bucketer,
-                                                                          UserProfile userProfile,
                                                                           String eventName,
                                                                           String userId,
                                                                           @Nullable Map<String, String> attributes) {
