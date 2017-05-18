@@ -32,7 +32,7 @@ import com.optimizely.ab.android.event_handler.EventIntentService;
 import com.optimizely.ab.android.sdk.DataFileService;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.bucketing.UserProfile;
+import com.optimizely.ab.bucketing.UserProfileService;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,13 +44,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -147,7 +147,7 @@ public class MainActivityEspressoTest {
             });
 
     @Test
-    public void experimentActivationForWhitelistUser() throws InterruptedException {
+    public void experimentActivationForWhitelistUser() throws Exception {
         // Check that the text was changed.
         // These tests are pointed at a real project.
         // The user 'test_user` is in the whitelist for variation_a for experiment background_experiment
@@ -174,8 +174,9 @@ public class MainActivityEspressoTest {
         }
         assertTrue(events.isEmpty());
         MyApplication myApplication = (MyApplication) activityTestRule.getActivity().getApplication();
-        UserProfile userProfile = myApplication.getOptimizelyManager().getUserProfile();
+        UserProfileService userProfileService = myApplication.getOptimizelyManager().getUserProfileService();
         // Being in the white list should override user profile
-        assertNull(userProfile.lookup("test_user", "background_experiment"));
+        Map<String, Object> userProfileMap = userProfileService.lookup("test_user");
+        assertNull(userProfileMap);
     }
 }
