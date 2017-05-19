@@ -68,8 +68,8 @@ public class UserProfileUtils {
 
     /**
      * Convert a Map to a {@link UserProfile} instance.
-     * @param map The map to construct the User Profile from.
-     * @return A User Profile instance.
+     * @param map The map to construct the {@link UserProfile} from.
+     * @return A {@link UserProfile} instance.
      */
     static UserProfile convertMapToUserProfile(@Nonnull Map<String, Object> map) {
         String userId = (String) map.get(UserProfileService.userIdKey);

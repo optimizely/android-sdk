@@ -81,10 +81,8 @@ public class DecisionService {
             return null;
         }
 
-        Variation variation;
-
         // check for whitelisting
-        variation = getWhitelistedVariation(experiment, userId);
+        Variation variation = getWhitelistedVariation(experiment, userId);
         if (variation != null) {
             return variation;
         }
@@ -96,11 +94,10 @@ public class DecisionService {
                 Map<String, Object> userProfileMap = userProfileService.lookup(userId);
                 if (userProfileMap == null) {
                     logger.info("We were unable to get a user profile map from the UserProfileService.");
-                }
-                else if (UserProfileUtils.isValidUserProfileMap(userProfileMap)) {
+                } else if (UserProfileUtils.isValidUserProfileMap(userProfileMap)) {
                     userProfile = UserProfileUtils.convertMapToUserProfile(userProfileMap);
                 } else {
-                    logger.warn("The User Profile Service returned an invalid map.");
+                    logger.warn("The UserProfileService returned an invalid map.");
                 }
             } catch (Exception exception) {
                 logger.error(exception.getMessage());
