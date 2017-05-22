@@ -60,7 +60,7 @@ public class AndroidUserProfileService implements UserProfileService {
         UserProfileCache userProfileCache = new UserProfileCache(
                 new UserProfileCache.DiskCache(new Cache(context, LoggerFactory.getLogger(Cache.class)),
                         Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(UserProfileCache.DiskCache.class),
-                        memoryCache, projectId),
+                        projectId),
                 LoggerFactory.getLogger(UserProfileCache.class),
                 memoryCache);
 

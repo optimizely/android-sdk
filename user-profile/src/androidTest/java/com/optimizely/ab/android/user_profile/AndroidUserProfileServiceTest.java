@@ -67,7 +67,7 @@ public class AndroidUserProfileServiceTest {
         executor = MoreExecutors.newDirectExecutorService();
         memoryCache = new ConcurrentHashMap<>();
         projectId = "123";
-        diskCache = new UserProfileCache.DiskCache(cache, executor, logger, memoryCache, projectId);
+        diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
         userProfileCache = new UserProfileCache(diskCache, logger, memoryCache);
         androidUserProfileService = new AndroidUserProfileService(userProfileCache, logger);
 

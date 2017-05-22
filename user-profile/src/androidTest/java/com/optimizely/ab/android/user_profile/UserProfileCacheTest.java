@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -32,11 +32,14 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -64,7 +67,7 @@ public class UserProfileCacheTest {
         logger = mock(Logger.class);
         projectId = "1";
         cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
-        diskCache = new UserProfileCache.DiskCache(cache, executor, logger, memoryCache, projectId);
+        diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
         memoryCache = new ConcurrentHashMap<>();
         userProfileCache = new UserProfileCache(diskCache, logger, memoryCache);
 
@@ -107,6 +110,11 @@ public class UserProfileCacheTest {
         verify(logger).info("Saved user profile for {}.", userId2);
 
         userProfileCache.clear();
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail("Time out");
+        }
         userProfileCache.start();
 
         assertNull(userProfileCache.lookup(userId1));
@@ -186,9 +194,17 @@ public class UserProfileCacheTest {
         userProfileCache.save(userProfileMap2);
         verify(logger).info("Saved user profile for {}.", userId2);
 
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail("Time out");
+        }
+        verify(logger, times(2)).info("Saved user profiles to disk.");
         userProfileCache.start();
 
         Map<String, Object> userProfileMap1 = userProfileCache.lookup(userId1);
+        assertNotNull(userProfileMap1);
+        assertNotNull(userProfileMap1.get("user_id"));
         assertEquals(userId1, (String) userProfileMap1.get("user_id"));
         Map<String, Map<String, String>> experimentBucketMap1 = (ConcurrentHashMap<String, Map<String, String>>)
                 userProfileMap1.get("experiment_bucket_map");

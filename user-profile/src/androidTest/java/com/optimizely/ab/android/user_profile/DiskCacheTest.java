@@ -65,7 +65,7 @@ public class DiskCacheTest {
         cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
         memoryCache = new ConcurrentHashMap<>();
         projectId = "123";
-        diskCache = new UserProfileCache.DiskCache(cache, executor, logger, memoryCache, projectId);
+        diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
         userId = "user_1";
 
         // Populate in-memory cache.
@@ -103,14 +103,14 @@ public class DiskCacheTest {
     public void testLoadIOException() throws JSONException {
         cache = mock(Cache.class);
         when(cache.load(diskCache.getFileName())).thenReturn(null);
-        diskCache = new UserProfileCache.DiskCache(cache, executor, logger, memoryCache, projectId);
+        diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
         assertEquals(new JSONObject().toString(), diskCache.load().toString());
         verify(logger).warn("Unable to load user profile cache from disk.");
     }
 
     @Test
     public void testSaveAndLoad() throws JSONException {
-        diskCache.save();
+        diskCache.save(memoryCache);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -137,9 +137,9 @@ public class DiskCacheTest {
     public void testSaveIOException() throws JSONException {
         cache = mock(Cache.class);
         when(cache.save(diskCache.getFileName(), memoryCache.toString())).thenReturn(false);
-        diskCache = new UserProfileCache.DiskCache(cache, executor, logger, memoryCache, projectId);
+        diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
 
-        diskCache.save();
+        diskCache.save(memoryCache);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -152,7 +152,7 @@ public class DiskCacheTest {
     @Test
     public void testSaveInvalidMemoryCache() throws JSONException {
         memoryCache.put("user_2", new ConcurrentHashMap<String, Object>());
-        diskCache.save();
+        diskCache.save(memoryCache);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {

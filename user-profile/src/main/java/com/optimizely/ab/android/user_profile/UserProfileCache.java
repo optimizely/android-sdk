@@ -28,14 +28,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 import static com.optimizely.ab.bucketing.UserProfileService.experimentBucketMapKey;
 import static com.optimizely.ab.bucketing.UserProfileService.userIdKey;
-import static com.optimizely.ab.bucketing.UserProfileService.variationIdKey;
 
 /**
  * Stores a map of user IDs to {@link com.optimizely.ab.bucketing.UserProfile} with write-back to a file.
@@ -58,7 +56,7 @@ class UserProfileCache {
      */
     void clear() {
         memoryCache.clear();
-        diskCache.save();
+        diskCache.save(memoryCache);
         logger.info("User profile cache cleared.");
     }
 
@@ -93,7 +91,7 @@ class UserProfileCache {
         } else {
             if (memoryCache.containsKey(userId)) {
                 memoryCache.remove(userId);
-                diskCache.save();
+                diskCache.save(memoryCache);
                 logger.info("Removed user profile for {}.", userId);
             }
         }
@@ -121,7 +119,7 @@ class UserProfileCache {
                         (ConcurrentHashMap<String, Decision>) userProfileMap.get(experimentBucketMapKey);
                 if (experimentBucketMap.containsKey(experimentId)) {
                     experimentBucketMap.remove(experimentId);
-                    diskCache.save();
+                    diskCache.save(memoryCache);
                     logger.info("Removed decision for experiment {} from user profile for {}.", experimentId, userId);
                 }
             }
@@ -141,7 +139,7 @@ class UserProfileCache {
             logger.error("Unable to save user profile because user ID was empty.");
         } else {
             memoryCache.put(userId, userProfileMap);
-            diskCache.save();
+            diskCache.save(memoryCache);
             logger.info("Saved user profile for {}.", userId);
         }
     }
@@ -152,34 +150,10 @@ class UserProfileCache {
     void start() {
         try {
             JSONObject userProfilesJson = diskCache.load();
-
-            Iterator<String> userIdIterator = userProfilesJson.keys();
-            while (userIdIterator.hasNext()) {
-                // Convert JSONObject to map.
-                String userId = userIdIterator.next();
-                JSONObject userProfileJson = userProfilesJson.getJSONObject(userId);
-
-                Map<String, Map<String, String>> experimentBucketMap = new ConcurrentHashMap<>();
-                JSONObject experimentBucketMapJson = userProfileJson.getJSONObject(
-                        experimentBucketMapKey);
-                Iterator<String> experimentIdIterator = experimentBucketMapJson.keys();
-                while (experimentIdIterator.hasNext()) {
-                    String experimentId = experimentIdIterator.next();
-                    JSONObject experimentBucketMapEntryJson = experimentBucketMapJson.getJSONObject(experimentId);
-                    String variationId = experimentBucketMapEntryJson.getString(variationIdKey);
-
-                    Map<String, String> decisionMap = new ConcurrentHashMap<>();
-                    decisionMap.put(variationIdKey, variationId);
-                    experimentBucketMap.put(experimentId, decisionMap);
-                }
-
-                Map<String, Object> userProfileMap = new ConcurrentHashMap<>();
-                userProfileMap.put(userIdKey, userId);
-                userProfileMap.put(experimentBucketMapKey, experimentBucketMap);
-
-                // Add map to in-memory cache.
-                memoryCache.put(userId, userProfileMap);
-            }
+            Map<String, Map<String, Object>> userProfilesMap = UserProfileCacheUtils.convertJSONObjectToMap
+                    (userProfilesJson);
+            memoryCache.clear();
+            memoryCache.putAll(userProfilesMap);
             logger.info("Loaded user profile cache from disk.");
         } catch (Exception e) {
             clear();
@@ -196,16 +170,14 @@ class UserProfileCache {
         @NonNull private final Cache cache;
         @NonNull private final Executor executor;
         @NonNull private final Logger logger;
-        @NonNull private final Map<String, Map<String, Object>> memoryCache;
         @NonNull private final String projectId;
 
 
         public DiskCache(@NonNull Cache cache, @NonNull Executor executor, @NonNull Logger logger,
-                         @NonNull Map<String, Map<String, Object>> memoryCache, @NonNull String projectId) {
+                         @NonNull String projectId) {
             this.cache = cache;
             this.executor = executor;
             this.logger = logger;
-            this.memoryCache = memoryCache;
             this.projectId = projectId;
         }
 
@@ -226,45 +198,13 @@ class UserProfileCache {
         /**
          * Save the in-memory cache to disk in a background thread.
          */
-        void save() {
+        void save(final Map<String, Map<String, Object>> userProfilesMap) {
             AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void[] params) {
-                    JSONObject userProfilesJson = new JSONObject();
-
+                    JSONObject userProfilesJson;
                     try {
-                        Iterator userProfileIterator = memoryCache.entrySet().iterator();
-                        while (userProfileIterator.hasNext()) {
-                            // Convert UserProfile to map.
-                            Map.Entry userProfileEntry = (Map.Entry) userProfileIterator.next();
-                            Map<String, Object> userProfileMap = (ConcurrentHashMap<String, Object>) userProfileEntry
-                                    .getValue();
-
-                            // Convert map to JSONObject.
-                            String userId = (String) userProfileMap.get(userIdKey);
-                            Map<String, Map<String, String>> experimentBucketMap = (Map<String, Map<String, String>>)
-                                    userProfileMap.get(experimentBucketMapKey);
-
-                            JSONObject experimentBucketMapJson = new JSONObject();
-                            Iterator experimentBucketMapIterator = experimentBucketMap.entrySet().iterator();
-                            while (experimentBucketMapIterator.hasNext()) {
-                                Map.Entry experimentBucketMapEntry = (Map.Entry) experimentBucketMapIterator.next();
-                                String experimentId = (String) experimentBucketMapEntry.getKey();
-                                Map<String, String> decisionsMap = (Map<String, String>) experimentBucketMapEntry
-                                        .getValue();
-                                JSONObject decisionJson = new JSONObject();
-                                decisionJson.put(variationIdKey, decisionsMap.get
-                                        (variationIdKey));
-                                experimentBucketMapJson.put(experimentId, decisionJson);
-                            }
-
-                            JSONObject userProfileJson = new JSONObject();
-                            userProfileJson.put(userIdKey, userId);
-                            userProfileJson.put(experimentBucketMapKey, experimentBucketMapJson);
-
-                            // Add user profile to JSONObject of all user profiles.
-                            userProfilesJson.put(userId, userProfileJson);
-                        }
+                        userProfilesJson = UserProfileCacheUtils.convertMapToJSONObject(userProfilesMap);
                     } catch (Exception e) {
                         logger.error("Unable to serialize user profiles to save to disk.", e);
                         return false;
