@@ -56,7 +56,7 @@ public class AndroidUserProfileService implements UserProfileService {
      * @return the instance as {@link UserProfileService}
      */
     public static UserProfileService newInstance(@NonNull String projectId, @NonNull Context context) {
-        Map<String, Map<String, Object>> memoryCache = new ConcurrentHashMap<String, Map<String, Object>>();
+        Map<String, Map<String, Object>> memoryCache = new ConcurrentHashMap<>();
         UserProfileCache userProfileCache = new UserProfileCache(
                 new UserProfileCache.DiskCache(new Cache(context, LoggerFactory.getLogger(Cache.class)),
                         Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(UserProfileCache.DiskCache.class),
@@ -108,8 +108,8 @@ public class AndroidUserProfileService implements UserProfileService {
      * @param userId the user ID of the decision to remove
      * @param experimentId the experiment ID of the decision to remove
      */
-    public void removeDecision(String userId, String experimentId) {
-        userProfileCache.removeDecision(userId, experimentId);
+    public void remove(String userId, String experimentId) {
+        userProfileCache.remove(userId, experimentId);
     }
 
     /**

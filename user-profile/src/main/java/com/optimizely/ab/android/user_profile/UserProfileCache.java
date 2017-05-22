@@ -105,7 +105,7 @@ class UserProfileCache {
      * @param userId the user ID of the decision to remove
      * @param experimentId the experiment ID of the decision to remove
      */
-    void removeDecision(String userId, String experimentId) {
+    void remove(String userId, String experimentId) {
         if (userId == null) {
             logger.error("Unable to remove decision because user ID was null.");
         } else if (userId.isEmpty()) {
@@ -159,8 +159,7 @@ class UserProfileCache {
                 String userId = userIdIterator.next();
                 JSONObject userProfileJson = userProfilesJson.getJSONObject(userId);
 
-                Map<String, Map<String, String>> experimentBucketMap =
-                        new ConcurrentHashMap<String, Map<String, String>>();
+                Map<String, Map<String, String>> experimentBucketMap = new ConcurrentHashMap<>();
                 JSONObject experimentBucketMapJson = userProfileJson.getJSONObject(
                         experimentBucketMapKey);
                 Iterator<String> experimentIdIterator = experimentBucketMapJson.keys();
@@ -169,12 +168,12 @@ class UserProfileCache {
                     JSONObject experimentBucketMapEntryJson = experimentBucketMapJson.getJSONObject(experimentId);
                     String variationId = experimentBucketMapEntryJson.getString(variationIdKey);
 
-                    Map<String, String> decisionMap = new ConcurrentHashMap<String, String>();
+                    Map<String, String> decisionMap = new ConcurrentHashMap<>();
                     decisionMap.put(variationIdKey, variationId);
                     experimentBucketMap.put(experimentId, decisionMap);
                 }
 
-                Map<String, Object> userProfileMap = new ConcurrentHashMap<String, Object>();
+                Map<String, Object> userProfileMap = new ConcurrentHashMap<>();
                 userProfileMap.put(userIdKey, userId);
                 userProfileMap.put(experimentBucketMapKey, experimentBucketMap);
 

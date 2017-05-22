@@ -63,19 +63,19 @@ public class DiskCacheTest {
     public void setup() {
         logger = mock(Logger.class);
         cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
-        memoryCache = new ConcurrentHashMap<String, Map<String, Object>>();
+        memoryCache = new ConcurrentHashMap<>();
         projectId = "123";
         diskCache = new UserProfileCache.DiskCache(cache, executor, logger, memoryCache, projectId);
         userId = "user_1";
 
         // Populate in-memory cache.
-        Map<String, Object> userProfileMap = new ConcurrentHashMap<String, Object>();
+        Map<String, Object> userProfileMap = new ConcurrentHashMap<>();
         userProfileMap.put("user_id", userId);
-        Map<String, Map<String, String>> experimentBucketMap = new ConcurrentHashMap<String, Map<String, String>>();
-        Map<String, String> decisionMap1 = new ConcurrentHashMap<String, String>();
+        Map<String, Map<String, String>> experimentBucketMap = new ConcurrentHashMap<>();
+        Map<String, String> decisionMap1 = new ConcurrentHashMap<>();
         decisionMap1.put("variation_id", "var_1");
         experimentBucketMap.put("exp_1", decisionMap1);
-        Map<String, String> decisionMap2 = new ConcurrentHashMap<String, String>();
+        Map<String, String> decisionMap2 = new ConcurrentHashMap<>();
         decisionMap2.put("variation_id", "var_2");
         experimentBucketMap.put("exp_2", decisionMap2);
         userProfileMap.put("experiment_bucket_map", experimentBucketMap);

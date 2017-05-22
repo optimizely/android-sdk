@@ -65,30 +65,30 @@ public class UserProfileCacheTest {
         projectId = "1";
         cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
         diskCache = new UserProfileCache.DiskCache(cache, executor, logger, memoryCache, projectId);
-        memoryCache = new ConcurrentHashMap<String, Map<String, Object>>();
+        memoryCache = new ConcurrentHashMap<>();
         userProfileCache = new UserProfileCache(diskCache, logger, memoryCache);
 
         // Test data.
         userId1 = "user_1";
-        userProfileMap1 = new ConcurrentHashMap<String, Object>();
+        userProfileMap1 = new ConcurrentHashMap<>();
         userProfileMap1.put("user_id", userId1);
-        Map<String, Map<String, String>> experimentBucketMap1 = new ConcurrentHashMap<String, Map<String, String>>();
-        Map<String, String> decisionMap1 = new ConcurrentHashMap<String, String>();
+        Map<String, Map<String, String>> experimentBucketMap1 = new ConcurrentHashMap<>();
+        Map<String, String> decisionMap1 = new ConcurrentHashMap<>();
         decisionMap1.put("variation_id", "var_1");
         experimentBucketMap1.put("exp_1", decisionMap1);
-        Map<String, String> decisionMap2 = new ConcurrentHashMap<String, String>();
+        Map<String, String> decisionMap2 = new ConcurrentHashMap<>();
         decisionMap2.put("variation_id", "var_2");
         experimentBucketMap1.put("exp_2", decisionMap2);
         userProfileMap1.put("experiment_bucket_map", experimentBucketMap1);
 
         userId2 = "user_2";
-        userProfileMap2 = new ConcurrentHashMap<String, Object>();
+        userProfileMap2 = new ConcurrentHashMap<>();
         userProfileMap2.put("user_id", userId2);
-        Map<String, Map<String, String>> experimentBucketMap2 = new ConcurrentHashMap<String, Map<String, String>>();
-        Map<String, String> decisionMap3 = new ConcurrentHashMap<String, String>();
+        Map<String, Map<String, String>> experimentBucketMap2 = new ConcurrentHashMap<>();
+        Map<String, String> decisionMap3 = new ConcurrentHashMap<>();
         decisionMap3.put("variation_id", "var_3");
         experimentBucketMap2.put("exp_1", decisionMap3);
-        Map<String, String> decisionMap4 = new ConcurrentHashMap<String, String>();
+        Map<String, String> decisionMap4 = new ConcurrentHashMap<>();
         decisionMap4.put("variation_id", "var_4");
         experimentBucketMap2.put("exp_2", decisionMap4);
         userProfileMap2.put("experiment_bucket_map", experimentBucketMap2);
@@ -152,7 +152,7 @@ public class UserProfileCacheTest {
         userProfileCache.save(userProfileMap2);
         verify(logger).info("Saved user profile for {}.", userId2);
 
-        userProfileCache.removeDecision(userId1, "exp_1");
+        userProfileCache.remove(userId1, "exp_1");
         userProfileCache.start();
 
         Map<String, Object> userProfileMap1 = userProfileCache.lookup(userId1);
@@ -166,16 +166,16 @@ public class UserProfileCacheTest {
 
     @Test
     public void testRemoveDecisionInvalidUserIdAndExperimentId() throws JSONException {
-        userProfileCache.removeDecision(null, "1");
+        userProfileCache.remove(null, "1");
         verify(logger).error("Unable to remove decision because user ID was null.");
 
-        userProfileCache.removeDecision("", "1");
+        userProfileCache.remove("", "1");
         verify(logger).error("Unable to remove decision because user ID was empty.");
 
-        userProfileCache.removeDecision("1", null);
+        userProfileCache.remove("1", null);
         verify(logger).error("Unable to remove decision because experiment ID was null.");
 
-        userProfileCache.removeDecision("1", "");
+        userProfileCache.remove("1", "");
         verify(logger).error("Unable to remove decision because experiment ID was empty.");
     }
 
