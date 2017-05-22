@@ -33,7 +33,7 @@ public class UserProfileUtils {
      * @return True if the map can be converted into a {@link UserProfile}.
      *          False if the map cannot be converted.
      */
-    static boolean isValidUserProfileMap(@Nonnull Map<String, Object> map) {
+    public static boolean isValidUserProfileMap(@Nonnull Map<String, Object> map) {
         // The Map must contain a value for the user ID
         if (!map.containsKey(UserProfileService.userIdKey)) {
             return false;
@@ -71,7 +71,7 @@ public class UserProfileUtils {
      * @param map The map to construct the {@link UserProfile} from.
      * @return A {@link UserProfile} instance.
      */
-    static UserProfile convertMapToUserProfile(@Nonnull Map<String, Object> map) {
+    public static UserProfile convertMapToUserProfile(@Nonnull Map<String, Object> map) {
         String userId = (String) map.get(UserProfileService.userIdKey);
         Map<String, Map<String, String>> experimentBucketMap = (Map<String, Map<String, String>>) map.get(UserProfileService.experimentBucketMapKey);
         Map<String, Decision> decisions = new HashMap<String, Decision>(experimentBucketMap.size());
