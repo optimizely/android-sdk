@@ -46,10 +46,19 @@ public class OptimizelyClient {
     private final Logger logger;
 
     @Nullable private Optimizely optimizely;
+    @Nullable private Map<String, String> defaultAttributes;
 
     OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
         this.optimizely = optimizely;
         this.logger = logger;
+    }
+
+    protected void setDefaultAttributes(Map<String, String> attrs) {
+        this.defaultAttributes = attrs;
+    }
+
+    public Map<String, String> getDefaultAttributes() {
+        return this.defaultAttributes;
     }
 
     /**
@@ -83,6 +92,7 @@ public class OptimizelyClient {
                                         @NonNull String userId,
                                         @NonNull Map<String, String> attributes) {
         if (isValid()) {
+            attributes.putAll(defaultAttributes);
             return optimizely.activate(experimentKey, userId, attributes);
         } else {
             logger.warn("Optimizely is not initialized, could not activate experiment {} for user {} " +
@@ -140,6 +150,7 @@ public class OptimizelyClient {
                       @NonNull String userId,
                       @NonNull Map<String, String> attributes) throws UnknownEventTypeException {
         if (isValid()) {
+            attributes.putAll(defaultAttributes);
             optimizely.track(eventName, userId, attributes);
 
         } else {
@@ -160,6 +171,7 @@ public class OptimizelyClient {
                       @NonNull Map<String, String> attributes,
                       @NonNull Map<String, ?> eventTags) throws UnknownEventTypeException {
         if (isValid()) {
+            attributes.putAll(defaultAttributes);
             optimizely.track(eventName, userId, attributes, eventTags);
 
         } else {
@@ -200,6 +212,7 @@ public class OptimizelyClient {
                       @NonNull Map<String, String> attributes,
                       long eventValue) {
         if (isValid()) {
+            attributes.putAll(defaultAttributes);
             optimizely.track(eventName, userId, attributes, eventValue);
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
@@ -234,6 +247,7 @@ public class OptimizelyClient {
                                               @NonNull Map<String, String> attributes,
                                               boolean activateExperiment) {
         if (isValid()) {
+            attributes.putAll(defaultAttributes);
             return optimizely.getVariableString(variableKey, userId, attributes,
                                                 activateExperiment);
         } else {
@@ -383,6 +397,7 @@ public class OptimizelyClient {
                                             @NonNull String userId,
                                             @NonNull Map<String, String> attributes) {
         if (isValid()) {
+            attributes.putAll(defaultAttributes);
             return optimizely.getVariation(experimentKey, userId, attributes);
         } else {
             logger.warn("Optimizely is not initialized, could not get variation for experiment {} " +
