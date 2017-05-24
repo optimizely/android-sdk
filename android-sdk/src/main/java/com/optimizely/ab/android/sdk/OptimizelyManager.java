@@ -165,7 +165,7 @@ public class OptimizelyManager {
         Map<String, String> attrMap = new HashMap<String, String>();
 
         attrMap.put(DEVICE_MODEL, androidDeviceModel);
-        String sdkVersion = androidSdkVersionName + Integer.toString(androidSdkVersion);
+        String sdkVersion = androidSdkVersionName; // + Integer.toString(androidSdkVersion);
         attrMap.put(SDK_VERSION, sdkVersion);
         attrMap.put(OS_VERSION, androidOSVersion);
         String appVersion = androidAppVersionName + Integer.toString(androidAppVersion);
