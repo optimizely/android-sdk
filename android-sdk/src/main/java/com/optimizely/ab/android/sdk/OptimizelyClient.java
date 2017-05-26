@@ -30,6 +30,7 @@ import com.optimizely.ab.notification.NotificationListener;
 import org.slf4j.Logger;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -51,6 +52,8 @@ public class OptimizelyClient {
     OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
         this.optimizely = optimizely;
         this.logger = logger;
+        // unit tests create a client with no optimizely manager. so, we need start with an empty map
+        defaultAttributes = Collections.EMPTY_MAP;
     }
 
     protected void setDefaultAttributes(Map<String, String> attrs) {
@@ -59,6 +62,14 @@ public class OptimizelyClient {
 
     public Map<String, String> getDefaultAttributes() {
         return this.defaultAttributes;
+    }
+
+    private Map<String, String> mergeAttributes(@NonNull Map<String, String> attrs) {
+        Map<String,String> combinedMap = new HashMap<String,String>(defaultAttributes);
+
+        combinedMap.putAll(attrs);
+
+        return combinedMap;
     }
 
     /**
@@ -92,11 +103,7 @@ public class OptimizelyClient {
                                         @NonNull String userId,
                                         @NonNull Map<String, String> attributes) {
         if (isValid()) {
-            // unit tests create a client with no optimizely manager. so, we need to test for null
-            if (defaultAttributes != null) {
-                attributes.putAll(defaultAttributes);
-            }
-            return optimizely.activate(experimentKey, userId, attributes);
+            return optimizely.activate(experimentKey, userId, this.mergeAttributes(attributes));
         } else {
             logger.warn("Optimizely is not initialized, could not activate experiment {} for user {} " +
                     "with attributes", experimentKey, userId);
@@ -154,10 +161,7 @@ public class OptimizelyClient {
                       @NonNull Map<String, String> attributes) throws UnknownEventTypeException {
         if (isValid()) {
             // unit tests create a client with no optimizely manager. so, we need to test for null
-            if (defaultAttributes != null) {
-                attributes.putAll(defaultAttributes);
-            }
-            optimizely.track(eventName, userId, attributes);
+            optimizely.track(eventName, userId, this.mergeAttributes(attributes));
 
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {} with attributes",
@@ -177,11 +181,7 @@ public class OptimizelyClient {
                       @NonNull Map<String, String> attributes,
                       @NonNull Map<String, ?> eventTags) throws UnknownEventTypeException {
         if (isValid()) {
-            // unit tests create a client with no optimizely manager. so, we need to test for null
-            if (defaultAttributes != null) {
-                attributes.putAll(defaultAttributes);
-            }
-            optimizely.track(eventName, userId, attributes, eventTags);
+            optimizely.track(eventName, userId, this.mergeAttributes(attributes), eventTags);
 
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
@@ -221,11 +221,7 @@ public class OptimizelyClient {
                       @NonNull Map<String, String> attributes,
                       long eventValue) {
         if (isValid()) {
-            // unit tests create a client with no optimizely manager. so, we need to test for null
-            if (defaultAttributes != null) {
-                attributes.putAll(defaultAttributes);
-            }
-            optimizely.track(eventName, userId, attributes, eventValue);
+            optimizely.track(eventName, userId, this.mergeAttributes(attributes), eventValue);
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
                     " with value {} and attributes", eventName, userId, eventValue);
@@ -259,11 +255,7 @@ public class OptimizelyClient {
                                               @NonNull Map<String, String> attributes,
                                               boolean activateExperiment) {
         if (isValid()) {
-            // unit tests create a client with no optimizely manager. so, we need to test for null
-            if (defaultAttributes != null) {
-                attributes.putAll(defaultAttributes);
-            }
-            return optimizely.getVariableString(variableKey, userId, attributes,
+            return optimizely.getVariableString(variableKey, userId, this.mergeAttributes(attributes),
                                                 activateExperiment);
         } else {
             logger.warn("Optimizely is not initialized, could not get live variable {} " +

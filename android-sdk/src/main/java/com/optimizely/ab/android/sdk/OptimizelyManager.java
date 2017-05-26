@@ -156,7 +156,7 @@ public class OptimizelyManager {
             androidAppVersion = pInfo.versionCode;
         }
         catch (Exception e) {
-            logger.error("problem getting app version from context", e);
+            logger.warn("Error getting app version from context.", e);
             androidAppVersionName = "";
             androidAppVersion = 0;
         }
@@ -165,7 +165,7 @@ public class OptimizelyManager {
         Map<String, String> attrMap = new HashMap<String, String>();
 
         attrMap.put(DEVICE_MODEL, androidDeviceModel);
-        String sdkVersion = androidSdkVersionName; // + Integer.toString(androidSdkVersion);
+        String sdkVersion = androidSdkVersionName;
         attrMap.put(SDK_VERSION, sdkVersion);
         attrMap.put(OS_VERSION, androidOSVersion);
         String appVersion = androidAppVersionName + Integer.toString(androidAppVersion);
