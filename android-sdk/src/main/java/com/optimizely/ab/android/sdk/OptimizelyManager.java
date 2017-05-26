@@ -76,18 +76,6 @@ public class OptimizelyManager {
     @Nullable private OptimizelyStartListener optimizelyStartListener;
     @Nullable private UserProfile userProfile;
 
-    @NonNull private final String androidDeviceModel;
-    @NonNull private final String androidOSVersion;
-    @NonNull private final int androidSdkVersion;
-    @NonNull private final String androidSdkVersionName;
-    @Nullable private int androidAppVersion;
-    @Nullable private String androidAppVersionName;
-
-    static private final String DEVICE_MODEL = "optimizely_android_device_model";
-    static private final String SDK_VERSION = "optimizely_android_sdk_version";
-    static private final String OS_VERSION = "optimizely_android_os_version";
-    static private final String APP_VERSION = "optimizely_android_app_version";
-
     OptimizelyManager(@NonNull String projectId,
                       @NonNull Long eventHandlerDispatchInterval,
                       @NonNull TimeUnit eventHandlerDispatchIntervalTimeUnit,
@@ -102,10 +90,6 @@ public class OptimizelyManager {
         this.dataFileDownloadIntervalTimeUnit = dataFileDownloadIntervalTimeUnit;
         this.executor = executor;
         this.logger = logger;
-        this.androidDeviceModel = android.os.Build.MODEL;
-        this.androidOSVersion = android.os.Build.VERSION.RELEASE;
-        this.androidSdkVersion = BuildConfig.VERSION_CODE;
-        this.androidSdkVersionName = BuildConfig.VERSION_NAME;
 
     }
 
@@ -148,31 +132,6 @@ public class OptimizelyManager {
         this.optimizelyStartListener = optimizelyStartListener;
     }
 
-    private Map<String, String> buildDefaultAttributesMap(Context context) {
-        try {
-            PackageInfo pInfo = context.getApplicationContext().getPackageManager().getPackageInfo(
-                    context.getApplicationContext().getPackageName(), 0);
-            androidAppVersionName = pInfo.versionName;
-            androidAppVersion = pInfo.versionCode;
-        }
-        catch (Exception e) {
-            logger.warn("Error getting app version from context.", e);
-            androidAppVersionName = "";
-            androidAppVersion = 0;
-        }
-
-
-        Map<String, String> attrMap = new HashMap<String, String>();
-
-        attrMap.put(DEVICE_MODEL, androidDeviceModel);
-        String sdkVersion = androidSdkVersionName;
-        attrMap.put(SDK_VERSION, sdkVersion);
-        attrMap.put(OS_VERSION, androidOSVersion);
-        String appVersion = androidAppVersionName + Integer.toString(androidAppVersion);
-        attrMap.put(APP_VERSION, appVersion);
-
-        return attrMap;
-    }
     /**
      * Initialize Optimizely Synchronously
      * <p>
@@ -407,7 +366,7 @@ public class OptimizelyManager {
 
                 try {
                     OptimizelyManager.this.optimizelyClient = buildOptimizely(context, dataFile, userProfile);
-                    optimizelyClient.setDefaultAttributes(buildDefaultAttributesMap(context));
+                    optimizelyClient.setDefaultAttributes(OptimizelyDefaultAttributes.buildDefaultAttributesMap(context, logger));
                     OptimizelyManager.this.userProfile = userProfile;
                     logger.info("Sending Optimizely instance to listener");
 
