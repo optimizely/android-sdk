@@ -24,10 +24,9 @@ import android.content.pm.PackageInfo;
 import org.slf4j.Logger;
 
 /**
- *  class to encapsulate default attributes that will be added to attributes passed in
- *  by the OptimizelyClient
+ *  Class to encapsulate default attributes that will be added to attributes passed in
+ *  by the OptimizelyClient.
  */
-
 public class OptimizelyDefaultAttributes {
 
     static private final String DEVICE_MODEL_KEY = "optimizely_android_device_model";
@@ -74,8 +73,7 @@ public class OptimizelyDefaultAttributes {
         Map<String, String> attrMap = new HashMap<String, String>();
 
         attrMap.put(DEVICE_MODEL_KEY, androidDeviceModel);
-        String sdkVersion = androidSdkVersionName;
-        attrMap.put(SDK_VERSION_KEY, sdkVersion);
+        attrMap.put(SDK_VERSION_KEY, androidSdkVersionName);
         attrMap.put(OS_VERSION_KEY, androidOSVersion);
         String appVersion = androidAppVersionName + Integer.toString(androidAppVersion);
         attrMap.put(APP_VERSION_KEY, appVersion);

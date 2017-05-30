@@ -64,7 +64,7 @@ public class OptimizelyClient {
 
     /**
      * Set default attributes to a non null attribute map.
-     * This is set by the Optimizily manager and include things like os version and sdk version.
+     * This is set by the Optimizely manager and includes things like os version and sdk version.
      * @param attrs a map of default attributes.
      */
     protected void setDefaultAttributes(@NonNull Map<String, String> attrs) {
@@ -81,7 +81,7 @@ public class OptimizelyClient {
 
     /**
      * Get the default attributes and combine them with the attributes passed in.
-     * The attributes passed in take precedence over the default attributes. So, you can override default attributes/
+     * The attributes passed in take precedence over the default attributes. So, you can override default attributes.
      * @param attrs attributes that will be combined with default attributes.
      * @return a new map of both the default attributes and attributes passed in.
      */
