@@ -48,8 +48,6 @@ public class UserProfileCacheUtilsTest {
     public void setup() throws JSONException {
         // Test data.
         userId1 = "user_1";
-        Map<String, Object> userProfileMap1 = new ConcurrentHashMap<>();
-        userProfileMap1.put("user_id", userId1);
         Map<String, Map<String, String>> experimentBucketMap1 = new ConcurrentHashMap<>();
         Map<String, String> decisionMap1 = new ConcurrentHashMap<>();
         decisionMap1.put("variation_id", "var_1");
@@ -57,11 +55,11 @@ public class UserProfileCacheUtilsTest {
         Map<String, String> decisionMap2 = new ConcurrentHashMap<>();
         decisionMap2.put("variation_id", "var_2");
         experimentBucketMap1.put(expId2, decisionMap2);
+        Map<String, Object> userProfileMap1 = new ConcurrentHashMap<>();
+        userProfileMap1.put("user_id", userId1);
         userProfileMap1.put("experiment_bucket_map", experimentBucketMap1);
 
         userId2 = "user_2";
-        Map<String, Object> userProfileMap2 = new ConcurrentHashMap<>();
-        userProfileMap2.put("user_id", userId2);
         Map<String, Map<String, String>> experimentBucketMap2 = new ConcurrentHashMap<>();
         Map<String, String> decisionMap3 = new ConcurrentHashMap<>();
         decisionMap3.put("variation_id", "var_3");
@@ -69,6 +67,8 @@ public class UserProfileCacheUtilsTest {
         Map<String, String> decisionMap4 = new ConcurrentHashMap<>();
         decisionMap4.put("variation_id", "var_4");
         experimentBucketMap2.put(expId2, decisionMap4);
+        Map<String, Object> userProfileMap2 = new ConcurrentHashMap<>();
+        userProfileMap2.put("user_id", userId2);
         userProfileMap2.put("experiment_bucket_map", experimentBucketMap2);
 
         userProfilesMap = new ConcurrentHashMap<>();

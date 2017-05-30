@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link com.optimizely.ab.android.user_profile.UserProfileCache.DiskCache}
+ * Tests for {@link UserProfileCache.DiskCache}
  */
 @RunWith(AndroidJUnit4.class)
 public class DiskCacheTest {
@@ -69,8 +69,6 @@ public class DiskCacheTest {
         userId = "user_1";
 
         // Populate in-memory cache.
-        Map<String, Object> userProfileMap = new ConcurrentHashMap<>();
-        userProfileMap.put("user_id", userId);
         Map<String, Map<String, String>> experimentBucketMap = new ConcurrentHashMap<>();
         Map<String, String> decisionMap1 = new ConcurrentHashMap<>();
         decisionMap1.put("variation_id", "var_1");
@@ -78,6 +76,8 @@ public class DiskCacheTest {
         Map<String, String> decisionMap2 = new ConcurrentHashMap<>();
         decisionMap2.put("variation_id", "var_2");
         experimentBucketMap.put("exp_2", decisionMap2);
+        Map<String, Object> userProfileMap = new ConcurrentHashMap<>();
+        userProfileMap.put("user_id", userId);
         userProfileMap.put("experiment_bucket_map", experimentBucketMap);
         memoryCache.put(userId, userProfileMap);
     }
@@ -89,7 +89,7 @@ public class DiskCacheTest {
 
     @Test
     public void testGetFileName() {
-        assertEquals("optly-user-profile-123.json", diskCache.getFileName());
+        assertEquals("optly-user-profile-service-123.json", diskCache.getFileName());
     }
 
     @Test

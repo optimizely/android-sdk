@@ -56,13 +56,15 @@ public class AndroidUserProfileService implements UserProfileService {
      * @return the instance as {@link UserProfileService}
      */
     public static UserProfileService newInstance(@NonNull String projectId, @NonNull Context context) {
-        Map<String, Map<String, Object>> memoryCache = new ConcurrentHashMap<>();
         UserProfileCache userProfileCache = new UserProfileCache(
                 new UserProfileCache.DiskCache(new Cache(context, LoggerFactory.getLogger(Cache.class)),
                         Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(UserProfileCache.DiskCache.class),
                         projectId),
                 LoggerFactory.getLogger(UserProfileCache.class),
-                memoryCache);
+                new ConcurrentHashMap<String, Map<String, Object>>(),
+                new UserProfileCache.LegacyDiskCache(new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                        Executors.newSingleThreadExecutor(),
+                        LoggerFactory.getLogger(UserProfileCache.LegacyDiskCache.class), projectId));
 
         return new AndroidUserProfileService(userProfileCache,
                 LoggerFactory.getLogger(AndroidUserProfileService.class));

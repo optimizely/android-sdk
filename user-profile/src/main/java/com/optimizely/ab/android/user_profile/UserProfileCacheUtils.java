@@ -28,11 +28,13 @@ import static com.optimizely.ab.bucketing.UserProfileService.userIdKey;
 import static com.optimizely.ab.bucketing.UserProfileService.variationIdKey;
 
 /**
- *
+ * A Utils class to help transform a user profile JSONObject to a map and vice versa.
  */
 public class UserProfileCacheUtils {
 
     /**
+     * Transform a user profile JSONObject to a user profile map.
+     *
      * @param userProfilesJson
      * @return
      */
@@ -70,7 +72,7 @@ public class UserProfileCacheUtils {
     }
 
     /**
-     *
+     * Transform a user profile map to a user profile JSONObject.
      *
      * @param userProfilesMap
      * @return

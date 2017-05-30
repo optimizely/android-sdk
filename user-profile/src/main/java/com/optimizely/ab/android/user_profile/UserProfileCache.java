@@ -22,18 +22,19 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.android.shared.Cache;
-import com.optimizely.ab.bucketing.Decision;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 import static com.optimizely.ab.bucketing.UserProfileService.experimentBucketMapKey;
 import static com.optimizely.ab.bucketing.UserProfileService.userIdKey;
+import static com.optimizely.ab.bucketing.UserProfileService.variationIdKey;
 
 /**
  * Stores a map of user IDs to {@link com.optimizely.ab.bucketing.UserProfile} with write-back to a file.
@@ -43,12 +44,15 @@ class UserProfileCache {
     @NonNull @VisibleForTesting protected final DiskCache diskCache;
     @NonNull private final Logger logger;
     @NonNull private final Map<String, Map<String, Object>> memoryCache;
+    @NonNull private final LegacyDiskCache legacyDiskCache;
 
     UserProfileCache(@NonNull DiskCache diskCache, @NonNull Logger logger,
-                     @NonNull Map<String, Map<String, Object>> memoryCache) {
+                     @NonNull Map<String, Map<String, Object>> memoryCache,
+                     @NonNull LegacyDiskCache legacyDiskCache) {
         this.logger = logger;
         this.diskCache = diskCache;
         this.memoryCache = memoryCache;
+        this.legacyDiskCache = legacyDiskCache;
     }
 
     /**
@@ -76,6 +80,49 @@ class UserProfileCache {
             return null;
         }
         return memoryCache.get(userId);
+    }
+
+    /**
+     * Migrate legacy user profiles if found.
+     * <p>
+     * Note: this will overwrite a newer `UserProfile` cache in the unlikely event that a legacy cache and new cache
+     * both exist on disk.
+     */
+    @VisibleForTesting
+    void migrateLegacyUserProfiles() {
+        JSONObject legacyUserProfilesJson = legacyDiskCache.load();
+
+        if (legacyUserProfilesJson == null) {
+            logger.info("No legacy user profiles to migrate.");
+            return;
+        }
+
+        try {
+            Iterator<String> userIdIterator = legacyUserProfilesJson.keys();
+            while (userIdIterator.hasNext()) {
+                String userId = userIdIterator.next();
+                JSONObject legacyUserProfileJson = legacyUserProfilesJson.getJSONObject(userId);
+
+                Map<String, Map<String, String>> experimentBucketMap = new ConcurrentHashMap<>();
+                Iterator<String> experimentIdIterator = legacyUserProfileJson.keys();
+                while (experimentIdIterator.hasNext()) {
+                    String experimentId = experimentIdIterator.next();
+                    String variationId = legacyUserProfileJson.getString(experimentId);
+                    Map<String, String> decisionMap = new ConcurrentHashMap<>();
+                    decisionMap.put(variationIdKey, variationId);
+                    experimentBucketMap.put(experimentId, decisionMap);
+                }
+
+                Map<String, Object> userProfileMap = new ConcurrentHashMap<>();
+                userProfileMap.put(userIdKey, userId);
+                userProfileMap.put(experimentBucketMapKey, experimentBucketMap);
+                save(userProfileMap);
+            }
+        } catch (JSONException e) {
+            logger.warn("Unable to deserialize legacy user profiles. Will delete legacy user profile cache file.", e);
+        } finally {
+            legacyDiskCache.delete();
+        }
     }
 
     /**
@@ -115,8 +162,8 @@ class UserProfileCache {
         } else {
             Map<String, Object> userProfileMap = memoryCache.get(userId);
             if (userProfileMap != null) {
-                Map<String, Decision> experimentBucketMap =
-                        (ConcurrentHashMap<String, Decision>) userProfileMap.get(experimentBucketMapKey);
+                Map<String, Map<String, String>> experimentBucketMap =
+                        (ConcurrentHashMap<String, Map<String, String>>) userProfileMap.get(experimentBucketMapKey);
                 if (experimentBucketMap.containsKey(experimentId)) {
                     experimentBucketMap.remove(experimentId);
                     diskCache.save(memoryCache);
@@ -148,6 +195,9 @@ class UserProfileCache {
      * Load the cache from disk to memory.
      */
     void start() {
+        // Migrate legacy user profiles if found.
+        migrateLegacyUserProfiles();
+
         try {
             JSONObject userProfilesJson = diskCache.load();
             Map<String, Map<String, Object>> userProfilesMap = UserProfileCacheUtils.convertJSONObjectToMap
@@ -166,12 +216,11 @@ class UserProfileCache {
      */
     static class DiskCache {
 
-        private static final String FILE_NAME = "optly-user-profile-%s.json";
+        private static final String FILE_NAME = "optly-user-profile-service-%s.json";
         @NonNull private final Cache cache;
         @NonNull private final Executor executor;
         @NonNull private final Logger logger;
         @NonNull private final String projectId;
-
 
         public DiskCache(@NonNull Cache cache, @NonNull Executor executor, @NonNull Logger logger,
                          @NonNull String projectId) {
@@ -218,6 +267,73 @@ class UserProfileCache {
                         logger.warn("Unable to save user profiles to disk.");
                     }
                     return saved;
+                }
+            };
+            task.executeOnExecutor(executor);
+        }
+    }
+
+    /**
+     * Stores a map of userIds to a map of expIds to variationIds in a file.
+     *
+     * @deprecated This class is only used to migrate legacy user profiles to the new {@link UserProfileCache}.
+     */
+    static class LegacyDiskCache {
+
+        private static final String FILE_NAME = "optly-user-profile-%s.json";
+        @NonNull private final Cache cache;
+        @NonNull private final Executor executor;
+        @NonNull private final Logger logger;
+        @NonNull private final String projectId;
+
+        LegacyDiskCache(@NonNull Cache cache, @NonNull Executor executor, @NonNull Logger logger,
+                        @NonNull String projectId) {
+            this.cache = cache;
+            this.executor = executor;
+            this.logger = logger;
+            this.projectId = projectId;
+        }
+
+        @VisibleForTesting
+        String getFileName() {
+            return String.format(FILE_NAME, projectId);
+        }
+
+        /**
+         * Load legacy user profiles from disk if found.
+         */
+        @Nullable
+        JSONObject load() {
+            String cacheString = cache.load(getFileName());
+
+            if (cacheString == null) {
+                logger.info("Legacy user profile cache not found.");
+                return null;
+            }
+
+            try {
+                return new JSONObject(cacheString);
+            } catch (JSONException e) {
+                logger.warn("Unable to parse legacy user profiles. Will delete legacy user profile cache file.", e);
+                delete();
+                return null;
+            }
+        }
+
+        /**
+         * Delete the legacy user profile cache from disk in a background thread.
+         */
+        void delete() {
+            AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void[] params) {
+                    Boolean deleted = cache.delete(getFileName());
+                    if (deleted) {
+                        logger.info("Deleted legacy user profile from disk.");
+                    } else {
+                        logger.warn("Unable to delete legacy user profile from disk.");
+                    }
+                    return deleted;
                 }
             };
             task.executeOnExecutor(executor);

@@ -51,6 +51,7 @@ public class AndroidUserProfileServiceTest {
     private UserProfileCache.DiskCache diskCache;
     private ListeningExecutorService executor;
     private Logger logger;
+    private UserProfileCache.LegacyDiskCache legacyDiskCache;
     private Map<String, Map<String, Object>> memoryCache;
     private String projectId;
     private UserProfileCache userProfileCache;
@@ -65,16 +66,15 @@ public class AndroidUserProfileServiceTest {
         logger = mock(Logger.class);
         cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
         executor = MoreExecutors.newDirectExecutorService();
+        legacyDiskCache = new UserProfileCache.LegacyDiskCache(cache, executor, logger, projectId);
         memoryCache = new ConcurrentHashMap<>();
         projectId = "123";
         diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
-        userProfileCache = new UserProfileCache(diskCache, logger, memoryCache);
+        userProfileCache = new UserProfileCache(diskCache, logger, memoryCache, legacyDiskCache);
         androidUserProfileService = new AndroidUserProfileService(userProfileCache, logger);
 
         // Test data.
         userId1 = "user_1";
-        userProfileMap1 = new ConcurrentHashMap<>();
-        userProfileMap1.put("user_id", userId1);
         Map<String, Map<String, String>> experimentBucketMap1 = new ConcurrentHashMap<>();
         Map<String, String> decisionMap1 = new ConcurrentHashMap<>();
         decisionMap1.put("variation_id", "var_1");
@@ -82,11 +82,11 @@ public class AndroidUserProfileServiceTest {
         Map<String, String> decisionMap2 = new ConcurrentHashMap<>();
         decisionMap2.put("variation_id", "var_2");
         experimentBucketMap1.put("exp_2", decisionMap2);
+        userProfileMap1 = new ConcurrentHashMap<>();
+        userProfileMap1.put("user_id", userId1);
         userProfileMap1.put("experiment_bucket_map", experimentBucketMap1);
 
         userId2 = "user_2";
-        userProfileMap2 = new ConcurrentHashMap<>();
-        userProfileMap2.put("user_id", userId2);
         Map<String, Map<String, String>> experimentBucketMap2 = new ConcurrentHashMap<>();
         Map<String, String> decisionMap3 = new ConcurrentHashMap<>();
         decisionMap3.put("variation_id", "var_3");
@@ -94,6 +94,8 @@ public class AndroidUserProfileServiceTest {
         Map<String, String> decisionMap4 = new ConcurrentHashMap<>();
         decisionMap4.put("variation_id", "var_4");
         experimentBucketMap2.put("exp_2", decisionMap4);
+        userProfileMap2 = new ConcurrentHashMap<>();
+        userProfileMap2.put("user_id", userId2);
         userProfileMap2.put("experiment_bucket_map", experimentBucketMap2);    }
 
     @After
