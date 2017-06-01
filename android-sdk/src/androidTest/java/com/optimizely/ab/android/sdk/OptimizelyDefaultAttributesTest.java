@@ -19,10 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 import android.content.Context;
 import android.content.pm.PackageInfo;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
 import static org.mockito.Matchers.any;
@@ -36,6 +38,7 @@ import static org.junit.Assert.*;
 /**
  * Tests for {@link OptimizelyDefaultAttributes}
  */
+@RunWith(AndroidJUnit4.class)
 public class OptimizelyDefaultAttributesTest {
     private Logger logger;
 
