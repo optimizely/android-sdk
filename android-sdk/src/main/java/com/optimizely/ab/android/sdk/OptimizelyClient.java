@@ -30,6 +30,7 @@ import com.optimizely.ab.notification.NotificationListener;
 import org.slf4j.Logger;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -46,10 +47,51 @@ public class OptimizelyClient {
     private final Logger logger;
 
     @Nullable private Optimizely optimizely;
+    @Nullable private Map<String, String> defaultAttributes;
 
     OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
         this.optimizely = optimizely;
         this.logger = logger;
+        /*
+        OptimizelyManager is initialized with an OptimizelyClient with a null optimizely property:
+        https://github.com/optimizely/android-sdk/blob/master/android-sdk/src/main/java/com/optimizely/ab/android/sdk/OptimizelyManager.java#L63
+        optimizely will remain null until OptimizelyManager#initialize has been called, so isValid checks for that. Otherwise apps would crash if
+        the public methods here were called before initialize.
+        So, we start with an empty map of default attributes until the manager is initialized.
+        */
+        defaultAttributes = Collections.EMPTY_MAP;
+    }
+
+    /**
+     * Set default attributes to a non null attribute map.
+     * This is set by the Optimizely manager and includes things like os version and sdk version.
+     * @param attrs a map of default attributes.
+     */
+    protected void setDefaultAttributes(@NonNull Map<String, String> attrs) {
+        this.defaultAttributes = attrs;
+    }
+
+    /**
+     * Return the default attributes map
+     * @return the map of default attributes
+     */
+    public @NonNull Map<String, String> getDefaultAttributes() {
+        return this.defaultAttributes;
+    }
+
+    /**
+     * Get the default attributes and combine them with the attributes passed in.
+     * The attributes passed in take precedence over the default attributes. So, you can override default attributes.
+     * @param attrs attributes that will be combined with default attributes.
+     * @return a new map of both the default attributes and attributes passed in.
+     */
+    private Map<String, String> getAllAttributes(@NonNull Map<String, String> attrs) {
+        Map<String,String> combinedMap = new HashMap<String,String>(defaultAttributes);
+
+        // this essentially overrides defaultAttributes if the attrs passed in have the same key.
+        combinedMap.putAll(attrs);
+
+        return combinedMap;
     }
 
     /**
@@ -83,7 +125,7 @@ public class OptimizelyClient {
                                         @NonNull String userId,
                                         @NonNull Map<String, String> attributes) {
         if (isValid()) {
-            return optimizely.activate(experimentKey, userId, attributes);
+            return optimizely.activate(experimentKey, userId, getAllAttributes(attributes));
         } else {
             logger.warn("Optimizely is not initialized, could not activate experiment {} for user {} " +
                     "with attributes", experimentKey, userId);
@@ -140,7 +182,7 @@ public class OptimizelyClient {
                       @NonNull String userId,
                       @NonNull Map<String, String> attributes) throws UnknownEventTypeException {
         if (isValid()) {
-            optimizely.track(eventName, userId, attributes);
+            optimizely.track(eventName, userId, getAllAttributes(attributes));
 
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {} with attributes",
@@ -160,7 +202,7 @@ public class OptimizelyClient {
                       @NonNull Map<String, String> attributes,
                       @NonNull Map<String, ?> eventTags) throws UnknownEventTypeException {
         if (isValid()) {
-            optimizely.track(eventName, userId, attributes, eventTags);
+            optimizely.track(eventName, userId, getAllAttributes(attributes), eventTags);
 
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
@@ -200,7 +242,7 @@ public class OptimizelyClient {
                       @NonNull Map<String, String> attributes,
                       long eventValue) {
         if (isValid()) {
-            optimizely.track(eventName, userId, attributes, eventValue);
+            optimizely.track(eventName, userId, getAllAttributes(attributes), eventValue);
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
                     " with value {} and attributes", eventName, userId, eventValue);
@@ -234,7 +276,7 @@ public class OptimizelyClient {
                                               @NonNull Map<String, String> attributes,
                                               boolean activateExperiment) {
         if (isValid()) {
-            return optimizely.getVariableString(variableKey, userId, attributes,
+            return optimizely.getVariableString(variableKey, userId, getAllAttributes(attributes),
                                                 activateExperiment);
         } else {
             logger.warn("Optimizely is not initialized, could not get live variable {} " +
@@ -383,7 +425,7 @@ public class OptimizelyClient {
                                             @NonNull String userId,
                                             @NonNull Map<String, String> attributes) {
         if (isValid()) {
-            return optimizely.getVariation(experimentKey, userId, attributes);
+            return optimizely.getVariation(experimentKey, userId, getAllAttributes(attributes));
         } else {
             logger.warn("Optimizely is not initialized, could not get variation for experiment {} " +
                     "for user {} with attributes", experimentKey, userId);

@@ -24,6 +24,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInfo;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -87,6 +88,7 @@ public class OptimizelyManager {
         this.dataFileDownloadIntervalTimeUnit = dataFileDownloadIntervalTimeUnit;
         this.executor = executor;
         this.logger = logger;
+
     }
 
     @NonNull
@@ -362,6 +364,7 @@ public class OptimizelyManager {
 
                 try {
                     OptimizelyManager.this.optimizelyClient = buildOptimizely(context, dataFile, userProfile);
+                    optimizelyClient.setDefaultAttributes(OptimizelyDefaultAttributes.buildDefaultAttributesMap(context, logger));
                     OptimizelyManager.this.userProfile = userProfile;
                     logger.info("Sending Optimizely instance to listener");
 
