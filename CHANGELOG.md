@@ -1,3 +1,16 @@
+## 2.0.0
+
+May 19, 2017
+
+### New Features
+
+- Added `UserProfileService` interface to allow for sticky bucketing
+
+### Breaking Changes
+
+- Removed `UserProfile` interface. Replaced with `UserProfileService` interface.
+- Removed support for v1 datafiles.
+
 ## 1.6.0
 
 March 17, 2017
