@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
@@ -51,7 +51,7 @@ public class DataFileCacheTest {
 
     @Before
     public void setup() {
-        logger = mock(Logger.class);
+        logger = Mockito.mock(Logger.class);
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
         dataFileCache = new DataFileCache("1", cache, logger);
     }
@@ -74,10 +74,10 @@ public class DataFileCacheTest {
 
     @Test
     public void loadJsonException() throws IOException {
-        Cache cache = mock(Cache.class);
+        Cache cache = Mockito.mock(Cache.class);
         DataFileCache dataFileCache = new DataFileCache("1", cache, logger);
-        when(cache.load(dataFileCache.getFileName())).thenReturn("{");
+        Mockito.when(cache.load(dataFileCache.getFileName())).thenReturn("{");
         assertNull(dataFileCache.load());
-        verify(logger).error(contains("Unable to parse data file"), any(JSONException.class));
+        Mockito.verify(logger).error(Matchers.contains("Unable to parse data file"), Matchers.any(JSONException.class));
     }
 }

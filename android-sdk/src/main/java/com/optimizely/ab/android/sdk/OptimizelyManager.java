@@ -37,6 +37,13 @@ import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
+
+import com.optimizely.ab.android.datafile_handler.DataFileService;
+import com.optimizely.ab.android.datafile_handler.DataFileCache;
+import com.optimizely.ab.android.datafile_handler.DataFileClient;
+import com.optimizely.ab.android.datafile_handler.DataFileLoadedListener;
+import com.optimizely.ab.android.datafile_handler.DataFileLoader;
+
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;

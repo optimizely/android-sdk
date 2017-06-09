@@ -14,10 +14,11 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import com.optimizely.ab.android.shared.Client;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,140 +55,140 @@ public class DataFileClientTest {
 
     @Before
     public void setup() {
-        client = mock(Client.class);
-        logger = mock(Logger.class);
+        client = Mockito.mock(Client.class);
+        logger = Mockito.mock(Logger.class);
         dataFileClient = new DataFileClient(client, logger);
-        urlConnection = mock(HttpURLConnection.class);
+        urlConnection = Mockito.mock(HttpURLConnection.class);
     }
 
     @Test
     public void request200() throws IOException {
         URL url = new URL(DataFileService.getDatafileUrl("1"));
-        when(client.openConnection(url)).thenReturn(urlConnection);
-        when(urlConnection.getResponseCode()).thenReturn(200);
-        when(client.readStream(urlConnection)).thenReturn("{}");
+        Mockito.when(client.openConnection(url)).thenReturn(urlConnection);
+        Mockito.when(urlConnection.getResponseCode()).thenReturn(200);
+        Mockito.when(client.readStream(urlConnection)).thenReturn("{}");
 
         dataFileClient.request(url.toString());
 
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
-        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        Mockito.verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        Assert.assertEquals(Integer.valueOf(2), captor2.getValue());
+        Assert.assertEquals(Integer.valueOf(3), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
 
-        verify(logger).info("Requesting data file from {}", url);
-        verify(client).saveLastModified(urlConnection);
-        verify(client).readStream(urlConnection);
-        verify(urlConnection).disconnect();
+        Mockito.verify(logger).info("Requesting data file from {}", url);
+        Mockito.verify(client).saveLastModified(urlConnection);
+        Mockito.verify(client).readStream(urlConnection);
+        Mockito.verify(urlConnection).disconnect();
     }
 
     @Test
     public void request201() throws IOException {
         URL url = new URL(DataFileService.getDatafileUrl("1"));
-        when(client.openConnection(url)).thenReturn(urlConnection);
-        when(urlConnection.getResponseCode()).thenReturn(201);
-        when(client.readStream(urlConnection)).thenReturn("{}");
+        Mockito.when(client.openConnection(url)).thenReturn(urlConnection);
+        Mockito.when(urlConnection.getResponseCode()).thenReturn(201);
+        Mockito.when(client.readStream(urlConnection)).thenReturn("{}");
 
         dataFileClient.request(url.toString());
 
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
-        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        Mockito.verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        Assert.assertEquals(Integer.valueOf(2), captor2.getValue());
+        Assert.assertEquals(Integer.valueOf(3), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
 
-        verify(logger).info("Requesting data file from {}", url);
-        verify(client).saveLastModified(urlConnection);
-        verify(client).readStream(urlConnection);
-        verify(urlConnection).disconnect();
+        Mockito.verify(logger).info("Requesting data file from {}", url);
+        Mockito.verify(client).saveLastModified(urlConnection);
+        Mockito.verify(client).readStream(urlConnection);
+        Mockito.verify(urlConnection).disconnect();
     }
 
     @Test
     public void request299() throws IOException {
         URL url = new URL(DataFileService.getDatafileUrl("1"));
-        when(client.openConnection(url)).thenReturn(urlConnection);
-        when(urlConnection.getResponseCode()).thenReturn(299);
-        when(client.readStream(urlConnection)).thenReturn("{}");
+        Mockito.when(client.openConnection(url)).thenReturn(urlConnection);
+        Mockito.when(urlConnection.getResponseCode()).thenReturn(299);
+        Mockito.when(client.readStream(urlConnection)).thenReturn("{}");
 
         dataFileClient.request(url.toString());
 
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
-        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        Mockito.verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        Assert.assertEquals(Integer.valueOf(2), captor2.getValue());
+        Assert.assertEquals(Integer.valueOf(3), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
 
-        verify(logger).info("Requesting data file from {}", url);
-        verify(client).saveLastModified(urlConnection);
-        verify(client).readStream(urlConnection);
-        verify(urlConnection).disconnect();
+        Mockito.verify(logger).info("Requesting data file from {}", url);
+        Mockito.verify(client).saveLastModified(urlConnection);
+        Mockito.verify(client).readStream(urlConnection);
+        Mockito.verify(urlConnection).disconnect();
     }
 
     @Test
     public void request300() throws IOException {
         URL url = new URL(DataFileService.getDatafileUrl("1"));
-        when(client.openConnection(url)).thenReturn(urlConnection);
-        when(urlConnection.getResponseCode()).thenReturn(300);
+        Mockito.when(client.openConnection(url)).thenReturn(urlConnection);
+        Mockito.when(urlConnection.getResponseCode()).thenReturn(300);
 
         dataFileClient.request(url.toString());
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
-        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        Mockito.verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        Assert.assertEquals(Integer.valueOf(2), captor2.getValue());
+        Assert.assertEquals(Integer.valueOf(3), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertNull(response);
 
-        verify(logger).error("Unexpected response from data file cdn, status: {}", 300);
-        verify(urlConnection).disconnect();
+        Mockito.verify(logger).error("Unexpected response from data file cdn, status: {}", 300);
+        Mockito.verify(urlConnection).disconnect();
     }
 
     @Test
     public void handlesIOException() throws IOException {
         URL url = new URL(DataFileService.getDatafileUrl("1"));
-        when(client.openConnection(url)).thenReturn(urlConnection);
-        when(urlConnection.getResponseCode()).thenReturn(200);
-        doThrow(new IOException()).when(urlConnection).connect();
+        Mockito.when(client.openConnection(url)).thenReturn(urlConnection);
+        Mockito.when(urlConnection.getResponseCode()).thenReturn(200);
+        Mockito.doThrow(new IOException()).when(urlConnection).connect();
 
         dataFileClient.request(url.toString());
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
-        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        Mockito.verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        Assert.assertEquals(Integer.valueOf(2), captor2.getValue());
+        Assert.assertEquals(Integer.valueOf(3), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertNull(response);
 
-        verify(logger).error(contains("Error making request"), any(IOException.class));
-        verify(urlConnection).disconnect();
-        verify(urlConnection).disconnect();
+        Mockito.verify(logger).error(Matchers.contains("Error making request"), Matchers.any(IOException.class));
+        Mockito.verify(urlConnection).disconnect();
+        Mockito.verify(urlConnection).disconnect();
     }
 
     @Test
     public void handlesNullResponse() throws MalformedURLException {
         URL url = new URL(DataFileService.getDatafileUrl("1"));
-        when(client.execute(any(Client.Request.class), eq(2), eq(3))).thenReturn(null);
+        Mockito.when(client.execute(Matchers.any(Client.Request.class), Matchers.eq(2), Matchers.eq(3))).thenReturn(null);
         assertNull(dataFileClient.request(url.toString()));
     }
 
     @Test
     public void handlesEmptyStringResponse() throws MalformedURLException {
         URL url = new URL(DataFileService.getDatafileUrl("1"));
-        when(client.execute(any(Client.Request.class), eq(2), eq(3))).thenReturn("");
+        Mockito.when(client.execute(Matchers.any(Client.Request.class), Matchers.eq(2), Matchers.eq(3))).thenReturn("");
         assertEquals("", dataFileClient.request(url.toString()));
     }
 }

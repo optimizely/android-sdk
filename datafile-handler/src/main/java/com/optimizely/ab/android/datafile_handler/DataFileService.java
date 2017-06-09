@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.app.Service;
 import android.content.Intent;
@@ -115,18 +115,18 @@ public class DataFileService extends Service {
         return String.format(FORMAT_VERSIONED_CDN_URL, projectId, DATAFILE_VERSION);
     }
 
-    void stop() {
+    public void stop() {
         stopSelf();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    void getDataFile(String projectId, DataFileLoader dataFileLoader, DataFileLoadedListener loadedListener) {
+    public void getDataFile(String projectId, DataFileLoader dataFileLoader, DataFileLoadedListener loadedListener) {
         String datafileUrl = getDatafileUrl(projectId);
         dataFileLoader.getDataFile(datafileUrl, loadedListener);
     }
 
-    class LocalBinder extends Binder {
-        DataFileService getService() {
+    public class LocalBinder extends Binder {
+        public DataFileService getService() {
             // Return this instance of LocalService so clients can call public methods
             return DataFileService.this;
         }

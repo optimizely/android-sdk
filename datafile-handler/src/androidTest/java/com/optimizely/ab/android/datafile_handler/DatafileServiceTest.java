@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 import android.content.Intent;
@@ -58,15 +58,15 @@ public class DatafileServiceTest {
         Intent intent = new Intent(context, DataFileService.class);
         IBinder binder = mServiceRule.bindService(intent);
         final Context targetContext = InstrumentationRegistry.getTargetContext();
-        Logger logger = mock(Logger.class);
+        Logger logger = Mockito.mock(Logger.class);
         DataFileCache dataFileCache = new DataFileCache("1", new Cache(targetContext, logger), logger);
-        Client client = mock(Client.class);
+        Client client = Mockito.mock(Client.class);
         DataFileClient dataFileClient = new DataFileClient(client, logger);
-        DataFileLoadedListener dataFileLoadedListener = mock(DataFileLoadedListener.class);
+        DataFileLoadedListener dataFileLoadedListener = Mockito.mock(DataFileLoadedListener.class);
 
 
         DataFileService dataFileService = ((DataFileService.LocalBinder) binder).getService();
-        DataFileLoader dataFileLoader = new DataFileLoader(dataFileService, dataFileClient, dataFileCache, MoreExecutors.newDirectExecutorService(), mock(Logger.class));
+        DataFileLoader dataFileLoader = new DataFileLoader(dataFileService, dataFileClient, dataFileCache, MoreExecutors.newDirectExecutorService(), Mockito.mock(Logger.class));
         dataFileService.getDataFile("1", dataFileLoader, dataFileLoadedListener);
 
         assertTrue(dataFileService.isBound());
@@ -81,10 +81,10 @@ public class DatafileServiceTest {
         IBinder binder = mServiceRule.bindService(intent);
         intent.putExtra(DataFileService.EXTRA_PROJECT_ID, "1");
         DataFileService dataFileService = ((DataFileService.LocalBinder) binder).getService();
-        Logger logger = mock(Logger.class);
+        Logger logger = Mockito.mock(Logger.class);
         dataFileService.logger = logger;
         dataFileService.onStartCommand(intent, 0, 0);
-        verify(logger).info("Started watching project {} in the background", "1");
+        Mockito.verify(logger).info("Started watching project {} in the background", "1");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -94,10 +94,10 @@ public class DatafileServiceTest {
         Intent intent = new Intent(context, DataFileService.class);
         IBinder binder = mServiceRule.bindService(intent);
         DataFileService dataFileService = ((DataFileService.LocalBinder) binder).getService();
-        Logger logger = mock(Logger.class);
+        Logger logger = Mockito.mock(Logger.class);
         dataFileService.logger = logger;
         dataFileService.onStartCommand(null, 0, 0);
-        verify(logger).warn("Data file service received a null intent");
+        Mockito.verify(logger).warn("Data file service received a null intent");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -108,10 +108,10 @@ public class DatafileServiceTest {
         Intent intent = new Intent(context, DataFileService.class);
         IBinder binder = mServiceRule.bindService(intent);
         DataFileService dataFileService = ((DataFileService.LocalBinder) binder).getService();
-        Logger logger = mock(Logger.class);
+        Logger logger = Mockito.mock(Logger.class);
         dataFileService.logger = logger;
         dataFileService.onStartCommand(intent, 0, 0);
-        verify(logger).warn("Data file service received an intent with no project id extra");
+        Mockito.verify(logger).warn("Data file service received an intent with no project id extra");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

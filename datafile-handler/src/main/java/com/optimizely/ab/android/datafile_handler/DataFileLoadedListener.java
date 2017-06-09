@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.support.annotation.Nullable;
 
@@ -23,16 +23,15 @@ import android.support.annotation.Nullable;
  *
  * Datafiles can come from a local file or the CDN
  *
- * @hide
+ *
  */
-interface DataFileLoadedListener {
+public interface DataFileLoadedListener {
 
     /**
      * Called with new datafile
      *
      * @param dataFile the datafile json, can be null if datafile loading failed.
      *
-     * @hide
      */
-    void onDataFileLoaded(@Nullable String dataFile);
+     void onDataFileLoaded(@Nullable String dataFile);
 }

@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 import android.os.Build;
@@ -66,15 +66,15 @@ public class DataFileLoaderTest {
 
     @Before
     public void setup() {
-        datafileService = mock(DataFileService.class);
-        logger = mock(Logger.class);
+        datafileService = Mockito.mock(DataFileService.class);
+        logger = Mockito.mock(Logger.class);
         final Context targetContext = InstrumentationRegistry.getTargetContext();
         dataFileCache = new DataFileCache("1", new Cache(targetContext, logger), logger);
-        client = mock(Client.class);
+        client = Mockito.mock(Client.class);
         dataFileClient = new DataFileClient(client, logger);
-        dataFileLoadedListener = mock(DataFileLoadedListener.class);
-        when(datafileService.getApplicationContext()).thenReturn(targetContext);
-        when(datafileService.isBound()).thenReturn(true);
+        dataFileLoadedListener = Mockito.mock(DataFileLoadedListener.class);
+        Mockito.when(datafileService.getApplicationContext()).thenReturn(targetContext);
+        Mockito.when(datafileService.isBound()).thenReturn(true);
     }
 
     @After
@@ -88,7 +88,7 @@ public class DataFileLoaderTest {
         DataFileLoader dataFileLoader =
                 new DataFileLoader(datafileService, dataFileClient, dataFileCache, executor, logger);
 
-        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
+        Mockito.when(client.execute(Matchers.any(Client.Request.class), Matchers.anyInt(), Matchers.anyInt())).thenReturn("{}");
 
         dataFileLoader.getDataFile("1", dataFileLoadedListener);
         try {
@@ -100,7 +100,7 @@ public class DataFileLoaderTest {
         final JSONObject cachedDataFile = dataFileCache.load();
         assertNotNull(cachedDataFile);
         assertEquals("{}", cachedDataFile.toString());
-        verify(dataFileLoadedListener, atMost(1)).onDataFileLoaded("{}");
+        Mockito.verify(dataFileLoadedListener, Mockito.atMost(1)).onDataFileLoaded("{}");
     }
 
     @Test
@@ -110,7 +110,7 @@ public class DataFileLoaderTest {
                 new DataFileLoader(datafileService, dataFileClient, dataFileCache, executor, logger);
         dataFileCache.save("{}");
 
-        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("");
+        Mockito.when(client.execute(Matchers.any(Client.Request.class), Matchers.anyInt(), Matchers.anyInt())).thenReturn("");
 
         dataFileLoader.getDataFile("1", dataFileLoadedListener);
         try {
@@ -122,7 +122,7 @@ public class DataFileLoaderTest {
         final JSONObject cachedDataFile = dataFileCache.load();
         assertNotNull(cachedDataFile);
         assertEquals("{}", cachedDataFile.toString());
-        verify(dataFileLoadedListener, atMost(1)).onDataFileLoaded("{}");
+        Mockito.verify(dataFileLoadedListener, Mockito.atMost(1)).onDataFileLoaded("{}");
     }
 
     @Test
@@ -131,7 +131,7 @@ public class DataFileLoaderTest {
         DataFileLoader dataFileLoader =
                 new DataFileLoader(datafileService, dataFileClient, dataFileCache, executor, logger);
 
-        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn(null);
+        Mockito.when(client.execute(Matchers.any(Client.Request.class), Matchers.anyInt(), Matchers.anyInt())).thenReturn(null);
 
         dataFileLoader.getDataFile("1", dataFileLoadedListener);
         try {
@@ -142,21 +142,21 @@ public class DataFileLoaderTest {
 
         final JSONObject cachedDataFile = dataFileCache.load();
         assertNull(cachedDataFile);
-        verify(dataFileLoadedListener, atMost(1)).onDataFileLoaded(null);
+        Mockito.verify(dataFileLoadedListener, Mockito.atMost(1)).onDataFileLoaded(null);
     }
 
     @Test
     public void warningsAreLogged() throws IOException {
         final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
-        Cache cache = mock(Cache.class);
+        Cache cache = Mockito.mock(Cache.class);
         dataFileCache = new DataFileCache("1", cache, logger);
         DataFileLoader dataFileLoader =
                 new DataFileLoader(datafileService, dataFileClient, dataFileCache, executor, logger);
 
-        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
-        when(cache.exists(dataFileCache.getFileName())).thenReturn(true);
-        when(cache.delete(dataFileCache.getFileName())).thenReturn(false);
-        when(cache.save(dataFileCache.getFileName(), "{}")).thenReturn(false);
+        Mockito.when(client.execute(Matchers.any(Client.Request.class), Matchers.anyInt(), Matchers.anyInt())).thenReturn("{}");
+        Mockito.when(cache.exists(dataFileCache.getFileName())).thenReturn(true);
+        Mockito.when(cache.delete(dataFileCache.getFileName())).thenReturn(false);
+        Mockito.when(cache.save(dataFileCache.getFileName(), "{}")).thenReturn(false);
 
         dataFileLoader.getDataFile("1", dataFileLoadedListener);
         try {
@@ -165,8 +165,8 @@ public class DataFileLoaderTest {
             fail();
         }
 
-        verify(logger).warn("Unable to delete old datafile");
-        verify(logger).warn("Unable to save new datafile");
-        verify(dataFileLoadedListener, atMost(1)).onDataFileLoaded("{}");
+        Mockito.verify(logger).warn("Unable to delete old datafile");
+        Mockito.verify(logger).warn("Unable to save new datafile");
+        Mockito.verify(dataFileLoadedListener, Mockito.atMost(1)).onDataFileLoaded("{}");
     }
 }

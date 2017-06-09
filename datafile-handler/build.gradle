@@ -29,9 +29,8 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
         versionCode 1
-        versionName version_name
+        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
     }
     testOptions {
         unitTests.returnDefaultValues = true
@@ -45,21 +44,14 @@ android {
             testCoverageEnabled true
         }
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
-
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
 }
 
 dependencies {
-    compile project(':event-handler')
-    compile project(':user-profile')
-    compile project(':datafile-handler')
+    compile project(':shared')
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"
@@ -75,18 +67,17 @@ dependencies {
     androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestCompile "com.noveogroup.android:android-logger:$android_logger_ver"
-    androidTestCompile "com.google.code.gson:gson:$gson_ver"
 }
 
 uploadArchives {
-    dependsOn = [':android-sdk:clean', ':android-sdk:releaseJavadocJar', ':android-sdk:releaseSourcesJar']
-    shouldRunAfter = [':event-handler:uploadArchives', ':user-profile:uploadArchives']
+    dependsOn = [':datafile-handler:clean', ':datafile-handler:releaseJavadocJar', ':datafile-handler:releaseSourcesJar']
+    shouldRunAfter = [':shared:uploadArchives']
     repositories {
         mavenDeployer {
-            repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android") {
+            repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android-datafile-handler") {
                 authentication(userName: bintray_user, password: bintray_api_key)
             }
-            pom.artifactId = "android-sdk"
+            pom.artifactId = "android-sdk-datafile-handler"
         }
     }
 }
@@ -95,7 +86,7 @@ android.libraryVariants.all { variant ->
     task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
         source = variant.javaCompile.source
 
-        title = "Optimizely X Android SDK"
+        title = "Optimizely X Android Event Handler"
 
         options.links("http://docs.oracle.com/javase/7/docs/api/");
         options.linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference");
@@ -129,3 +120,4 @@ android.libraryVariants.all { variant ->
     }
     project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
 }
+

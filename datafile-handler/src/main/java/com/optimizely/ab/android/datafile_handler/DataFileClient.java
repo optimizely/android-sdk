@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,12 +30,12 @@ import java.net.URL;
 /**
  * Makes requests to the Optly CDN to get the datafile
  */
-class DataFileClient {
+public class DataFileClient {
 
     @NonNull private final Client client;
     @NonNull private final Logger logger;
 
-    DataFileClient(@NonNull Client client, @NonNull Logger logger) {
+    public DataFileClient(@NonNull Client client, @NonNull Logger logger) {
         this.client = client;
         this.logger = logger;
     }
@@ -54,7 +54,7 @@ class DataFileClient {
      * @return a valid datafile, null, or an empty string (on 304 responses)
      */
     @Nullable
-    String request(final String urlString) {
+    public String request(final String urlString) {
         Client.Request<String> request = new Client.Request<String>() {
             @Override
             public String execute() {

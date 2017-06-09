@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.os.AsyncTask;
 import android.os.Build;
@@ -30,7 +30,7 @@ import java.util.concurrent.Executor;
 /**
  * Handles intents and bindings in {@link DataFileService}
  */
-class DataFileLoader {
+public class DataFileLoader {
 
     @NonNull private final DataFileService dataFileService;
     @NonNull private final Executor executor;
@@ -40,7 +40,7 @@ class DataFileLoader {
 
     private boolean hasNotifiedListener = false;
 
-    DataFileLoader(@NonNull DataFileService dataFileService,
+    public DataFileLoader(@NonNull DataFileService dataFileService,
                    @NonNull DataFileClient dataFileClient,
                    @NonNull DataFileCache dataFileCache,
                    @NonNull Executor executor,
@@ -53,7 +53,7 @@ class DataFileLoader {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    void getDataFile(@NonNull String datafileUrl, @Nullable DataFileLoadedListener dataFileLoadedListener) {
+    public void getDataFile(@NonNull String datafileUrl, @Nullable DataFileLoadedListener dataFileLoadedListener) {
         RequestDataFileFromClientTask requestDataFileFromClientTask =
                 new RequestDataFileFromClientTask(datafileUrl,
                         dataFileService,

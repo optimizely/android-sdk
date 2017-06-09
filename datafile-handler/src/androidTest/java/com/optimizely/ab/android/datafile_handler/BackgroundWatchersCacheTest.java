@@ -14,10 +14,11 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.support.test.InstrumentationRegistry;
 
+import com.optimizely.ab.android.datafile_handler.BackgroundWatchersCache;
 import com.optimizely.ab.android.shared.Cache;
 
 import org.json.JSONException;

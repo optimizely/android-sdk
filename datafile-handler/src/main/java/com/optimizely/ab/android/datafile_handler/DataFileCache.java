@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,14 +36,14 @@ public class DataFileCache {
     @NonNull private final String projectId;
     @NonNull private final Logger logger;
 
-    DataFileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
+    public DataFileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
         this.projectId = projectId;
         this.logger = logger;
     }
 
     @Nullable
-    JSONObject load() {
+    public JSONObject load() {
         String optlyDataFile = cache.load(getFileName());
 
         if (optlyDataFile == null) {
@@ -58,19 +58,19 @@ public class DataFileCache {
 
     }
 
-    boolean delete() {
+    public boolean delete() {
         return cache.delete(getFileName());
     }
 
-    boolean exists() {
+    public boolean exists() {
         return cache.exists(getFileName());
     }
 
-    boolean save(String dataFile) {
+    public boolean save(String dataFile) {
         return cache.save(getFileName(), dataFile);
     }
 
-    String getFileName() {
+    public String getFileName() {
         return String.format(OPTLY_DATA_FILE_NAME, projectId);
     }
 }
