@@ -6,13 +6,13 @@
 
     <application>
         <service
-            android:name="com.optimizely.ab.android.datafile_handler.DataFileService"
+            android:name="DataFileService"
             android:enabled="true"
             android:exported="false">
         </service>
 
         <receiver
-            android:name="com.optimizely.ab.android.datafile_handler.DataFileRescheduler"
+            android:name="DataFileRescheduler"
             android:enabled="true"
             android:exported="false">
             <intent-filter>

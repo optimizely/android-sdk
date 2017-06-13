@@ -30,6 +30,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.optimizely.ab.android.datafile_handler.DataFileService;
+import com.optimizely.ab.android.datafile_handler.DataFileLoadedListener;
+import com.optimizely.ab.android.datafile_handler.DataFileLoader;
+
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;

@@ -34,11 +34,11 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.contains;
 
 /**
  * Tests for {@link DataFileCache}
@@ -51,7 +51,7 @@ public class DataFileCacheTest {
 
     @Before
     public void setup() {
-        logger = Mockito.mock(Logger.class);
+        logger = mock(Logger.class);
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
         dataFileCache = new DataFileCache("1", cache, logger);
     }
@@ -74,10 +74,10 @@ public class DataFileCacheTest {
 
     @Test
     public void loadJsonException() throws IOException {
-        Cache cache = Mockito.mock(Cache.class);
+        Cache cache = mock(Cache.class);
         DataFileCache dataFileCache = new DataFileCache("1", cache, logger);
-        Mockito.when(cache.load(dataFileCache.getFileName())).thenReturn("{");
+        when(cache.load(dataFileCache.getFileName())).thenReturn("{");
         assertNull(dataFileCache.load());
-        Mockito.verify(logger).error(Matchers.contains("Unable to parse data file"), Matchers.any(JSONException.class));
+        verify(logger).error(contains("Unable to parse data file"), any(JSONException.class));
     }
 }

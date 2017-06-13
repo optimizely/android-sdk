@@ -29,7 +29,7 @@ import android.util.Pair;
 import android.view.WindowManager;
 
 import com.optimizely.ab.android.event_handler.EventIntentService;
-import com.optimizely.ab.android.sdk.DataFileService;
+import com.optimizely.ab.android.datafile_handler.DataFileService;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserProfileService;

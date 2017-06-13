@@ -29,7 +29,7 @@ android {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
         versionCode 1
-        versionName "1.0"
+        versionName version_name
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     testOptions {
@@ -86,7 +86,7 @@ android.libraryVariants.all { variant ->
     task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
         source = variant.javaCompile.source
 
-        title = "Optimizely X Android Event Handler"
+        title = "Optimizely X Android Datfile Handler"
 
         options.links("http://docs.oracle.com/javase/7/docs/api/");
         options.linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference");
