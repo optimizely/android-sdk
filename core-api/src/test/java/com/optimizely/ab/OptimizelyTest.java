@@ -1141,67 +1141,6 @@ public class OptimizelyTest {
     }
 
     /**
-     * Verify that {@link Optimizely#track(String, String, long)} passes through revenue.
-     */
-    @Test
-    public void trackEventWithRevenue() throws Exception {
-        EventType eventType = validProjectConfig.getEventTypes().get(0);
-        long revenue = 1234L;
-
-        // setup a mock event builder to return expected conversion params
-        EventBuilder mockEventBuilder = mock(EventBuilder.class);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withBucketing(mockBucketer)
-                .withEventBuilder(mockEventBuilder)
-                .withConfig(validProjectConfig)
-                .withErrorHandler(mockErrorHandler)
-                .build();
-
-        Map<String, String> testParams = new HashMap<String, String>();
-        testParams.put("test", "params");
-        Map<String, Object> eventTags= new HashMap<String, Object>();
-        eventTags.put(ReservedEventKey.REVENUE.toString(), revenue);
-        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
-                validProjectConfig,
-                mockBucketer,
-                eventType.getKey(),
-                genericUserId,
-                Collections.<String, String>emptyMap());
-        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
-        when(mockEventBuilder.createConversionEvent(
-                eq(validProjectConfig),
-                eq(experimentVariationMap),
-                eq(genericUserId),
-                eq(eventType.getId()),
-                eq(eventType.getKey()),
-                eq(Collections.<String, String>emptyMap()),
-                eq(eventTags)))
-                .thenReturn(logEventToDispatch);
-
-        // call track
-        optimizely.track(eventType.getKey(), genericUserId, revenue);
-
-        // setup the event tag map captor (so we can verify its content)
-        ArgumentCaptor<Map> eventTagCaptor = ArgumentCaptor.forClass(Map.class);
-
-        // verify that the event builder was called with the expected revenue
-        verify(mockEventBuilder).createConversionEvent(
-                eq(validProjectConfig),
-                eq(experimentVariationMap),
-                eq(genericUserId),
-                eq(eventType.getId()),
-                eq(eventType.getKey()),
-                eq(Collections.<String, String>emptyMap()),
-                eventTagCaptor.capture());
-
-        Long actualValue = (Long)eventTagCaptor.getValue().get(ReservedEventKey.REVENUE.toString());
-        assertThat(actualValue, is(revenue));
-
-        verify(mockEventHandler).dispatchEvent(logEventToDispatch);
-    }
-
-    /**
      * Verify that {@link Optimizely#track(String, String, Map, Map)} passes event features to
      * {@link EventBuilder#createConversionEvent(ProjectConfig, Map, String, String, String, Map, Map)}
      */

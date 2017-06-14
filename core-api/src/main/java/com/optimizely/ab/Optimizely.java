@@ -213,26 +213,6 @@ public class Optimizely {
         track(eventName, userId, attributes, Collections.<String, String>emptyMap());
     }
 
-    /**
-     * @deprecated see {@link #track(String, String, Map)} and pass in the revenue value as an event tag instead.
-     */
-    public void track(@Nonnull String eventName,
-                      @Nonnull String userId,
-                      long eventValue) throws UnknownEventTypeException {
-        track(eventName, userId, Collections.<String, String>emptyMap(), Collections.singletonMap(
-                ReservedEventKey.REVENUE.toString(), eventValue));
-    }
-
-    /**
-     * @deprecated see {@link #track(String, String, Map, long)} and pass in the revenue value as an event tag instead.
-     */
-    public void track(@Nonnull String eventName,
-                      @Nonnull String userId,
-                      @Nonnull Map<String, String> attributes,
-                      long eventValue) throws UnknownEventTypeException {
-        track(eventName, userId, attributes, Collections.singletonMap(ReservedEventKey.REVENUE.toString(), eventValue));
-    }
-
     public void track(@Nonnull String eventName,
                       @Nonnull String userId,
                       @Nonnull Map<String, String> attributes,
