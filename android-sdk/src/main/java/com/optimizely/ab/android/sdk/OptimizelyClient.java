@@ -104,7 +104,7 @@ public class OptimizelyClient {
     public @Nullable Variation activate(@NonNull String experimentKey,
                                         @NonNull String userId) {
         if (isValid()) {
-            return optimizely.activate(experimentKey, userId);
+            return optimizely.activate(experimentKey, userId, getDefaultAttributes());
         } else {
             logger.warn("Optimizely is not initialized, could not activate experiment {} for user {}",
                     experimentKey, userId);
@@ -163,7 +163,7 @@ public class OptimizelyClient {
                       @NonNull String userId) {
         if (isValid()) {
             try {
-                optimizely.track(eventName, userId);
+                optimizely.track(eventName, userId, getDefaultAttributes());
             } catch (Exception e) {
                 logger.error("Unable to track event", e);
             }
@@ -221,7 +221,7 @@ public class OptimizelyClient {
                       @NonNull String userId,
                       long eventValue) throws UnknownEventTypeException {
         if (isValid()) {
-            optimizely.track(eventName, userId, eventValue);
+            optimizely.track(eventName, userId, getDefaultAttributes(), eventValue);
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
                     " with value {}", eventName, userId, eventValue);
@@ -259,7 +259,7 @@ public class OptimizelyClient {
     public @Nullable String getVariableString(@NonNull String variableKey,
                                               @NonNull String userId,
                                               boolean activateExperiment) {
-        return getVariableString(variableKey, userId, Collections.<String, String>emptyMap(),
+        return getVariableString(variableKey, userId, getDefaultAttributes(),
                                  activateExperiment);
     }
 
@@ -295,7 +295,7 @@ public class OptimizelyClient {
     public @Nullable Boolean getVariableBoolean(@NonNull String variableKey,
                                                 @NonNull String userId,
                                                 boolean activateExperiment) {
-        return getVariableBoolean(variableKey, userId, Collections.<String, String>emptyMap(),
+        return getVariableBoolean(variableKey, userId, getDefaultAttributes(),
                                   activateExperiment);
     }
 
@@ -312,7 +312,7 @@ public class OptimizelyClient {
                                                 @NonNull Map<String, String> attributes,
                                                 boolean activateExperiment) {
         if (isValid()) {
-            return optimizely.getVariableBoolean(variableKey, userId, attributes,
+            return optimizely.getVariableBoolean(variableKey, userId, getAllAttributes(attributes),
                                                  activateExperiment);
         } else {
             logger.warn("Optimizely is not initialized, could not get live variable {} " +
@@ -331,7 +331,7 @@ public class OptimizelyClient {
     public @Nullable Integer getVariableInteger(@NonNull String variableKey,
                                                 @NonNull String userId,
                                                 boolean activateExperiment) {
-        return getVariableInteger(variableKey, userId, Collections.<String, String>emptyMap(),
+        return getVariableInteger(variableKey, userId, getDefaultAttributes(),
                                   activateExperiment);
     }
 
@@ -348,7 +348,7 @@ public class OptimizelyClient {
                                                 @NonNull Map<String, String> attributes,
                                                 boolean activateExperiment) {
         if (isValid()) {
-            return optimizely.getVariableInteger(variableKey, userId, attributes,
+            return optimizely.getVariableInteger(variableKey, userId, getAllAttributes(attributes),
                                                  activateExperiment);
         } else {
             logger.warn("Optimizely is not initialized, could not get live variable {} " +
@@ -367,7 +367,7 @@ public class OptimizelyClient {
     public @Nullable Double getVariableDouble(@NonNull String variableKey,
                                               @NonNull String userId,
                                               boolean activateExperiment) {
-        return getVariableDouble(variableKey, userId, Collections.<String, String>emptyMap(),
+        return getVariableDouble(variableKey, userId, getDefaultAttributes(),
                                  activateExperiment);
     }
 
@@ -384,7 +384,7 @@ public class OptimizelyClient {
                                               @NonNull Map<String, String> attributes,
                                               boolean activateExperiment) {
         if (isValid()) {
-            return optimizely.getVariableDouble(variableKey, userId, attributes,
+            return optimizely.getVariableDouble(variableKey, userId, getAllAttributes(attributes),
                                                 activateExperiment);
         } else {
             logger.warn("Optimizely is not initialized, could not get live variable {} " +
@@ -404,7 +404,7 @@ public class OptimizelyClient {
     public @Nullable Variation getVariation(@NonNull String experimentKey,
                                             @NonNull String userId) {
         if (isValid()) {
-            return optimizely.getVariation(experimentKey, userId);
+            return optimizely.getVariation(experimentKey, userId, getDefaultAttributes());
         } else {
             logger.warn("Optimizely is not initialized, could not get variation for experiment {} " +
                     "for user {}", experimentKey, userId);
