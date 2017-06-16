@@ -36,7 +36,6 @@ import java.util.Map;
 public class ProjectConfig {
 
     public enum Version {
-        V1 ("1"),
         V2 ("2"),
         V3 ("3");
 

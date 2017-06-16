@@ -64,11 +64,7 @@ final class JsonConfigParser implements ConfigParser {
             List<Experiment> experiments = parseExperiments(rootObject.getJSONArray("experiments"));
 
             List<Attribute> attributes;
-            if (version.equals(ProjectConfig.Version.V1.toString())) {
-                attributes = parseAttributes(rootObject.getJSONArray("dimensions"));
-            } else {
-                attributes = parseAttributes(rootObject.getJSONArray("attributes"));
-            }
+            attributes = parseAttributes(rootObject.getJSONArray("attributes"));
 
             List<EventType> events = parseEvents(rootObject.getJSONArray("events"));
             List<Audience> audiences = parseAudiences(rootObject.getJSONArray("audiences"));

@@ -60,11 +60,7 @@ public class ProjectConfigGsonDeserializer implements JsonDeserializer<ProjectCo
             context.deserialize(jsonObject.get("experiments").getAsJsonArray(), experimentsType);
 
         List<Attribute> attributes;
-        if (version.equals(ProjectConfig.Version.V1.toString())) {
-            attributes = context.deserialize(jsonObject.get("dimensions"), attributesType);
-        } else {
-            attributes = context.deserialize(jsonObject.get("attributes"), attributesType);
-        }
+        attributes = context.deserialize(jsonObject.get("attributes"), attributesType);
 
         List<EventType> events =
             context.deserialize(jsonObject.get("events").getAsJsonArray(), eventsType);

@@ -64,11 +64,7 @@ final class JsonSimpleConfigParser implements ConfigParser {
             List<Experiment> experiments = parseExperiments((JSONArray)rootObject.get("experiments"));
 
             List<Attribute> attributes;
-            if (version.equals(ProjectConfig.Version.V1.toString())) {
-                throw new ConfigParseException("The Java SDK no longer supports datafile version 1. If you wish to use a Classic Custom Project, please use Java SDK version 1.6 or below.");
-            } else {
-                attributes = parseAttributes((JSONArray)rootObject.get("attributes"));
-            }
+            attributes = parseAttributes((JSONArray)rootObject.get("attributes"));
 
             List<EventType> events = parseEvents((JSONArray)rootObject.get("events"));
             List<Audience> audiences = parseAudiences((JSONArray)parser.parse(rootObject.get("audiences").toString()));
