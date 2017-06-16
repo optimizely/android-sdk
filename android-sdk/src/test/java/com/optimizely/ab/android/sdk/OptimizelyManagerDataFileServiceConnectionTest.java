@@ -17,11 +17,16 @@
 package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
+import android.content.ServiceConnection;
 import android.os.Build;
+import android.os.IBinder;
+import android.app.Service;
 import android.support.annotation.RequiresApi;
 
+import com.optimizely.ab.android.shared.DataFileLoadedListener;
+import com.optimizely.ab.android.shared.ReflectionUtils;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.user_profile.AndroidUserProfileService;
+import com.optimizely.ab.bucketing.UserProfileService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,10 +34,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.optimizely.ab.android.datafile_handler.DataFileService;
-import com.optimizely.ab.android.datafile_handler.DataFileLoadedListener;
-import com.optimizely.ab.android.datafile_handler.DataFileLoader;
 
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -43,42 +44,44 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests {@link OptimizelyManager.DataFileServiceConnection}
+ * Tests DataFileServiceConnection
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OptimizelyManagerDataFileServiceConnectionTest {
 
-    private OptimizelyManager.DataFileServiceConnection dataFileServiceConnection;
+    private ServiceConnection dataFileServiceConnection;
     @Mock private OptimizelyManager optimizelyManager;
 
     @Before
     public void setup() {
-        dataFileServiceConnection = new OptimizelyManager.DataFileServiceConnection(optimizelyManager, mock(Context.class));
+        dataFileServiceConnection = optimizelyManager.getDataFileServiceConnection(optimizelyManager.getProjectId(), mock(Context.class), mock(DataFileLoadedListener.class));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnected() {
-        DataFileService.LocalBinder binder = mock(DataFileService.LocalBinder.class);
-        DataFileService service = mock(DataFileService.class);
+        IBinder binder = (IBinder) mock(ReflectionUtils.getClass("com.optimizely.ab.android.datafile_handler.DataFileService.LocalBinder", this.getClass().getClassLoader()));
+        Service service = (Service) mock(ReflectionUtils.getClass("com.optimizely.ab.android.datafile_handler.DataFileService", this.getClass().getClassLoader()));
         Context context = mock(Context.class);
         when(service.getApplicationContext()).thenReturn(context);
-        when(binder.getService()).thenReturn(service);
+        when(ReflectionUtils.callMethod(binder, "getService", ReflectionUtils.emptyArgTypes, ReflectionUtils.emptyArgs)).thenReturn(service);
         when(optimizelyManager.getProjectId()).thenReturn("1");
         ArgumentCaptor<DataFileLoadedListener> captor = ArgumentCaptor.forClass(DataFileLoadedListener.class);
         dataFileServiceConnection.onServiceConnected(null, binder);
-        verify(service).getDataFile(same("1"), any(DataFileLoader.class), captor.capture());
+        Class[] argTypes = {String.class, ReflectionUtils.getClass("com.optmizely.ab.android.datafile_handler.DataFileLoader", this.getClass().getClassLoader()), DataFileLoadedListener.class};
+        ReflectionUtils.callMethod(verify(service), "getDataFile", argTypes, same("1"), any(ReflectionUtils.getClass("com.optmizely.ab.android.datafile_handler.DataFileLoader", this.getClass().getClassLoader())), captor.capture());
+        //verify(service).getDataFile(same("1"), any(ReflectionUtils.getClass("com.optmizely.ab.android.datafile_handler.DataFileLoader", this.getClass().getClassLoader()), captor.capture());
         DataFileLoadedListener listener = captor.getValue();
         listener.onDataFileLoaded("");
-        verify(optimizelyManager).injectOptimizely(any(Context.class), any(AndroidUserProfileService.class),
+        verify(optimizelyManager).injectOptimizely(any(Context.class), any(UserProfileService.class),
                 any(ServiceScheduler.class), eq(""));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnectedNullServiceFromBinder() {
-        DataFileService.LocalBinder binder = mock(DataFileService.LocalBinder.class);
-        when(binder.getService()).thenReturn(null);
+        IBinder binder = (IBinder) mock(ReflectionUtils.getClass("com.optimizely.ab.android.datafile_handler.DataFileService.LocalBinder", this.getClass().getClassLoader()));
+        when(ReflectionUtils.callMethod(binder, "getService", ReflectionUtils.emptyArgTypes, ReflectionUtils.emptyArgs)).thenReturn(null);
 
         try {
             dataFileServiceConnection.onServiceConnected(null, binder);
