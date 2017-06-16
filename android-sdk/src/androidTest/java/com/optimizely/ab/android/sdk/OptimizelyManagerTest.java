@@ -25,10 +25,7 @@ import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecuto
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.user_profile.AndroidUserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
-
-import com.optimizely.ab.android.datafile_handler.DataFileService;
 
 import org.junit.Before;
 import org.junit.Test;

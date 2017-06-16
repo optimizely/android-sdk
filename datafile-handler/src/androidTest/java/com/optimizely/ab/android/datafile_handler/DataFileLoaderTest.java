@@ -26,6 +26,8 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
+import com.optimizely.ab.android.shared.DataFileCache;
+import com.optimizely.ab.android.shared.DataFileLoadedListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;

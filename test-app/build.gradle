@@ -29,6 +29,9 @@ android {
 dependencies {
     // Includes the Optimizely X Full Stack Java SDK, event handler, and user profile
     compile project(':android-sdk')
+    compile project(':event-handler')
+    compile project(':datafile-handler')
+    compile project(':user-profile')
     // compile 'com.optimizely.ab:android-sdk:1.0.0'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
@@ -38,6 +41,9 @@ dependencies {
     testCompile "com.noveogroup.android:android-logger:$android_logger_ver"
     // testCompile 'com.optimizely.ab:android-sdk:1.0.0'
     testCompile project(':android-sdk')
+    testCompile project(':event-handler')
+    testCompile project(':datafile-handler')
+    testCompile project(':user-profile')
 
     androidTestCompile("com.android.support.test:runner:$support_test_runner_ver")
     androidTestCompile "com.android.support:support-annotations:24.2.1"
@@ -50,4 +56,7 @@ dependencies {
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
     // androidTestCompile 'com.optimizely.ab:android-sdk:1.0.0'
     androidTestCompile project(':android-sdk')
+    androidTestCompile project(':event-handler')
+    androidTestCompile project(':datafile-handler')
+    androidTestCompile project(':user-profile')
 }

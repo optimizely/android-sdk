@@ -16,11 +16,15 @@
 
 package com.optimizely.ab.android.datafile_handler;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+
+import com.optimizely.ab.android.shared.DataFileCache;
+import com.optimizely.ab.android.shared.DataFileLoadedListener;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -50,6 +54,13 @@ public class DataFileLoader {
         this.dataFileClient = dataFileClient;
         this.dataFileCache = dataFileCache;
         this.executor = executor;
+
+        new DataFileServiceConnection("projectId", dataFileService.getApplicationContext(), new DataFileLoadedListener() {
+            public void onDataFileLoaded(@Nullable String dataFile) {}
+
+            public void onStop(Context context) {}
+
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

@@ -27,6 +27,8 @@ import android.support.test.rule.ServiceTestRule;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
+import com.optimizely.ab.android.shared.DataFileCache;
+import com.optimizely.ab.android.shared.DataFileLoadedListener;
 
 import org.junit.Ignore;
 import org.junit.Rule;

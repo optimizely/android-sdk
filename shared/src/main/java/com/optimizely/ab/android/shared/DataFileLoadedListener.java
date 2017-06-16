@@ -14,9 +14,10 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.datafile_handler;
+package com.optimizely.ab.android.shared;
 
 import android.support.annotation.Nullable;
+import android.content.Context;
 
 /**
  * Listens for new Optimizely datafiles
@@ -34,4 +35,6 @@ public interface DataFileLoadedListener {
      *
      */
      void onDataFileLoaded(@Nullable String dataFile);
+
+    void onStop(Context context);
 }

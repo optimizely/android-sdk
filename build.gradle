@@ -70,7 +70,8 @@ task clean(type: Delete) {
 
 task ship() {
     dependsOn(':android-sdk:uploadArchives', ':shared:uploadArchives',
-            'event-handler:uploadArchives', 'user-profile:uploadArchives')
+            'event-handler:uploadArchives', 'user-profile:uploadArchives',
+            'datafile-handle:uploadArchives')
 }
 
 task cleanAllModules << {
@@ -78,7 +79,7 @@ task cleanAllModules << {
 }
 
 cleanAllModules.dependsOn(':android-sdk:clean', ':event-handler:clean',
-        ':user-profile:clean', ':shared:clean')
+        ':user-profile:clean', ':shared:clean', ':datafile-handler:clean')
 
 task testAllModules << {
     logger.info("Running android tests for all modules")
@@ -90,6 +91,7 @@ task testAllModulesTravis << {
 
 testAllModulesTravis.dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
         ':event-handler:connectedAndroidTest', ':event-handler:test',
+        ':datafile-handler:connectedAndroidTest', ':datafile-handler:test',
         ':user-profile:connectedAndroidTest', ':shared:connectedAndroidTest')
 
 testAllModules.dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')

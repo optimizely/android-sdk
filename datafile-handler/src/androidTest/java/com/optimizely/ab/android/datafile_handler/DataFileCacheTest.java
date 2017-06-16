@@ -20,6 +20,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.Cache;
+import com.optimizely.ab.android.shared.DataFileCache;
 
 import org.json.JSONException;
 import org.json.JSONObject;
