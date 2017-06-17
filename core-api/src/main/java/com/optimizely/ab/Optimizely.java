@@ -285,6 +285,7 @@ public class Optimizely {
 
     //======== live variable getters ========//
 
+    @Deprecated
     public @Nullable
     String getVariableString(@Nonnull String variableKey,
                              @Nonnull String userId,
@@ -292,6 +293,7 @@ public class Optimizely {
         return getVariableString(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
+    @Deprecated
     public @Nullable
     String getVariableString(@Nonnull String variableKey,
                              @Nonnull String userId,
@@ -332,6 +334,7 @@ public class Optimizely {
         return variable.getDefaultValue();
     }
 
+    @Deprecated
     public @Nullable
     Boolean getVariableBoolean(@Nonnull String variableKey,
                                @Nonnull String userId,
@@ -339,6 +342,7 @@ public class Optimizely {
         return getVariableBoolean(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
+    @Deprecated
     public @Nullable
     Boolean getVariableBoolean(@Nonnull String variableKey,
                                @Nonnull String userId,
@@ -354,6 +358,7 @@ public class Optimizely {
         return null;
     }
 
+    @Deprecated
     public @Nullable
     Integer getVariableInteger(@Nonnull String variableKey,
                                @Nonnull String userId,
@@ -361,6 +366,7 @@ public class Optimizely {
         return getVariableInteger(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
+    @Deprecated
     public @Nullable
     Integer getVariableInteger(@Nonnull String variableKey,
                                @Nonnull String userId,
@@ -381,6 +387,7 @@ public class Optimizely {
         return null;
     }
 
+    @Deprecated
     public @Nullable
     Double getVariableDouble(@Nonnull String variableKey,
                              @Nonnull String userId,
@@ -388,6 +395,7 @@ public class Optimizely {
         return getVariableDouble(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
+    @Deprecated
     public @Nullable
     Double getVariableDouble(@Nonnull String variableKey,
                              @Nonnull String userId,
@@ -588,6 +596,7 @@ public class Optimizely {
      * @throws UnknownLiveVariableException if there are no event types in the current project config with the given
      * name
      */
+    @Deprecated
     private LiveVariable getLiveVariableOrThrow(ProjectConfig projectConfig, String variableKey)
         throws UnknownLiveVariableException {
 
