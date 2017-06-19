@@ -377,6 +377,11 @@ public final class ProjectConfigTestUtils {
                                  events, Collections.<Audience>emptyList(), true, Collections.<LiveVariable>emptyList());
     }
 
+    private static final ProjectConfig VALID_PROJECT_CONFIG_V4 = generateValidProjectConfigV4();
+    private static ProjectConfig generateValidProjectConfigV4() {
+        return null;
+    }
+
     private ProjectConfigTestUtils() { }
 
     public static String validConfigJsonV2() throws IOException {
@@ -421,6 +426,10 @@ public final class ProjectConfigTestUtils {
      */
     public static ProjectConfig noAudienceProjectConfigV3() {
         return NO_AUDIENCE_PROJECT_CONFIG_V3;
+    }
+
+    public static ProjectConfig validProjectConfigV4() {
+        return VALID_PROJECT_CONFIG_V4;
     }
 
     /**
