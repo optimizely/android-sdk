@@ -21,7 +21,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.user_profile.AndroidUserProfileService;
+import com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public class OptimizelyManagerDataFileServiceConnectionTest {
         verify(service).getDataFile(same("1"), any(DataFileLoader.class), captor.capture());
         DataFileLoadedListener listener = captor.getValue();
         listener.onDataFileLoaded("");
-        verify(optimizelyManager).injectOptimizely(any(Context.class), any(AndroidUserProfileService.class),
+        verify(optimizelyManager).injectOptimizely(any(Context.class), any(AndroidUserProfileServiceDefault.class),
                 any(ServiceScheduler.class), eq(""));
     }
 

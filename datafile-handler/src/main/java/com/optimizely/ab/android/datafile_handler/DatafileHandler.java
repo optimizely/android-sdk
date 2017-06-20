@@ -1,5 +1,6 @@
 package com.optimizely.ab.android.datafile_handler;
 
+import android.content.Context;
 import android.text.format.Time;
 
 import com.optimizely.ab.android.shared.DataFileLoadedListener;
@@ -18,28 +19,28 @@ public interface DatafileHandler {
      * @param projectId - project id of the project for the datafile.
      * @return a valid datafile or null
      */
-    public String dowloadDatafile(String projectId);
+    public String dowloadDatafile(Context context, String projectId);
 
     /**
      * Asyncrhonis download data file.
      * @param projectId - project id of the datafile to get.
      * @param listener - listener to call when datafile download complete.
      */
-    public void downloadDataFile(String projectId, DataFileLoadedListener listener);
+    public void downloadDataFile(Context context, String projectId, DataFileLoadedListener listener);
 
     /**
      *  Startbackground updates to the project datafile .
      * @param updateInterval frequency of updates.
      * @param timeUnit at time interval.
      */
-    public void startBackgroundUpdates(String projectId, Long updateInterval, TimeUnit timeUnit, DataFileLoadedListener listener);
+    public void startBackgroundUpdates(Context context, String projectId, Long updateInterval, TimeUnit timeUnit, DataFileLoadedListener listener);
 
     /**
      * Stop the background updates.
      * @param projectId project id of the datafile uploading.
      * @param listener listener that will be called after unscheduling updates.
      */
-    public void stopBackgroundUpdates(String projectId, DataFileLoadedListener listener);
+    public void stopBackgroundUpdates(Context context, String projectId, DataFileLoadedListener listener);
 
 
     /**
@@ -47,13 +48,21 @@ public interface DatafileHandler {
      * @param projectId project id of the datafile..
      * @param dataFile the datafile to save.
      */
-    public void saveDatafile(String projectId, String dataFile);
+    public void saveDatafile(Context context, String projectId, String dataFile);
 
     /**
      * Load a cached datafile if it exists
      * @param projectId project id of the datafile to try and get from cache
      * @return The datafile cached or null if it was not available.
      */
-    public String loadSavedDatafile(String projectId);
+    public String loadSavedDatafile(Context context, String projectId);
+
+    /**
+     *
+     * @param projectId
+     * @return
+     */
+    public Boolean isDatafileSaved(Context context, String projectId);
+
 
 }

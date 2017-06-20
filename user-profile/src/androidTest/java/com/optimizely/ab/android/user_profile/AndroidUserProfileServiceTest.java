@@ -41,12 +41,12 @@ import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link AndroidUserProfileService}
+ * Tests for {@link AndroidUserProfileServiceDefault}
  */
 @RunWith(AndroidJUnit4.class)
 public class AndroidUserProfileServiceTest {
 
-    private AndroidUserProfileService androidUserProfileService;
+    private AndroidUserProfileServiceDefault androidUserProfileService;
     private Cache cache;
     private UserProfileCache.DiskCache diskCache;
     private ListeningExecutorService executor;
@@ -71,7 +71,7 @@ public class AndroidUserProfileServiceTest {
         projectId = "123";
         diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
         userProfileCache = new UserProfileCache(diskCache, logger, memoryCache, legacyDiskCache);
-        androidUserProfileService = new AndroidUserProfileService(userProfileCache, logger);
+        androidUserProfileService = new AndroidUserProfileServiceDefault(userProfileCache, logger);
 
         // Test data.
         userId1 = "user_1";

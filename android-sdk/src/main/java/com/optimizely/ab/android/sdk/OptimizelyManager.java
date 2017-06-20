@@ -470,7 +470,7 @@ public class OptimizelyManager {
 
     protected UserProfileService getAndroidUserProfileServiceAndStart(Context context) {
         Class[] classes = { String.class, Context.class };
-        Object obj = ReflectionUtils.getObject("com.optimizely.ab.android.user_profile.AndroidUserProfileService", this.getClass().getClassLoader(),
+        Object obj = ReflectionUtils.getObject("com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault", this.getClass().getClassLoader(),
                 "newInstance", classes, getProjectId(), context);
 
         ReflectionUtils.callMethod(obj, "start",ReflectionUtils.emptyArgTypes, ReflectionUtils.emptyArgs);
@@ -480,7 +480,7 @@ public class OptimizelyManager {
 
     protected UserProfileService getAndroidUserProfileService(Context context) {
         Class[] classes = { String.class, Context.class };
-        Object obj = ReflectionUtils.getObject("com.optimizely.ab.android.user_profile.AndroidUserProfileService", this.getClass().getClassLoader(),
+        Object obj = ReflectionUtils.getObject("com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault", this.getClass().getClassLoader(),
                 "newInstance", classes, getProjectId(), context);
 
         return (UserProfileService)obj;

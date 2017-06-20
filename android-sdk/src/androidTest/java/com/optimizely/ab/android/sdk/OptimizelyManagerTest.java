@@ -25,7 +25,7 @@ import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecuto
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.user_profile.AndroidUserProfileService;
+import com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault;
 import com.optimizely.ab.config.parser.ConfigParseException;
 
 import com.optimizely.ab.android.datafile_handler.DataFileService;
@@ -160,7 +160,7 @@ public class OptimizelyManagerTest {
     @Test
     public void injectOptimizely() {
         Context context = mock(Context.class);
-        AndroidUserProfileService userProfileService = mock(AndroidUserProfileService.class);
+        AndroidUserProfileServiceDefault userProfileService = mock(AndroidUserProfileServiceDefault.class);
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
@@ -183,7 +183,7 @@ public class OptimizelyManagerTest {
     public void injectOptimizelyNullListener() {
         Context context = mock(Context.class);
         when(context.getPackageName()).thenReturn("com.optly");
-        AndroidUserProfileService userProfileService = mock(AndroidUserProfileService.class);
+        AndroidUserProfileServiceDefault userProfileService = mock(AndroidUserProfileServiceDefault.class);
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         optimizelyManager.setOptimizelyStartListener(null);
@@ -208,7 +208,7 @@ public class OptimizelyManagerTest {
     public void injectOptimizelyHandlesInvalidDataFile() {
         Context context = mock(Context.class);
         when(context.getPackageName()).thenReturn("com.optly");
-        AndroidUserProfileService userProfileService = mock(AndroidUserProfileService.class);
+        AndroidUserProfileServiceDefault userProfileService = mock(AndroidUserProfileServiceDefault.class);
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         optimizelyManager.setOptimizelyStartListener(null);
@@ -233,7 +233,7 @@ public class OptimizelyManagerTest {
     public void injectOptimizelyDoesNotDuplicateCallback() {
         Context context = mock(Context.class);
         when(context.getPackageName()).thenReturn("com.optly");
-        AndroidUserProfileService userProfileService = mock(AndroidUserProfileService.class);
+        AndroidUserProfileServiceDefault userProfileService = mock(AndroidUserProfileServiceDefault.class);
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
