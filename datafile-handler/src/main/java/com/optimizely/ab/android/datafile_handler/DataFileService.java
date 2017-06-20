@@ -26,8 +26,6 @@ import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
-import com.optimizely.ab.android.shared.DataFileCache;
-import com.optimizely.ab.android.shared.DataFileLoadedListener;
 import com.optimizely.ab.android.shared.OptlyStorage;
 
 import org.slf4j.Logger;

@@ -1,9 +1,6 @@
 package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
-import android.text.format.Time;
-
-import com.optimizely.ab.android.shared.DataFileLoadedListener;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,14 +30,13 @@ public interface DatafileHandler {
      * @param updateInterval frequency of updates.
      * @param timeUnit at time interval.
      */
-    public void startBackgroundUpdates(Context context, String projectId, Long updateInterval, TimeUnit timeUnit, DataFileLoadedListener listener);
+    public void startBackgroundUpdates(Context context, String projectId, Long updateInterval, TimeUnit timeUnit);
 
     /**
      * Stop the background updates.
      * @param projectId project id of the datafile uploading.
-     * @param listener listener that will be called after unscheduling updates.
      */
-    public void stopBackgroundUpdates(Context context, String projectId, DataFileLoadedListener listener);
+    public void stopBackgroundUpdates(Context context, String projectId);
 
 
     /**

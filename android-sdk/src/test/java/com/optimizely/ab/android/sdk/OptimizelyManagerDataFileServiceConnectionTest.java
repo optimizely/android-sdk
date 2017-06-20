@@ -31,7 +31,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.optimizely.ab.android.datafile_handler.DataFileService;
-import com.optimizely.ab.android.shared.DataFileLoadedListener;
+import com.optimizely.ab.android.datafile_handler.DataFileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DataFileLoader;
 import com.optimizely.ab.android.datafile_handler.DataFileServiceConnection;
 import static junit.framework.Assert.fail;
@@ -71,8 +71,7 @@ public class OptimizelyManagerDataFileServiceConnectionTest {
         verify(service).getDataFile(same("1"), any(DataFileLoader.class), captor.capture());
         DataFileLoadedListener listener = captor.getValue();
         listener.onDataFileLoaded("");
-        verify(optimizelyManager).injectOptimizely(any(Context.class), any(AndroidUserProfileServiceDefault.class),
-                any(ServiceScheduler.class), eq(""));
+        verify(optimizelyManager).injectOptimizely(any(Context.class), any(AndroidUserProfileServiceDefault.class), eq(""));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

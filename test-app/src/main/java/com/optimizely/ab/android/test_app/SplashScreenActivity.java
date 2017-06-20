@@ -26,7 +26,6 @@ import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
-import com.optimizely.ab.android.shared.DataFileCache;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.config.Variation;
 
@@ -105,16 +104,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                 startActivity(intent);
 
-                optimizelyManager.stop(myApplication.getBaseContext());
-
-                AlarmManager alarmManager = (AlarmManager) myApplication.getApplicationContext()
-                        .getSystemService(Context.ALARM_SERVICE);
-                ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
-                        .PendingIntentFactory(myApplication.getApplicationContext());
-                ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory,
-                        LoggerFactory.getLogger(ServiceScheduler.class));
-                intent = new Intent(myApplication.getApplicationContext(), DataFileService.class);
-                serviceScheduler.unschedule(intent);
+                //optimizelyManager.stop(myApplication.getBaseContext());
+                optimizelyManager.getDatafileHandler().stopBackgroundUpdates(myApplication.getApplicationContext(), optimizelyManager.getProjectId());
             }
         });
     }

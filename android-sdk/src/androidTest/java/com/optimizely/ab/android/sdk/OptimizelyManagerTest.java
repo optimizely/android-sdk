@@ -93,7 +93,7 @@ public class OptimizelyManagerTest {
         optimizelyManager.initialize(context, startListener);
 
         assertNotNull(optimizelyManager.getOptimizelyStartListener());
-        assertNotNull(optimizelyManager.getDataFileServiceConnection());
+        assertNotNull(optimizelyManager.getDatafileHandler());
 
         verify(appContext).bindService(captor.capture(), any(DataFileServiceConnection.class), eq(Context.BIND_AUTO_CREATE));
 
@@ -146,14 +146,11 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
 
-        DataFileServiceConnection dataFileServiceConnection = new DataFileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDataFileLoadedListener(context));
-        dataFileServiceConnection.setBound(true);
-        optimizelyManager.setDataFileServiceConnection(dataFileServiceConnection);
+        optimizelyManager.getDatafileHandler().downloadDataFile(context, optimizelyManager.getProjectId(), null);
 
         optimizelyManager.stop(context);
 
         assertNull(optimizelyManager.getOptimizelyStartListener());
-        verify(appContext).unbindService(dataFileServiceConnection);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -161,11 +158,10 @@ public class OptimizelyManagerTest {
     public void injectOptimizely() {
         Context context = mock(Context.class);
         AndroidUserProfileServiceDefault userProfileService = mock(AndroidUserProfileServiceDefault.class);
-        ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
         optimizelyManager.setOptimizelyStartListener(startListener);
-        optimizelyManager.injectOptimizely(context, userProfileService, serviceScheduler, minDataFile);
+        optimizelyManager.injectOptimizely(context, userProfileService, minDataFile);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -173,7 +169,6 @@ public class OptimizelyManagerTest {
         }
 
         verify(userProfileService).start();
-        verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
     }
@@ -187,7 +182,7 @@ public class OptimizelyManagerTest {
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         optimizelyManager.setOptimizelyStartListener(null);
-        optimizelyManager.injectOptimizely(context, userProfileService, serviceScheduler, minDataFile);
+        optimizelyManager.injectOptimizely(context, userProfileService, minDataFile);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -212,7 +207,7 @@ public class OptimizelyManagerTest {
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         optimizelyManager.setOptimizelyStartListener(null);
-        optimizelyManager.injectOptimizely(context, userProfileService, serviceScheduler, "{}");
+        optimizelyManager.injectOptimizely(context, userProfileService, "{}");
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -238,7 +233,7 @@ public class OptimizelyManagerTest {
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
         optimizelyManager.setOptimizelyStartListener(startListener);
-        optimizelyManager.injectOptimizely(context, userProfileService, serviceScheduler, minDataFile);
+        optimizelyManager.injectOptimizely(context, userProfileService, minDataFile);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -251,7 +246,7 @@ public class OptimizelyManagerTest {
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
 
-        optimizelyManager.injectOptimizely(context, userProfileService, serviceScheduler, minDataFile);
+        optimizelyManager.injectOptimizely(context, userProfileService, minDataFile);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {

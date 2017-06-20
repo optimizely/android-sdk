@@ -23,9 +23,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
-import com.optimizely.ab.android.shared.DataFileCache;
-import com.optimizely.ab.android.shared.DataFileLoadedListener;
-
 import org.json.JSONObject;
 import org.slf4j.Logger;
 

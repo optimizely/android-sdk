@@ -9,11 +9,8 @@ import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
-import com.optimizely.ab.android.shared.DataFileCache;
-import com.optimizely.ab.android.shared.DataFileLoadedListener;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.bucketing.UserProfileService;
 
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
@@ -93,7 +90,7 @@ public class DatafileHandlerDefault implements DatafileHandler {
      * @param updateInterval frequency of updates.
      * @param timeUnit at time interval.
      */
-    public void startBackgroundUpdates(Context context, String projectId, Long updateInterval, TimeUnit timeUnit, DataFileLoadedListener listener) {
+    public void startBackgroundUpdates(Context context, String projectId, Long updateInterval, TimeUnit timeUnit) {
         AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
@@ -111,9 +108,8 @@ public class DatafileHandlerDefault implements DatafileHandler {
      * Stop the background updates.
      * @param context - application context.
      * @param projectId project id of the datafile uploading.
-     * @param listener listener that will be called after unscheduling updates.
      */
-    public void stopBackgroundUpdates(Context context, String projectId, DataFileLoadedListener listener) {
+    public void stopBackgroundUpdates(Context context, String projectId) {
         AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler

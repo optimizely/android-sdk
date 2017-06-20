@@ -20,8 +20,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
-import android.app.Service;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -29,7 +27,6 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
@@ -38,25 +35,25 @@ import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
 
-import com.optimizely.ab.android.shared.Cache;
-import com.optimizely.ab.android.shared.DataFileLoadedListener;
-import com.optimizely.ab.android.shared.ReflectionUtils;
+import com.optimizely.ab.android.datafile_handler.DataFileLoadedListener;
+import com.optimizely.ab.android.datafile_handler.DataFileService;
+import com.optimizely.ab.android.datafile_handler.DatafileHandler;
+import com.optimizely.ab.android.datafile_handler.DatafileHandlerDefault;
+import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.shared.DataFileCache;
 
+import com.optimizely.ab.android.user_profile.AndroidUserProfileService;
+import com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.internal.payload.Event;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -75,11 +72,12 @@ public class OptimizelyManager {
     @NonNull private final TimeUnit dataFileDownloadIntervalTimeUnit;
     @NonNull private final Executor executor;
     @NonNull private final Logger logger;
-    @Nullable private ServiceConnection dataFileServiceConnection;
-    @NonNull public Boolean useDataFileService = true;
+    @NonNull public Boolean useDatafileHandlerBackgroundUpdates = true;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
-    @Nullable private UserProfileService userProfileService;
 
+    @Nullable private AndroidUserProfileService userProfileService;
+    @Nullable private DatafileHandler datafileHandler;
+    @Nullable private EventHandler eventHandler = null;
     OptimizelyManager(@NonNull String projectId,
                       @NonNull Long eventHandlerDispatchInterval,
                       @NonNull TimeUnit eventHandlerDispatchIntervalTimeUnit,
@@ -94,6 +92,7 @@ public class OptimizelyManager {
         this.dataFileDownloadIntervalTimeUnit = dataFileDownloadIntervalTimeUnit;
         this.executor = executor;
         this.logger = logger;
+        this.datafileHandler = new DatafileHandlerDefault();
     }
 
     @NonNull
@@ -115,15 +114,6 @@ public class OptimizelyManager {
     @NonNull
     public static Builder builder(@NonNull String projectId) {
         return new Builder(projectId);
-    }
-
-    @Nullable
-    ServiceConnection getDataFileServiceConnection() {
-        return dataFileServiceConnection;
-    }
-
-    void setDataFileServiceConnection(@Nullable ServiceConnection dataFileServiceConnection) {
-        this.dataFileServiceConnection = dataFileServiceConnection;
     }
 
     @Nullable
@@ -159,36 +149,11 @@ public class OptimizelyManager {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
 
-        initializeServiceConnection(context);
+        datafileHandler.downloadDataFile(context, projectId, getDataFileLoadedListener(context));
 
         return optimizelyClient;
     }
 
-    private Boolean initializeServiceConnection(Context context) {
-        if (useDataFileService == false) {
-            logger.info("DataFileServiceConnection called but use data file service is set to false");
-            return false;
-        }
-        // After instantiating the OptimizelyClient, we will begin the datafile sync so that next time
-        // the user can instantiate with the latest datafile
-        Class clazz = getDataFileServiceClass();
-        if (clazz == null) {
-            // the data file service may have been excluded from the package.
-            // So, we are going to all inject so that optimizely can continue to run.
-            logger.info("DataFileServiceConnect was attempted to be found in the classPath but does not seem to exist." +
-                    "  The developer must have excluded the datafile-handler module.  DataFileServiceConnection cannot be started.");
-            return false;
-        }
-
-        final Intent intent = new Intent(context.getApplicationContext(), clazz);
-        if (dataFileServiceConnection == null) {
-            this.dataFileServiceConnection = getDataFileServiceConnection(projectId, context, getDataFileLoadedListener(context));
-            context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
-        }
-
-        return true;
-
-    }
     /**
      * Initialize Optimizely Synchronously
      * <p>
@@ -222,15 +187,11 @@ public class OptimizelyManager {
      * @return an {@link OptimizelyClient} instance
      */
     public OptimizelyClient initialize(@NonNull Context context) {
-        DataFileCache dataFileCache = new DataFileCache(
-                projectId,
-                new Cache(context, LoggerFactory.getLogger(Cache.class)),
-                LoggerFactory.getLogger(DataFileCache.class)
-        );
 
-        JSONObject datafile = dataFileCache.load();
+        String datafile = datafileHandler.loadSavedDatafile(context, projectId);
+
         if (datafile != null) {
-            return initialize(context, datafile.toString());
+            return initialize(context, datafile);
         }
 
         // return dummy client if not able to initialize a valid one
@@ -271,7 +232,7 @@ public class OptimizelyManager {
             return;
         }
         this.optimizelyStartListener = optimizelyStartListener;
-        initializeServiceConnection(context);
+        datafileHandler.downloadDataFile(context, projectId, getDataFileLoadedListener(context));
     }
 
     DataFileLoadedListener getDataFileLoadedListener(final Context context) {
@@ -281,15 +242,9 @@ public class OptimizelyManager {
                          @Override
                             public void onDataFileLoaded(@Nullable String dataFile) {
                              // App is being used, i.e. in the foreground
-                            AlarmManager alarmManager = (AlarmManager) context
-                                    .getSystemService(Context.ALARM_SERVICE);
-                             ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
-                                     .PendingIntentFactory(context);
-                             ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory,
-                                     LoggerFactory.getLogger(ServiceScheduler.class));
                              if (dataFile != null) {
-                                 UserProfileService userProfileService = getAndroidUserProfileService(context);
-                                 injectOptimizely(context, userProfileService, serviceScheduler, dataFile);
+                                 AndroidUserProfileService userProfileService = getAndroidUserProfileService(context);
+                                 injectOptimizely(context, userProfileService, dataFile);
                              } else {
                                  // We should always call the callback even with the dummy
                                  // instances.  Devs might gate the rest of their app
@@ -326,10 +281,6 @@ public class OptimizelyManager {
     public void stop(@NonNull Context context) {
         if (!isAndroidVersionSupported()) {
             return;
-        }
-        if (dataFileServiceConnection != null && ReflectionUtils.callMethod(dataFileServiceConnection,"isBound", ReflectionUtils.emptyArgTypes, ReflectionUtils.emptyArgs) == Boolean.TRUE) {
-            context.getApplicationContext().unbindService(dataFileServiceConnection);
-            dataFileServiceConnection = null;
         }
 
         this.optimizelyStartListener = null;
@@ -374,13 +325,7 @@ public class OptimizelyManager {
      * @return True if the datafile is cached on the disk
      */
     public boolean isDatafileCached(Context context) {
-        DataFileCache dataFileCache = new DataFileCache(
-                projectId,
-                new Cache(context, LoggerFactory.getLogger(Cache.class)),
-                LoggerFactory.getLogger(DataFileCache.class)
-        );
-
-        return dataFileCache.exists();
+        return datafileHandler.isDatafileSaved(context, projectId);
     }
 
     /**
@@ -389,38 +334,35 @@ public class OptimizelyManager {
      * @return the CDN location of the datafile
      */
     public static @NonNull String getDatafileUrl(String projectId) {
-        Class fileService = ReflectionUtils.getClass("com.optimizely.ab.android.datafile_handler.DataFileService", ClassLoader.getSystemClassLoader());
-        Class[] argTypes = {projectId.getClass() };
-        return (String) ReflectionUtils.callStaticMethod(fileService, "getDatafileUrl", argTypes, projectId);
-        //return DataFileService.getDatafileUrl(projectId);
+        return DataFileService.getDatafileUrl(projectId);
     }
 
     @NonNull
-    String getProjectId() {
+    public String getProjectId() {
         return projectId;
     }
 
+    public DatafileHandler getDatafileHandler() {
+        return datafileHandler;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    void injectOptimizely(@NonNull final Context context, final @NonNull UserProfileService userProfileService,
-                          @Nullable final ServiceScheduler serviceScheduler, @NonNull final String dataFile) {
-        AsyncTask<Void, Void, UserProfileService> initUserProfileTask = new AsyncTask<Void, Void, UserProfileService>() {
+    void injectOptimizely(@NonNull final Context context, final @NonNull AndroidUserProfileService userProfileService,
+                          @NonNull final String dataFile) {
+        AsyncTask<Void, Void, AndroidUserProfileService> initUserProfileTask = new AsyncTask<Void, Void, AndroidUserProfileService>() {
             @Override
-            protected UserProfileService doInBackground(Void[] params) {
-                ReflectionUtils.callMethod(userProfileService, "start", ReflectionUtils.emptyArgTypes, ReflectionUtils.emptyArgs);
-                //userProfileService.start();
+            protected AndroidUserProfileService doInBackground(Void[] params) {
+                userProfileService.start();
                 return userProfileService;
             }
 
             @Override
-            protected void onPostExecute(UserProfileService userProfileService) {
+            protected void onPostExecute(AndroidUserProfileService userProfileService) {
 
-                Class clazz = getDataFileServiceClass();
-                if (clazz != null && useDataFileService == true) {
-                    Intent intent = new Intent(context, clazz);
-                    intent.putExtra("com.optimizely.ab.android.EXTRA_PROJECT_ID", projectId);
-                    serviceScheduler.schedule(intent, dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval));
+
+                if (useDatafileHandlerBackgroundUpdates && datafileHandler != null) {
+                    datafileHandler.startBackgroundUpdates(context, projectId, dataFileDownloadInterval, dataFileDownloadIntervalTimeUnit);
                 }
-
                 try {
                     OptimizelyManager.this.optimizelyClient = buildOptimizely(context, dataFile, userProfileService);
                     OptimizelyManager.this.userProfileService = userProfileService;
@@ -464,44 +406,33 @@ public class OptimizelyManager {
         return userProfileService;
     }
 
-    protected Class getDataFileServiceClass() {
-        return ReflectionUtils.getClass("com.optimizely.ab.android.datafile_handler.DataFileService", this.getClass().getClassLoader());
+    protected AndroidUserProfileService getAndroidUserProfileServiceAndStart(Context context) {
+
+        if (userProfileService != null) {
+            AndroidUserProfileService aups = userProfileService.getNewInstance(projectId, context);
+            aups.start();
+            return aups;
+        }
+        return null;
     }
 
-    protected UserProfileService getAndroidUserProfileServiceAndStart(Context context) {
-        Class[] classes = { String.class, Context.class };
-        Object obj = ReflectionUtils.getObject("com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault", this.getClass().getClassLoader(),
-                "newInstance", classes, getProjectId(), context);
+    protected AndroidUserProfileService getAndroidUserProfileService(Context context) {
+        if (userProfileService != null) {
+            return userProfileService.getNewInstance(projectId, context);
+        }
+        else {
+            return (AndroidUserProfileService) AndroidUserProfileServiceDefault.newInstance(projectId, context);
+        }
 
-        ReflectionUtils.callMethod(obj, "start",ReflectionUtils.emptyArgTypes, ReflectionUtils.emptyArgs);
-
-        return (UserProfileService)obj;
-    }
-
-    protected UserProfileService getAndroidUserProfileService(Context context) {
-        Class[] classes = { String.class, Context.class };
-        Object obj = ReflectionUtils.getObject("com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault", this.getClass().getClassLoader(),
-                "newInstance", classes, getProjectId(), context);
-
-        return (UserProfileService)obj;
     }
 
     protected EventHandler getEventHandler(Context context) {
-        Class[] classes = { Context.class };
-        Object obj = ReflectionUtils.getObject("com.optimizely.ab.android.event_handler.OptlyEventHandler", this.getClass().getClassLoader(),
-                "getInstance", classes, context);
-        Class[] argTypes = { Long.class, TimeUnit.class };
-        ReflectionUtils.callMethod(obj, "setDispatchInterval", argTypes, eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+        if (eventHandler == null) {
+            OptlyEventHandler eventH = OptlyEventHandler.getInstance(context);
+            eventH.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+        }
 
-        return (EventHandler)obj;
-    }
-
-    protected ServiceConnection getDataFileServiceConnection(String projectId, Context context, DataFileLoadedListener listener) {
-        Class[] classes = { String.class, Context.class, DataFileLoadedListener.class };
-        Object obj = ReflectionUtils.getObject("com.optimizely.ab.android.datafile_handler.DataFileServiceConnection", this.getClass().getClassLoader(),
-                null, classes, projectId, context, listener);
-
-        return (ServiceConnection)obj;
+        return (EventHandler)eventHandler;
     }
 
     private boolean isAndroidVersionSupported() {
