@@ -76,6 +76,7 @@ public class OptimizelyManager {
     @NonNull private final Executor executor;
     @NonNull private final Logger logger;
     @Nullable private ServiceConnection dataFileServiceConnection;
+    @NonNull public Boolean useDataFileService = true;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
     @Nullable private UserProfileService userProfileService;
 
@@ -163,14 +164,29 @@ public class OptimizelyManager {
         return optimizelyClient;
     }
 
-    private void initializeServiceConnection(Context context) {
+    private Boolean initializeServiceConnection(Context context) {
+        if (useDataFileService == false) {
+            logger.info("DataFileServiceConnection called but use data file service is set to false");
+            return false;
+        }
         // After instantiating the OptimizelyClient, we will begin the datafile sync so that next time
         // the user can instantiate with the latest datafile
-        final Intent intent = new Intent(context.getApplicationContext(), getDataFileServiceClass());
+        Class clazz = getDataFileServiceClass();
+        if (clazz == null) {
+            // the data file service may have been excluded from the package.
+            // So, we are going to all inject so that optimizely can continue to run.
+            logger.info("DataFileServiceConnect was attempted to be found in the classPath but does not seem to exist." +
+                    "  The developer must have excluded the datafile-handler module.  DataFileServiceConnection cannot be started.");
+            return false;
+        }
+
+        final Intent intent = new Intent(context.getApplicationContext(), clazz);
         if (dataFileServiceConnection == null) {
             this.dataFileServiceConnection = getDataFileServiceConnection(projectId, context, getDataFileLoadedListener(context));
             context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
         }
+
+        return true;
 
     }
     /**
@@ -272,12 +288,8 @@ public class OptimizelyManager {
                              ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory,
                                      LoggerFactory.getLogger(ServiceScheduler.class));
                              if (dataFile != null) {
-                                 Class[] classes = { String.class, Context.class };
-                                 UserProfileService userProfileService = (UserProfileService)
-                                         ReflectionUtils.getObject("com.optimizely.ab.android.user_profile.AndroidUserProfileService", this.getClass().getClassLoader(),
-                                         "newInstance", classes, getProjectId(), context);
-
-                                        injectOptimizely(context, userProfileService, serviceScheduler, dataFile);
+                                 UserProfileService userProfileService = getAndroidUserProfileService(context);
+                                 injectOptimizely(context, userProfileService, serviceScheduler, dataFile);
                              } else {
                                  // We should always call the callback even with the dummy
                                  // instances.  Devs might gate the rest of their app
@@ -390,7 +402,7 @@ public class OptimizelyManager {
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void injectOptimizely(@NonNull final Context context, final @NonNull UserProfileService userProfileService,
-                          @NonNull final ServiceScheduler serviceScheduler, @NonNull final String dataFile) {
+                          @Nullable final ServiceScheduler serviceScheduler, @NonNull final String dataFile) {
         AsyncTask<Void, Void, UserProfileService> initUserProfileTask = new AsyncTask<Void, Void, UserProfileService>() {
             @Override
             protected UserProfileService doInBackground(Void[] params) {
@@ -401,9 +413,13 @@ public class OptimizelyManager {
 
             @Override
             protected void onPostExecute(UserProfileService userProfileService) {
-                Intent intent = new Intent(context, getDataFileServiceClass());
-                intent.putExtra("com.optimizely.ab.android.EXTRA_PROJECT_ID", projectId);
-                serviceScheduler.schedule(intent, dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval));
+
+                Class clazz = getDataFileServiceClass();
+                if (clazz != null && useDataFileService == true) {
+                    Intent intent = new Intent(context, clazz);
+                    intent.putExtra("com.optimizely.ab.android.EXTRA_PROJECT_ID", projectId);
+                    serviceScheduler.schedule(intent, dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval));
+                }
 
                 try {
                     OptimizelyManager.this.optimizelyClient = buildOptimizely(context, dataFile, userProfileService);
@@ -458,6 +474,14 @@ public class OptimizelyManager {
                 "newInstance", classes, getProjectId(), context);
 
         ReflectionUtils.callMethod(obj, "start",ReflectionUtils.emptyArgTypes, ReflectionUtils.emptyArgs);
+
+        return (UserProfileService)obj;
+    }
+
+    protected UserProfileService getAndroidUserProfileService(Context context) {
+        Class[] classes = { String.class, Context.class };
+        Object obj = ReflectionUtils.getObject("com.optimizely.ab.android.user_profile.AndroidUserProfileService", this.getClass().getClassLoader(),
+                "newInstance", classes, getProjectId(), context);
 
         return (UserProfileService)obj;
     }

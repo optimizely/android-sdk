@@ -15,6 +15,8 @@
  ***************************************************************************/
 package com.optimizely.ab.android.test_app;
 
+import android.app.AlarmManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +26,13 @@ import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
+import com.optimizely.ab.android.shared.DataFileCache;
+import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.config.Variation;
+
+import com.optimizely.ab.android.datafile_handler.DataFileService;
+
+import org.slf4j.LoggerFactory;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -48,6 +56,26 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+//        if (optimizelyManager.isDatafileCached(this) == true) {
+//            optimizelyManager.initialize(this);
+//            String userId = myApplication.getAnonUserId();
+//            Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId);
+//            Intent intent = null;
+//            // variation is nullable so we should check for null values
+//            if (backgroundVariation != null) {
+//                // Show activity based on the variation the user got bucketed into
+//                if (backgroundVariation.getKey().equals("variation_a")) {
+//                    intent = new Intent(myApplication.getBaseContext(), VariationAActivity.class);
+//                } else if (backgroundVariation.getKey().equals("variation_b")) {
+//                    intent = new Intent(myApplication.getBaseContext(), VariationBActivity.class);
+//                }
+//            }
+//
+//            startActivity(intent);
+//
+//            return;
+//        }
 
         // Initialize Optimizely asynchronously
         optimizelyManager.initialize(this, new OptimizelyStartListener() {
@@ -76,6 +104,17 @@ public class SplashScreenActivity extends AppCompatActivity {
                 }
 
                 startActivity(intent);
+
+                optimizelyManager.stop(myApplication.getBaseContext());
+
+                AlarmManager alarmManager = (AlarmManager) myApplication.getApplicationContext()
+                        .getSystemService(Context.ALARM_SERVICE);
+                ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
+                        .PendingIntentFactory(myApplication.getApplicationContext());
+                ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory,
+                        LoggerFactory.getLogger(ServiceScheduler.class));
+                intent = new Intent(myApplication.getApplicationContext(), DataFileService.class);
+                serviceScheduler.unschedule(intent);
             }
         });
     }

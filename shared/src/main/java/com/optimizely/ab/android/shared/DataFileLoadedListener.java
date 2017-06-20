@@ -36,5 +36,9 @@ public interface DataFileLoadedListener {
      */
      void onDataFileLoaded(@Nullable String dataFile);
 
-    void onStop(Context context);
+    /**
+     *
+     * @param context
+     */
+     void onStop(Context context);
 }

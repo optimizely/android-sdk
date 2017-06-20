@@ -80,11 +80,11 @@ public class DataFileServiceConnection implements ServiceConnection {
        listener.onStop(context);
     }
 
-    boolean isBound() {
+    public boolean isBound() {
         return bound;
     }
 
-    void setBound(boolean bound) {
+    public void setBound(Boolean bound) {
         this.bound = bound;
     }
 }
