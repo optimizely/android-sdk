@@ -1,0 +1,100 @@
+package com.optimizely.ab.android.datafile_handler;
+
+import android.content.Context;
+import android.support.annotation.Nullable;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+/**
+ * Instrumentation test, which will execute on an Android device.
+ *
+ * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ */
+@RunWith(AndroidJUnit4.class)
+public class DatafileHandlerTest {
+
+    DatafileHandler handler = mock(DatafileHandlerDefault.class);
+    @Before
+    public void setup() {
+        handler = new DatafileHandlerDefault();
+    }
+
+    @Test
+    public void useAppContext() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+        assertEquals("com.optimizely.ab.android.datafile_handler.test", appContext.getPackageName());
+    }
+
+    @Test
+    public void testSaveExistsRemove() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+        handler.saveDatafile(appContext, "1", "{}");
+        assertTrue(handler.isDatafileSaved(appContext, "1"));
+        assertNotNull(handler.loadSavedDatafile(appContext, "1"));
+        handler.removeSavedDatafile(appContext, "1");
+        assertFalse(handler.isDatafileSaved(appContext, "1"));
+        assertEquals("com.optimizely.ab.android.datafile_handler.test", appContext.getPackageName());
+    }
+
+    @Test
+    public void testDownload() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+        String datafile = handler.dowloadDatafile(appContext, "1");
+
+        assertNull(datafile);
+    }
+
+    @Test
+    public void testAsyncDownload() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+        handler.downloadDatafile(appContext, "1", new DataFileLoadedListener() {
+            @Override
+            public void onDataFileLoaded(@Nullable String dataFile) {
+                assertNull(dataFile);
+            }
+
+            @Override
+            public void onStop(Context context) {
+
+            }
+        });
+
+    }
+
+    @Test
+    public void testBackground() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+        handler.startBackgroundUpdates(appContext, "1", 1L, TimeUnit.DAYS);
+
+        assertTrue(true);
+
+        handler.stopBackgroundUpdates(appContext, "1");
+
+        assertTrue(true);
+    }
+
+}

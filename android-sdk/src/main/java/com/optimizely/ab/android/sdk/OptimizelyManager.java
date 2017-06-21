@@ -40,7 +40,6 @@ import com.optimizely.ab.android.datafile_handler.DataFileService;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileHandlerDefault;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
-import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import com.optimizely.ab.android.user_profile.AndroidUserProfileService;
 import com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault;
@@ -84,7 +83,8 @@ public class OptimizelyManager {
                       @NonNull Long dataFileDownloadInterval,
                       @NonNull TimeUnit dataFileDownloadIntervalTimeUnit,
                       @NonNull Executor executor,
-                      @NonNull Logger logger) {
+                      @NonNull Logger logger,
+                      @Nullable DatafileHandler dfHandler) {
         this.projectId = projectId;
         this.eventHandlerDispatchInterval = eventHandlerDispatchInterval;
         this.eventHandlerDispatchIntervalTimeUnit = eventHandlerDispatchIntervalTimeUnit;
@@ -92,7 +92,12 @@ public class OptimizelyManager {
         this.dataFileDownloadIntervalTimeUnit = dataFileDownloadIntervalTimeUnit;
         this.executor = executor;
         this.logger = logger;
-        this.datafileHandler = new DatafileHandlerDefault();
+        if (dfHandler == null) {
+            this.datafileHandler = new DatafileHandlerDefault();
+        }
+        else {
+            this.datafileHandler = dfHandler;
+        }
     }
 
     @NonNull
@@ -149,7 +154,7 @@ public class OptimizelyManager {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
 
-        datafileHandler.downloadDataFile(context, projectId, getDataFileLoadedListener(context));
+        datafileHandler.downloadDatafile(context, projectId, getDataFileLoadedListener(context));
 
         return optimizelyClient;
     }
@@ -232,7 +237,7 @@ public class OptimizelyManager {
             return;
         }
         this.optimizelyStartListener = optimizelyStartListener;
-        datafileHandler.downloadDataFile(context, projectId, getDataFileLoadedListener(context));
+        datafileHandler.downloadDatafile(context, projectId, getDataFileLoadedListener(context));
     }
 
     DataFileLoadedListener getDataFileLoadedListener(final Context context) {
@@ -592,7 +597,7 @@ public class OptimizelyManager {
                     dataFileDownloadInterval,
                     dataFileDownloadIntervalTimeUnit,
                     Executors.newSingleThreadExecutor(),
-                    logger);
+                    logger, null);
         }
     }
 }

@@ -54,11 +54,11 @@ public class DatafileHandlerDefault implements DatafileHandler {
      * @param projectId - project id of the datafile to get.
      * @param listener - listener to call when datafile download complete.
      */
-    public void downloadDataFile(final Context context, String projectId, final DataFileLoadedListener listener) {
+    public void downloadDatafile(final Context context, String projectId, final DataFileLoadedListener listener) {
 
         final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
         if (dataFileServiceConnection == null) {
-            this.dataFileServiceConnection = new DataFileServiceConnection(projectId, context,
+            this.dataFileServiceConnection = new DataFileServiceConnection(projectId, context.getApplicationContext(),
                     new DataFileLoadedListener() {
                         @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
                         @Override
@@ -94,11 +94,11 @@ public class DatafileHandlerDefault implements DatafileHandler {
         AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
-                .PendingIntentFactory(context);
+                .PendingIntentFactory(context.getApplicationContext());
         ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory,
                 LoggerFactory.getLogger(ServiceScheduler.class));
 
-        Intent intent = new Intent(context, DataFileService.class);
+        Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
         intent.putExtra("com.optimizely.ab.android.EXTRA_PROJECT_ID", projectId);
         serviceScheduler.schedule(intent, timeUnit.toMillis(updateInterval));
 
@@ -113,10 +113,10 @@ public class DatafileHandlerDefault implements DatafileHandler {
         AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
-                .PendingIntentFactory(context);
+                .PendingIntentFactory(context.getApplicationContext());
         ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory,
                 LoggerFactory.getLogger(ServiceScheduler.class));
-        Intent intent = new Intent(context, DataFileService.class);
+        Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
         serviceScheduler.unschedule(intent);
 
     }
@@ -175,6 +175,21 @@ public class DatafileHandlerDefault implements DatafileHandler {
         );
 
         return dataFileCache.exists();
+    }
+
+    /**
+     * Remove the datatfile in cache.
+     * @param projectId project id of the datafile..
+     */
+    public void removeSavedDatafile(Context context, String projectId) {
+        DataFileCache dataFileCache = new DataFileCache(
+                projectId,
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(DataFileCache.class)
+        );
+        if (dataFileCache.exists()) {
+            dataFileCache.delete();
+        }
     }
 
 

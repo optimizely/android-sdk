@@ -23,7 +23,7 @@ public interface DatafileHandler {
      * @param projectId - project id of the datafile to get.
      * @param listener - listener to call when datafile download complete.
      */
-    public void downloadDataFile(Context context, String projectId, DataFileLoadedListener listener);
+    public void downloadDatafile(Context context, String projectId, DataFileLoadedListener listener);
 
     /**
      *  Startbackground updates to the project datafile .
@@ -59,6 +59,13 @@ public interface DatafileHandler {
      * @return
      */
     public Boolean isDatafileSaved(Context context, String projectId);
+
+    /**
+     * Remove the datatfile in cache.
+     * @param projectId project id of the datafile..
+     */
+    public void removeSavedDatafile(Context context, String projectId);
+
 
 
 }

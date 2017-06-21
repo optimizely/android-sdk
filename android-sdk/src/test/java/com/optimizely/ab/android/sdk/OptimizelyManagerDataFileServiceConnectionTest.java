@@ -66,12 +66,11 @@ public class OptimizelyManagerDataFileServiceConnectionTest {
         when(service.getApplicationContext()).thenReturn(context);
         when(binder.getService()).thenReturn(service);
         when(optimizelyManager.getProjectId()).thenReturn("1");
+        when(optimizelyManager.getDataFileLoadedListener(context)).thenReturn(mock(DataFileLoadedListener.class));
         ArgumentCaptor<DataFileLoadedListener> captor = ArgumentCaptor.forClass(DataFileLoadedListener.class);
+        dataFileServiceConnection = new DataFileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDataFileLoadedListener(context) );
         dataFileServiceConnection.onServiceConnected(null, binder);
-        verify(service).getDataFile(same("1"), any(DataFileLoader.class), captor.capture());
-        DataFileLoadedListener listener = captor.getValue();
-        listener.onDataFileLoaded("");
-        verify(optimizelyManager).injectOptimizely(any(Context.class), any(AndroidUserProfileServiceDefault.class), eq(""));
+        verify(service).getDataFile(same("1"), any(DataFileLoader.class), any(DataFileLoadedListener.class));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

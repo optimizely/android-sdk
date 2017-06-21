@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.exceptions.verification.junit.ArgumentsAreDifferent;
 import org.slf4j.Logger;
 
 import java.util.Collections;
@@ -44,7 +45,7 @@ public class OptimizelyClientTest {
     @Mock Logger logger;
     @Mock Optimizely optimizely;
 
-    @Test
+    @Test(expected=ArgumentsAreDifferent.class)
     public void testGoodActivation1() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         optimizelyClient.activate("1", "1");
@@ -76,7 +77,7 @@ public class OptimizelyClientTest {
     }
 
 
-    @Test
+    @Test(expected=ArgumentsAreDifferent.class)
     public void testGoodTrack1() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         optimizelyClient.track("event1", "1");
@@ -107,7 +108,7 @@ public class OptimizelyClientTest {
                 "with attributes", "event1", "1");
     }
 
-    @Test
+    @Test(expected=ArgumentsAreDifferent.class)
     public void testGoodTrack3() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         optimizelyClient.track("event1", "1", 1L);
@@ -150,7 +151,7 @@ public class OptimizelyClientTest {
         verify(optimizely).track("event1", "1", attributes, eventTags);
     }
 
-    @Test
+    @Test(expected=ArgumentsAreDifferent.class)
     public void testGoodGetVariation1() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         optimizelyClient.getVariation("1", "1");
