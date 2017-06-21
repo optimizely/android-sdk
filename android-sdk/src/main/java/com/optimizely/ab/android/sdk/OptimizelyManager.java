@@ -430,6 +430,7 @@ public class OptimizelyManager {
         if (eventHandler == null) {
             OptlyEventHandler eventH = OptlyEventHandler.getInstance(context);
             eventH.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+            eventHandler = eventH;
         }
 
         return (EventHandler)eventHandler;
