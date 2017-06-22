@@ -19,8 +19,9 @@ package com.optimizely.ab.event.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.Exception;
+
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
@@ -42,13 +43,13 @@ public final class BuildVersionInfo {
                                       Charset.forName("UTF-8")));
         try {
             return bufferedReader.readLine();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("unable to read version number");
             return "unknown";
         } finally {
             try {
                 bufferedReader.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("unable to close reader cleanly");
             }
         }
