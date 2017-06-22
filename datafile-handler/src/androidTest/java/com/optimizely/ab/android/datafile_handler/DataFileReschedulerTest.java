@@ -103,7 +103,7 @@ public class DataFileReschedulerTest {
         dispatcher.dispatch(intent);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(mockContext).startService(captor.capture());
-        Assert.assertEquals("1", captor.getValue().getStringExtra(DataFileService.EXTRA_PROJECT_ID));
+        assertEquals("1", captor.getValue().getStringExtra(DataFileService.EXTRA_PROJECT_ID));
         verify(logger).info("Rescheduled data file watching for project {}", "1");
         cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }

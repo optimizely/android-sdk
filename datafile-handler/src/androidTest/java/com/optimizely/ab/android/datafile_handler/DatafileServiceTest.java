@@ -16,29 +16,38 @@
 
 package com.optimizely.ab.android.datafile_handler;
 
+import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
 import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
 import android.support.test.rule.ServiceTestRule;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
+import com.optimizely.ab.android.shared.ServiceScheduler;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link DataFileService}
@@ -47,8 +56,15 @@ import static org.mockito.Mockito.verify;
     // Known bug https://code.google.com/p/android/issues/detail?id=180396
 public class DatafileServiceTest {
 
+    private ListeningExecutorService executor;
+
     @Rule
     public final ServiceTestRule mServiceRule = new ServiceTestRule();
+
+    @Before
+    public void setup() {
+        executor = MoreExecutors.newDirectExecutorService();
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
@@ -112,6 +128,34 @@ public class DatafileServiceTest {
         dataFileService.logger = logger;
         dataFileService.onStartCommand(intent, 0, 0);
         verify(logger).warn("Data file service received an intent with no project id extra");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    @Test
+    public void testIntentExtraData(){
+        Context context = mock(Context.class);
+        when(context.getPackageName()).thenReturn("com.optly");
+        ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        AlarmManager alarmManager = (AlarmManager) context
+                .getSystemService(Context.ALARM_SERVICE);
+        ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
+                .PendingIntentFactory(context);
+
+        Intent intent = new Intent(context, DataFileService.class);
+        intent.putExtra(DataFileService.EXTRA_PROJECT_ID, "1");
+        serviceScheduler.schedule(intent, TimeUnit.HOURS.toMillis(1L));
+
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail("Timed out");
+        }
+
+        verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
+
+        Intent intent2 = captor.getValue();
+        assertTrue(intent2.getComponent().getShortClassName().contains("DataFileService"));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

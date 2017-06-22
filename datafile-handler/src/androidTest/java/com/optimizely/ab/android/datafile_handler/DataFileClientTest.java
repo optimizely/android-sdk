@@ -74,8 +74,8 @@ public class DataFileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        Assert.assertEquals(Integer.valueOf(2), captor2.getValue());
-        Assert.assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(3), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
@@ -99,8 +99,8 @@ public class DataFileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        Assert.assertEquals(Integer.valueOf(2), captor2.getValue());
-        Assert.assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(3), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
@@ -124,8 +124,8 @@ public class DataFileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        Assert.assertEquals(Integer.valueOf(2), captor2.getValue());
-        Assert.assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(3), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
@@ -147,8 +147,8 @@ public class DataFileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        Assert.assertEquals(Integer.valueOf(2), captor2.getValue());
-        Assert.assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(3), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertNull(response);
 
@@ -168,8 +168,8 @@ public class DataFileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        Assert.assertEquals(Integer.valueOf(2), captor2.getValue());
-        Assert.assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(3), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertNull(response);
 

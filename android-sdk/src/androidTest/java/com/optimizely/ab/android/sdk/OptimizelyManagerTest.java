@@ -183,7 +183,7 @@ public class OptimizelyManagerTest {
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         optimizelyManager.setOptimizelyStartListener(null);
-        //optimizelyManager.injectOptimizely(context, userProfileService, minDataFile);
+        optimizelyManager.injectOptimizely(context, userProfileService, minDataFile);
         AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
@@ -199,9 +199,9 @@ public class OptimizelyManagerTest {
             fail("Timed out");
         }
 
-        //verify(userProfileService).start();
+        verify(userProfileService).start();
         verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
-        //verify(logger).info("No listener to send Optimizely to");
+        verify(logger).info("No listener to send Optimizely to");
 
         Intent intent2 = captor.getValue();
         assertTrue(intent2.getComponent().getShortClassName().contains("DataFileService"));
