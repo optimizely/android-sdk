@@ -43,6 +43,7 @@ import com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.android.event_handler.EventIntentService;
 import com.optimizely.ab.event.internal.payload.Event;
 
 import org.slf4j.Logger;
@@ -209,7 +210,7 @@ public class OptimizelyManager {
      * datafile will be updated from network if it is different from the cache.  If there is no
      * cached datafile the returned instance will always be built from the remote datafile.
      *
-     * @param activity                an Activity, used to automatically unbind com.optimizely.ab.android.datafile_handler.DatafileService
+     * @param activity                an Activity, used to automatically unbind {@link DatafileService}
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -227,7 +228,7 @@ public class OptimizelyManager {
      * @see #initialize(Activity, OptimizelyStartListener)
      * <p>
      * This method does the same thing except it can be used with a generic {@link Context}.
-     * When using this method be sure to call {@link #stop(Context)} to unbind com.optimizely.ab.android.datafile_handler.DatafileService.
+     * When using this method be sure to call {@link #stop(Context)} to unbind  {@link DatafileService}.
      */
     public void initialize(@NonNull Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
         if (!isAndroidVersionSupported()) {
@@ -272,10 +273,9 @@ public class OptimizelyManager {
     }
 
     /**
-     * Unbinds com.optimizely.ab.android.datafile_handler.DatafileService
+     * Called after the {@link DatafileService} is unbound.
      * <p>
-     * Calling this is not necessary if using {@link #initialize(Activity, OptimizelyStartListener)} which
-     * handles unbinding implicitly.
+     * Here we just cancel the start listener.
      *
      * @param context any {@link Context} instance
      */
@@ -539,7 +539,7 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which com.optimizely.ab.android.event_handler.EventIntentService
+         * Sets the interval which {@link EventIntentService}
          * will flush events.
          *
          * @param interval the interval
@@ -553,7 +553,7 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which com.optimizely.ab.android.datafile_handler.DatafileService will attempt to update the
+         * Sets the interval which {@link DatafileService} will attempt to update the
          * cached datafile.
          *
          * @param interval the interval

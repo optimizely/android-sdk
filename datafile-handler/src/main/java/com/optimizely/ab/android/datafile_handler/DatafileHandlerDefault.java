@@ -99,7 +99,7 @@ public class DatafileHandlerDefault implements DatafileHandler {
                 LoggerFactory.getLogger(ServiceScheduler.class));
 
         Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
-        intent.putExtra("com.optimizely.ab.android.EXTRA_PROJECT_ID", projectId);
+        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, projectId);
         serviceScheduler.schedule(intent, timeUnit.toMillis(updateInterval));
 
     }

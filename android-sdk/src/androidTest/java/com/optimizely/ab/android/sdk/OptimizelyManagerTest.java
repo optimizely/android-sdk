@@ -187,7 +187,7 @@ public class OptimizelyManagerTest {
                 .PendingIntentFactory(context);
 
         Intent intent = new Intent(context, DatafileService.class);
-        intent.putExtra("com.optimizely.ab.android.EXTRA_PROJECT_ID", optimizelyManager.getProjectId());
+        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, optimizelyManager.getProjectId());
         serviceScheduler.schedule(intent, optimizelyManager.getDatafileDownloadIntervalTimeUnit().toMillis(optimizelyManager.getDatafileDownloadInterval()));
 
         try {
