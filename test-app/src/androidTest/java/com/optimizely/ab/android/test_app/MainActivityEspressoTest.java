@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -153,6 +154,11 @@ public class MainActivityEspressoTest {
         // The user 'test_user` is in the whitelist for variation_a for experiment background_experiment
         onView(withId(R.id.tv_variation_a_text_1))
                 .check(matches(isDisplayed()));
+
+
+        // here i am rescheduling the data file service.  this is because in the splash activity after optimizely startup
+        // the app unschedules the data file service.
+        serviceScheduler.schedule(dataFileServiceIntent, TimeUnit.DAYS.toMillis(1L));
 
         // Espresso will wait for Optimizely to start due to the registered idling resources
         assertTrue(serviceScheduler.isScheduled(dataFileServiceIntent));

@@ -75,7 +75,7 @@ task ship() {
 }
 
 task cleanAllModules << {
-    logger.info("Running clena for all modules")
+    logger.info("Running clean for all modules")
 }
 
 cleanAllModules.dependsOn(':android-sdk:clean', ':event-handler:clean',
