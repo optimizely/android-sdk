@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DatafileHandlerDefault implements DatafileHandler {
 
-    private DataFileServiceConnection dataFileServiceConnection;
+    private DatafileServiceConnection datafileServiceConnection;
 
     /**
      * Synchronous call to get download the datafile.
@@ -34,19 +34,19 @@ public class DatafileHandlerDefault implements DatafileHandler {
      * @return a valid datafile or null
      */
     public String dowloadDatafile(Context context, String projectId) {
-        DataFileClient dataFileClient = new DataFileClient(
+        DatafileClient datafileClient = new DatafileClient(
                 new Client(new OptlyStorage(context), LoggerFactory.getLogger(OptlyStorage.class)),
-                LoggerFactory.getLogger(DataFileClient.class));
+                LoggerFactory.getLogger(DatafileClient.class));
 
-        String datafileUrl = DataFileService.getDatafileUrl(projectId);
+        String datafileUrl = DatafileService.getDatafileUrl(projectId);
 
-        return dataFileClient.request(datafileUrl);
+        return datafileClient.request(datafileUrl);
     }
 
     /**
      * Asynchronous download data file.
      *
-     * We create a DataFileService intent, create a DataService connection, and bind it to the application context.
+     * We create a DatafileService intent, create a DataService connection, and bind it to the application context.
      * After we receive the datafile, we unbind the service and cleanup the service connection.
      * This gets the project file from the optimizely cdn.
      *
@@ -54,20 +54,20 @@ public class DatafileHandlerDefault implements DatafileHandler {
      * @param projectId - project id of the datafile to get.
      * @param listener - listener to call when datafile download complete.
      */
-    public void downloadDatafile(final Context context, String projectId, final DataFileLoadedListener listener) {
+    public void downloadDatafile(final Context context, String projectId, final DatafileLoadedListener listener) {
 
-        final Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
-        if (dataFileServiceConnection == null) {
-            this.dataFileServiceConnection = new DataFileServiceConnection(projectId, context.getApplicationContext(),
-                    new DataFileLoadedListener() {
+        final Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
+        if (datafileServiceConnection == null) {
+            this.datafileServiceConnection = new DatafileServiceConnection(projectId, context.getApplicationContext(),
+                    new DatafileLoadedListener() {
                         @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
                         @Override
-                        public void onDataFileLoaded(@Nullable String dataFile) {
-                            listener.onDataFileLoaded(dataFile);
+                        public void onDatafileLoaded(@Nullable String dataFile) {
+                            listener.onDatafileLoaded(dataFile);
 
-                            if (dataFileServiceConnection != null && dataFileServiceConnection.isBound()) {
-                                context.getApplicationContext().unbindService(dataFileServiceConnection);
-                                dataFileServiceConnection = null;
+                            if (datafileServiceConnection != null && datafileServiceConnection.isBound()) {
+                                context.getApplicationContext().unbindService(datafileServiceConnection);
+                                datafileServiceConnection = null;
                             }
 
                         }
@@ -77,7 +77,7 @@ public class DatafileHandlerDefault implements DatafileHandler {
                             listener.onStop(context);
                         }
                     });
-            context.getApplicationContext().bindService(intent, dataFileServiceConnection, Context.BIND_AUTO_CREATE);
+            context.getApplicationContext().bindService(intent, datafileServiceConnection, Context.BIND_AUTO_CREATE);
         }
 
     }
@@ -98,7 +98,7 @@ public class DatafileHandlerDefault implements DatafileHandler {
         ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory,
                 LoggerFactory.getLogger(ServiceScheduler.class));
 
-        Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
+        Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
         intent.putExtra("com.optimizely.ab.android.EXTRA_PROJECT_ID", projectId);
         serviceScheduler.schedule(intent, timeUnit.toMillis(updateInterval));
 
@@ -116,7 +116,7 @@ public class DatafileHandlerDefault implements DatafileHandler {
                 .PendingIntentFactory(context.getApplicationContext());
         ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory,
                 LoggerFactory.getLogger(ServiceScheduler.class));
-        Intent intent = new Intent(context.getApplicationContext(), DataFileService.class);
+        Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
         serviceScheduler.unschedule(intent);
 
     }
@@ -129,15 +129,15 @@ public class DatafileHandlerDefault implements DatafileHandler {
      * @param dataFile the datafile to save.
      */
     public void saveDatafile(Context context, String projectId, String dataFile) {
-        DataFileCache dataFileCache = new DataFileCache(
+        DatafileCache datafileCache = new DatafileCache(
                 projectId,
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
-                LoggerFactory.getLogger(DataFileCache.class)
+                LoggerFactory.getLogger(DatafileCache.class)
         );
 
-        dataFileCache.delete();
+        datafileCache.delete();
 
-        dataFileCache.save(dataFile);
+        datafileCache.save(dataFile);
     }
 
     /**
@@ -147,13 +147,13 @@ public class DatafileHandlerDefault implements DatafileHandler {
      * @return The datafile cached or null if it was not available.
      */
     public String loadSavedDatafile(Context context, String projectId) {
-        DataFileCache dataFileCache = new DataFileCache(
+        DatafileCache datafileCache = new DatafileCache(
                 projectId,
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
-                LoggerFactory.getLogger(DataFileCache.class)
+                LoggerFactory.getLogger(DatafileCache.class)
         );
 
-        JSONObject datafile = dataFileCache.load();
+        JSONObject datafile = datafileCache.load();
         if (datafile != null) {
             return datafile.toString();
         }
@@ -168,13 +168,13 @@ public class DatafileHandlerDefault implements DatafileHandler {
      * @return true if cached false if not.
      */
     public Boolean isDatafileSaved(Context context, String projectId) {
-        DataFileCache dataFileCache = new DataFileCache(
+        DatafileCache datafileCache = new DatafileCache(
                 projectId,
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
-                LoggerFactory.getLogger(DataFileCache.class)
+                LoggerFactory.getLogger(DatafileCache.class)
         );
 
-        return dataFileCache.exists();
+        return datafileCache.exists();
     }
 
     /**
@@ -182,13 +182,13 @@ public class DatafileHandlerDefault implements DatafileHandler {
      * @param projectId project id of the datafile..
      */
     public void removeSavedDatafile(Context context, String projectId) {
-        DataFileCache dataFileCache = new DataFileCache(
+        DatafileCache datafileCache = new DatafileCache(
                 projectId,
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
-                LoggerFactory.getLogger(DataFileCache.class)
+                LoggerFactory.getLogger(DatafileCache.class)
         );
-        if (dataFileCache.exists()) {
-            dataFileCache.delete();
+        if (datafileCache.exists()) {
+            datafileCache.delete();
         }
     }
 

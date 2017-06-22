@@ -24,8 +24,6 @@ import android.support.test.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,33 +40,33 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link DataFileRescheduler}
+ * Tests for {@link DatafileRescheduler}
  */
 @RunWith(JUnit4.class)
 @Ignore
 // Tests pass locally but not on travis
 // probably starting too many services
-public class DataFileReschedulerTest {
+public class DatafileReschedulerTest {
 
-    private DataFileRescheduler dataFileRescheduler;
+    private DatafileRescheduler datafileRescheduler;
     private Logger logger;
 
     @Before
     public void setup() {
-        dataFileRescheduler = new DataFileRescheduler();
+        datafileRescheduler = new DatafileRescheduler();
         logger = mock(Logger.class);
-        dataFileRescheduler.logger = logger;
+        datafileRescheduler.logger = logger;
     }
 
     @Test
     public void receivingNullContext() {
-        dataFileRescheduler.onReceive(null, mock(Intent.class));
+        datafileRescheduler.onReceive(null, mock(Intent.class));
         verify(logger).warn("Received invalid broadcast to data file rescheduler");
     }
 
     @Test
     public void receivingNullIntent() {
-        dataFileRescheduler.onReceive(mock(Context.class), null);
+        datafileRescheduler.onReceive(mock(Context.class), null);
         verify(logger).warn("Received invalid broadcast to data file rescheduler");
     }
 
@@ -77,7 +75,7 @@ public class DataFileReschedulerTest {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = mock(Intent.class);
         when(intent.getAction()).thenReturn(Intent.ACTION_BOOT_COMPLETED);
-        dataFileRescheduler.onReceive(context, intent);
+        datafileRescheduler.onReceive(context, intent);
         verify(logger).info("Received intent with action {}", Intent.ACTION_BOOT_COMPLETED);
     }
 
@@ -87,7 +85,7 @@ public class DataFileReschedulerTest {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = mock(Intent.class);
         when(intent.getAction()).thenReturn(Intent.ACTION_MY_PACKAGE_REPLACED);
-        dataFileRescheduler.onReceive(context, intent);
+        datafileRescheduler.onReceive(context, intent);
         verify(logger).info("Received intent with action {}", Intent.ACTION_MY_PACKAGE_REPLACED);
     }
 
@@ -98,12 +96,12 @@ public class DataFileReschedulerTest {
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
         backgroundWatchersCache.setIsWatching("1", true);
         Logger logger = mock(Logger.class);
-        DataFileRescheduler.Dispatcher dispatcher = new DataFileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
-        Intent intent = new Intent(mockContext, DataFileService.class);
+        DatafileRescheduler.Dispatcher dispatcher = new DatafileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
+        Intent intent = new Intent(mockContext, DatafileService.class);
         dispatcher.dispatch(intent);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(mockContext).startService(captor.capture());
-        assertEquals("1", captor.getValue().getStringExtra(DataFileService.EXTRA_PROJECT_ID));
+        assertEquals("1", captor.getValue().getStringExtra(DatafileService.EXTRA_PROJECT_ID));
         verify(logger).info("Rescheduled data file watching for project {}", "1");
         cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }
@@ -117,8 +115,8 @@ public class DataFileReschedulerTest {
         backgroundWatchersCache.setIsWatching("2", true);
         backgroundWatchersCache.setIsWatching("3", true);
         Logger logger = mock(Logger.class);
-        DataFileRescheduler.Dispatcher dispatcher = new DataFileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
-        Intent intent = new Intent(mockContext, DataFileService.class);
+        DatafileRescheduler.Dispatcher dispatcher = new DatafileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
+        Intent intent = new Intent(mockContext, DatafileService.class);
         dispatcher.dispatch(intent);
         verify(mockContext, times(3)).startService(any(Intent.class));
         cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);

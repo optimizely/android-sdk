@@ -28,8 +28,8 @@ import android.support.test.runner.AndroidJUnit4;
 import android.util.Pair;
 import android.view.WindowManager;
 
+import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.event_handler.EventIntentService;
-import com.optimizely.ab.android.datafile_handler.DataFileService;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -105,11 +105,11 @@ public class MainActivityEspressoTest {
                 protected void before() throws Throwable {
                     super.before();
 
-                    dataFileServiceIntent = new Intent(context, DataFileService.class);
-                    dataFileServiceIntent.putExtra(DataFileService.EXTRA_PROJECT_ID, MyApplication.PROJECT_ID);
+                    dataFileServiceIntent = new Intent(context, DatafileService.class);
+                    dataFileServiceIntent.putExtra(DatafileService.EXTRA_PROJECT_ID, MyApplication.PROJECT_ID);
 
                     eventIntentService = new Intent(context, EventIntentService.class);
-                    eventIntentService.putExtra(DataFileService.EXTRA_PROJECT_ID, MyApplication.PROJECT_ID);
+                    eventIntentService.putExtra(DatafileService.EXTRA_PROJECT_ID, MyApplication.PROJECT_ID);
 
                     Context applicationContext = context.getApplicationContext();
                     ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(applicationContext);

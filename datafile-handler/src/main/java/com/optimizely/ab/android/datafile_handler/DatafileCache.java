@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 /**
  * Abstracts the actual data "file" {@link java.io.File}
  */
-public class DataFileCache {
+public class DatafileCache {
 
     private static final String OPTLY_DATA_FILE_NAME = "optly-data-file-%s.json";
 
@@ -36,7 +36,7 @@ public class DataFileCache {
     @NonNull private final String projectId;
     @NonNull private final Logger logger;
 
-    public DataFileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
+    public DatafileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
         this.projectId = projectId;
         this.logger = logger;
@@ -44,13 +44,13 @@ public class DataFileCache {
 
     @Nullable
     public JSONObject load() {
-        String optlyDataFile = cache.load(getFileName());
+        String optlyDatafile = cache.load(getFileName());
 
-        if (optlyDataFile == null) {
+        if (optlyDatafile == null) {
             return null;
         }
         try {
-            return new JSONObject(optlyDataFile);
+            return new JSONObject(optlyDatafile);
         } catch (JSONException e) {
             logger.error("Unable to parse data file", e);
             return null;

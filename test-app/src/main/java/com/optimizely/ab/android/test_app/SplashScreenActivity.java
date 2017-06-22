@@ -15,8 +15,6 @@
  ***************************************************************************/
 package com.optimizely.ab.android.test_app;
 
-import android.app.AlarmManager;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -26,12 +24,7 @@ import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
-import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.config.Variation;
-
-import com.optimizely.ab.android.datafile_handler.DataFileService;
-
-import org.slf4j.LoggerFactory;
 
 public class SplashScreenActivity extends AppCompatActivity {
 

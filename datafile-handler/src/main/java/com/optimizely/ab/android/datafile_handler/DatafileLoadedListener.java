@@ -26,7 +26,7 @@ import android.content.Context;
  *
  *
  */
-public interface DataFileLoadedListener {
+public interface DatafileLoadedListener {
 
     /**
      * Called with new datafile
@@ -34,7 +34,7 @@ public interface DataFileLoadedListener {
      * @param dataFile the datafile json, can be null if datafile loading failed.
      *
      */
-     void onDataFileLoaded(@Nullable String dataFile);
+     void onDatafileLoaded(@Nullable String dataFile);
 
     /**
      *

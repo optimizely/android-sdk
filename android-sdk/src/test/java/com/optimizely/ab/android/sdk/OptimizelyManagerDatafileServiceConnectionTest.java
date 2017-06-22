@@ -20,9 +20,6 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
-import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,10 +27,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.optimizely.ab.android.datafile_handler.DataFileService;
-import com.optimizely.ab.android.datafile_handler.DataFileLoadedListener;
-import com.optimizely.ab.android.datafile_handler.DataFileLoader;
-import com.optimizely.ab.android.datafile_handler.DataFileServiceConnection;
+import com.optimizely.ab.android.datafile_handler.DatafileService;
+import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
+import com.optimizely.ab.android.datafile_handler.DatafileLoader;
+import com.optimizely.ab.android.datafile_handler.DatafileServiceConnection;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -43,44 +40,44 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests {@link OptimizelyManager.DataFileServiceConnection}
+ * Tests {@link OptimizelyManager.DatafileServiceConnection}
  */
 @RunWith(MockitoJUnitRunner.class)
-public class OptimizelyManagerDataFileServiceConnectionTest {
+public class OptimizelyManagerDatafileServiceConnectionTest {
 
-    private DataFileServiceConnection dataFileServiceConnection;
+    private DatafileServiceConnection datafileServiceConnection;
     @Mock private OptimizelyManager optimizelyManager;
 
     @Before
     public void setup() {
         Context context = mock(Context.class);
-        dataFileServiceConnection = new DataFileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDataFileLoadedListener(context));
+        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDatafileLoadedListener(context));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnected() {
-        DataFileService.LocalBinder binder = mock(DataFileService.LocalBinder.class);
-        DataFileService service = mock(DataFileService.class);
+        DatafileService.LocalBinder binder = mock(DatafileService.LocalBinder.class);
+        DatafileService service = mock(DatafileService.class);
         Context context = mock(Context.class);
         when(service.getApplicationContext()).thenReturn(context);
         when(binder.getService()).thenReturn(service);
         when(optimizelyManager.getProjectId()).thenReturn("1");
-        when(optimizelyManager.getDataFileLoadedListener(context)).thenReturn(mock(DataFileLoadedListener.class));
-        ArgumentCaptor<DataFileLoadedListener> captor = ArgumentCaptor.forClass(DataFileLoadedListener.class);
-        dataFileServiceConnection = new DataFileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDataFileLoadedListener(context) );
-        dataFileServiceConnection.onServiceConnected(null, binder);
-        verify(service).getDataFile(same("1"), any(DataFileLoader.class), any(DataFileLoadedListener.class));
+        when(optimizelyManager.getDatafileLoadedListener(context)).thenReturn(mock(DatafileLoadedListener.class));
+        ArgumentCaptor<DatafileLoadedListener> captor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
+        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDatafileLoadedListener(context) );
+        datafileServiceConnection.onServiceConnected(null, binder);
+        verify(service).getDatafile(same("1"), any(DatafileLoader.class), any(DatafileLoadedListener.class));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnectedNullServiceFromBinder() {
-        DataFileService.LocalBinder binder = mock(DataFileService.LocalBinder.class);
+        DatafileService.LocalBinder binder = mock(DatafileService.LocalBinder.class);
         when(binder.getService()).thenReturn(null);
 
         try {
-            dataFileServiceConnection.onServiceConnected(null, binder);
+            datafileServiceConnection.onServiceConnected(null, binder);
         } catch (NullPointerException e) {
             fail();
         }

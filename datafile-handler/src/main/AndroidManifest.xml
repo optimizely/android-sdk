@@ -6,13 +6,13 @@
 
     <application>
         <service
-            android:name="DataFileService"
+            android:name=".DatafileService"
             android:enabled="true"
             android:exported="false">
         </service>
 
         <receiver
-            android:name="DataFileRescheduler"
+            android:name="DatafileRescheduler"
             android:enabled="true"
             android:exported="false">
             <intent-filter>

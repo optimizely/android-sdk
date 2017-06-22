@@ -30,12 +30,12 @@ import java.util.List;
 
 /**
  * Broadcast Receiver that handles app upgrade and phone restart broadcasts in order
- * to reschedule {@link DataFileService}
+ * to reschedule {@link DatafileService}
  *
  * @hide
  */
-public class DataFileRescheduler extends BroadcastReceiver {
-    Logger logger = LoggerFactory.getLogger(DataFileRescheduler.class);
+public class DatafileRescheduler extends BroadcastReceiver {
+    Logger logger = LoggerFactory.getLogger(DatafileRescheduler.class);
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -47,7 +47,7 @@ public class DataFileRescheduler extends BroadcastReceiver {
                     new Cache(context, LoggerFactory.getLogger(Cache.class)),
                     LoggerFactory.getLogger(BackgroundWatchersCache.class));
             Dispatcher dispatcher = new Dispatcher(context, backgroundWatchersCache, LoggerFactory.getLogger(Dispatcher.class));
-            intent = new Intent(context, DataFileService.class);
+            intent = new Intent(context, DatafileService.class);
             dispatcher.dispatch(intent);
 
 
@@ -57,7 +57,7 @@ public class DataFileRescheduler extends BroadcastReceiver {
     }
 
     /**
-     * Handles building sending Intents to {@link DataFileService}
+     * Handles building sending Intents to {@link DatafileService}
      *
      * This abstraction mostly makes unit testing easier
      */
@@ -76,7 +76,7 @@ public class DataFileRescheduler extends BroadcastReceiver {
         void dispatch(Intent intent) {
             List<String> projectIds = backgroundWatchersCache.getWatchingProjectIds();
             for (String projectId : projectIds) {
-                intent.putExtra(DataFileService.EXTRA_PROJECT_ID, projectId);
+                intent.putExtra(DatafileService.EXTRA_PROJECT_ID, projectId);
                 context.startService(intent);
 
                 logger.info("Rescheduled data file watching for project {}", projectId);

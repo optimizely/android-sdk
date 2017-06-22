@@ -23,7 +23,7 @@ public interface DatafileHandler {
      * @param projectId - project id of the datafile to get.
      * @param listener - listener to call when datafile download complete.
      */
-    public void downloadDatafile(Context context, String projectId, DataFileLoadedListener listener);
+    public void downloadDatafile(Context context, String projectId, DatafileLoadedListener listener);
 
     /**
      *  Startbackground updates to the project datafile .

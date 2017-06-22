@@ -38,7 +38,7 @@ import java.util.concurrent.Executors;
  *
  * @hide
  */
-public class DataFileService extends Service {
+public class DatafileService extends Service {
     /**
      * Extra containing the project id this instance of Optimizely was built with
      */
@@ -60,17 +60,17 @@ public class DataFileService extends Service {
         if (intent != null) {
             if (intent.hasExtra(EXTRA_PROJECT_ID)) {
                 String projectId = intent.getStringExtra(EXTRA_PROJECT_ID);
-                DataFileClient dataFileClient = new DataFileClient(
+                DatafileClient datafileClient = new DatafileClient(
                         new Client(new OptlyStorage(getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
-                        LoggerFactory.getLogger(DataFileClient.class));
-                DataFileCache dataFileCache = new DataFileCache(
+                        LoggerFactory.getLogger(DatafileClient.class));
+                DatafileCache datafileCache = new DatafileCache(
                         projectId,
                         new Cache(getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
-                        LoggerFactory.getLogger(DataFileCache.class));
+                        LoggerFactory.getLogger(DatafileCache.class));
 
                 String datafileUrl = getDatafileUrl(projectId);
-                DataFileLoader dataFileLoader = new DataFileLoader(this, dataFileClient, dataFileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DataFileLoader.class));
-                dataFileLoader.getDataFile(datafileUrl, null);
+                DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
+                datafileLoader.getDatafile(datafileUrl, null);
                 BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
                         new Cache(this, LoggerFactory.getLogger(Cache.class)),
                         LoggerFactory.getLogger(BackgroundWatchersCache.class));
@@ -120,15 +120,15 @@ public class DataFileService extends Service {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    public void getDataFile(String projectId, DataFileLoader dataFileLoader, DataFileLoadedListener loadedListener) {
+    public void getDatafile(String projectId, DatafileLoader datafileLoader, DatafileLoadedListener loadedListener) {
         String datafileUrl = getDatafileUrl(projectId);
-        dataFileLoader.getDataFile(datafileUrl, loadedListener);
+        datafileLoader.getDatafile(datafileUrl, loadedListener);
     }
 
     public class LocalBinder extends Binder {
-        public DataFileService getService() {
+        public DatafileService getService() {
             // Return this instance of LocalService so clients can call public methods
-            return DataFileService.this;
+            return DatafileService.this;
         }
     }
 }

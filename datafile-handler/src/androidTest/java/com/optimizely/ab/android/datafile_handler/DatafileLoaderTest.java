@@ -51,114 +51,114 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link DataFileLoader}
+ * Tests for {@link DatafileLoader}
  */
 @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
 @RunWith(AndroidJUnit4.class)
-public class DataFileLoaderTest {
+public class DatafileLoaderTest {
 
-    private DataFileService datafileService;
-    private DataFileCache dataFileCache;
-    private DataFileClient dataFileClient;
+    private DatafileService datafileService;
+    private DatafileCache datafileCache;
+    private DatafileClient datafileClient;
     private Client client;
     private Logger logger;
-    private DataFileLoadedListener dataFileLoadedListener;
+    private DatafileLoadedListener datafileLoadedListener;
 
     @Before
     public void setup() {
-        datafileService = mock(DataFileService.class);
+        datafileService = mock(DatafileService.class);
         logger = mock(Logger.class);
         final Context targetContext = InstrumentationRegistry.getTargetContext();
-        dataFileCache = new DataFileCache("1", new Cache(targetContext, logger), logger);
+        datafileCache = new DatafileCache("1", new Cache(targetContext, logger), logger);
         client = mock(Client.class);
-        dataFileClient = new DataFileClient(client, logger);
-        dataFileLoadedListener = mock(DataFileLoadedListener.class);
+        datafileClient = new DatafileClient(client, logger);
+        datafileLoadedListener = mock(DatafileLoadedListener.class);
         when(datafileService.getApplicationContext()).thenReturn(targetContext);
         when(datafileService.isBound()).thenReturn(true);
     }
 
     @After
     public void tearDown() {
-        dataFileCache.delete();
+        datafileCache.delete();
     }
 
     @Test
     public void loadFromCDNWhenNoCachedFile() throws MalformedURLException, JSONException {
         final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
-        DataFileLoader dataFileLoader =
-                new DataFileLoader(datafileService, dataFileClient, dataFileCache, executor, logger);
+        DatafileLoader datafileLoader =
+                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
 
-        dataFileLoader.getDataFile("1", dataFileLoadedListener);
+        datafileLoader.getDatafile("1", datafileLoadedListener);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail();
         }
 
-        final JSONObject cachedDataFile = dataFileCache.load();
-        assertNotNull(cachedDataFile);
-        assertEquals("{}", cachedDataFile.toString());
-        verify(dataFileLoadedListener, atMost(1)).onDataFileLoaded("{}");
+        final JSONObject cachedDatafile = datafileCache.load();
+        assertNotNull(cachedDatafile);
+        assertEquals("{}", cachedDatafile.toString());
+        verify(datafileLoadedListener, atMost(1)).onDatafileLoaded("{}");
     }
 
     @Test
     public void loadWhenCacheFileExistsAndCDNNotModified() {
         final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
-        DataFileLoader dataFileLoader =
-                new DataFileLoader(datafileService, dataFileClient, dataFileCache, executor, logger);
-        dataFileCache.save("{}");
+        DatafileLoader datafileLoader =
+                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+        datafileCache.save("{}");
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("");
 
-        dataFileLoader.getDataFile("1", dataFileLoadedListener);
+        datafileLoader.getDatafile("1", datafileLoadedListener);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail();
         }
 
-        final JSONObject cachedDataFile = dataFileCache.load();
-        assertNotNull(cachedDataFile);
-        assertEquals("{}", cachedDataFile.toString());
-        verify(dataFileLoadedListener, atMost(1)).onDataFileLoaded("{}");
+        final JSONObject cachedDatafile = datafileCache.load();
+        assertNotNull(cachedDatafile);
+        assertEquals("{}", cachedDatafile.toString());
+        verify(datafileLoadedListener, atMost(1)).onDatafileLoaded("{}");
     }
 
     @Test
     public void noCacheAndLoadFromCDNFails() {
         final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
-        DataFileLoader dataFileLoader =
-                new DataFileLoader(datafileService, dataFileClient, dataFileCache, executor, logger);
+        DatafileLoader datafileLoader =
+                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn(null);
 
-        dataFileLoader.getDataFile("1", dataFileLoadedListener);
+        datafileLoader.getDatafile("1", datafileLoadedListener);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail();
         }
 
-        final JSONObject cachedDataFile = dataFileCache.load();
-        assertNull(cachedDataFile);
-        verify(dataFileLoadedListener, atMost(1)).onDataFileLoaded(null);
+        final JSONObject cachedDatafile = datafileCache.load();
+        assertNull(cachedDatafile);
+        verify(datafileLoadedListener, atMost(1)).onDatafileLoaded(null);
     }
 
     @Test
     public void warningsAreLogged() throws IOException {
         final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
         Cache cache = mock(Cache.class);
-        dataFileCache = new DataFileCache("1", cache, logger);
-        DataFileLoader dataFileLoader =
-                new DataFileLoader(datafileService, dataFileClient, dataFileCache, executor, logger);
+        datafileCache = new DatafileCache("1", cache, logger);
+        DatafileLoader datafileLoader =
+                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
-        when(cache.exists(dataFileCache.getFileName())).thenReturn(true);
-        when(cache.delete(dataFileCache.getFileName())).thenReturn(false);
-        when(cache.save(dataFileCache.getFileName(), "{}")).thenReturn(false);
+        when(cache.exists(datafileCache.getFileName())).thenReturn(true);
+        when(cache.delete(datafileCache.getFileName())).thenReturn(false);
+        when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(false);
 
-        dataFileLoader.getDataFile("1", dataFileLoadedListener);
+        datafileLoader.getDatafile("1", datafileLoadedListener);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -167,6 +167,6 @@ public class DataFileLoaderTest {
 
         verify(logger).warn("Unable to delete old datafile");
         verify(logger).warn("Unable to save new datafile");
-        verify(dataFileLoadedListener, atMost(1)).onDataFileLoaded("{}");
+        verify(datafileLoadedListener, atMost(1)).onDatafileLoaded("{}");
     }
 }

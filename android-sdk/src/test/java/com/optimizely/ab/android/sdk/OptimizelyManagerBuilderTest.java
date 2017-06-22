@@ -34,11 +34,11 @@ public class OptimizelyManagerBuilderTest {
     @Test
     public void testBuildWithInvalidPollingInterval() {
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withDataFileDownloadInterval(5, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(5, TimeUnit.SECONDS)
                 .build();
 
-        assertEquals(60L, manager.getDataFileDownloadInterval().longValue());
-        assertEquals(TimeUnit.SECONDS, manager.getDataFileDownloadIntervalTimeUnit());
+        assertEquals(60L, manager.getDatafileDownloadInterval().longValue());
+        assertEquals(TimeUnit.SECONDS, manager.getDatafileDownloadIntervalTimeUnit());
     }
 
     /**
@@ -48,10 +48,10 @@ public class OptimizelyManagerBuilderTest {
     @Test
     public void testBuildWithValidPollingInterval() {
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withDataFileDownloadInterval(61, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61, TimeUnit.SECONDS)
                 .build();
 
-        assertEquals(61L, manager.getDataFileDownloadInterval().longValue());
-        assertEquals(TimeUnit.SECONDS, manager.getDataFileDownloadIntervalTimeUnit());
+        assertEquals(61L, manager.getDatafileDownloadInterval().longValue());
+        assertEquals(TimeUnit.SECONDS, manager.getDatafileDownloadIntervalTimeUnit());
     }
 }

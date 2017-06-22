@@ -30,12 +30,12 @@ import java.net.URL;
 /**
  * Makes requests to the Optly CDN to get the datafile
  */
-public class DataFileClient {
+public class DatafileClient {
 
     @NonNull private final Client client;
     @NonNull private final Logger logger;
 
-    public DataFileClient(@NonNull Client client, @NonNull Logger logger) {
+    public DatafileClient(@NonNull Client client, @NonNull Logger logger) {
         this.client = client;
         this.logger = logger;
     }

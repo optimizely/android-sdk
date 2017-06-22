@@ -18,11 +18,8 @@ package com.optimizely.ab.android.sdk;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -35,8 +32,8 @@ import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
 
-import com.optimizely.ab.android.datafile_handler.DataFileLoadedListener;
-import com.optimizely.ab.android.datafile_handler.DataFileService;
+import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
+import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileHandlerDefault;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
@@ -101,12 +98,12 @@ public class OptimizelyManager {
     }
 
     @NonNull
-    public Long getDataFileDownloadInterval() {
+    public Long getDatafileDownloadInterval() {
         return dataFileDownloadInterval;
     }
 
     @NonNull
-    public TimeUnit getDataFileDownloadIntervalTimeUnit() {
+    public TimeUnit getDatafileDownloadIntervalTimeUnit() {
         return dataFileDownloadIntervalTimeUnit;
     }
 
@@ -154,7 +151,7 @@ public class OptimizelyManager {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
 
-        datafileHandler.downloadDatafile(context, projectId, getDataFileLoadedListener(context));
+        datafileHandler.downloadDatafile(context, projectId, getDatafileLoadedListener(context));
 
         return optimizelyClient;
     }
@@ -212,7 +209,7 @@ public class OptimizelyManager {
      * datafile will be updated from network if it is different from the cache.  If there is no
      * cached datafile the returned instance will always be built from the remote datafile.
      *
-     * @param activity                an Activity, used to automatically unbind com.optimizely.ab.android.datafile_handler.DataFileService
+     * @param activity                an Activity, used to automatically unbind com.optimizely.ab.android.datafile_handler.DatafileService
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -230,22 +227,22 @@ public class OptimizelyManager {
      * @see #initialize(Activity, OptimizelyStartListener)
      * <p>
      * This method does the same thing except it can be used with a generic {@link Context}.
-     * When using this method be sure to call {@link #stop(Context)} to unbind com.optimizely.ab.android.datafile_handler.DataFileService.
+     * When using this method be sure to call {@link #stop(Context)} to unbind com.optimizely.ab.android.datafile_handler.DatafileService.
      */
     public void initialize(@NonNull Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
         if (!isAndroidVersionSupported()) {
             return;
         }
         this.optimizelyStartListener = optimizelyStartListener;
-        datafileHandler.downloadDatafile(context, projectId, getDataFileLoadedListener(context));
+        datafileHandler.downloadDatafile(context, projectId, getDatafileLoadedListener(context));
     }
 
-    DataFileLoadedListener getDataFileLoadedListener(final Context context) {
+    DatafileLoadedListener getDatafileLoadedListener(final Context context) {
         return
-                new DataFileLoadedListener() {
+                new DatafileLoadedListener() {
                          @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
                          @Override
-                            public void onDataFileLoaded(@Nullable String dataFile) {
+                            public void onDatafileLoaded(@Nullable String dataFile) {
                              // App is being used, i.e. in the foreground
                              if (dataFile != null) {
                                  AndroidUserProfileService userProfileService = getAndroidUserProfileService(context);
@@ -275,7 +272,7 @@ public class OptimizelyManager {
     }
 
     /**
-     * Unbinds com.optimizely.ab.android.datafile_handler.DataFileService
+     * Unbinds com.optimizely.ab.android.datafile_handler.DatafileService
      * <p>
      * Calling this is not necessary if using {@link #initialize(Activity, OptimizelyStartListener)} which
      * handles unbinding implicitly.
@@ -339,7 +336,7 @@ public class OptimizelyManager {
      * @return the CDN location of the datafile
      */
     public static @NonNull String getDatafileUrl(String projectId) {
-        return DataFileService.getDatafileUrl(projectId);
+        return DatafileService.getDatafileUrl(projectId);
     }
 
     @NonNull
@@ -556,14 +553,14 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which com.optimizely.ab.android.datafile_handler.DataFileService will attempt to update the
+         * Sets the interval which com.optimizely.ab.android.datafile_handler.DatafileService will attempt to update the
          * cached datafile.
          *
          * @param interval the interval
          * @param timeUnit the unit of the interval
          * @return this {@link Builder} instance
          */
-        public Builder withDataFileDownloadInterval(long interval, @NonNull TimeUnit timeUnit) {
+        public Builder withDatafileDownloadInterval(long interval, @NonNull TimeUnit timeUnit) {
             this.dataFileDownloadInterval = interval;
             this.dataFileDownloadIntervalTimeUnit = timeUnit;
             return this;

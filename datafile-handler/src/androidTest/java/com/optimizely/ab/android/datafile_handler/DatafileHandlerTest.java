@@ -69,9 +69,9 @@ public class DatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        handler.downloadDatafile(appContext, "1", new DataFileLoadedListener() {
+        handler.downloadDatafile(appContext, "1", new DatafileLoadedListener() {
             @Override
-            public void onDataFileLoaded(@Nullable String dataFile) {
+            public void onDatafileLoaded(@Nullable String dataFile) {
                 assertNull(dataFile);
             }
 

@@ -16,15 +16,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 
-public class DataFileServiceConnection implements ServiceConnection {
+public class DatafileServiceConnection implements ServiceConnection {
 
     @NonNull private final Context context;
     @NonNull private final String projectId;
-    @NonNull private final DataFileLoadedListener listener;
+    @NonNull private final DatafileLoadedListener listener;
 
     private boolean bound = false;
 
-    public DataFileServiceConnection(@NonNull String projectId, @NonNull Context context, @NonNull DataFileLoadedListener listener) {
+    public DatafileServiceConnection(@NonNull String projectId, @NonNull Context context, @NonNull DatafileLoadedListener listener) {
         this.projectId = projectId;
         this.context = context;
         this.listener = listener;
@@ -38,31 +38,31 @@ public class DataFileServiceConnection implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName className,
                                    IBinder service) {
-        if (!(service instanceof DataFileService.LocalBinder)) {
+        if (!(service instanceof DatafileService.LocalBinder)) {
             return;
         }
 
-        // We've bound to DataFileService, cast the IBinder and get DataFileService instance
-        DataFileService.LocalBinder binder = (DataFileService.LocalBinder) service;
-        final DataFileService dataFileService = binder.getService();
-        if (dataFileService != null) {
-            DataFileClient dataFileClient = new DataFileClient(
-                    new Client(new OptlyStorage(dataFileService.getApplicationContext()),
+        // We've bound to DatafileService, cast the IBinder and get DatafileService instance
+        DatafileService.LocalBinder binder = (DatafileService.LocalBinder) service;
+        final DatafileService datafileService = binder.getService();
+        if (datafileService != null) {
+            DatafileClient datafileClient = new DatafileClient(
+                    new Client(new OptlyStorage(datafileService.getApplicationContext()),
                             LoggerFactory.getLogger(OptlyStorage.class)),
-                    LoggerFactory.getLogger(DataFileClient.class));
+                    LoggerFactory.getLogger(DatafileClient.class));
 
-            DataFileCache dataFileCache = new DataFileCache(
+            DatafileCache datafileCache = new DatafileCache(
                     projectId,
-                    new Cache(dataFileService.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
-                    LoggerFactory.getLogger(DataFileCache.class));
+                    new Cache(datafileService.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
+                    LoggerFactory.getLogger(DatafileCache.class));
 
-            DataFileLoader dataFileLoader = new DataFileLoader(dataFileService,
-                    dataFileClient,
-                    dataFileCache,
+            DatafileLoader datafileLoader = new DatafileLoader(datafileService,
+                    datafileClient,
+                    datafileCache,
                     Executors.newSingleThreadExecutor(),
-                    LoggerFactory.getLogger(DataFileLoader.class));
+                    LoggerFactory.getLogger(DatafileLoader.class));
 
-            dataFileService.getDataFile(projectId, dataFileLoader, listener);
+            datafileService.getDatafile(projectId, datafileLoader, listener);
         }
         bound = true;
     }
