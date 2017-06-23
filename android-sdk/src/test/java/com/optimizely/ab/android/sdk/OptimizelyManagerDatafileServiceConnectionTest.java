@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests {@link OptimizelyManager.DatafileServiceConnection}
+ * Tests {@link DatafileServiceConnection}
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OptimizelyManagerDatafileServiceConnectionTest {
