@@ -86,7 +86,7 @@ android.libraryVariants.all { variant ->
     task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
         source = variant.javaCompile.source
 
-        title = "Optimizely X Android Datfile Handler"
+        title = "Optimizely X Android Datafile Handler"
 
         options.links("http://docs.oracle.com/javase/7/docs/api/");
         options.linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference");
