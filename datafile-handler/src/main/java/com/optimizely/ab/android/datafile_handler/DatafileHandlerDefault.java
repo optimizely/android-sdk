@@ -91,6 +91,9 @@ public class DatafileHandlerDefault implements DatafileHandler {
      * @param timeUnit at time interval.
      */
     public void startBackgroundUpdates(Context context, String projectId, Long updateInterval, TimeUnit timeUnit) {
+
+        enableBackgroundCache(context);
+
         AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
@@ -118,6 +121,23 @@ public class DatafileHandlerDefault implements DatafileHandler {
                 LoggerFactory.getLogger(ServiceScheduler.class));
         Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
         serviceScheduler.unschedule(intent);
+
+        clearBackgroundCache(context);
+    }
+
+    private void enableBackgroundCache(Context context) {
+        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(BackgroundWatchersCache.class));
+        backgroundWatchersCache.setWatchingEnabled(true);
+
+    }
+
+    private void clearBackgroundCache(Context context) {
+        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(BackgroundWatchersCache.class));
+        backgroundWatchersCache.delete();
 
     }
 

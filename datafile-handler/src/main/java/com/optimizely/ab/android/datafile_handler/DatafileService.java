@@ -74,7 +74,9 @@ public class DatafileService extends Service {
                 BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
                         new Cache(this, LoggerFactory.getLogger(Cache.class)),
                         LoggerFactory.getLogger(BackgroundWatchersCache.class));
-                backgroundWatchersCache.setIsWatching(projectId, true);
+                if (backgroundWatchersCache.isWatchingEnabled() == true) {
+                    backgroundWatchersCache.setIsWatching(projectId, true);
+                }
 
                 logger.info("Started watching project {} in the background", projectId);
             } else {

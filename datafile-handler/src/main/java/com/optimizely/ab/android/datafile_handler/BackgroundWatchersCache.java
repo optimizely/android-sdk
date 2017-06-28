@@ -34,6 +34,7 @@ import java.util.List;
  */
 class BackgroundWatchersCache {
     static final String BACKGROUND_WATCHERS_FILE_NAME = "optly-background-watchers.json";
+    static final String BACKGROUND_WATCHERS_ENABLED = "optly-background-watchers-enabled";
 
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
@@ -41,6 +42,35 @@ class BackgroundWatchersCache {
     BackgroundWatchersCache(@NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
         this.logger = logger;
+    }
+
+    boolean setWatchingEnabled(@NonNull boolean watching) {
+        try {
+            JSONObject backgroundWatchers = load();
+            if (backgroundWatchers != null) {
+                backgroundWatchers.put(BACKGROUND_WATCHERS_ENABLED, watching);
+                return save(backgroundWatchers.toString());
+            }
+        } catch (JSONException e) {
+            logger.error("Unable to update watching state for project id", e);
+        }
+
+        return false;
+    }
+
+    boolean isWatchingEnabled() {
+        try {
+            JSONObject backgroundWatchers = load();
+
+            if (backgroundWatchers != null) {
+                return backgroundWatchers.getBoolean(BACKGROUND_WATCHERS_ENABLED);
+
+            }
+        } catch (JSONException e) {
+            logger.error("Unable check if watching enabled", e);
+        }
+
+        return false;
     }
 
     boolean setIsWatching(@NonNull String projectId, boolean watching) {
@@ -90,6 +120,9 @@ class BackgroundWatchersCache {
                 Iterator<String> iterator = backgroundWatchers.keys();
                 while (iterator.hasNext()) {
                     final String projectId = iterator.next();
+                    if (projectId == BACKGROUND_WATCHERS_ENABLED) {
+                        continue;
+                    }
                     if (backgroundWatchers.getBoolean(projectId)) {
                         projectIds.add(projectId);
                     }
@@ -113,7 +146,7 @@ class BackgroundWatchersCache {
         return new JSONObject(backGroundWatchersFile);
     }
 
-    private boolean delete() {
+    protected boolean delete() {
         return cache.delete(BACKGROUND_WATCHERS_FILE_NAME);
     }
 

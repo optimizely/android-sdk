@@ -91,7 +91,7 @@ public class OptimizelyManager {
                       @NonNull Executor executor,
                       @NonNull Boolean useDatafileHandlerBackgroundUpdates,
                       @NonNull Logger logger,
-                      @Nullable DatafileHandler dfHandler,
+                      @Nullable DatafileHandler datafileHandler,
                       @Nullable EventHandler eventHandler,
                       @Nullable ErrorHandler errorHandler,
                       @Nullable AndroidUserProfileService userProfileService) {
@@ -104,11 +104,11 @@ public class OptimizelyManager {
 
         this.useDatafileHandlerBackgroundUpdates = useDatafileHandlerBackgroundUpdates;
         this.logger = logger;
-        if (dfHandler == null) {
+        if (datafileHandler == null) {
             this.datafileHandler = new DatafileHandlerDefault();
         }
         else {
-            this.datafileHandler = dfHandler;
+            this.datafileHandler = datafileHandler;
         }
         this.eventHandler = eventHandler;
         this.errorHandler = errorHandler;
@@ -240,12 +240,10 @@ public class OptimizelyManager {
     }
 
     /**
+     * This method does the same thing except it can be used with a generic {@link Context}.
      * @param context                 any type of context instance
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
      * @see #initialize(Activity, OptimizelyStartListener)
-     * <p>
-     * This method does the same thing except it can be used with a generic {@link Context}.
-     * When using this method be sure to call {@link #stop(Context)} to unbind  {@link DatafileService}.
      */
     public void initialize(@NonNull Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
         if (!isAndroidVersionSupported()) {
