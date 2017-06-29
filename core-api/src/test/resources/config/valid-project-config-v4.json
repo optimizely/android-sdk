@@ -13,23 +13,270 @@
   ],
   "attributes": [
     {
-      "id": "334265546",
-      "key": "Gryffindor"
+      "id": "553339214",
+      "key": "house"
     }
   ],
-  "events": [],
+  "events": [
+    {
+      "id": "3785620495",
+      "key": "basic_event",
+      "experimentIds": [
+        "1323241596",
+        "2738374745",
+        "3042640549",
+        "3262035800",
+        "3072915611"
+      ]
+    },
+    {
+      "id": "3195631717",
+      "key": "event_with_paused_experiment",
+      "experimentIds": [
+        "2667098701"
+      ]
+    },
+    {
+      "id": "1987018666",
+      "key": "event_with_launched_experiments_only",
+      "experimentIds": [
+        "3072915611"
+      ]
+    }
+  ],
+  "experiments": [
+    {
+      "id": "1323241596",
+      "key": "basic_experiment",
+      "layerId": "1630555626",
+      "status": "Running",
+      "variations": [
+        {
+          "id": "1423767502",
+          "key": "A",
+          "variables": []
+        },
+        {
+          "id": "3433458314",
+          "key": "B",
+          "variables": []
+        }
+      ],
+      "trafficAllocation": [
+        {
+          "entityId": "1423767502",
+          "endOfRange": 5000
+        },
+        {
+          "entityId": "3433458314",
+          "endOfRange": 10000
+        }
+      ],
+      "audienceIds": [],
+      "forcedVariations": {
+        "Harry Potter": "A",
+        "Tom Riddle": "B"
+      }
+    },
+    {
+      "id": "3262035800",
+      "key": "multivariate_experiment",
+      "layerId": "3262035800",
+      "status": "Running",
+      "variations": [
+        {
+          "id": "1880281238",
+          "key": "Fred",
+          "variables": [
+            {
+              "id": "675244127",
+              "value": "F"
+            },
+            {
+              "id": "4052219963",
+              "value": "red"
+            }
+          ]
+        },
+        {
+          "id": "3631049532",
+          "key": "Feorge",
+          "variables": [
+            {
+              "id": "675244127",
+              "value": "F"
+            },
+            {
+              "id": "4052219963",
+              "value": "eorge"
+            }
+          ]
+        },
+        {
+          "id": "4204375027",
+          "key": "Gred",
+          "variables": [
+            {
+              "id": "675244127",
+              "value": "G"
+            },
+            {
+              "id": "4052219963",
+              "value": "red"
+            }
+          ]
+        },
+        {
+          "id": "2099211198",
+          "key": "George",
+          "variables": [
+            {
+              "id": "675244127",
+              "value": "G"
+            },
+            {
+              "id": "4052219963",
+              "value": "eorge"
+            }
+          ]
+        }
+      ],
+      "trafficAllocation": [
+        {
+          "entityId": "1880281238",
+          "endOfRange": 2500
+        },
+        {
+          "entityId": "3631049532",
+          "endOfRange": 5000
+        },
+        {
+          "entityId": "4204375027",
+          "endOfRange": 7500
+        },
+        {
+          "entityId": "2099211198",
+          "endOfRange": 10000
+        }
+      ],
+      "audienceIds": [
+        "3468206642"
+      ],
+      "forcedVariations": {
+        "Fred": "Fred",
+        "Feorge": "Feorge",
+        "Gred": "Gred",
+        "George": "George"
+      }
+    },
+    {
+      "id": "2667098701",
+      "key": "paused_experiment",
+      "layerId": "3949273892",
+      "status": "Paused",
+      "variations": [
+        {
+          "id": "391535909",
+          "key": "Control",
+          "variables": []
+        }
+      ],
+      "trafficAllocation": [
+        {
+          "entityId": "391535909",
+          "endOfRange": 10000
+        }
+      ],
+      "audienceIds": [],
+      "forcedVariations": {
+        "Harry Potter": "Control"
+      }
+    }
+  ],
   "groups": [
     {
       "id": "1015968292",
       "policy": "random",
+      "experiments": [
+        {
+          "id": "2738374745",
+          "key": "first_grouped_experiment",
+          "layerId": "3301900159",
+          "status": "Running",
+          "variations": [
+            {
+              "id": "2377378132",
+              "key": "A",
+              "variables": []
+            },
+            {
+              "id": "1179171250",
+              "key": "B",
+              "variables": []
+            }
+          ],
+          "trafficAllocation": [
+            {
+              "entityId": "2377378132",
+              "endOfRange": 5000
+            },
+            {
+              "entityId": "1179171250",
+              "endOfRange": 10000
+            }
+          ],
+          "audienceIds": [
+            "3468206642"
+          ],
+          "forcedVariations": {
+            "Harry Potter": "A",
+            "Tom Riddle": "B"
+          }
+        },
+        {
+          "id": "3042640549",
+          "key": "second_grouped_experiment",
+          "layerId": "2625300442",
+          "status": "Running",
+          "variations": [
+            {
+              "id": "1558539439",
+              "key": "A",
+              "variables": []
+            },
+            {
+              "id": "2142748370",
+              "key": "B",
+              "variables": []
+            }
+          ],
+          "trafficAllocation": [
+            {
+              "entityId": "1558539439",
+              "endOfRange": 5000
+            },
+            {
+              "entityId": "2142748370",
+              "endOfRange": 10000
+            }
+          ],
+          "audienceIds": [
+            "3468206642"
+          ],
+          "forcedVariations": {
+            "Hermione Granger": "A",
+            "Ronald Weasley": "B"
+          }
+        }
+      ],
       "trafficAllocation": [
         {
           "entityId": "2738374745",
-          "endOfRange": 5000
+          "endOfRange": 4000
         },
         {
           "entityId": "3042640549",
-          "endOfRange": 10000
+          "endOfRange": 8000
         }
       ]
     }
@@ -117,226 +364,28 @@
           "defaultValue": "arry"
         }
       ]
+    },
+    {
+      "id": "3072915611",
+      "key": "launched_experiment",
+      "layerId": "3587821424",
+      "status": "Launched",
+      "variations": [
+        {
+          "id": "1647582435",
+          "key": "launch_control",
+          "variables": []
+        }
+      ],
+      "trafficAllocation": [
+        {
+          "entityId": "1647582435",
+          "endOfRange": 8000
+        }
+      ],
+      "audienceIds": [],
+      "forcedVariations": {}
     }
   ],
-  "layers": [
-    {
-      "id": "1630555626",
-      "policy": "single_experiment",
-      "experiments": [
-        {
-          "id": "1323241596",
-          "key": "basic_experiment",
-          "status": "Running",
-          "variations": [
-            {
-              "id": "1423767502",
-              "key": "A",
-              "variables": []
-            },
-            {
-              "id": "3433458314",
-              "key": "B",
-              "variables": []
-            }
-          ],
-          "trafficAllocation": [
-            {
-              "entityId": "1423767502",
-              "endOfRange": 5000
-            },
-            {
-              "entityId": "3433458314",
-              "endOfRange": 10000
-            }
-          ],
-          "audienceIds": [
-            "3468206642"
-          ],
-          "forcedVariations": {
-            "Harry Potter": "A",
-            "Tom Riddle": "B"
-          }
-        }
-      ]
-    },
-    {
-      "id": "3301900159",
-      "policy": "single_experiment",
-      "experiments": [
-        {
-          "id": "2738374745",
-          "key": "first_grouped_experiment",
-          "status": "Running",
-          "groupId": "1015968292",
-          "variations": [
-            {
-              "id": "2377378132",
-              "key": "A",
-              "variables": []
-            },
-            {
-              "id": "1179171250",
-              "key": "B",
-              "variables": []
-            }
-          ],
-          "trafficAllocation": [
-            {
-              "entityId": "2377378132",
-              "endOfRange": 5000
-            },
-            {
-              "entityId": "1179171250",
-              "endOfRange": 10000
-            }
-          ],
-          "audienceIds": [
-            "3468206642"
-          ],
-          "forcedVariations": {
-            "Harry Potter": "A",
-            "Tom Riddle": "B"
-          }
-        }
-      ]
-    },
-    {
-      "id": "2625300442",
-      "policy": "single_experiment",
-      "experiments": [
-        {
-          "id": "3042640549",
-          "key": "second_grouped_experiment",
-          "status": "Running",
-          "groupId": "1015968292",
-          "variations": [
-            {
-              "id": "1558539439",
-              "key": "A",
-              "variables": []
-            },
-            {
-              "id": "2142748370",
-              "key": "B",
-              "variables": []
-            }
-          ],
-          "trafficAllocation": [
-            {
-              "entityId": "1558539439",
-              "endOfRange": 5000
-            },
-            {
-              "entityId": "2142748370",
-              "endOfRange": 10000
-            }
-          ],
-          "audienceIds": [
-            "3468206642"
-          ],
-          "forcedVariations": {
-            "Hermione Granger": "A",
-            "Ronald Weasley": "B"
-          }
-        }
-      ]
-    },
-    {
-      "id": "3780747876",
-      "policy": "single_experiment",
-      "experiments": [
-        {
-          "id": "3262035800",
-          "key": "multivariate_experiment",
-          "status": "Running",
-          "variations": [
-            {
-              "id": "1880281238",
-              "key": "Fred",
-              "variables": [
-                {
-                  "id": "675244127",
-                  "value": "F"
-                },
-                {
-                  "id": "4052219963",
-                  "value": "red"
-                }
-              ]
-            },
-            {
-              "id": "3631049532",
-              "key": "Feorge",
-              "variables": [
-                {
-                  "id": "675244127",
-                  "value": "F"
-                },
-                {
-                  "id": "4052219963",
-                  "value": "eorge"
-                }
-              ]
-            },
-            {
-              "id": "4204375027",
-              "key": "Gred",
-              "variables": [
-                {
-                  "id": "675244127",
-                  "value": "G"
-                },
-                {
-                  "id": "4052219963",
-                  "value": "red"
-                }
-              ]
-            },
-            {
-              "id": "2099211198",
-              "key": "George",
-              "variables": [
-                {
-                  "id": "675244127",
-                  "value": "G"
-                },
-                {
-                  "id": "4052219963",
-                  "value": "eorge"
-                }
-              ]
-            }
-          ],
-          "trafficAllocation": [
-            {
-              "entityId": "1880281238",
-              "endOfRange": 2500
-            },
-            {
-              "entityId": "3631049532",
-              "endOfRange": 5000
-            },
-            {
-              "entityId": "4204375027",
-              "endOfRange": 7500
-            },
-            {
-              "entityId": "2099211198",
-              "endOfRange": 10000
-            }
-          ],
-          "audienceIds": [
-            "3468206642"
-          ],
-          "forcedVariations": {
-            "Fred": "Fred",
-            "Feorge": "Feorge",
-            "Gred": "Gred",
-            "George": "George"
-          }
-        }
-      ]
-    }
-  ]
+  "liveVariables": []
 }
