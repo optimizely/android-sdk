@@ -46,11 +46,9 @@ public class DatafileRescheduler extends BroadcastReceiver {
             BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
                     new Cache(context, LoggerFactory.getLogger(Cache.class)),
                     LoggerFactory.getLogger(BackgroundWatchersCache.class));
-            if (backgroundWatchersCache.isWatchingEnabled() == true) {
-                Dispatcher dispatcher = new Dispatcher(context, backgroundWatchersCache, LoggerFactory.getLogger(Dispatcher.class));
-                intent = new Intent(context, DatafileService.class);
-                dispatcher.dispatch(intent);
-            }
+            Dispatcher dispatcher = new Dispatcher(context, backgroundWatchersCache, LoggerFactory.getLogger(Dispatcher.class));
+            intent = new Intent(context, DatafileService.class);
+            dispatcher.dispatch(intent);
 
 
         } else {

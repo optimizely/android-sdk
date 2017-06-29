@@ -71,14 +71,6 @@ public class DatafileService extends Service {
                 String datafileUrl = getDatafileUrl(projectId);
                 DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
                 datafileLoader.getDatafile(datafileUrl, null);
-                BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
-                        new Cache(this, LoggerFactory.getLogger(Cache.class)),
-                        LoggerFactory.getLogger(BackgroundWatchersCache.class));
-                if (backgroundWatchersCache.isWatchingEnabled() == true) {
-                    backgroundWatchersCache.setIsWatching(projectId, true);
-                }
-
-                logger.info("Started watching project {} in the background", projectId);
             } else {
                 logger.warn("Data file service received an intent with no project id extra");
             }

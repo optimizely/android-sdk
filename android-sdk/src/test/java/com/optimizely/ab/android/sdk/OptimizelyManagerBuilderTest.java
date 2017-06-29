@@ -22,7 +22,7 @@ import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
-import com.optimizely.ab.android.user_profile.AndroidUserProfileService;
+import com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -133,7 +133,7 @@ public class OptimizelyManagerBuilderTest {
     public void testBuildWithUserProfileService() {
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
-        AndroidUserProfileService ups = mock(AndroidUserProfileService.class);
+        AndroidUserProfileServiceDefault ups = mock(AndroidUserProfileServiceDefault.class);
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
                 .withDatafileDownloadInterval(61, TimeUnit.SECONDS)
                 .withUserProfileService(ups)

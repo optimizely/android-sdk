@@ -38,7 +38,6 @@ import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileHandlerDefault;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 
-import com.optimizely.ab.android.user_profile.AndroidUserProfileService;
 import com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
@@ -80,7 +79,7 @@ public class OptimizelyManager {
     @Nullable private Logger logger = null;
     @Nullable private EventHandler eventHandler = null;
     @Nullable private ErrorHandler errorHandler = null;
-    @Nullable private AndroidUserProfileService userProfileService = null;
+    @Nullable private UserProfileService userProfileService = null;
 
 
     OptimizelyManager(@NonNull String projectId,
@@ -94,7 +93,7 @@ public class OptimizelyManager {
                       @Nullable DatafileHandler datafileHandler,
                       @Nullable EventHandler eventHandler,
                       @Nullable ErrorHandler errorHandler,
-                      @Nullable AndroidUserProfileService userProfileService) {
+                      @Nullable UserProfileService userProfileService) {
         this.projectId = projectId;
         this.eventHandlerDispatchInterval = eventHandlerDispatchInterval;
         this.eventHandlerDispatchIntervalTimeUnit = eventHandlerDispatchIntervalTimeUnit;
@@ -160,9 +159,8 @@ public class OptimizelyManager {
             return optimizelyClient;
         }
 
-        UserProfileService userProfileService = getAndroidUserProfileServiceAndStart(context);
         try {
-            optimizelyClient = buildOptimizely(context, datafile, userProfileService);
+            optimizelyClient = buildOptimizely(context, datafile);
         } catch (ConfigParseException e) {
             logger.error("Unable to parse compiled data file", e);
         } catch (Exception e) {
@@ -261,7 +259,6 @@ public class OptimizelyManager {
                             public void onDatafileLoaded(@Nullable String dataFile) {
                              // App is being used, i.e. in the foreground
                              if (dataFile != null) {
-                                 AndroidUserProfileService userProfileService = getAndroidUserProfileService(context);
                                  injectOptimizely(context, userProfileService, dataFile);
                              } else {
                                  // We should always call the callback even with the dummy
@@ -364,60 +361,61 @@ public class OptimizelyManager {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    void injectOptimizely(@NonNull final Context context, final @NonNull AndroidUserProfileService userProfileService,
+    void injectOptimizely(@NonNull final Context context, final @NonNull UserProfileService userProfileService,
                           @NonNull final String dataFile) {
-        AsyncTask<Void, Void, AndroidUserProfileService> initUserProfileTask = new AsyncTask<Void, Void, AndroidUserProfileService>() {
-            @Override
-            protected AndroidUserProfileService doInBackground(Void[] params) {
-                userProfileService.start();
-                return userProfileService;
-            }
-
-            @Override
-            protected void onPostExecute(AndroidUserProfileService userProfileService) {
 
 
-                if (useDatafileHandlerBackgroundUpdates && datafileHandler != null) {
-                    datafileHandler.startBackgroundUpdates(context, projectId, dataFileDownloadInterval, dataFileDownloadIntervalTimeUnit);
+        if (userProfileService instanceof AndroidUserProfileServiceDefault) {
+            ((AndroidUserProfileServiceDefault) userProfileService).startInBackground(new AndroidUserProfileServiceDefault.StartCallback() {
+                @Override
+                public void onStartComplete(UserProfileService userProfileService) {
+                    completeInject(context, dataFile);
                 }
-                try {
-                    OptimizelyManager.this.optimizelyClient = buildOptimizely(context, dataFile, userProfileService);
-                    OptimizelyManager.this.userProfileService = userProfileService;
-                    optimizelyClient.setDefaultAttributes(OptimizelyDefaultAttributes.buildDefaultAttributesMap(context, logger));
-                    logger.info("Sending Optimizely instance to listener");
-
-                    if (optimizelyStartListener != null) {
-                        optimizelyStartListener.onStart(optimizelyClient);
-                    } else {
-                        logger.info("No listener to send Optimizely to");
-                    }
-                } catch (Exception e) {
-                    logger.error("Unable to build optimizely instance", e);
-                }
-            }
-        };
-
-        try {
-            initUserProfileTask.executeOnExecutor(executor);
-        } catch (Exception e) {
-            logger.error("Unable to initialize the user profile while injecting Optimizely", e);
+            });
         }
+        else {
+            completeInject(context, dataFile);
+        }
+
     }
 
-    private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile, @NonNull
-            UserProfileService userProfileService) throws ConfigParseException {
+    @VisibleForTesting
+    protected void completeInject(Context context, String dataFile) {
+        if (useDatafileHandlerBackgroundUpdates && datafileHandler != null) {
+            datafileHandler.startBackgroundUpdates(context, projectId, dataFileDownloadInterval, dataFileDownloadIntervalTimeUnit);
+        }
+        try {
+            optimizelyClient = buildOptimizely(context, dataFile);
+            optimizelyClient.setDefaultAttributes(OptimizelyDefaultAttributes.buildDefaultAttributesMap(context, logger));
+            logger.info("Sending Optimizely instance to listener");
+
+            if (optimizelyStartListener != null) {
+                optimizelyStartListener.onStart(optimizelyClient);
+            } else {
+                logger.info("No listener to send Optimizely to");
+            }
+        } catch (Exception e) {
+            logger.error("Unable to build optimizely instance", e);
+        }
+
+    }
+
+    private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile) throws ConfigParseException {
         EventHandler eventHandler = getEventHandler(context);
 
         Event.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
         Optimizely.Builder builder = Optimizely.builder(dataFile, eventHandler)
-                .withUserProfileService(userProfileService)
                 .withClientEngine(clientEngine)
                 .withClientVersion(BuildConfig.CLIENT_VERSION);
         if (errorHandler != null) {
             builder.withErrorHandler(errorHandler);
         }
-        if (this.userProfileService != null) {
+        if (userProfileService != null) {
+            builder.withUserProfileService(userProfileService);
+        }
+        else {
+            userProfileService = AndroidUserProfileServiceDefault.newInstance(projectId, context);
             builder.withUserProfileService(userProfileService);
         }
 
@@ -430,25 +428,6 @@ public class OptimizelyManager {
         return userProfileService;
     }
 
-    protected AndroidUserProfileService getAndroidUserProfileServiceAndStart(Context context) {
-
-        if (userProfileService != null) {
-            AndroidUserProfileService aups = userProfileService.getNewInstance(projectId, context);
-            aups.start();
-            return aups;
-        }
-        return null;
-    }
-
-    protected AndroidUserProfileService getAndroidUserProfileService(Context context) {
-        if (userProfileService != null) {
-            return userProfileService.getNewInstance(projectId, context);
-        }
-        else {
-            return (AndroidUserProfileService) AndroidUserProfileServiceDefault.newInstance(projectId, context);
-        }
-
-    }
 
     protected EventHandler getEventHandler(Context context) {
         if (eventHandler == null) {
@@ -565,7 +544,7 @@ public class OptimizelyManager {
         @Nullable private Logger logger = null;
         @Nullable private EventHandler eventHandler = null;
         @Nullable private ErrorHandler errorHandler = null;
-        @Nullable private AndroidUserProfileService userProfileService = null;
+        @Nullable private UserProfileService userProfileService = null;
 
         Builder(@NonNull String projectId) {
             this.projectId = projectId;
@@ -651,11 +630,11 @@ public class OptimizelyManager {
         }
 
         /**
-         * Override the default {@link AndroidUserProfileService}.
+         * Override the default {@link UserProfileService}.
          * @param overrideHandler
          * @return this {@link Builder} instance
          */
-        public Builder withUserProfileService(AndroidUserProfileService overrideHandler) {
+        public Builder withUserProfileService(UserProfileService overrideHandler) {
             this.userProfileService = overrideHandler;
             return this;
         }
