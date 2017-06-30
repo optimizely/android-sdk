@@ -100,10 +100,6 @@ class EventDispatcher {
     private long getInterval(@NonNull Intent intent) {
         long duration = intent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1);
         // We are either scheduling for the first time or rescheduling after our alarms were cancelled
-        if (duration == -1) {
-            // Use an hour for duration by default
-            duration = optlyStorage.getLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
-        }
         return duration;
     }
 

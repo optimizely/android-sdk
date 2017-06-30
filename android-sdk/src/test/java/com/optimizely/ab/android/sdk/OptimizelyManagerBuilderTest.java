@@ -59,7 +59,7 @@ public class OptimizelyManagerBuilderTest {
     @Test
     public void testBuildWithInvalidPollingInterval() {
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withDatafileDownloadInterval(5, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(5L, TimeUnit.SECONDS)
                 .build();
 
         assertEquals(60L, manager.getDatafileDownloadInterval().longValue());
@@ -73,7 +73,7 @@ public class OptimizelyManagerBuilderTest {
     @Test
     public void testBuildWithValidPollingInterval() {
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withDatafileDownloadInterval(61, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
                 .build();
 
         assertEquals(61L, manager.getDatafileDownloadInterval().longValue());
@@ -86,7 +86,7 @@ public class OptimizelyManagerBuilderTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
         EventHandler eventHandler = mock(EventHandler.class);
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
-                .withDatafileDownloadInterval(61, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
                 .withEventHandler(eventHandler)
                 .build();
 
@@ -103,7 +103,7 @@ public class OptimizelyManagerBuilderTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
         ErrorHandler errorHandler = mock(ErrorHandler.class);
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
-                .withDatafileDownloadInterval(61, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
                 .withErrorHandler(errorHandler)
                 .build();
 
@@ -119,7 +119,7 @@ public class OptimizelyManagerBuilderTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
         DatafileHandler dfHandler = mock(DatafileHandler.class);
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
-                .withDatafileDownloadInterval(61, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
                 .withDatafileHandler(dfHandler)
                 .build();
 
@@ -135,7 +135,7 @@ public class OptimizelyManagerBuilderTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
         AndroidUserProfileServiceDefault ups = mock(AndroidUserProfileServiceDefault.class);
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
-                .withDatafileDownloadInterval(61, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
                 .withUserProfileService(ups)
                 .build();
 

@@ -74,7 +74,6 @@ public class OptimizelyManager {
 
     @NonNull private final Executor executor;
 
-    @NonNull private Boolean useDatafileHandlerBackgroundUpdates = false;
     @Nullable private DatafileHandler datafileHandler = null;
     @Nullable private Logger logger = null;
     @Nullable private EventHandler eventHandler = null;
@@ -84,11 +83,10 @@ public class OptimizelyManager {
 
     OptimizelyManager(@NonNull String projectId,
                       @NonNull Long eventHandlerDispatchInterval,
-                      @NonNull TimeUnit eventHandlerDispatchIntervalTimeUnit,
+                      @Nullable TimeUnit eventHandlerDispatchIntervalTimeUnit,
                       @NonNull Long dataFileDownloadInterval,
-                      @NonNull TimeUnit dataFileDownloadIntervalTimeUnit,
+                      @Nullable TimeUnit dataFileDownloadIntervalTimeUnit,
                       @NonNull Executor executor,
-                      @NonNull Boolean useDatafileHandlerBackgroundUpdates,
                       @NonNull Logger logger,
                       @Nullable DatafileHandler datafileHandler,
                       @Nullable EventHandler eventHandler,
@@ -101,7 +99,6 @@ public class OptimizelyManager {
         this.dataFileDownloadIntervalTimeUnit = dataFileDownloadIntervalTimeUnit;
         this.executor = executor;
 
-        this.useDatafileHandlerBackgroundUpdates = useDatafileHandlerBackgroundUpdates;
         this.logger = logger;
         if (datafileHandler == null) {
             this.datafileHandler = new DatafileHandlerDefault();
@@ -381,7 +378,7 @@ public class OptimizelyManager {
 
     @VisibleForTesting
     protected void completeInject(Context context, String dataFile) {
-        if (useDatafileHandlerBackgroundUpdates && datafileHandler != null) {
+        if (dataFileDownloadInterval > 0 && dataFileDownloadIntervalTimeUnit != null && datafileHandler != null) {
             datafileHandler.startBackgroundUpdates(context, projectId, dataFileDownloadInterval, dataFileDownloadIntervalTimeUnit);
         }
         try {
@@ -431,9 +428,9 @@ public class OptimizelyManager {
 
     protected EventHandler getEventHandler(Context context) {
         if (eventHandler == null) {
-            OptlyEventHandler eventH = OptlyEventHandler.getInstance(context);
-            eventH.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
-            eventHandler = eventH;
+            OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
+            eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+            this.eventHandler = eventHandler;
         }
 
         return (EventHandler)eventHandler;
@@ -534,12 +531,12 @@ public class OptimizelyManager {
 
         @NonNull private final String projectId;
 
-        @NonNull private Long dataFileDownloadInterval = 1L;
-        @NonNull private TimeUnit dataFileDownloadIntervalTimeUnit = TimeUnit.DAYS;
-        @NonNull private Long eventHandlerDispatchInterval = 1L;
-        @NonNull private TimeUnit eventHandlerDispatchIntervalTimeUnit = TimeUnit.DAYS;
-        // we will not turn on background updates by default.  you have to call withDatafileHandlerBackgroundUpdates.
-        @NonNull private Boolean useDatafileHandlerBackgroundUpdates = false;
+        // -1 will cause the background download to not be initiated.
+        @NonNull private Long dataFileDownloadInterval = -1L;
+        @Nullable private TimeUnit dataFileDownloadIntervalTimeUnit = null;
+        // -1 will cause the background download to not be initiated.
+        @NonNull private Long eventHandlerDispatchInterval = -1L;
+        @Nullable private TimeUnit eventHandlerDispatchIntervalTimeUnit = null;
         @Nullable private DatafileHandler datafileHandler = null;
         @Nullable private Logger logger = null;
         @Nullable private EventHandler eventHandler = null;
@@ -551,14 +548,13 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which {@link EventIntentService}
-         * will flush events.
+         * Sets the interval which {@link EventIntentService} will flush events.
          *
          * @param interval the interval
          * @param timeUnit the unit of the interval
          * @return this {@link Builder} instance
          */
-        public Builder withEventHandlerDispatchInterval(long interval, @NonNull TimeUnit timeUnit) {
+        public Builder withEventHandlerDispatchInterval(long interval, @Nullable TimeUnit timeUnit) {
             this.eventHandlerDispatchInterval = interval;
             this.eventHandlerDispatchIntervalTimeUnit = timeUnit;
             return this;
@@ -566,26 +562,15 @@ public class OptimizelyManager {
 
         /**
          * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
-         * cached datafile.
+         * cached datafile.  If you set this to -1 and null respectfully, you disable background updates.
          *
          * @param interval the interval
          * @param timeUnit the unit of the interval
          * @return this {@link Builder} instance
          */
-        public Builder withDatafileDownloadInterval(long interval, @NonNull TimeUnit timeUnit) {
+        public Builder withDatafileDownloadInterval(long interval, @Nullable TimeUnit timeUnit) {
             this.dataFileDownloadInterval = interval;
             this.dataFileDownloadIntervalTimeUnit = timeUnit;
-            return this;
-        }
-
-        /**
-         * Set whether to call {@link DatafileHandler} startBackgroundUpdates or not.
-         * If this is set, datafile download interval will be ignored.
-         * @param enableBackgroundUpdates
-         * @return this {@link Builder} instance
-         */
-        public Builder withDatafileHandlerBackgroundUpdates(Boolean enableBackgroundUpdates) {
-            this.useDatafileHandlerBackgroundUpdates = enableBackgroundUpdates;
             return this;
         }
 
@@ -654,12 +639,15 @@ public class OptimizelyManager {
                     logger.error("Unable to generate logger from class");
                 }
             }
-            // AlarmManager doesn't allow intervals less than 60 seconds
-            if (dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval) < (60 * 1000)) {
-                dataFileDownloadIntervalTimeUnit = TimeUnit.SECONDS;
-                dataFileDownloadInterval = 60L;
-                logger.warn("Minimum datafile polling interval is 60 seconds. " +
-                        "Defaulting to 60 seconds.");
+
+            if (dataFileDownloadIntervalTimeUnit != null) {
+                // AlarmManager doesn't allow intervals less than 60 seconds
+                if (dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval) < (60 * 1000)) {
+                    dataFileDownloadIntervalTimeUnit = TimeUnit.SECONDS;
+                    dataFileDownloadInterval = 60L;
+                    logger.warn("Minimum datafile polling interval is 60 seconds. " +
+                            "Defaulting to 60 seconds.");
+                }
             }
 
             return new OptimizelyManager(projectId,
@@ -668,7 +656,6 @@ public class OptimizelyManager {
                     dataFileDownloadInterval,
                     dataFileDownloadIntervalTimeUnit,
                     Executors.newSingleThreadExecutor(),
-                    useDatafileHandlerBackgroundUpdates,
                     logger,
                     datafileHandler,
                     eventHandler,

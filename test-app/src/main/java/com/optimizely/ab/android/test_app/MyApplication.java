@@ -74,9 +74,8 @@ public class MyApplication extends Application {
         // tests setup not work and the Espresso tests will fail.  Also, the project id passed here
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
         optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
-                .withEventHandlerDispatchInterval(3, TimeUnit.MINUTES)
-                .withDatafileDownloadInterval(30, TimeUnit.SECONDS)
-                .withDatafileHandlerBackgroundUpdates(true)
+                //.withEventHandlerDispatchInterval(30L, TimeUnit.SECONDS)
+                //.withDatafileDownloadInterval(30L, TimeUnit.SECONDS)
                 .build();
     }
 }

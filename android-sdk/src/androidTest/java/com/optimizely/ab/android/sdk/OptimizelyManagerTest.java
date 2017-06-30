@@ -80,7 +80,7 @@ public class OptimizelyManagerTest {
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
         DatafileHandler handler = mock(DatafileHandlerDefault.class);
-        optimizelyManager = new OptimizelyManager(testProjectId, 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, false, logger, handler, null, null, null);
+        optimizelyManager = new OptimizelyManager(testProjectId, 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger, handler, null, null, null);
     }
 
     @SuppressWarnings("WrongConstant")

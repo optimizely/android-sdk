@@ -64,7 +64,12 @@ public class OptlyEventHandler implements EventHandler {
      * @param timeUnit a {@link TimeUnit}
      */
     public void setDispatchInterval(Long dispatchInterval, TimeUnit timeUnit) {
-        this.dispatchInterval = timeUnit.toMillis(dispatchInterval);
+        if (timeUnit == null || dispatchInterval == null || dispatchInterval == -1L) {
+            this.dispatchInterval = -1L;
+        }
+        else {
+            this.dispatchInterval = timeUnit.toMillis(dispatchInterval);
+        }
     }
 
     /**
@@ -87,9 +92,8 @@ public class OptlyEventHandler implements EventHandler {
         Intent intent = new Intent(context, EventIntentService.class);
         intent.putExtra(EventIntentService.EXTRA_URL, logEvent.getEndpointUrl());
         intent.putExtra(EventIntentService.EXTRA_REQUEST_BODY, logEvent.getBody());
-        if (dispatchInterval != -1) {
-            intent.putExtra(EventIntentService.EXTRA_INTERVAL, dispatchInterval);
-        }
+        intent.putExtra(EventIntentService.EXTRA_INTERVAL, dispatchInterval);
+
         context.startService(intent);
         logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
 
