@@ -103,7 +103,7 @@ public class Feature {
 
     @Override
     public String toString() {
-        return "Feature{" +
+        return "FeatureFlag{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +

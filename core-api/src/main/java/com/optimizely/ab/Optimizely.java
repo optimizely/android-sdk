@@ -416,7 +416,7 @@ public class Optimizely {
         return null;
     }
 
-    //======== Feature APIs ========//
+    //======== FeatureFlag APIs ========//
 
     /**
      * Determine whether a boolean feature is enabled.

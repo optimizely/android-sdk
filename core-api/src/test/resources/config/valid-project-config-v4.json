@@ -191,6 +191,27 @@
       "forcedVariations": {
         "Harry Potter": "Control"
       }
+    },
+    {
+      "id": "3072915611",
+      "key": "launched_experiment",
+      "layerId": "3587821424",
+      "status": "Launched",
+      "variations": [
+        {
+          "id": "1647582435",
+          "key": "launch_control",
+          "variables": []
+        }
+      ],
+      "trafficAllocation": [
+        {
+          "entityId": "1647582435",
+          "endOfRang": 8000
+        }
+      ],
+      "audienceIds": [],
+      "forcedVariations": {}
     }
   ],
   "groups": [
@@ -281,7 +302,7 @@
       ]
     }
   ],
-  "features": [
+  "featureFlags": [
     {
       "id": "4195505407",
       "key": "boolean_feature",

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -617,5 +618,27 @@ public final class ProjectConfigTestUtils {
                 assertThat(actualLiveVariableUsageInstance.getValue(), is(expectedLiveVariableUsageInstance.getValue()));
             }
         }
+    }
+
+    public static <T> List<T> createListOfObjects(T ... elements) {
+        ArrayList<T> list = new ArrayList<T>(elements.length);
+        for (T element : elements) {
+            list.add(element);
+        }
+        return list;
+    }
+
+    public static <K, V> Map<K, V> createMapOfObjects(List<K>keys, List<V>values) {
+        HashMap<K, V> map = new HashMap<K, V>(keys.size());
+        if (keys.size() == values.size()) {
+            Iterator<K> keysIterator = keys.iterator();
+            Iterator<V> valuesIterator = values.iterator();
+            while (keysIterator.hasNext() && valuesIterator.hasNext()) {
+                K key = keysIterator.next();
+                V value = valuesIterator.next();
+                map.put(key, value);
+            }
+        }
+        return map;
     }
 }

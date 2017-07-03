@@ -23,10 +23,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 /**
- * Represents a Feature definition at the project level
+ * Represents a FeatureFlag definition at the project level
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Feature implements IdKeyMapped{
+public class FeatureFlag implements IdKeyMapped{
 
     private final String id;
     private final String key;
@@ -35,11 +35,11 @@ public class Feature implements IdKeyMapped{
     private final List<LiveVariable> variables;
 
     @JsonCreator
-    public Feature(@JsonProperty("id") String id,
-                   @JsonProperty("key") String key,
-                   @JsonProperty("layerId") String layerId,
-                   @JsonProperty("experimentIds") List<String> experimentIds,
-                   @JsonProperty("variables") List<LiveVariable> variables) {
+    public FeatureFlag(@JsonProperty("id") String id,
+                       @JsonProperty("key") String key,
+                       @JsonProperty("layerId") String layerId,
+                       @JsonProperty("experimentIds") List<String> experimentIds,
+                       @JsonProperty("variables") List<LiveVariable> variables) {
         this.id = id;
         this.key = key;
         this.layerId = layerId;
@@ -69,7 +69,7 @@ public class Feature implements IdKeyMapped{
 
     @Override
     public String toString() {
-        return "Feature{" +
+        return "FeatureFlag{" +
                 "id='" + id + '\'' +
                 ", key='" + key + '\'' +
                 ", layerId='" + layerId + '\'' +
