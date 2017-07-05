@@ -24,8 +24,10 @@ import org.junit.rules.ExpectedException;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV3;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV4;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV4;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.verifyProjectConfig;
 
 /**
@@ -50,6 +52,15 @@ public class GsonConfigParserTest {
         GsonConfigParser parser = new GsonConfigParser();
         ProjectConfig actual = parser.parseProjectConfig(validConfigJsonV3());
         ProjectConfig expected = validProjectConfigV3();
+
+        verifyProjectConfig(actual, expected);
+    }
+
+    @Test
+    public void parseProjectCOnfigV4() throws Exception {
+        GsonConfigParser parser = new GsonConfigParser();
+        ProjectConfig actual = parser.parseProjectConfig(validConfigJsonV4());
+        ProjectConfig expected = validProjectConfigV4();
 
         verifyProjectConfig(actual, expected);
     }

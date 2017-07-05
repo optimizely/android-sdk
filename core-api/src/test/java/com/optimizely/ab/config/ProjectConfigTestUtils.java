@@ -39,6 +39,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -380,7 +381,7 @@ public final class ProjectConfigTestUtils {
 
     private static final ProjectConfig VALID_PROJECT_CONFIG_V4 = generateValidProjectConfigV4();
     private static ProjectConfig generateValidProjectConfigV4() {
-        return null;
+        return ValidProjectConfigV4.generateValidProjectConfigV4();
     }
 
     private ProjectConfigTestUtils() { }
@@ -399,6 +400,10 @@ public final class ProjectConfigTestUtils {
 
     public static String noAudienceProjectConfigJsonV3() throws IOException {
         return Resources.toString(Resources.getResource("config/no-audience-project-config-v3.json"), Charsets.UTF_8);
+    }
+
+    public static String validConfigJsonV4() throws IOException {
+        return Resources.toString(Resources.getResource("config/valid-project-config-v4.json"), Charsets.UTF_8);
     }
 
     /**
@@ -506,7 +511,9 @@ public final class ProjectConfigTestUtils {
             TrafficAllocation expectedDistribution = expected.get(i);
 
             assertThat(actualDistribution.getEntityId(), is(expectedDistribution.getEntityId()));
-            assertThat(actualDistribution.getEndOfRange(), is(expectedDistribution.getEndOfRange()));
+            assertEquals("expectedDistribution: " + expectedDistribution.toString() +
+                            "is not equal to the actualDistribution: " + actualDistribution.toString(),
+                    expectedDistribution.getEndOfRange(), actualDistribution.getEndOfRange());
         }
     }
 
