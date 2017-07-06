@@ -223,7 +223,16 @@ public class OptimizelyManagerTest {
     @Test
     public void injectOptimizelyHandlesInvalidDatafile() {
         Context context = mock(Context.class);
+        PackageManager packageManager = mock(PackageManager.class);
+
         when(context.getPackageName()).thenReturn("com.optly");
+        when(context.getApplicationContext()).thenReturn(context);
+        when(context.getApplicationContext().getPackageManager()).thenReturn(packageManager);
+        try {
+            when(packageManager.getPackageInfo("com.optly", 0)).thenReturn(mock(PackageInfo.class));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         DefaultAndroidUserProfileService userProfileService = mock(DefaultAndroidUserProfileService.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<DefaultAndroidUserProfileService.StartCallback> callbackArgumentCaptor =
@@ -237,7 +246,6 @@ public class OptimizelyManagerTest {
             fail("Timed out");
         }
 
-        verify(userProfileService).startInBackground(callbackArgumentCaptor.capture());
         verify(logger).error(eq("Unable to build optimizely instance"), any(Exception.class));
 
     }
