@@ -19,6 +19,8 @@ package com.optimizely.ab.android.sdk;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
@@ -29,14 +31,15 @@ import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileHandlerDefault;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault;
+import com.optimizely.ab.android.user_profile.DefaultAndroidUserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
+
+import com.optimizely.ab.bucketing.UserProfileService;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.exceptions.verification.junit.ArgumentsAreDifferent;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
@@ -156,11 +159,8 @@ public class OptimizelyManagerTest {
     @Test
     public void injectOptimizely() {
         Context context = mock(Context.class);
-        AndroidUserProfileServiceDefault userProfileService = mock(AndroidUserProfileServiceDefault.class);
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        UserProfileService userProfileService = mock(UserProfileService.class);
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
-        ArgumentCaptor<AndroidUserProfileServiceDefault.StartCallback> callbackArgumentCaptor =
-                ArgumentCaptor.forClass(AndroidUserProfileServiceDefault.StartCallback.class);
 
         optimizelyManager.setOptimizelyStartListener(startListener);
         optimizelyManager.injectOptimizely(context, userProfileService, minDatafile);
@@ -170,10 +170,6 @@ public class OptimizelyManagerTest {
             fail("Timed out");
         }
 
-        verify(userProfileService).startInBackground(callbackArgumentCaptor.capture());
-
-        optimizelyManager.completeInject(context, minDatafile);
-
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
     }
@@ -182,13 +178,23 @@ public class OptimizelyManagerTest {
     @Test
     public void injectOptimizelyNullListener() {
         Context context = mock(Context.class);
+        PackageManager packageManager = mock(PackageManager.class);
+
         when(context.getPackageName()).thenReturn("com.optly");
-        AndroidUserProfileServiceDefault userProfileService = mock(AndroidUserProfileServiceDefault.class);
+        when(context.getApplicationContext()).thenReturn(context);
+        when(context.getApplicationContext().getPackageManager()).thenReturn(packageManager);
+        try {
+            when(packageManager.getPackageInfo("com.optly", 0)).thenReturn(mock(PackageInfo.class));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        UserProfileService userProfileService = mock(UserProfileService.class);
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<AndroidUserProfileServiceDefault.StartCallback> callbackArgumentCaptor =
-                ArgumentCaptor.forClass(AndroidUserProfileServiceDefault.StartCallback.class);
+        ArgumentCaptor<DefaultAndroidUserProfileService.StartCallback> callbackArgumentCaptor =
+                ArgumentCaptor.forClass(DefaultAndroidUserProfileService.StartCallback.class);
         optimizelyManager.setOptimizelyStartListener(null);
+
         optimizelyManager.injectOptimizely(context, userProfileService, minDatafile);
         AlarmManager alarmManager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
@@ -205,10 +211,8 @@ public class OptimizelyManagerTest {
             fail("Timed out");
         }
 
-        verify(userProfileService).startInBackground(callbackArgumentCaptor.capture());
-        verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
-        optimizelyManager.completeInject(context, minDatafile);
         verify(logger).info("No listener to send Optimizely to");
+        verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
 
         Intent intent2 = captor.getValue();
         assertTrue(intent2.getComponent().getShortClassName().contains("DatafileService"));
@@ -220,10 +224,10 @@ public class OptimizelyManagerTest {
     public void injectOptimizelyHandlesInvalidDatafile() {
         Context context = mock(Context.class);
         when(context.getPackageName()).thenReturn("com.optly");
-        AndroidUserProfileServiceDefault userProfileService = mock(AndroidUserProfileServiceDefault.class);
+        DefaultAndroidUserProfileService userProfileService = mock(DefaultAndroidUserProfileService.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<AndroidUserProfileServiceDefault.StartCallback> callbackArgumentCaptor =
-                ArgumentCaptor.forClass(AndroidUserProfileServiceDefault.StartCallback.class);
+        ArgumentCaptor<DefaultAndroidUserProfileService.StartCallback> callbackArgumentCaptor =
+                ArgumentCaptor.forClass(DefaultAndroidUserProfileService.StartCallback.class);
 
         optimizelyManager.setOptimizelyStartListener(null);
         optimizelyManager.injectOptimizely(context, userProfileService, "{}");
@@ -234,7 +238,6 @@ public class OptimizelyManagerTest {
         }
 
         verify(userProfileService).startInBackground(callbackArgumentCaptor.capture());
-        optimizelyManager.completeInject(context, "{}");
         verify(logger).error(eq("Unable to build optimizely instance"), any(Exception.class));
 
     }
@@ -243,12 +246,19 @@ public class OptimizelyManagerTest {
     @Test
     public void injectOptimizelyDoesNotDuplicateCallback() {
         Context context = mock(Context.class);
-        when(context.getPackageName()).thenReturn("com.optly");
-        AndroidUserProfileServiceDefault userProfileService = mock(AndroidUserProfileServiceDefault.class);
-        ArgumentCaptor<AndroidUserProfileServiceDefault.StartCallback> callbackArgumentCaptor =
-                ArgumentCaptor.forClass(AndroidUserProfileServiceDefault.StartCallback.class);
+        PackageManager packageManager = mock(PackageManager.class);
 
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        when(context.getPackageName()).thenReturn("com.optly");
+        when(context.getApplicationContext()).thenReturn(context);
+        when(context.getApplicationContext().getPackageManager()).thenReturn(packageManager);
+        try {
+            when(packageManager.getPackageInfo("com.optly", 0)).thenReturn(mock(PackageInfo.class));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        UserProfileService userProfileService = mock(UserProfileService.class);
+
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
         optimizelyManager.setOptimizelyStartListener(startListener);
         optimizelyManager.injectOptimizely(context, userProfileService, minDatafile);
@@ -258,18 +268,8 @@ public class OptimizelyManagerTest {
             fail("Timed out");
         }
 
-        verify(userProfileService).startInBackground(callbackArgumentCaptor.capture());
-
-        optimizelyManager.completeInject(context, minDatafile);
-
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
 
-        optimizelyManager.injectOptimizely(context, userProfileService, minDatafile);
-        try {
-            executor.awaitTermination(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            fail("Timed out");
-        }
     }
 }

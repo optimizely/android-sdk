@@ -63,8 +63,8 @@ public class OptlyEventHandler implements EventHandler {
      * @param dispatchInterval the interval in the provided {@link TimeUnit}
      * @param timeUnit a {@link TimeUnit}
      */
-    public void setDispatchInterval(Long dispatchInterval, TimeUnit timeUnit) {
-        if (timeUnit == null || dispatchInterval == null || dispatchInterval == -1L) {
+    public void setDispatchInterval(long dispatchInterval, TimeUnit timeUnit) {
+        if (timeUnit == null || dispatchInterval <= 0) {
             this.dispatchInterval = -1L;
         }
         else {

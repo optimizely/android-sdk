@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -38,7 +37,7 @@ import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileHandlerDefault;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 
-import com.optimizely.ab.android.user_profile.AndroidUserProfileServiceDefault;
+import com.optimizely.ab.android.user_profile.DefaultAndroidUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
@@ -66,10 +65,10 @@ public class OptimizelyManager {
     @NonNull private final String projectId;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
-    @NonNull private final Long eventHandlerDispatchInterval;
+    @NonNull private final long eventHandlerDispatchInterval;
     @NonNull private final TimeUnit eventHandlerDispatchIntervalTimeUnit;
 
-    @NonNull private final Long dataFileDownloadInterval;
+    @NonNull private final long dataFileDownloadInterval;
     @NonNull private final TimeUnit dataFileDownloadIntervalTimeUnit;
 
     @NonNull private final Executor executor;
@@ -82,9 +81,9 @@ public class OptimizelyManager {
 
 
     OptimizelyManager(@NonNull String projectId,
-                      @NonNull Long eventHandlerDispatchInterval,
+                      @NonNull long eventHandlerDispatchInterval,
                       @Nullable TimeUnit eventHandlerDispatchIntervalTimeUnit,
-                      @NonNull Long dataFileDownloadInterval,
+                      @NonNull long dataFileDownloadInterval,
                       @Nullable TimeUnit dataFileDownloadIntervalTimeUnit,
                       @NonNull Executor executor,
                       @NonNull Logger logger,
@@ -361,40 +360,37 @@ public class OptimizelyManager {
     void injectOptimizely(@NonNull final Context context, final @NonNull UserProfileService userProfileService,
                           @NonNull final String dataFile) {
 
-
-        if (userProfileService instanceof AndroidUserProfileServiceDefault) {
-            ((AndroidUserProfileServiceDefault) userProfileService).startInBackground(new AndroidUserProfileServiceDefault.StartCallback() {
-                @Override
-                public void onStartComplete(UserProfileService userProfileService) {
-                    completeInject(context, dataFile);
-                }
-            });
-        }
-        else {
-            completeInject(context, dataFile);
-        }
-
-    }
-
-    @VisibleForTesting
-    protected void completeInject(Context context, String dataFile) {
         if (dataFileDownloadInterval > 0 && dataFileDownloadIntervalTimeUnit != null && datafileHandler != null) {
             datafileHandler.startBackgroundUpdates(context, projectId, dataFileDownloadInterval, dataFileDownloadIntervalTimeUnit);
         }
         try {
             optimizelyClient = buildOptimizely(context, dataFile);
             optimizelyClient.setDefaultAttributes(OptimizelyDefaultAttributes.buildDefaultAttributesMap(context, logger));
-            logger.info("Sending Optimizely instance to listener");
 
-            if (optimizelyStartListener != null) {
-                optimizelyStartListener.onStart(optimizelyClient);
-            } else {
-                logger.info("No listener to send Optimizely to");
+            if (userProfileService instanceof DefaultAndroidUserProfileService) {
+                ((DefaultAndroidUserProfileService) userProfileService).startInBackground(new DefaultAndroidUserProfileService.StartCallback() {
+                    @Override
+                    public void onStartComplete(UserProfileService userProfileService) {
+                        if (optimizelyStartListener != null) {
+                            logger.info("Sending Optimizely instance to listener");
+                            optimizelyStartListener.onStart(optimizelyClient);
+                        } else {
+                            logger.info("No listener to send Optimizely to");
+                        }
+                    }
+                });
+            }
+            else {
+                if (optimizelyStartListener != null) {
+                    logger.info("Sending Optimizely instance to listener");
+                    optimizelyStartListener.onStart(optimizelyClient);
+                } else {
+                    logger.info("No listener to send Optimizely to");
+                }
             }
         } catch (Exception e) {
             logger.error("Unable to build optimizely instance", e);
         }
-
     }
 
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile) throws ConfigParseException {
@@ -412,7 +408,7 @@ public class OptimizelyManager {
             builder.withUserProfileService(userProfileService);
         }
         else {
-            userProfileService = AndroidUserProfileServiceDefault.newInstance(projectId, context);
+            userProfileService = DefaultAndroidUserProfileService.newInstance(projectId, context);
             builder.withUserProfileService(userProfileService);
         }
 
@@ -532,10 +528,10 @@ public class OptimizelyManager {
         @NonNull private final String projectId;
 
         // -1 will cause the background download to not be initiated.
-        @NonNull private Long dataFileDownloadInterval = -1L;
+        @NonNull private long dataFileDownloadInterval = -1L;
         @Nullable private TimeUnit dataFileDownloadIntervalTimeUnit = null;
         // -1 will cause the background download to not be initiated.
-        @NonNull private Long eventHandlerDispatchInterval = -1L;
+        @NonNull private long eventHandlerDispatchInterval = -1L;
         @Nullable private TimeUnit eventHandlerDispatchIntervalTimeUnit = null;
         @Nullable private DatafileHandler datafileHandler = null;
         @Nullable private Logger logger = null;
@@ -640,7 +636,7 @@ public class OptimizelyManager {
                 }
             }
 
-            if (dataFileDownloadIntervalTimeUnit != null) {
+            if (dataFileDownloadIntervalTimeUnit != null && dataFileDownloadInterval > 0) {
                 // AlarmManager doesn't allow intervals less than 60 seconds
                 if (dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval) < (60 * 1000)) {
                     dataFileDownloadIntervalTimeUnit = TimeUnit.SECONDS;
