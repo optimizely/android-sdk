@@ -35,7 +35,6 @@ import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.internal.ExperimentUtils;
 import com.optimizely.ab.internal.LogbackVerifier;
-import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.notification.NotificationListener;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Rule;
@@ -75,8 +74,6 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.anyString;
@@ -1439,217 +1436,6 @@ public class OptimizelyTest {
         verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
     }
 
-    //======== live variable getters tests ========//
-
-    /**
-     * Verify that {@link Optimizely#getVariableString(String, String, boolean)} returns null and logs properly when
-     * an invalid live variable key is provided and the {@link NoOpErrorHandler} is used.
-     */
-    @Test
-    public void getVariableInvalidVariableKeyNoOpErrorHandler() throws Exception {
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withConfig(validProjectConfig)
-                .build();
-
-        logbackVerifier.expectMessage(Level.ERROR, "Live variable \"invalid_key\" is not in the datafile.");
-        assertNull(optimizely.getVariableString("invalid_key", "userId", false));
-    }
-
-    /**
-     * Verify that {@link Optimizely#getVariableString(String, String, boolean)} returns throws an
-     * {@link UnknownLiveVariableException} when an invalid live variable key is provided and the
-     * {@link RaiseExceptionErrorHandler} is used.
-     */
-    @Test
-    public void getVariableInvalidVariableKeyRaiseExceptionErrorHandler() throws Exception {
-        thrown.expect(UnknownLiveVariableException.class);
-
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withConfig(validProjectConfig)
-                .withErrorHandler(new RaiseExceptionErrorHandler())
-                .build();
-
-        optimizely.getVariableString("invalid_key", "userId", false);
-    }
-
-    /**
-     * Verify that {@link Optimizely#getVariableString(String, String, Map, boolean)} returns a string live variable
-     * value when an proper variable key is provided and dispatches an impression when activateExperiment is true.
-     */
-    @Test
-    public void getVariableStringActivateExperimentTrue() throws Exception {
-
-        assumeTrue(datafileVersion >= 3);
-
-        Experiment activatedExperiment = validProjectConfig.getExperiments().get(0);
-        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
-
-        when(mockBucketer.bucket(activatedExperiment, genericUserId))
-                .thenReturn(bucketedVariation);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withConfig(validProjectConfig)
-                .withBucketing(mockBucketer)
-                .withErrorHandler(new RaiseExceptionErrorHandler())
-                .build();
-
-        String variableKey = "string_variable";
-        Map<String, String> attributes = Collections.singletonMap("browser_type", "chrome");
-
-        assertThat(optimizely.getVariableString(variableKey, genericUserId,
-                attributes, true),
-                is("string_var_vtag1"));
-
-        verify(mockEventHandler).dispatchEvent(any(LogEvent.class));
-    }
-
-    /**
-     * Verify that {@link Optimizely#getVariableString(String, String, Map, boolean)} returns a string live variable
-     * value when an proper variable key is provided and doesn't dispatch an impression when activateExperiment is
-     * false.
-     */
-    @Test
-    public void getVariableStringActivateExperimentFalse() throws Exception {
-
-        assumeTrue(datafileVersion >= 3);
-
-        Experiment activatedExperiment = validProjectConfig.getExperiments().get(0);
-        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
-
-        when(mockBucketer.bucket(activatedExperiment, "userId"))
-                .thenReturn(bucketedVariation);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withConfig(validProjectConfig)
-                .withBucketing(mockBucketer)
-                .withErrorHandler(new RaiseExceptionErrorHandler())
-                .build();
-
-        assertThat(optimizely.getVariableString("string_variable", "userId",
-                Collections.singletonMap("browser_type", "chrome"), false),
-                is("string_var_vtag1"));
-        verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
-    }
-
-    /**
-     * Verify that {@link Optimizely#getVariableString(String, String, boolean)} returns the default value of
-     * a live variable when no experiments are using the live variable.
-     */
-    @Test
-    public void getVariableStringReturnsDefaultValueNoExperimentsUsingLiveVariable() throws Exception {
-
-        assumeTrue(datafileVersion >= 3);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withConfig(validProjectConfig)
-                .build();
-
-        logbackVerifier.expectMessage(Level.WARN, "No experiment is using variable \"unused_string_variable\".");
-        assertThat(optimizely.getVariableString("unused_string_variable",
-                "userId", true), is("unused_variable"));
-    }
-
-    /**
-     * Verify that {@link Optimizely#getVariableString(String, String, Map, boolean)} returns the default value when
-     * a user isn't bucketed into a variation in the experiment.
-     */
-    @Test
-    public void getVariableStringReturnsDefaultValueUserNotInVariation() throws Exception {
-
-        assumeTrue(datafileVersion >= 3);
-
-        // user isn't bucketed into a variation in any experiment
-        when(mockBucketer.bucket(any(Experiment.class), any(String.class)))
-                .thenReturn(null);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withConfig(validProjectConfig)
-                .withBucketing(mockBucketer)
-                .build();
-
-        assertThat(optimizely.getVariableString("string_variable", "userId",
-                Collections.singletonMap("browser_type", "chrome"), true),
-                is("string_live_variable"));
-    }
-
-    /**
-     * Verify that {@link Optimizely#getVariableBoolean(String, String, Map, boolean)} returns a boolean live variable
-     * value when an proper variable key is provided and dispatches an impression when activateExperiment is true.
-     */
-    @Test
-    public void getVariableBoolean() throws Exception {
-
-        assumeTrue(datafileVersion >= 3);
-
-        Experiment activatedExperiment = validProjectConfig.getExperiments().get(0);
-        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
-
-        when(mockBucketer.bucket(activatedExperiment, "userId"))
-                .thenReturn(bucketedVariation);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withConfig(validProjectConfig)
-                .withBucketing(mockBucketer)
-                .build();
-
-        assertTrue(optimizely.getVariableBoolean("etag1_variable", "userId",
-                Collections.singletonMap("browser_type", "chrome"), true));
-    }
-
-    /**
-     * Verify that {@link Optimizely#getVariableDouble(String, String, Map, boolean)} returns a double live variable
-     * value when an proper variable key is provided and dispatches an impression when activateExperiment is true.
-     */
-    @Test
-    public void getVariableDouble() throws Exception {
-
-        assumeTrue(datafileVersion >= 3);
-
-        Experiment activatedExperiment = validProjectConfig.getExperiments().get(0);
-        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
-
-        when(mockBucketer.bucket(activatedExperiment, "userId"))
-                .thenReturn(bucketedVariation);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withConfig(validProjectConfig)
-                .withBucketing(mockBucketer)
-                .build();
-
-        assertThat(optimizely.getVariableDouble("double_variable", "userId",
-                Collections.singletonMap("browser_type", "chrome"), true),
-                is(5.3));
-        verify(mockEventHandler).dispatchEvent(any(LogEvent.class));
-    }
-
-    /**
-     * Verify that {@link Optimizely#getVariableInteger(String, String, Map, boolean)} returns a integer live variable
-     * value when an proper variable key is provided and dispatches an impression when activateExperiment is true.
-     */
-    @Test
-    public void getVariableInteger() throws Exception {
-
-        assumeTrue(datafileVersion >= 3);
-
-        Experiment activatedExperiment = validProjectConfig.getExperiments().get(0);
-        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
-
-        when(mockBucketer.bucket(activatedExperiment, "userId"))
-                .thenReturn(bucketedVariation);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withConfig(validProjectConfig)
-                .withBucketing(mockBucketer)
-                .build();
-
-        assertThat(optimizely.getVariableInteger("integer_variable", "userId",
-                Collections.singletonMap("browser_type", "chrome"), true),
-                is(10));
-        verify(mockEventHandler).dispatchEvent(any(LogEvent.class));
-    }
-
     //======== getVariation tests ========//
 
     /**
@@ -1938,17 +1724,8 @@ public class OptimizelyTest {
 
         // Check if listener is notified when experiment is activated
         Variation actualVariation = optimizely.activate(activatedExperiment, genericUserId, attributes);
-        verify(listener, times(1))
-                .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
 
-        // Check if listener is notified when live variable is accessed
-        boolean activateExperiment = true;
-        optimizely.getVariableString("string_variable", genericUserId, attributes, activateExperiment);
-
-        if (datafileVersion >= 3) {
-            verify(listener, times(2))
-                    .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
-        } else {
+        if (datafileVersion == 3 || datafileVersion == 2) {
             verify(listener, times(1))
                     .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
         }
@@ -2022,9 +1799,6 @@ public class OptimizelyTest {
         verify(listener, never())
                 .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
 
-        // Check if listener is notified after a live variable is accessed
-        boolean activateExperiment = true;
-        optimizely.getVariableString("string_variable", genericUserId, attributes, activateExperiment);
         verify(listener, never())
                 .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
 
@@ -2096,9 +1870,6 @@ public class OptimizelyTest {
         verify(listener, never())
                 .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
 
-        // Check if listener is notified after a live variable is accessed
-        boolean activateExperiment = true;
-        optimizely.getVariableString("string_variable", genericUserId, attributes, activateExperiment);
         verify(listener, never())
                 .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
 

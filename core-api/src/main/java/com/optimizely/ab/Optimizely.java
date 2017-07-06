@@ -22,8 +22,6 @@ import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
-import com.optimizely.ab.config.LiveVariable;
-import com.optimizely.ab.config.LiveVariableUsageInstance;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.ConfigParseException;
@@ -38,7 +36,6 @@ import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
 import com.optimizely.ab.internal.EventTagUtils;
-import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.notification.NotificationBroadcaster;
 import com.optimizely.ab.notification.NotificationListener;
 import org.slf4j.Logger;
@@ -281,139 +278,6 @@ public class Optimizely {
 
         notificationBroadcaster.broadcastEventTracked(eventName, userId, filteredAttributes, eventValue,
                 conversionEvent);
-    }
-
-    //======== live variable getters ========//
-
-    @Deprecated
-    public @Nullable
-    String getVariableString(@Nonnull String variableKey,
-                             @Nonnull String userId,
-                             boolean activateExperiment) throws UnknownLiveVariableException {
-        return getVariableString(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
-    }
-
-    @Deprecated
-    public @Nullable
-    String getVariableString(@Nonnull String variableKey,
-                             @Nonnull String userId,
-                             @Nonnull Map<String, String> attributes,
-                             boolean activateExperiment)
-            throws UnknownLiveVariableException {
-
-        LiveVariable variable = getLiveVariableOrThrow(projectConfig, variableKey);
-        if (variable == null) {
-            return null;
-        }
-
-        List<Experiment> experimentsUsingLiveVariable =
-                projectConfig.getLiveVariableIdToExperimentsMapping().get(variable.getId());
-        Map<String, Map<String, LiveVariableUsageInstance>> variationToLiveVariableUsageInstanceMapping =
-                projectConfig.getVariationToLiveVariableUsageInstanceMapping();
-
-        if (experimentsUsingLiveVariable == null) {
-            logger.warn("No experiment is using variable \"{}\".", variable.getKey());
-            return variable.getDefaultValue();
-        }
-
-        for (Experiment experiment : experimentsUsingLiveVariable) {
-            Variation variation;
-            if (activateExperiment) {
-                variation = activate(experiment, userId, attributes);
-            } else {
-                variation = getVariation(experiment, userId, attributes);
-            }
-
-            if (variation != null) {
-                LiveVariableUsageInstance usageInstance =
-                        variationToLiveVariableUsageInstanceMapping.get(variation.getId()).get(variable.getId());
-                return usageInstance.getValue();
-            }
-        }
-
-        return variable.getDefaultValue();
-    }
-
-    @Deprecated
-    public @Nullable
-    Boolean getVariableBoolean(@Nonnull String variableKey,
-                               @Nonnull String userId,
-                               boolean activateExperiment) throws UnknownLiveVariableException {
-        return getVariableBoolean(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
-    }
-
-    @Deprecated
-    public @Nullable
-    Boolean getVariableBoolean(@Nonnull String variableKey,
-                               @Nonnull String userId,
-                               @Nonnull Map<String, String> attributes,
-                               boolean activateExperiment)
-            throws UnknownLiveVariableException {
-
-        String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
-        if (variableValueString != null) {
-            return Boolean.parseBoolean(variableValueString);
-        }
-
-        return null;
-    }
-
-    @Deprecated
-    public @Nullable
-    Integer getVariableInteger(@Nonnull String variableKey,
-                               @Nonnull String userId,
-                               boolean activateExperiment) throws UnknownLiveVariableException {
-        return getVariableInteger(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
-    }
-
-    @Deprecated
-    public @Nullable
-    Integer getVariableInteger(@Nonnull String variableKey,
-                               @Nonnull String userId,
-                               @Nonnull Map<String, String> attributes,
-                               boolean activateExperiment)
-            throws UnknownLiveVariableException {
-
-        String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
-        if (variableValueString != null) {
-            try {
-                return Integer.parseInt(variableValueString);
-            } catch (NumberFormatException e) {
-                logger.error("Variable value \"{}\" for live variable \"{}\" is not an integer.", variableValueString,
-                        variableKey);
-            }
-        }
-
-        return null;
-    }
-
-    @Deprecated
-    public @Nullable
-    Double getVariableDouble(@Nonnull String variableKey,
-                             @Nonnull String userId,
-                             boolean activateExperiment) throws UnknownLiveVariableException {
-        return getVariableDouble(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
-    }
-
-    @Deprecated
-    public @Nullable
-    Double getVariableDouble(@Nonnull String variableKey,
-                             @Nonnull String userId,
-                             @Nonnull Map<String, String> attributes,
-                             boolean activateExperiment)
-            throws UnknownLiveVariableException {
-
-        String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
-        if (variableValueString != null) {
-            try {
-                return Double.parseDouble(variableValueString);
-            } catch (NumberFormatException e) {
-                logger.error("Variable value \"{}\" for live variable \"{}\" is not a double.", variableValueString,
-                        variableKey);
-            }
-        }
-
-        return null;
     }
 
     //======== FeatureFlag APIs ========//
@@ -737,37 +601,6 @@ public class Optimizely {
         }
 
         return eventType;
-    }
-
-    /**
-     * Helper method to retrieve the {@link LiveVariable} for the given variable key.
-     * If {@link RaiseExceptionErrorHandler} is provided, either a live variable is returned, or an exception is
-     * thrown.
-     * If {@link NoOpErrorHandler} is used, either a live variable or {@code null} is returned.
-     *
-     * @param projectConfig the current project config
-     * @param variableKey the key for the live variable being retrieved from the current project config
-     * @return the live variable to retrieve for the given variable key
-     *
-     * @throws UnknownLiveVariableException if there are no event types in the current project config with the given
-     * name
-     */
-    @Deprecated
-    private LiveVariable getLiveVariableOrThrow(ProjectConfig projectConfig, String variableKey)
-        throws UnknownLiveVariableException {
-
-        LiveVariable liveVariable = projectConfig
-            .getLiveVariableKeyMapping()
-            .get(variableKey);
-
-        if (liveVariable == null) {
-            String unknownLiveVariableKeyError =
-                    String.format("Live variable \"%s\" is not in the datafile.", variableKey);
-            logger.error(unknownLiveVariableKeyError);
-            errorHandler.handleError(new UnknownLiveVariableException(unknownLiveVariableKeyError));
-        }
-
-        return liveVariable;
     }
 
     /**
