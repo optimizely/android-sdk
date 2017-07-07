@@ -35,7 +35,7 @@ import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.event_handler.EventIntentService;
-import com.optimizely.ab.android.event_handler.OptlyEventHandler;
+import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.user_profile.DefaultAndroidUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
@@ -396,7 +396,7 @@ public class OptimizelyManager {
 
     protected EventHandler getEventHandler(Context context) {
         if (eventHandler == null) {
-            OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
+            DefaultEventHandler eventHandler = DefaultEventHandler.getInstance(context);
             eventHandler.setDispatchInterval(eventDispatchInterval);
             this.eventHandler = eventHandler;
         }

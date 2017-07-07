@@ -35,15 +35,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link OptlyEventHandler}
+ * Tests for {@link DefaultEventHandler}
  */
 @RunWith(MockitoJUnitRunner.class)
-public class OptlyEventHandlerTest {
+public class DefaultEventHandlerTest {
 
     private Context context;
     private Logger logger;
 
-    private OptlyEventHandler optlyEventHandler;
+    private DefaultEventHandler eventHandler;
     private String url = "http://www.foo.com";
     private String requestBody = "key1=val1&key2=val2&key3=val3";
 
@@ -51,24 +51,26 @@ public class OptlyEventHandlerTest {
     public void setupEventHandler() {
         context = mock(Context.class);
         logger = mock(Logger.class);
-        optlyEventHandler = OptlyEventHandler.getInstance(context);
-        optlyEventHandler.logger = logger;
+        eventHandler = DefaultEventHandler.getInstance(context);
+        eventHandler.logger = logger;
     }
 
     @Test
     public void dispatchEventSuccess() throws MalformedURLException {
-        optlyEventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), requestBody));
+        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), requestBody));
         verify(context).startService(any(Intent.class));
         verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }
 
-    @Test public void dispatchEmptyUrlString() {
-        optlyEventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, "", new HashMap<String, String>(), requestBody));
+    @Test
+    public void dispatchEmptyUrlString() {
+        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, "", new HashMap<String, String>(), requestBody));
         verify(logger).error("Event dispatcher received an empty url");
     }
 
-    @Test public void dispatchEmptyParams() {
-        optlyEventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), requestBody));
+    @Test
+    public void dispatchEmptyParams() {
+        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), requestBody));
         verify(context).startService(any(Intent.class));
         verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }

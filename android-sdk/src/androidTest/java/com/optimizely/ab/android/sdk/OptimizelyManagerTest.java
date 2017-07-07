@@ -30,7 +30,7 @@ import android.support.test.runner.AndroidJUnit4;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
-import com.optimizely.ab.android.event_handler.OptlyEventHandler;
+import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultAndroidUserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
@@ -85,7 +85,7 @@ public class OptimizelyManagerTest {
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
-        EventHandler eventHandler = mock(OptlyEventHandler.class);
+        EventHandler eventHandler = mock(DefaultEventHandler.class);
         optimizelyManager = new OptimizelyManager(testProjectId, logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
     }
