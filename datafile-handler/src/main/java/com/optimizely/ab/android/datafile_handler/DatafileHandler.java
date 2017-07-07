@@ -20,7 +20,7 @@ import android.content.Context;
 
 /**
  * DatafileHandler
- * class that is used to interact with the datafile_handler module.  This interface can be
+ * class that is used to interact with the datafile_handler module. This interface can be
  * overridden so that the sdk user can provide a override for the default DatafileHandler.
  */
 public interface DatafileHandler {

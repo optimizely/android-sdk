@@ -39,19 +39,19 @@ import java.util.concurrent.Executors;
  * Once a user is bucketed they will stay bucketed unless the device's
  * storage is cleared. Bucketing information is stored in a simple file.
  */
-public class DefaultAndroidUserProfileService implements UserProfileService {
+public class DefaultUserProfileService implements UserProfileService {
 
     @NonNull private final UserProfileCache userProfileCache;
     @NonNull private final Logger logger;
 
-    DefaultAndroidUserProfileService(@NonNull UserProfileCache userProfileCache, @NonNull Logger logger) {
+    DefaultUserProfileService(@NonNull UserProfileCache userProfileCache, @NonNull Logger logger) {
         this.userProfileCache = userProfileCache;
         this.logger = logger;
     }
 
 
     /**
-     * Gets a new instance of {@link DefaultAndroidUserProfileService}.
+     * Gets a new instance of {@link DefaultUserProfileService}.
      *
      * @param projectId your project's id
      * @param context   an instance of {@link Context}
@@ -68,8 +68,8 @@ public class DefaultAndroidUserProfileService implements UserProfileService {
                         Executors.newSingleThreadExecutor(),
                         LoggerFactory.getLogger(UserProfileCache.LegacyDiskCache.class), projectId));
 
-        return new DefaultAndroidUserProfileService(userProfileCache,
-                LoggerFactory.getLogger(DefaultAndroidUserProfileService.class));
+        return new DefaultUserProfileService(userProfileCache,
+                LoggerFactory.getLogger(DefaultUserProfileService.class));
     }
 
     public interface StartCallback {
@@ -77,7 +77,7 @@ public class DefaultAndroidUserProfileService implements UserProfileService {
     }
 
     public void startInBackground(final StartCallback callback) {
-                final DefaultAndroidUserProfileService userProfileService = this;
+                final DefaultUserProfileService userProfileService = this;
 
                 AsyncTask<Void, Void, UserProfileService> initUserProfileTask = new AsyncTask<Void, Void, UserProfileService>() {
             @Override

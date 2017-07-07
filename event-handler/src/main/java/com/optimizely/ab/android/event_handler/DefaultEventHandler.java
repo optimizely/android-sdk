@@ -31,14 +31,14 @@ import org.slf4j.LoggerFactory;
  * <p>
  * This is the main entry point to the Android Module
  */
-public class OptlyEventHandler implements EventHandler {
+public class DefaultEventHandler implements EventHandler {
 
     @NonNull
     private final Context context;
-    Logger logger = LoggerFactory.getLogger(OptlyEventHandler.class);
+    Logger logger = LoggerFactory.getLogger(DefaultEventHandler.class);
     private long dispatchInterval = -1;
 
-    private OptlyEventHandler(@NonNull Context context) {
+    private DefaultEventHandler(@NonNull Context context) {
         this.context = context;
     }
 
@@ -46,10 +46,10 @@ public class OptlyEventHandler implements EventHandler {
      * Gets a new instance
      *
      * @param context any valid Android {@link Context}
-     * @return a new instance of {@link OptlyEventHandler}
+     * @return a new instance of {@link DefaultEventHandler}
      */
-    public static OptlyEventHandler getInstance(@NonNull Context context) {
-        return new OptlyEventHandler(context);
+    public static DefaultEventHandler getInstance(@NonNull Context context) {
+        return new DefaultEventHandler(context);
     }
 
     /**
