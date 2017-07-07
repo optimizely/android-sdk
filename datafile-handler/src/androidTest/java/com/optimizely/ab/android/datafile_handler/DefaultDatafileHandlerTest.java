@@ -17,18 +17,16 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 /**
- * Instrumentation test, which will execute on an Android device.
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ * Tests for {@link DefaultDatafileHandler}
  */
 @RunWith(AndroidJUnit4.class)
-public class DatafileHandlerTest {
+public class DefaultDatafileHandlerTest {
 
-    DatafileHandler handler = mock(DefaultDatafileHandler.class);
+    DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
 
     @Before
     public void setup() {
-        handler = new DefaultDatafileHandler();
+        datafileHandler = new DefaultDatafileHandler();
     }
 
     @Test
@@ -44,11 +42,11 @@ public class DatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        handler.saveDatafile(appContext, "1", "{}");
-        assertTrue(handler.isDatafileSaved(appContext, "1"));
-        assertNotNull(handler.loadSavedDatafile(appContext, "1"));
-        handler.removeSavedDatafile(appContext, "1");
-        assertFalse(handler.isDatafileSaved(appContext, "1"));
+        datafileHandler.saveDatafile(appContext, "1", "{}");
+        assertTrue(datafileHandler.isDatafileSaved(appContext, "1"));
+        assertNotNull(datafileHandler.loadSavedDatafile(appContext, "1"));
+        datafileHandler.removeSavedDatafile(appContext, "1");
+        assertFalse(datafileHandler.isDatafileSaved(appContext, "1"));
         assertEquals("com.optimizely.ab.android.datafile_handler.test", appContext.getPackageName());
     }
 
@@ -57,7 +55,7 @@ public class DatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        String datafile = handler.downloadDatafile(appContext, "1");
+        String datafile = datafileHandler.downloadDatafile(appContext, "1");
 
         assertNull(datafile);
     }
@@ -67,7 +65,7 @@ public class DatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        handler.downloadDatafile(appContext, "1", new DatafileLoadedListener() {
+        datafileHandler.downloadDatafile(appContext, "1", new DatafileLoadedListener() {
             @Override
             public void onDatafileLoaded(@Nullable String dataFile) {
                 assertNull(dataFile);
@@ -86,11 +84,11 @@ public class DatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        handler.startBackgroundUpdates(appContext, "1", 24 * 60 * 60L);
+        datafileHandler.startBackgroundUpdates(appContext, "1", 24 * 60 * 60L);
 
         assertTrue(true);
 
-        handler.stopBackgroundUpdates(appContext, "1");
+        datafileHandler.stopBackgroundUpdates(appContext, "1");
 
         assertTrue(true);
     }

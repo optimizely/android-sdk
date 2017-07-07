@@ -32,7 +32,7 @@ import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.user_profile.DefaultAndroidUserProfileService;
+import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
 
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -195,8 +195,8 @@ public class OptimizelyManagerTest {
         UserProfileService userProfileService = mock(UserProfileService.class);
         ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<DefaultAndroidUserProfileService.StartCallback> callbackArgumentCaptor =
-                ArgumentCaptor.forClass(DefaultAndroidUserProfileService.StartCallback.class);
+        ArgumentCaptor<DefaultUserProfileService.StartCallback> callbackArgumentCaptor =
+                ArgumentCaptor.forClass(DefaultUserProfileService.StartCallback.class);
         optimizelyManager.setOptimizelyStartListener(null);
 
         optimizelyManager.injectOptimizely(context, userProfileService, minDatafile);
@@ -237,10 +237,10 @@ public class OptimizelyManagerTest {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        DefaultAndroidUserProfileService userProfileService = mock(DefaultAndroidUserProfileService.class);
+        DefaultUserProfileService userProfileService = mock(DefaultUserProfileService.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<DefaultAndroidUserProfileService.StartCallback> callbackArgumentCaptor =
-                ArgumentCaptor.forClass(DefaultAndroidUserProfileService.StartCallback.class);
+        ArgumentCaptor<DefaultUserProfileService.StartCallback> callbackArgumentCaptor =
+                ArgumentCaptor.forClass(DefaultUserProfileService.StartCallback.class);
 
         optimizelyManager.setOptimizelyStartListener(null);
         optimizelyManager.injectOptimizely(context, userProfileService, "{}");

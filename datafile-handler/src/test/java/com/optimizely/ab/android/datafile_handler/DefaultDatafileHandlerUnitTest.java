@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class DatafileHandlerUnitTest {
+public class DefaultDatafileHandlerUnitTest {
 
     DatafileHandler handler = mock(DefaultDatafileHandler.class);
 

@@ -36,7 +36,7 @@ import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.event_handler.EventIntentService;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
-import com.optimizely.ab.android.user_profile.DefaultAndroidUserProfileService;
+import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
@@ -339,8 +339,8 @@ public class OptimizelyManager {
             optimizelyClient = buildOptimizely(context, datafile);
             optimizelyClient.setDefaultAttributes(OptimizelyDefaultAttributes.buildDefaultAttributesMap(context, logger));
 
-            if (userProfileService instanceof DefaultAndroidUserProfileService) {
-                ((DefaultAndroidUserProfileService) userProfileService).startInBackground(new DefaultAndroidUserProfileService.StartCallback() {
+            if (userProfileService instanceof DefaultUserProfileService) {
+                ((DefaultUserProfileService) userProfileService).startInBackground(new DefaultUserProfileService.StartCallback() {
                     @Override
                     public void onStartComplete(UserProfileService userProfileService) {
                         if (optimizelyStartListener != null) {
@@ -380,7 +380,7 @@ public class OptimizelyManager {
             builder.withUserProfileService(userProfileService);
         }
         else {
-            userProfileService = DefaultAndroidUserProfileService.newInstance(projectId, context);
+            userProfileService = DefaultUserProfileService.newInstance(projectId, context);
             builder.withUserProfileService(userProfileService);
         }
 
