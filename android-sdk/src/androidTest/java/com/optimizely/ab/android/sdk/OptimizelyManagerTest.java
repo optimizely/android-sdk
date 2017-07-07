@@ -30,11 +30,13 @@ import android.support.test.runner.AndroidJUnit4;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileHandlerDefault;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
+import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultAndroidUserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
 
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.event.EventHandler;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -82,8 +84,10 @@ public class OptimizelyManagerTest {
     public void setup() {
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
-        DatafileHandler handler = mock(DatafileHandlerDefault.class);
-        optimizelyManager = new OptimizelyManager(testProjectId, 1L, TimeUnit.HOURS, 1L, TimeUnit.HOURS, executor, logger, handler, null, null, null);
+        DatafileHandler datafileHandler = mock(DatafileHandlerDefault.class);
+        EventHandler eventHandler = mock(OptlyEventHandler.class);
+        optimizelyManager = new OptimizelyManager(testProjectId, logger, 3600L, datafileHandler, null, 3600L,
+                eventHandler, null);
     }
 
     @SuppressWarnings("WrongConstant")
@@ -203,7 +207,7 @@ public class OptimizelyManagerTest {
 
         Intent intent = new Intent(context, DatafileService.class);
         intent.putExtra(DatafileService.EXTRA_PROJECT_ID, optimizelyManager.getProjectId());
-        serviceScheduler.schedule(intent, optimizelyManager.getDatafileDownloadIntervalTimeUnit().toMillis(optimizelyManager.getDatafileDownloadInterval()));
+        serviceScheduler.schedule(intent, optimizelyManager.getDatafileDownloadInterval() * 1000);
 
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
@@ -278,6 +282,5 @@ public class OptimizelyManagerTest {
 
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
-
     }
 }

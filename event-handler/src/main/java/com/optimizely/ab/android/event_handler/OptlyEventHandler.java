@@ -26,19 +26,17 @@ import com.optimizely.ab.event.LogEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Reference implementation of {@link EventHandler} for Android.
- *
+ * <p>
  * This is the main entry point to the Android Module
  */
 public class OptlyEventHandler implements EventHandler {
 
-    @NonNull private final Context context;
+    @NonNull
+    private final Context context;
     Logger logger = LoggerFactory.getLogger(OptlyEventHandler.class);
     private long dispatchInterval = -1;
-
 
     private OptlyEventHandler(@NonNull Context context) {
         this.context = context;
@@ -56,19 +54,18 @@ public class OptlyEventHandler implements EventHandler {
 
     /**
      * Sets event dispatch interval
-     *
+     * <p>
      * Events will only be scheduled to dispatch as long as events remain in storage.
-     *
+     * <p>
      * Events are put into storage when they fail to send over network.
-     * @param dispatchInterval the interval in the provided {@link TimeUnit}
-     * @param timeUnit a {@link TimeUnit}
+     *
+     * @param dispatchInterval the interval in seconds
      */
-    public void setDispatchInterval(long dispatchInterval, TimeUnit timeUnit) {
-        if (timeUnit == null || dispatchInterval <= 0) {
-            this.dispatchInterval = -1L;
-        }
-        else {
-            this.dispatchInterval = timeUnit.toMillis(dispatchInterval);
+    public void setDispatchInterval(long dispatchInterval) {
+        if (dispatchInterval <= 0) {
+            this.dispatchInterval = -1;
+        } else {
+            this.dispatchInterval = dispatchInterval;
         }
     }
 
@@ -96,6 +93,5 @@ public class OptlyEventHandler implements EventHandler {
 
         context.startService(intent);
         logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
-
     }
 }

@@ -59,7 +59,7 @@ public class DatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        String datafile = handler.dowloadDatafile(appContext, "1");
+        String datafile = handler.downloadDatafile(appContext, "1");
 
         assertNull(datafile);
     }
@@ -88,7 +88,7 @@ public class DatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        handler.startBackgroundUpdates(appContext, "1", 1L, TimeUnit.DAYS);
+        handler.startBackgroundUpdates(appContext, "1", 24*60*60L);
 
         assertTrue(true);
 
@@ -96,5 +96,4 @@ public class DatafileHandlerTest {
 
         assertTrue(true);
     }
-
 }

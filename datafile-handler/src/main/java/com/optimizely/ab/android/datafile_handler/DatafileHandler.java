@@ -18,8 +18,6 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * DatafileHandler
  * class that is used to interact with the datafile_handler module.  This interface can be
@@ -29,67 +27,69 @@ public interface DatafileHandler {
     /**
      * Synchronous call to get download the datafile.
      *
-     * @param context - application context for download
-     * @param projectId - project id of the project for the datafile.
+     * @param context   application context for download
+     * @param projectId project id of the project for the datafile
      * @return a valid datafile or null
      */
-    public String dowloadDatafile(Context context, String projectId);
+    String downloadDatafile(Context context, String projectId);
 
     /**
      * Asynchronous download data file.
-     * @param context - application context for download
-     * @param projectId - project id of the datafile to get.
-     * @param listener - listener to call when datafile download complete.
+     *
+     * @param context   application context for download
+     * @param projectId project id of the datafile to get
+     * @param listener  listener to call when datafile download complete
      */
-    public void downloadDatafile(Context context, String projectId, DatafileLoadedListener listener);
+    void downloadDatafile(Context context, String projectId, DatafileLoadedListener listener);
 
     /**
-     *  Start background updates to the project datafile .
-     * @param context - application context for download
-     * @param updateInterval frequency of updates.
-     * @param timeUnit at time interval.
+     * Start background updates to the project datafile .
+     *
+     * @param context        application context for download
+     * @param updateInterval frequency of updates in seconds
      */
-    public void startBackgroundUpdates(Context context, String projectId, Long updateInterval, TimeUnit timeUnit);
+    void startBackgroundUpdates(Context context, String projectId, Long updateInterval);
 
     /**
      * Stop the background updates.
-     * @param context - application context for download
-     * @param projectId project id of the datafile uploading.
+     *
+     * @param context   application context for download
+     * @param projectId project id of the datafile uploading
      */
-    public void stopBackgroundUpdates(Context context, String projectId);
-
+    void stopBackgroundUpdates(Context context, String projectId);
 
     /**
-     * Save the datatfile to cache.
-     * @param context - application context for datafile cache
-     * @param projectId project id of the datafile..
-     * @param dataFile the datafile to save.
+     * Save the datafile to cache.
+     *
+     * @param context   application context for datafile cache
+     * @param projectId project id of the datafile
+     * @param dataFile  the datafile to save
      */
-    public void saveDatafile(Context context, String projectId, String dataFile);
+    void saveDatafile(Context context, String projectId, String dataFile);
 
     /**
      * Load a cached datafile if it exists
-     * @param context - application context for datafile cache
+     *
+     * @param context   application context for datafile cache
      * @param projectId project id of the datafile to try and get from cache
-     * @return The datafile cached or null if it was not available.
+     * @return the datafile cached or null if it was not available
      */
-    public String loadSavedDatafile(Context context, String projectId);
+    String loadSavedDatafile(Context context, String projectId);
 
     /**
      * Has the file already been cached locally?
-     * @param context - application context for datafile cache
+     *
+     * @param context   application context for datafile cache
      * @param projectId
      * @return
      */
-    public Boolean isDatafileSaved(Context context, String projectId);
+    Boolean isDatafileSaved(Context context, String projectId);
 
     /**
-     * Remove the datatfile in cache.
-     * @param context - application context for datafile cache
-     * @param projectId project id of the datafile..
+     * Remove the datafile in cache.
+     *
+     * @param context   application context for datafile cache
+     * @param projectId project id of the datafile
      */
-    public void removeSavedDatafile(Context context, String projectId);
-
-
-
+    void removeSavedDatafile(Context context, String projectId);
 }

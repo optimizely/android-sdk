@@ -18,18 +18,15 @@ package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
 
-import com.optimizely.ab.error.ErrorHandler;
-import com.optimizely.ab.event.EventHandler;
-
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.user_profile.DefaultAndroidUserProfileService;
+import com.optimizely.ab.error.ErrorHandler;
+import com.optimizely.ab.event.EventHandler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
-
-import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -59,11 +56,10 @@ public class OptimizelyManagerBuilderTest {
     @Test
     public void testBuildWithInvalidPollingInterval() {
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withDatafileDownloadInterval(5L, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(5L)
                 .build();
 
         assertEquals(60L, manager.getDatafileDownloadInterval().longValue());
-        assertEquals(TimeUnit.SECONDS, manager.getDatafileDownloadIntervalTimeUnit());
     }
 
     /**
@@ -73,11 +69,10 @@ public class OptimizelyManagerBuilderTest {
     @Test
     public void testBuildWithValidPollingInterval() {
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61L)
                 .build();
 
         assertEquals(61L, manager.getDatafileDownloadInterval().longValue());
-        assertEquals(TimeUnit.SECONDS, manager.getDatafileDownloadIntervalTimeUnit());
     }
 
     @Test
@@ -86,12 +81,11 @@ public class OptimizelyManagerBuilderTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
         EventHandler eventHandler = mock(EventHandler.class);
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
-                .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61L)
                 .withEventHandler(eventHandler)
                 .build();
 
         assertEquals(61L, manager.getDatafileDownloadInterval().longValue());
-        assertEquals(TimeUnit.SECONDS, manager.getDatafileDownloadIntervalTimeUnit());
         assertEquals(manager.getEventHandler(appContext), eventHandler);
 
 
@@ -103,14 +97,13 @@ public class OptimizelyManagerBuilderTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
         ErrorHandler errorHandler = mock(ErrorHandler.class);
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
-                .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61L)
                 .withErrorHandler(errorHandler)
                 .build();
 
         manager.initialize(appContext, minDatafile);
 
         assertEquals(manager.getErrorHandler(appContext), errorHandler);
-
     }
 
     @Test
@@ -119,14 +112,13 @@ public class OptimizelyManagerBuilderTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
         DatafileHandler dfHandler = mock(DatafileHandler.class);
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
-                .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61L)
                 .withDatafileHandler(dfHandler)
                 .build();
 
         manager.initialize(appContext, minDatafile);
 
         assertEquals(manager.getDatafileHandler(), dfHandler);
-
     }
 
     @Test
@@ -135,13 +127,12 @@ public class OptimizelyManagerBuilderTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
         DefaultAndroidUserProfileService ups = mock(DefaultAndroidUserProfileService.class);
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
-                .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(61L)
                 .withUserProfileService(ups)
                 .build();
 
         manager.initialize(appContext, minDatafile);
 
         assertEquals(manager.getUserProfileService(), ups);
-
     }
 }
