@@ -32,10 +32,10 @@ import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 /**
- * DatafileHandlerDefault - This is the default implementation of DatafileHandler and is the main
- * interactive point to the datafile-handler module.
+ * The default implementation of {@link DatafileHandler} and the main
+ * interaction point to the datafile-handler module.
  */
-public class DatafileHandlerDefault implements DatafileHandler {
+public class DefaultDatafileHandler implements DatafileHandler {
 
     private DatafileServiceConnection datafileServiceConnection;
 

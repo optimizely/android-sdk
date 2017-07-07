@@ -9,15 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -27,10 +24,11 @@ import static org.mockito.Mockito.verify;
 @RunWith(AndroidJUnit4.class)
 public class DatafileHandlerTest {
 
-    DatafileHandler handler = mock(DatafileHandlerDefault.class);
+    DatafileHandler handler = mock(DefaultDatafileHandler.class);
+
     @Before
     public void setup() {
-        handler = new DatafileHandlerDefault();
+        handler = new DefaultDatafileHandler();
     }
 
     @Test
@@ -88,7 +86,7 @@ public class DatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        handler.startBackgroundUpdates(appContext, "1", 24*60*60L);
+        handler.startBackgroundUpdates(appContext, "1", 24 * 60 * 60L);
 
         assertTrue(true);
 

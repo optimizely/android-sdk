@@ -31,7 +31,7 @@ import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
-import com.optimizely.ab.android.datafile_handler.DatafileHandlerDefault;
+import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.event_handler.EventIntentService;
@@ -610,7 +610,7 @@ public class OptimizelyManager {
             }
 
             if (datafileHandler == null) {
-                datafileHandler = new DatafileHandlerDefault();
+                datafileHandler = new DefaultDatafileHandler();
             }
 
             return new OptimizelyManager(projectId,

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,11 +15,11 @@ import static org.mockito.Mockito.when;
  */
 public class DatafileHandlerUnitTest {
 
-    DatafileHandler handler = mock(DatafileHandlerDefault.class);
+    DatafileHandler handler = mock(DefaultDatafileHandler.class);
 
     @Test
     public void testHandler() throws Exception {
-        handler = new DatafileHandlerDefault();
+        handler = new DefaultDatafileHandler();
         Context context = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(context);
         assertFalse(handler.isDatafileSaved(context, "1"));

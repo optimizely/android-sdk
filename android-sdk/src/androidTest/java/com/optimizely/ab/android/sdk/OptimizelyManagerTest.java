@@ -28,7 +28,7 @@ import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecuto
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
-import com.optimizely.ab.android.datafile_handler.DatafileHandlerDefault;
+import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
@@ -84,7 +84,7 @@ public class OptimizelyManagerTest {
     public void setup() {
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
-        DatafileHandler datafileHandler = mock(DatafileHandlerDefault.class);
+        DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(OptlyEventHandler.class);
         optimizelyManager = new OptimizelyManager(testProjectId, logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
