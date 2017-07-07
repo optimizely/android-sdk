@@ -1,9 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-
     package="com.optimizely.ab.android.datafile_handler">
-
     <uses-permission android:name="android.permission.INTERNET"/>
-
     <application>
         <service
             android:name=".DatafileService"
