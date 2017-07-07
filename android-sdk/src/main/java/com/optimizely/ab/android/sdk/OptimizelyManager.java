@@ -30,19 +30,17 @@ import android.support.annotation.RequiresApi;
 import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
-
-import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
-import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileHandlerDefault;
+import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
+import com.optimizely.ab.android.datafile_handler.DatafileService;
+import com.optimizely.ab.android.event_handler.EventIntentService;
 import com.optimizely.ab.android.event_handler.OptlyEventHandler;
-
 import com.optimizely.ab.android.user_profile.DefaultAndroidUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
-import com.optimizely.ab.android.event_handler.EventIntentService;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.payload.Event;
 
@@ -51,9 +49,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Handles loading the Optimizely data file
@@ -65,13 +60,8 @@ public class OptimizelyManager {
     @NonNull private final String projectId;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
-    @NonNull private final long eventHandlerDispatchInterval;
-    @NonNull private final TimeUnit eventHandlerDispatchIntervalTimeUnit;
-
-    @NonNull private final long dataFileDownloadInterval;
-    @NonNull private final TimeUnit dataFileDownloadIntervalTimeUnit;
-
-    @NonNull private final Executor executor;
+    @NonNull private final long datafileDownloadInterval;
+    @NonNull private final long eventDispatchInterval;
 
     @Nullable private DatafileHandler datafileHandler = null;
     @Nullable private Logger logger = null;
@@ -81,43 +71,26 @@ public class OptimizelyManager {
 
 
     OptimizelyManager(@NonNull String projectId,
-                      @NonNull long eventHandlerDispatchInterval,
-                      @Nullable TimeUnit eventHandlerDispatchIntervalTimeUnit,
-                      @NonNull long dataFileDownloadInterval,
-                      @Nullable TimeUnit dataFileDownloadIntervalTimeUnit,
-                      @NonNull Executor executor,
                       @NonNull Logger logger,
+                      @NonNull long datafileDownloadInterval,
                       @Nullable DatafileHandler datafileHandler,
-                      @Nullable EventHandler eventHandler,
                       @Nullable ErrorHandler errorHandler,
+                      @NonNull long eventDispatchInterval,
+                      @Nullable EventHandler eventHandler,
                       @Nullable UserProfileService userProfileService) {
         this.projectId = projectId;
-        this.eventHandlerDispatchInterval = eventHandlerDispatchInterval;
-        this.eventHandlerDispatchIntervalTimeUnit = eventHandlerDispatchIntervalTimeUnit;
-        this.dataFileDownloadInterval = dataFileDownloadInterval;
-        this.dataFileDownloadIntervalTimeUnit = dataFileDownloadIntervalTimeUnit;
-        this.executor = executor;
-
         this.logger = logger;
-        if (datafileHandler == null) {
-            this.datafileHandler = new DatafileHandlerDefault();
-        }
-        else {
-            this.datafileHandler = datafileHandler;
-        }
+        this.datafileDownloadInterval = datafileDownloadInterval;
+        this.datafileHandler = datafileHandler;
+        this.eventDispatchInterval = eventDispatchInterval;
         this.eventHandler = eventHandler;
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
     }
 
-    @NonNull
+    @VisibleForTesting
     public Long getDatafileDownloadInterval() {
-        return dataFileDownloadInterval;
-    }
-
-    @NonNull
-    public TimeUnit getDatafileDownloadIntervalTimeUnit() {
-        return dataFileDownloadIntervalTimeUnit;
+        return datafileDownloadInterval;
     }
 
     /**
@@ -175,13 +148,13 @@ public class OptimizelyManager {
      * for future lookups via getClient. The datafile should be stored in res/raw.
      *
      * @param context     any {@link Context} instance
-     * @param dataFileRes the R id that the data file is located under.
+     * @param datafileRes the R id that the data file is located under.
      * @return an {@link OptimizelyClient} instance
      */
     @NonNull
-    public OptimizelyClient initialize(@NonNull Context context, @RawRes int dataFileRes) {
+    public OptimizelyClient initialize(@NonNull Context context, @RawRes int datafileRes) {
         try {
-            String datafile = loadRawResource(context, dataFileRes);
+            String datafile = loadRawResource(context, datafileRes);
             return initialize(context, datafile);
         } catch (IOException e) {
             logger.error("Unable to load compiled data file", e);
@@ -248,32 +221,31 @@ public class OptimizelyManager {
     }
 
     DatafileLoadedListener getDatafileLoadedListener(final Context context) {
-        return
-                new DatafileLoadedListener() {
-                         @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-                         @Override
-                            public void onDatafileLoaded(@Nullable String dataFile) {
-                             // App is being used, i.e. in the foreground
-                             if (dataFile != null) {
-                                 injectOptimizely(context, userProfileService, dataFile);
-                             } else {
-                                 // We should always call the callback even with the dummy
-                                 // instances.  Devs might gate the rest of their app
-                                 // based on the loading of Optimizely
-                                 OptimizelyStartListener optimizelyStartListener = getOptimizelyStartListener();
-                                 if (optimizelyStartListener != null) {
-                                     optimizelyStartListener.onStart(getOptimizely());
-                                 }
-                             }
-                         }
-
-                    @Override
-                    public void onStop(Context context) {
-                        stop(context);
+        return new DatafileLoadedListener() {
+            @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+            @Override
+            public void onDatafileLoaded(@Nullable String datafile) {
+                // App is being used, i.e. in the foreground
+                if (datafile != null) {
+                    injectOptimizely(context, userProfileService, datafile);
+                } else {
+                    // We should always call the callback even with the dummy
+                    // instances.  Devs might gate the rest of their app
+                    // based on the loading of Optimizely
+                    OptimizelyStartListener optimizelyStartListener = getOptimizelyStartListener();
+                    if (optimizelyStartListener != null) {
+                        optimizelyStartListener.onStart(getOptimizely());
                     }
-                };
+                }
+            }
 
+            @Override
+            public void onStop(Context context) {
+                stop(context);
+            }
+        };
     }
+
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     void stop(@NonNull Activity activity, @NonNull OptlyActivityLifecycleCallbacks optlyActivityLifecycleCallbacks) {
         stop(activity);
@@ -358,13 +330,13 @@ public class OptimizelyManager {
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void injectOptimizely(@NonNull final Context context, final @NonNull UserProfileService userProfileService,
-                          @NonNull final String dataFile) {
+                          @NonNull final String datafile) {
 
-        if (dataFileDownloadInterval > 0 && dataFileDownloadIntervalTimeUnit != null && datafileHandler != null) {
-            datafileHandler.startBackgroundUpdates(context, projectId, dataFileDownloadInterval, dataFileDownloadIntervalTimeUnit);
+        if (datafileDownloadInterval > 0 && datafileHandler != null) {
+            datafileHandler.startBackgroundUpdates(context, projectId, datafileDownloadInterval);
         }
         try {
-            optimizelyClient = buildOptimizely(context, dataFile);
+            optimizelyClient = buildOptimizely(context, datafile);
             optimizelyClient.setDefaultAttributes(OptimizelyDefaultAttributes.buildDefaultAttributesMap(context, logger));
 
             if (userProfileService instanceof DefaultAndroidUserProfileService) {
@@ -393,12 +365,12 @@ public class OptimizelyManager {
         }
     }
 
-    private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String dataFile) throws ConfigParseException {
+    private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String datafile) throws ConfigParseException {
         EventHandler eventHandler = getEventHandler(context);
 
         Event.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
-        Optimizely.Builder builder = Optimizely.builder(dataFile, eventHandler)
+        Optimizely.Builder builder = Optimizely.builder(datafile, eventHandler)
                 .withClientEngine(clientEngine)
                 .withClientVersion(BuildConfig.CLIENT_VERSION);
         if (errorHandler != null) {
@@ -425,11 +397,11 @@ public class OptimizelyManager {
     protected EventHandler getEventHandler(Context context) {
         if (eventHandler == null) {
             OptlyEventHandler eventHandler = OptlyEventHandler.getInstance(context);
-            eventHandler.setDispatchInterval(eventHandlerDispatchInterval, eventHandlerDispatchIntervalTimeUnit);
+            eventHandler.setDispatchInterval(eventDispatchInterval);
             this.eventHandler = eventHandler;
         }
 
-        return (EventHandler)eventHandler;
+        return eventHandler;
     }
 
     protected ErrorHandler getErrorHandler(Context context) {
@@ -528,11 +500,9 @@ public class OptimizelyManager {
         @NonNull private final String projectId;
 
         // -1 will cause the background download to not be initiated.
-        @NonNull private long dataFileDownloadInterval = -1L;
-        @Nullable private TimeUnit dataFileDownloadIntervalTimeUnit = null;
+        @NonNull private long datafileDownloadInterval = -1L;
         // -1 will cause the background download to not be initiated.
-        @NonNull private long eventHandlerDispatchInterval = -1L;
-        @Nullable private TimeUnit eventHandlerDispatchIntervalTimeUnit = null;
+        @NonNull private long eventDispatchInterval = -1L;
         @Nullable private DatafileHandler datafileHandler = null;
         @Nullable private Logger logger = null;
         @Nullable private EventHandler eventHandler = null;
@@ -544,29 +514,14 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which {@link EventIntentService} will flush events.
-         *
-         * @param interval the interval
-         * @param timeUnit the unit of the interval
-         * @return this {@link Builder} instance
-         */
-        public Builder withEventHandlerDispatchInterval(long interval, @Nullable TimeUnit timeUnit) {
-            this.eventHandlerDispatchInterval = interval;
-            this.eventHandlerDispatchIntervalTimeUnit = timeUnit;
-            return this;
-        }
-
-        /**
          * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
          * cached datafile.  If you set this to -1 and null respectfully, you disable background updates.
          *
          * @param interval the interval
-         * @param timeUnit the unit of the interval
          * @return this {@link Builder} instance
          */
-        public Builder withDatafileDownloadInterval(long interval, @Nullable TimeUnit timeUnit) {
-            this.dataFileDownloadInterval = interval;
-            this.dataFileDownloadIntervalTimeUnit = timeUnit;
+        public Builder withDatafileDownloadInterval(long interval) {
+            this.datafileDownloadInterval = interval;
             return this;
         }
 
@@ -591,32 +546,43 @@ public class OptimizelyManager {
         }
 
         /**
-         * Override the default {@link EventHandler}.
-         * @param overrideHandler
+         * Override the default {@link EventBuilder}.
+         * @param errorHandler
          * @return this {@link Builder} instance
          */
-        public Builder withEventHandler(EventHandler overrideHandler) {
-            this.eventHandler = overrideHandler;
+        public Builder withErrorHandler(ErrorHandler errorHandler) {
+            this.errorHandler = errorHandler;
             return this;
         }
 
         /**
-         * Override the default {@link EventBuilder}.
-         * @param overrideHandler
+         * Sets the interval which {@link EventIntentService} will flush events.
+         *
+         * @param interval the interval
          * @return this {@link Builder} instance
          */
-        public Builder withErrorHandler(ErrorHandler overrideHandler) {
-            this.errorHandler = overrideHandler;
+        public Builder withEventDispatchInterval(long interval) {
+            this.eventDispatchInterval = interval;
+            return this;
+        }
+
+        /**
+         * Override the default {@link EventHandler}.
+         * @param eventHandler
+         * @return this {@link Builder} instance
+         */
+        public Builder withEventHandler(EventHandler eventHandler) {
+            this.eventHandler = eventHandler;
             return this;
         }
 
         /**
          * Override the default {@link UserProfileService}.
-         * @param overrideHandler
+         * @param userProfileService
          * @return this {@link Builder} instance
          */
-        public Builder withUserProfileService(UserProfileService overrideHandler) {
-            this.userProfileService = overrideHandler;
+        public Builder withUserProfileService(UserProfileService userProfileService) {
+            this.userProfileService = userProfileService;
             return this;
         }
 
@@ -626,36 +592,34 @@ public class OptimizelyManager {
          * @return a {@link Builder} instance
          */
         public OptimizelyManager build() {
-
             if (logger == null) {
                 try {
                     logger = LoggerFactory.getLogger(OptimizelyManager.class);
                 } catch (Exception e) {
                     logger = LoggerFactory.getLogger("Optly.androidSdk");
-                    logger.error("Unable to generate logger from class");
+                    logger.error("Unable to generate logger from class.");
                 }
             }
 
-            if (dataFileDownloadIntervalTimeUnit != null && dataFileDownloadInterval > 0) {
+            if (datafileDownloadInterval > 0) {
                 // AlarmManager doesn't allow intervals less than 60 seconds
-                if (dataFileDownloadIntervalTimeUnit.toMillis(dataFileDownloadInterval) < (60 * 1000)) {
-                    dataFileDownloadIntervalTimeUnit = TimeUnit.SECONDS;
-                    dataFileDownloadInterval = 60L;
-                    logger.warn("Minimum datafile polling interval is 60 seconds. " +
-                            "Defaulting to 60 seconds.");
+                if (datafileDownloadInterval < 60) {
+                    datafileDownloadInterval = 60;
+                    logger.warn("Minimum datafile polling interval is 60 seconds. Defaulting to 60 seconds.");
                 }
+            }
+
+            if (datafileHandler == null) {
+                datafileHandler = new DatafileHandlerDefault();
             }
 
             return new OptimizelyManager(projectId,
-                    eventHandlerDispatchInterval,
-                    eventHandlerDispatchIntervalTimeUnit,
-                    dataFileDownloadInterval,
-                    dataFileDownloadIntervalTimeUnit,
-                    Executors.newSingleThreadExecutor(),
                     logger,
+                    datafileDownloadInterval,
                     datafileHandler,
-                    eventHandler,
                     errorHandler,
+                    eventDispatchInterval,
+                    eventHandler,
                     userProfileService);
         }
     }
