@@ -72,12 +72,12 @@ public class OptimizelyManager {
 
     OptimizelyManager(@NonNull String projectId,
                       @NonNull Logger logger,
-                      @NonNull long datafileDownloadInterval,
-                      @Nullable DatafileHandler datafileHandler,
+                      long datafileDownloadInterval,
+                      @NonNull DatafileHandler datafileHandler,
                       @Nullable ErrorHandler errorHandler,
-                      @NonNull long eventDispatchInterval,
-                      @Nullable EventHandler eventHandler,
-                      @Nullable UserProfileService userProfileService) {
+                      long eventDispatchInterval,
+                      @NonNull EventHandler eventHandler,
+                      @NonNull UserProfileService userProfileService) {
         this.projectId = projectId;
         this.logger = logger;
         this.datafileDownloadInterval = datafileDownloadInterval;
@@ -136,7 +136,7 @@ public class OptimizelyManager {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
 
-        datafileHandler.downloadDatafile(context, projectId, getDatafileLoadedListener(context));
+        datafileHandler.downloadDatafile(context, projectId, null);
 
         return optimizelyClient;
     }
@@ -259,7 +259,6 @@ public class OptimizelyManager {
      *
      * @param context any {@link Context} instance
      */
-    @SuppressWarnings("WeakerAccess")
     public void stop(@NonNull Context context) {
         if (!isAndroidVersionSupported()) {
             return;
@@ -380,6 +379,7 @@ public class OptimizelyManager {
             builder.withUserProfileService(userProfileService);
         }
         else {
+            // the builder creates the default user profile service. So, this should never happen.
             userProfileService = DefaultUserProfileService.newInstance(projectId, context);
             builder.withUserProfileService(userProfileService);
         }
@@ -500,9 +500,9 @@ public class OptimizelyManager {
         @NonNull private final String projectId;
 
         // -1 will cause the background download to not be initiated.
-        @NonNull private long datafileDownloadInterval = -1L;
+        private long datafileDownloadInterval = -1L;
         // -1 will cause the background download to not be initiated.
-        @NonNull private long eventDispatchInterval = -1L;
+        private long eventDispatchInterval = -1L;
         @Nullable private DatafileHandler datafileHandler = null;
         @Nullable private Logger logger = null;
         @Nullable private EventHandler eventHandler = null;
@@ -515,7 +515,8 @@ public class OptimizelyManager {
 
         /**
          * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
-         * cached datafile.  If you set this to -1 and null respectfully, you disable background updates.
+         * cached datafile.  If you set this to -1, you disable background updates.  If you don't set
+         * a download interval (or set to less than 0), then no background updates will be scheduled or occur.
          *
          * @param interval the interval
          * @return this {@link Builder} instance
@@ -557,6 +558,8 @@ public class OptimizelyManager {
 
         /**
          * Sets the interval which {@link EventIntentService} will flush events.
+         * If you set this to -1, you disable background updates.  If you don't set
+         * a event dispatch interval, then no background updates will be scheduled or occur.
          *
          * @param interval the interval
          * @return this {@link Builder} instance
@@ -568,6 +571,7 @@ public class OptimizelyManager {
 
         /**
          * Override the default {@link EventHandler}.
+         *
          * @param eventHandler
          * @return this {@link Builder} instance
          */
@@ -591,7 +595,7 @@ public class OptimizelyManager {
          *
          * @return a {@link Builder} instance
          */
-        public OptimizelyManager build() {
+        public OptimizelyManager build(Context context) {
             if (logger == null) {
                 try {
                     logger = LoggerFactory.getLogger(OptimizelyManager.class);
@@ -611,6 +615,14 @@ public class OptimizelyManager {
 
             if (datafileHandler == null) {
                 datafileHandler = new DefaultDatafileHandler();
+            }
+
+            if (userProfileService == null) {
+                userProfileService = DefaultUserProfileService.newInstance(projectId, context);
+            }
+
+            if (eventHandler == null) {
+                eventHandler = DefaultEventHandler.getInstance(context);
             }
 
             return new OptimizelyManager(projectId,

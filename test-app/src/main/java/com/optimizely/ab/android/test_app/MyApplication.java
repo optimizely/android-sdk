@@ -76,6 +76,6 @@ public class MyApplication extends Application {
         optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
                 //.withEventHandlerDispatchInterval(30L, TimeUnit.SECONDS)
                 //.withDatafileDownloadInterval(30L, TimeUnit.SECONDS)
-                .build();
+                .build(getApplicationContext());
     }
 }
