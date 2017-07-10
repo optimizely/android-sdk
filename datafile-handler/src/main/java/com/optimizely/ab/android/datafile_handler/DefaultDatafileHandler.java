@@ -40,7 +40,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
     private DatafileServiceConnection datafileServiceConnection;
 
     /**
-     * Synchronous call to get download the datafile.
+     * Synchronous call to download the datafile.
      * Gets the file on the current thread from the Optimizely CDN.
      *
      * @param context   application context
@@ -76,7 +76,9 @@ public class DefaultDatafileHandler implements DatafileHandler {
                         @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
                         @Override
                         public void onDatafileLoaded(@Nullable String dataFile) {
-                            listener.onDatafileLoaded(dataFile);
+                            if (listener != null) {
+                                listener.onDatafileLoaded(dataFile);
+                            }
 
                             if (datafileServiceConnection != null && datafileServiceConnection.isBound()) {
                                 context.getApplicationContext().unbindService(datafileServiceConnection);
@@ -87,7 +89,9 @@ public class DefaultDatafileHandler implements DatafileHandler {
 
                         @Override
                         public void onStop(Context context) {
-                            listener.onStop(context);
+                            if (listener != null) {
+                                listener.onStop(context);
+                            }
                         }
                     });
             context.getApplicationContext().bindService(intent, datafileServiceConnection, Context.BIND_AUTO_CREATE);

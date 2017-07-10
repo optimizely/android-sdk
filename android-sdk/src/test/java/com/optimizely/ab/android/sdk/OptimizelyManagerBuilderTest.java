@@ -55,9 +55,11 @@ public class OptimizelyManagerBuilderTest {
      */
     @Test
     public void testBuildWithInvalidPollingInterval() {
+        Context appContext = mock(Context.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
         OptimizelyManager manager = OptimizelyManager.builder("1")
                 .withDatafileDownloadInterval(5L)
-                .build();
+                .build(appContext);
 
         assertEquals(60L, manager.getDatafileDownloadInterval().longValue());
     }
@@ -68,9 +70,11 @@ public class OptimizelyManagerBuilderTest {
      */
     @Test
     public void testBuildWithValidPollingInterval() {
+        Context appContext = mock(Context.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
         OptimizelyManager manager = OptimizelyManager.builder("1")
                 .withDatafileDownloadInterval(61L)
-                .build();
+                .build(appContext);
 
         assertEquals(61L, manager.getDatafileDownloadInterval().longValue());
     }
@@ -83,7 +87,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
                 .withDatafileDownloadInterval(61L)
                 .withEventHandler(eventHandler)
-                .build();
+                .build(appContext);
 
         assertEquals(61L, manager.getDatafileDownloadInterval().longValue());
         assertEquals(manager.getEventHandler(appContext), eventHandler);
@@ -99,7 +103,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
                 .withDatafileDownloadInterval(61L)
                 .withErrorHandler(errorHandler)
-                .build();
+                .build(appContext);
 
         manager.initialize(appContext, minDatafile);
 
@@ -114,7 +118,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
                 .withDatafileDownloadInterval(61L)
                 .withDatafileHandler(dfHandler)
-                .build();
+                .build(appContext);
 
         manager.initialize(appContext, minDatafile);
 
@@ -129,7 +133,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
                 .withDatafileDownloadInterval(61L)
                 .withUserProfileService(ups)
-                .build();
+                .build(appContext);
 
         manager.initialize(appContext, minDatafile);
 

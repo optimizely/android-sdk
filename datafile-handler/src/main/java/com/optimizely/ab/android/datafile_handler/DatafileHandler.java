@@ -25,7 +25,7 @@ import android.content.Context;
  */
 public interface DatafileHandler {
     /**
-     * Synchronous call to get download the datafile.
+     * Synchronous call to download the datafile.
      *
      * @param context   application context for download
      * @param projectId project id of the project for the datafile
