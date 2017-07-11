@@ -1,4 +1,20 @@
 # Optimizely Android X SDK Changelog
+### 1.5.0
+July 11, 2017
+
+- Allow configure background tasks to run or not.
+
+*Bug Fixes*
+
+- Close cursor on sqllite.
+
+*Breaking Changes*
+
+- Pass context into OptimizelyManager.Builder.
+- UserProfileService added.
+- Background processes are not running by default.
+- Various handlers (EventHandler, DatafileHandler, ErrorHandler) can be overridden.
+
 ### 1.3.1
 April 25, 2017
 
