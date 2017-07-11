@@ -126,6 +126,16 @@ class EventDAO {
         } catch (Exception e) {
             logger.error("Error reading events db cursor", e);
         }
+        finally {
+            if (cursor != null && !cursor.isClosed()) {
+                try {
+                    cursor.close();
+                }
+                catch (Exception e) {
+                    logger.error("Error closing db cursor", e);
+                }
+            }
+        }
 
         return events;
     }

@@ -528,7 +528,7 @@ public class OptimizelyManager {
 
         /**
          * Override the default {@link DatafileHandler}.
-         * @param overrideHandler
+         * @param overrideHandler datafile handler to replace default handler
          * @return this {@link Builder} instance
          */
         public Builder withDatafileHandler(DatafileHandler overrideHandler) {
@@ -538,7 +538,7 @@ public class OptimizelyManager {
 
         /**
          * Override the default {@link Logger}.
-         * @param overrideHandler
+         * @param overrideHandler logger to override OptimizedlyManager and OptimizelyClient logger
          * @return this {@link Builder} instance
          */
         public Builder withLogger(Logger overrideHandler) {
@@ -547,8 +547,8 @@ public class OptimizelyManager {
         }
 
         /**
-         * Override the default {@link EventBuilder}.
-         * @param errorHandler
+         * Override the default {@link ErrorHandler}.
+         * @param errorHandler  handler to override the java core error handler.
          * @return this {@link Builder} instance
          */
         public Builder withErrorHandler(ErrorHandler errorHandler) {
@@ -572,7 +572,7 @@ public class OptimizelyManager {
         /**
          * Override the default {@link EventHandler}.
          *
-         * @param eventHandler
+         * @param eventHandler event handler to replace the default event handler
          * @return this {@link Builder} instance
          */
         public Builder withEventHandler(EventHandler eventHandler) {
@@ -582,7 +582,7 @@ public class OptimizelyManager {
 
         /**
          * Override the default {@link UserProfileService}.
-         * @param userProfileService
+         * @param userProfileService the user profile service to replace the default user profile service
          * @return this {@link Builder} instance
          */
         public Builder withUserProfileService(UserProfileService userProfileService) {
@@ -592,7 +592,7 @@ public class OptimizelyManager {
 
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
-         *
+         * @param  context the application context used to create default service if not provided.
          * @return a {@link Builder} instance
          */
         public OptimizelyManager build(Context context) {

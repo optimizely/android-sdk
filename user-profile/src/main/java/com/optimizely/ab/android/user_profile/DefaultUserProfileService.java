@@ -16,8 +16,10 @@
 
 package com.optimizely.ab.android.user_profile;
 
+import android.os.Build;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.annotation.TargetApi;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -76,6 +78,7 @@ public class DefaultUserProfileService implements UserProfileService {
         void onStartComplete(UserProfileService userProfileService);
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void startInBackground(final StartCallback callback) {
                 final DefaultUserProfileService userProfileService = this;
 
