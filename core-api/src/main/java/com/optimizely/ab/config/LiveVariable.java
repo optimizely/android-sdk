@@ -111,7 +111,12 @@ public class LiveVariable implements IdKeyMapped {
         this.id = id;
         this.key = key;
         this.defaultValue = defaultValue;
-        this.status = status;
+        if (status == null) {
+            this.status = VariableStatus.ACTIVE;
+        }
+        else {
+            this.status = status;
+        }
         this.type = type;
     }
 

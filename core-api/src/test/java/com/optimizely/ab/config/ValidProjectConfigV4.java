@@ -74,7 +74,7 @@ public class ValidProjectConfigV4 {
             VARIABLE_DOUBLE_VARIABLE_ID,
             VARIABLE_DOUBLE_VARIABLE_KEY,
             VARIABLE_DOUBLE_DEFAULT_VALUE,
-            LiveVariable.VariableStatus.ACTIVE,
+            null,
             LiveVariable.VariableType.DOUBLE
     );
     private static final FeatureFlag FEATURE_FLAG_SINGLE_VARIABLE_DOUBLE = new FeatureFlag(
@@ -95,7 +95,7 @@ public class ValidProjectConfigV4 {
             VARIABLE_INTEGER_VARIABLE_ID,
             VARIABLE_INTEGER_VARIABLE_KEY,
             VARIABLE_INTEGER_DEFAULT_VALUE,
-            LiveVariable.VariableStatus.ACTIVE,
+            null,
             LiveVariable.VariableType.INTEGER
     );
     private static final FeatureFlag FEATURE_FLAG_SINGLE_VARIABLE_INTEGER = new FeatureFlag(
@@ -116,7 +116,7 @@ public class ValidProjectConfigV4 {
             VARIABLE_BOOLEAN_VARIABLE_ID,
             VARIABLE_BOOLEAN_VARIABLE_KEY,
             VARIABLE_BOOLEAN_VARIABLE_DEFAULT_VALUE,
-            LiveVariable.VariableStatus.ACTIVE,
+            null,
             LiveVariable.VariableType.BOOLEAN
     );
     private static final FeatureFlag FEATURE_FLAG_SINGLE_VARIABLE_BOOLEAN = new FeatureFlag(
@@ -137,7 +137,7 @@ public class ValidProjectConfigV4 {
             VARIABLE_STRING_VARIABLE_ID,
             VARIABLE_STRING_VARIABLE_KEY,
             VARIABLE_STRING_VARIABLE_DEFAULT_VALUE,
-            LiveVariable.VariableStatus.ACTIVE,
+            null,
             LiveVariable.VariableType.STRING
     );
     private static final FeatureFlag FEATURE_FLAG_SINGLE_VARIABLE_STRING = new FeatureFlag(
@@ -158,7 +158,7 @@ public class ValidProjectConfigV4 {
             VARIABLE_FIRST_LETTER_ID,
             VARIABLE_FIRST_LETTER_KEY,
             VARIABLE_FIRST_LETTER_DEFAULT_VALUE,
-            LiveVariable.VariableStatus.ACTIVE,
+            null,
             LiveVariable.VariableType.STRING
     );
     private static final String         VARIABLE_REST_OF_NAME_ID = "4052219963";
@@ -168,7 +168,7 @@ public class ValidProjectConfigV4 {
             VARIABLE_REST_OF_NAME_ID,
             VARIABLE_REST_OF_NAME_KEY,
             VARIABLE_REST_OF_NAME_DEFAULT_VALUE,
-            LiveVariable.VariableStatus.ACTIVE,
+            null,
             LiveVariable.VariableType.STRING
     );
     private static final FeatureFlag FEATURE_FLAG_MULTI_VARIATE_FEATURE = new FeatureFlag(
