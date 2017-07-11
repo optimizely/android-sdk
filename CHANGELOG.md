@@ -1,5 +1,5 @@
 # Optimizely Android X SDK Changelog
-### 1.5.0
+### 1.4.0-alpha
 July 11, 2017
 
 - Allow configure background tasks to run or not.
