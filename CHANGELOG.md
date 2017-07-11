@@ -6,7 +6,7 @@ July 11, 2017
 
 *Bug Fixes*
 
-- Close cursor on sqllite.
+- Close cursor on SQLlite.
 
 *Breaking Changes*
 
