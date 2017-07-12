@@ -10,6 +10,7 @@ July 11, 2017
 
 *Breaking Changes*
 
+- Must include intent filter for EventRescheduler and DatafileRescheduler in the application manifest if the devloper wants to use them (see the test-app manifest for an example).
 - Pass context into OptimizelyManager.Builder.
 - UserProfileService added.
 - Background processes are not running by default.
