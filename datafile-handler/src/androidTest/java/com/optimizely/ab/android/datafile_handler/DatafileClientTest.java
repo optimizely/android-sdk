@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import com.optimizely.ab.android.shared.Client;
 
@@ -42,12 +42,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link DataFileClient}
+ * Tests for {@link DatafileClient}
  */
 @RunWith(JUnit4.class)
-public class DataFileClientTest {
+public class DatafileClientTest {
 
-    private DataFileClient dataFileClient;
+    private DatafileClient datafileClient;
     private Logger logger;
     private Client client;
     private HttpURLConnection urlConnection;
@@ -56,18 +56,18 @@ public class DataFileClientTest {
     public void setup() {
         client = mock(Client.class);
         logger = mock(Logger.class);
-        dataFileClient = new DataFileClient(client, logger);
+        datafileClient = new DatafileClient(client, logger);
         urlConnection = mock(HttpURLConnection.class);
     }
 
     @Test
     public void request200() throws IOException {
-        URL url = new URL(DataFileService.getDatafileUrl("1"));
+        URL url = new URL(DatafileService.getDatafileUrl("1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(200);
         when(client.readStream(urlConnection)).thenReturn("{}");
 
-        dataFileClient.request(url.toString());
+        datafileClient.request(url.toString());
 
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
@@ -87,12 +87,12 @@ public class DataFileClientTest {
 
     @Test
     public void request201() throws IOException {
-        URL url = new URL(DataFileService.getDatafileUrl("1"));
+        URL url = new URL(DatafileService.getDatafileUrl("1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(201);
         when(client.readStream(urlConnection)).thenReturn("{}");
 
-        dataFileClient.request(url.toString());
+        datafileClient.request(url.toString());
 
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
@@ -112,12 +112,12 @@ public class DataFileClientTest {
 
     @Test
     public void request299() throws IOException {
-        URL url = new URL(DataFileService.getDatafileUrl("1"));
+        URL url = new URL(DatafileService.getDatafileUrl("1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(299);
         when(client.readStream(urlConnection)).thenReturn("{}");
 
-        dataFileClient.request(url.toString());
+        datafileClient.request(url.toString());
 
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
@@ -137,11 +137,11 @@ public class DataFileClientTest {
 
     @Test
     public void request300() throws IOException {
-        URL url = new URL(DataFileService.getDatafileUrl("1"));
+        URL url = new URL(DatafileService.getDatafileUrl("1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(300);
 
-        dataFileClient.request(url.toString());
+        datafileClient.request(url.toString());
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
@@ -157,12 +157,12 @@ public class DataFileClientTest {
 
     @Test
     public void handlesIOException() throws IOException {
-        URL url = new URL(DataFileService.getDatafileUrl("1"));
+        URL url = new URL(DatafileService.getDatafileUrl("1"));
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(200);
         doThrow(new IOException()).when(urlConnection).connect();
 
-        dataFileClient.request(url.toString());
+        datafileClient.request(url.toString());
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
@@ -179,15 +179,15 @@ public class DataFileClientTest {
 
     @Test
     public void handlesNullResponse() throws MalformedURLException {
-        URL url = new URL(DataFileService.getDatafileUrl("1"));
+        URL url = new URL(DatafileService.getDatafileUrl("1"));
         when(client.execute(any(Client.Request.class), eq(2), eq(3))).thenReturn(null);
-        assertNull(dataFileClient.request(url.toString()));
+        assertNull(datafileClient.request(url.toString()));
     }
 
     @Test
     public void handlesEmptyStringResponse() throws MalformedURLException {
-        URL url = new URL(DataFileService.getDatafileUrl("1"));
+        URL url = new URL(DatafileService.getDatafileUrl("1"));
         when(client.execute(any(Client.Request.class), eq(2), eq(3))).thenReturn("");
-        assertEquals("", dataFileClient.request(url.toString()));
+        assertEquals("", datafileClient.request(url.toString()));
     }
 }

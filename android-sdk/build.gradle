@@ -57,8 +57,11 @@ android {
 }
 
 dependencies {
+    compile project(':shared')
+    compile project(':datafile-handler')
     compile project(':event-handler')
     compile project(':user-profile')
+    compile "com.optimizely.ab:core-api:$java_core_ver"
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"
@@ -79,7 +82,7 @@ dependencies {
 
 uploadArchives {
     dependsOn = [':android-sdk:clean', ':android-sdk:releaseJavadocJar', ':android-sdk:releaseSourcesJar']
-    shouldRunAfter = [':event-handler:uploadArchives', ':user-profile:uploadArchives']
+    shouldRunAfter = [':datafile-handler:uploadArchives', ':event-handler:uploadArchives', ':user-profile:uploadArchives']
     repositories {
         mavenDeployer {
             repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android") {

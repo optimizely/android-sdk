@@ -28,8 +28,8 @@ import android.support.test.runner.AndroidJUnit4;
 import android.util.Pair;
 import android.view.WindowManager;
 
+import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.event_handler.EventIntentService;
-import com.optimizely.ab.android.sdk.DataFileService;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -104,11 +105,11 @@ public class MainActivityEspressoTest {
                 protected void before() throws Throwable {
                     super.before();
 
-                    dataFileServiceIntent = new Intent(context, DataFileService.class);
-                    dataFileServiceIntent.putExtra(DataFileService.EXTRA_PROJECT_ID, MyApplication.PROJECT_ID);
+                    dataFileServiceIntent = new Intent(context, DatafileService.class);
+                    dataFileServiceIntent.putExtra(DatafileService.EXTRA_PROJECT_ID, MyApplication.PROJECT_ID);
 
                     eventIntentService = new Intent(context, EventIntentService.class);
-                    eventIntentService.putExtra(DataFileService.EXTRA_PROJECT_ID, MyApplication.PROJECT_ID);
+                    eventIntentService.putExtra(DatafileService.EXTRA_PROJECT_ID, MyApplication.PROJECT_ID);
 
                     Context applicationContext = context.getApplicationContext();
                     ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(applicationContext);
@@ -153,6 +154,11 @@ public class MainActivityEspressoTest {
         // The user 'test_user` is in the whitelist for variation_a for experiment background_experiment
         onView(withId(R.id.tv_variation_a_text_1))
                 .check(matches(isDisplayed()));
+
+
+        // here i am rescheduling the data file service.  this is because in the splash activity after optimizely startup
+        // the app unschedules the data file service.
+        serviceScheduler.schedule(dataFileServiceIntent, TimeUnit.DAYS.toMillis(1L));
 
         // Espresso will wait for Optimizely to start due to the registered idling resources
         assertTrue(serviceScheduler.isScheduled(dataFileServiceIntent));

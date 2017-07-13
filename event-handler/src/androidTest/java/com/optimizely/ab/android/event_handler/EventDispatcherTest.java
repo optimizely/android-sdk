@@ -40,6 +40,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.contains;
@@ -101,8 +102,8 @@ public class EventDispatcherTest {
         when(optlyStorage.getLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR)).thenReturn(AlarmManager.INTERVAL_HOUR);
         eventDispatcher.dispatch(mockIntent);
 
-        verify(serviceScheduler).schedule(mockIntent, AlarmManager.INTERVAL_HOUR);
-        verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, AlarmManager.INTERVAL_HOUR);
+        verify(serviceScheduler).schedule(mockIntent, -1);
+        verify(optlyStorage).saveLong(EventIntentService.EXTRA_INTERVAL, -1);
 
         verify(logger).info("Scheduled events to be dispatched");
     }

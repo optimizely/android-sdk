@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -14,25 +14,31 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.support.annotation.Nullable;
+import android.content.Context;
 
 /**
  * Listens for new Optimizely datafiles
  *
  * Datafiles can come from a local file or the CDN
  *
- * @hide
+ *
  */
-interface DataFileLoadedListener {
+public interface DatafileLoadedListener {
 
     /**
      * Called with new datafile
      *
      * @param dataFile the datafile json, can be null if datafile loading failed.
      *
-     * @hide
      */
-    void onDataFileLoaded(@Nullable String dataFile);
+     void onDatafileLoaded(@Nullable String dataFile);
+
+    /**
+     *
+     * @param context
+     */
+     void onStop(Context context);
 }

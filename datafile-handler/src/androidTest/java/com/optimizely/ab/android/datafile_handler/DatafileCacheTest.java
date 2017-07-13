@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
@@ -34,50 +34,50 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.contains;
 
 /**
- * Tests for {@link DataFileCache}
+ * Tests for {@link DatafileCache}
  */
 @RunWith(AndroidJUnit4.class)
-public class DataFileCacheTest {
+public class DatafileCacheTest {
 
-    private DataFileCache dataFileCache;
+    private DatafileCache datafileCache;
     private Logger logger;
 
     @Before
     public void setup() {
         logger = mock(Logger.class);
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
-        dataFileCache = new DataFileCache("1", cache, logger);
+        datafileCache = new DatafileCache("1", cache, logger);
     }
 
     @Test
     public void loadBeforeSaving() {
-        assertNull(dataFileCache.load());
+        assertNull(datafileCache.load());
     }
 
     @Test
     public void persistence() throws JSONException {
-        assertTrue(dataFileCache.save("{}"));
-        final JSONObject jsonObject = dataFileCache.load();
+        assertTrue(datafileCache.save("{}"));
+        final JSONObject jsonObject = datafileCache.load();
         assertNotNull(jsonObject);
         final String actual = jsonObject.toString();
         assertEquals(new JSONObject("{}").toString(), actual);
-        assertTrue(dataFileCache.delete());
-        assertNull(dataFileCache.load());
+        assertTrue(datafileCache.delete());
+        assertNull(datafileCache.load());
     }
 
     @Test
     public void loadJsonException() throws IOException {
         Cache cache = mock(Cache.class);
-        DataFileCache dataFileCache = new DataFileCache("1", cache, logger);
-        when(cache.load(dataFileCache.getFileName())).thenReturn("{");
-        assertNull(dataFileCache.load());
+        DatafileCache datafileCache = new DatafileCache("1", cache, logger);
+        when(cache.load(datafileCache.getFileName())).thenReturn("{");
+        assertNull(datafileCache.load());
         verify(logger).error(contains("Unable to parse data file"), any(JSONException.class));
     }
 }

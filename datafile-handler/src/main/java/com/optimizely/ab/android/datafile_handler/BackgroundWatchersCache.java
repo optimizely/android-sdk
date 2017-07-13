@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,7 +34,6 @@ import java.util.List;
  */
 class BackgroundWatchersCache {
     static final String BACKGROUND_WATCHERS_FILE_NAME = "optly-background-watchers.json";
-
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
 
@@ -113,7 +112,7 @@ class BackgroundWatchersCache {
         return new JSONObject(backGroundWatchersFile);
     }
 
-    private boolean delete() {
+    protected boolean delete() {
         return cache.delete(BACKGROUND_WATCHERS_FILE_NAME);
     }
 

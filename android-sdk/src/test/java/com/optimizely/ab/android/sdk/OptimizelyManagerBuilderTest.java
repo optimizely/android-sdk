@@ -16,29 +16,52 @@
 
 package com.optimizely.ab.android.sdk;
 
+import android.content.Context;
+
+import com.optimizely.ab.android.datafile_handler.DatafileHandler;
+import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
+import com.optimizely.ab.error.ErrorHandler;
+import com.optimizely.ab.event.EventHandler;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OptimizelyManagerBuilderTest {
 
+    private String testProjectId = "7595190003";
+    private Logger logger;
+
+    private String minDatafile = "{\n" +
+            "experiments: [ ],\n" +
+            "version: \"2\",\n" +
+            "audiences: [ ],\n" +
+            "groups: [ ],\n" +
+            "attributes: [ ],\n" +
+            "projectId: \"" + testProjectId + "\",\n" +
+            "accountId: \"6365361536\",\n" +
+            "events: [ ],\n" +
+            "revision: \"1\"\n" +
+            "}";
     /**
      * Verify that building the {@link OptimizelyManager} with a polling interval less than 60
      * seconds defaults to 60 seconds.
      */
     @Test
     public void testBuildWithInvalidPollingInterval() {
+        Context appContext = mock(Context.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withDataFileDownloadInterval(5, TimeUnit.SECONDS)
-                .build();
+                .withDatafileDownloadInterval(5L)
+                .build(appContext);
 
-        assertEquals(60L, manager.getDataFileDownloadInterval().longValue());
-        assertEquals(TimeUnit.SECONDS, manager.getDataFileDownloadIntervalTimeUnit());
+        assertEquals(60L, manager.getDatafileDownloadInterval().longValue());
     }
 
     /**
@@ -47,11 +70,73 @@ public class OptimizelyManagerBuilderTest {
      */
     @Test
     public void testBuildWithValidPollingInterval() {
+        Context appContext = mock(Context.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withDataFileDownloadInterval(61, TimeUnit.SECONDS)
-                .build();
+                .withDatafileDownloadInterval(61L)
+                .build(appContext);
 
-        assertEquals(61L, manager.getDataFileDownloadInterval().longValue());
-        assertEquals(TimeUnit.SECONDS, manager.getDataFileDownloadIntervalTimeUnit());
+        assertEquals(61L, manager.getDatafileDownloadInterval().longValue());
+    }
+
+    @Test
+    public void testBuildWithEventHandler() {
+        Context appContext = mock(Context.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
+        EventHandler eventHandler = mock(EventHandler.class);
+        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
+                .withDatafileDownloadInterval(61L)
+                .withEventHandler(eventHandler)
+                .build(appContext);
+
+        assertEquals(61L, manager.getDatafileDownloadInterval().longValue());
+        assertEquals(manager.getEventHandler(appContext), eventHandler);
+
+
+    }
+
+    @Test
+    public void testBuildWithErrorHandler() {
+        Context appContext = mock(Context.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
+        ErrorHandler errorHandler = mock(ErrorHandler.class);
+        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
+                .withDatafileDownloadInterval(61L)
+                .withErrorHandler(errorHandler)
+                .build(appContext);
+
+        manager.initialize(appContext, minDatafile);
+
+        assertEquals(manager.getErrorHandler(appContext), errorHandler);
+    }
+
+    @Test
+    public void testBuildWithDatafileHandler() {
+        Context appContext = mock(Context.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
+        DatafileHandler dfHandler = mock(DatafileHandler.class);
+        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
+                .withDatafileDownloadInterval(61L)
+                .withDatafileHandler(dfHandler)
+                .build(appContext);
+
+        manager.initialize(appContext, minDatafile);
+
+        assertEquals(manager.getDatafileHandler(), dfHandler);
+    }
+
+    @Test
+    public void testBuildWithUserProfileService() {
+        Context appContext = mock(Context.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
+        DefaultUserProfileService ups = mock(DefaultUserProfileService.class);
+        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
+                .withDatafileDownloadInterval(61L)
+                .withUserProfileService(ups)
+                .build(appContext);
+
+        manager.initialize(appContext, minDatafile);
+
+        assertEquals(manager.getUserProfileService(), ups);
     }
 }

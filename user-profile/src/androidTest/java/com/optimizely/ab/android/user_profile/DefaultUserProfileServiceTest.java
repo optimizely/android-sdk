@@ -41,12 +41,12 @@ import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link AndroidUserProfileService}
+ * Tests for {@link DefaultUserProfileService}
  */
 @RunWith(AndroidJUnit4.class)
-public class AndroidUserProfileServiceTest {
+public class DefaultUserProfileServiceTest {
 
-    private AndroidUserProfileService androidUserProfileService;
+    private DefaultUserProfileService userProfileService;
     private Cache cache;
     private UserProfileCache.DiskCache diskCache;
     private ListeningExecutorService executor;
@@ -71,7 +71,7 @@ public class AndroidUserProfileServiceTest {
         projectId = "123";
         diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
         userProfileCache = new UserProfileCache(diskCache, logger, memoryCache, legacyDiskCache);
-        androidUserProfileService = new AndroidUserProfileService(userProfileCache, logger);
+        userProfileService = new DefaultUserProfileService(userProfileCache, logger);
 
         // Test data.
         userId1 = "user_1";
@@ -105,16 +105,16 @@ public class AndroidUserProfileServiceTest {
 
     @Test
     public void saveAndStartAndLookup() {
-        androidUserProfileService.save(userProfileMap1);
-        androidUserProfileService.save(userProfileMap2);
+        userProfileService.save(userProfileMap1);
+        userProfileService.save(userProfileMap2);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Time out");
         }
-        androidUserProfileService.start();
+        userProfileService.start();
 
-        Map<String, Object> userProfileMap = androidUserProfileService.lookup(userId2);
+        Map<String, Object> userProfileMap = userProfileService.lookup(userId2);
         assertEquals(userId2, userProfileMap.get("user_id"));
         assertTrue(userProfileMap.containsKey("experiment_bucket_map"));
         Map<String, Map<String, String>> experimentBucketMap = (ConcurrentHashMap<String, Map<String, String>>)
@@ -124,18 +124,18 @@ public class AndroidUserProfileServiceTest {
 
     @Test
     public void remove() {
-        androidUserProfileService.save(userProfileMap1);
-        androidUserProfileService.save(userProfileMap2);
+        userProfileService.save(userProfileMap1);
+        userProfileService.save(userProfileMap2);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Time out");
         }
-        androidUserProfileService.remove(userId1);
+        userProfileService.remove(userId1);
 
-        assertNull(androidUserProfileService.lookup(userId1));
-        assertNotNull(androidUserProfileService.lookup(userId2));
-        Map<String, Object> userProfileMap = androidUserProfileService.lookup(userId2);
+        assertNull(userProfileService.lookup(userId1));
+        assertNotNull(userProfileService.lookup(userId2));
+        Map<String, Object> userProfileMap = userProfileService.lookup(userId2);
         assertEquals(userId2, userProfileMap.get("user_id"));
         assertTrue(userProfileMap.containsKey("experiment_bucket_map"));
         Map<String, Map<String, String>> experimentBucketMap = (ConcurrentHashMap<String, Map<String, String>>)
@@ -145,18 +145,18 @@ public class AndroidUserProfileServiceTest {
 
     @Test
     public void removeDecision() {
-        androidUserProfileService.save(userProfileMap1);
-        androidUserProfileService.save(userProfileMap2);
+        userProfileService.save(userProfileMap1);
+        userProfileService.save(userProfileMap2);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail("Time out");
         }
-        androidUserProfileService.remove(userId2, "exp_2");
+        userProfileService.remove(userId2, "exp_2");
 
-        assertNotNull(androidUserProfileService.lookup(userId1));
-        assertNotNull(androidUserProfileService.lookup(userId2));
-        Map<String, Object> userProfileMap = androidUserProfileService.lookup(userId2);
+        assertNotNull(userProfileService.lookup(userId1));
+        assertNotNull(userProfileService.lookup(userId2));
+        Map<String, Object> userProfileMap = userProfileService.lookup(userId2);
         assertEquals(userId2, userProfileMap.get("user_id"));
         assertTrue(userProfileMap.containsKey("experiment_bucket_map"));
         Map<String, Map<String, String>> experimentBucketMap = (ConcurrentHashMap<String, Map<String, String>>)

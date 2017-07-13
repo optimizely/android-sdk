@@ -49,6 +49,26 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+//        if (optimizelyManager.isDatafileCached(this) == true) {
+//            optimizelyManager.initialize(this);
+//            String userId = myApplication.getAnonUserId();
+//            Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId);
+//            Intent intent = null;
+//            // variation is nullable so we should check for null values
+//            if (backgroundVariation != null) {
+//                // Show activity based on the variation the user got bucketed into
+//                if (backgroundVariation.getKey().equals("variation_a")) {
+//                    intent = new Intent(myApplication.getBaseContext(), VariationAActivity.class);
+//                } else if (backgroundVariation.getKey().equals("variation_b")) {
+//                    intent = new Intent(myApplication.getBaseContext(), VariationBActivity.class);
+//                }
+//            }
+//
+//            startActivity(intent);
+//
+//            return;
+//        }
+
         // Initialize Optimizely asynchronously
         optimizelyManager.initialize(this, new OptimizelyStartListener() {
 
@@ -76,6 +96,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                 }
 
                 startActivity(intent);
+
+                //call this method if you set an interval but want to now stop doing bakcground updates.
+                //optimizelyManager.getDatafileHandler().stopBackgroundUpdates(myApplication.getApplicationContext(), optimizelyManager.getProjectId());
             }
         });
     }

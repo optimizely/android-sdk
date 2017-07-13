@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.sdk;
+package com.optimizely.ab.android.datafile_handler;
 
 import android.app.Service;
 import android.content.Intent;
@@ -38,7 +38,7 @@ import java.util.concurrent.Executors;
  *
  * @hide
  */
-public class DataFileService extends Service {
+public class DatafileService extends Service {
     /**
      * Extra containing the project id this instance of Optimizely was built with
      */
@@ -60,23 +60,17 @@ public class DataFileService extends Service {
         if (intent != null) {
             if (intent.hasExtra(EXTRA_PROJECT_ID)) {
                 String projectId = intent.getStringExtra(EXTRA_PROJECT_ID);
-                DataFileClient dataFileClient = new DataFileClient(
+                DatafileClient datafileClient = new DatafileClient(
                         new Client(new OptlyStorage(getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
-                        LoggerFactory.getLogger(DataFileClient.class));
-                DataFileCache dataFileCache = new DataFileCache(
+                        LoggerFactory.getLogger(DatafileClient.class));
+                DatafileCache datafileCache = new DatafileCache(
                         projectId,
                         new Cache(getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
-                        LoggerFactory.getLogger(DataFileCache.class));
+                        LoggerFactory.getLogger(DatafileCache.class));
 
                 String datafileUrl = getDatafileUrl(projectId);
-                DataFileLoader dataFileLoader = new DataFileLoader(this, dataFileClient, dataFileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DataFileLoader.class));
-                dataFileLoader.getDataFile(datafileUrl, null);
-                BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
-                        new Cache(this, LoggerFactory.getLogger(Cache.class)),
-                        LoggerFactory.getLogger(BackgroundWatchersCache.class));
-                backgroundWatchersCache.setIsWatching(projectId, true);
-
-                logger.info("Started watching project {} in the background", projectId);
+                DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
+                datafileLoader.getDatafile(datafileUrl, null);
             } else {
                 logger.warn("Data file service received an intent with no project id extra");
             }
@@ -115,20 +109,20 @@ public class DataFileService extends Service {
         return String.format(FORMAT_VERSIONED_CDN_URL, projectId, DATAFILE_VERSION);
     }
 
-    void stop() {
+    public void stop() {
         stopSelf();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    void getDataFile(String projectId, DataFileLoader dataFileLoader, DataFileLoadedListener loadedListener) {
+    public void getDatafile(String projectId, DatafileLoader datafileLoader, DatafileLoadedListener loadedListener) {
         String datafileUrl = getDatafileUrl(projectId);
-        dataFileLoader.getDataFile(datafileUrl, loadedListener);
+        datafileLoader.getDatafile(datafileUrl, loadedListener);
     }
 
-    class LocalBinder extends Binder {
-        DataFileService getService() {
+    public class LocalBinder extends Binder {
+        public DatafileService getService() {
             // Return this instance of LocalService so clients can call public methods
-            return DataFileService.this;
+            return DatafileService.this;
         }
     }
 }

@@ -16,7 +16,10 @@
 
 package com.optimizely.ab.android.user_profile;
 
+import android.os.Build;
 import android.content.Context;
+import android.os.AsyncTask;
+import android.annotation.TargetApi;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -38,18 +41,19 @@ import java.util.concurrent.Executors;
  * Once a user is bucketed they will stay bucketed unless the device's
  * storage is cleared. Bucketing information is stored in a simple file.
  */
-public class AndroidUserProfileService implements UserProfileService {
+public class DefaultUserProfileService implements UserProfileService {
 
     @NonNull private final UserProfileCache userProfileCache;
     @NonNull private final Logger logger;
 
-    AndroidUserProfileService(@NonNull UserProfileCache userProfileCache, @NonNull Logger logger) {
+    DefaultUserProfileService(@NonNull UserProfileCache userProfileCache, @NonNull Logger logger) {
         this.userProfileCache = userProfileCache;
         this.logger = logger;
     }
 
+
     /**
-     * Gets a new instance of {@link AndroidUserProfileService}.
+     * Gets a new instance of {@link DefaultUserProfileService}.
      *
      * @param projectId your project's id
      * @param context   an instance of {@link Context}
@@ -66,8 +70,40 @@ public class AndroidUserProfileService implements UserProfileService {
                         Executors.newSingleThreadExecutor(),
                         LoggerFactory.getLogger(UserProfileCache.LegacyDiskCache.class), projectId));
 
-        return new AndroidUserProfileService(userProfileCache,
-                LoggerFactory.getLogger(AndroidUserProfileService.class));
+        return new DefaultUserProfileService(userProfileCache,
+                LoggerFactory.getLogger(DefaultUserProfileService.class));
+    }
+
+    public interface StartCallback {
+        void onStartComplete(UserProfileService userProfileService);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void startInBackground(final StartCallback callback) {
+                final DefaultUserProfileService userProfileService = this;
+
+                AsyncTask<Void, Void, UserProfileService> initUserProfileTask = new AsyncTask<Void, Void, UserProfileService>() {
+            @Override
+            protected UserProfileService doInBackground(Void[] params) {
+                                userProfileService.start();
+                                return userProfileService;
+            }
+            @Override
+            protected void onPostExecute(UserProfileService userProfileService) {
+                if (callback != null) {
+                    callback.onStartComplete(userProfileService);
+                }
+            }
+        };
+
+        try {
+            initUserProfileTask.executeOnExecutor(Executors.newSingleThreadExecutor());
+        }
+        catch (Exception e) {
+            logger.error("Error loading user profile service from AndroidUserProfileServiceDefault");
+            callback.onStartComplete(null);
+        }
+
     }
 
     /**
