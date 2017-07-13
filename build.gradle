@@ -71,7 +71,7 @@ task clean(type: Delete) {
 task ship() {
     dependsOn(':android-sdk:uploadArchives', ':shared:uploadArchives',
             'event-handler:uploadArchives', 'user-profile:uploadArchives',
-            'datafile-handle:uploadArchives')
+            'datafile-handler:uploadArchives')
 }
 
 task cleanAllModules << {
