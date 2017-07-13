@@ -1,4 +1,20 @@
-## 2.0.0
+# Optimizely Java X SDK Changelog
+## 1.7.0
+
+July 12, 2017
+
+This release will support Android SDK release 1.4.0
+
+### New Features
+
+- Added `UserProfileService` interface to allow for sticky bucketing
+
+### Breaking Changes
+
+- Removed `UserProfile` interface. Replaced with `UserProfileService` interface.
+- Removed support for v1 datafiles.
+
+## 2.0.0-alpha
 
 May 19, 2017
 
