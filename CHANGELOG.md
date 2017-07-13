@@ -6,11 +6,11 @@ July 11, 2017
 
 *Bug Fixes*
 
-- Close cursor on SQLlite.
+- Close cursor on SQLite.
 
 *Breaking Changes*
 
-- Must include intent filter for EventRescheduler and DatafileRescheduler in the application manifest if the devloper wants to use them (see the test-app manifest for an example).
+- Must include intent filter for EventRescheduler and DatafileRescheduler in the application manifest if the developer wants to use them (see the test-app manifest for an example).
 - Pass context into OptimizelyManager.Builder.
 - UserProfileService added.
 - Background processes are not running by default.
