@@ -119,12 +119,14 @@ class EventDAO {
                     }
                 } while (cursor.moveToNext());
 
-                cursor.close();
-
                 logger.info("Got events from SQLite");
             }
         } catch (Exception e) {
             logger.error("Error reading events db cursor", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
         return events;
