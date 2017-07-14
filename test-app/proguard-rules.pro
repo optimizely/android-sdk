@@ -15,3 +15,28 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+## Below are the suggested rules from the developer documentation:
+## https://developers.optimizely.com/x/solutions/sdks/reference/index.html?language=android&platform=mobile#installation
+
+# Optimizely
+-keep class com.optimizely.ab.** { *; }
+
+# Gson
+-keepnames class com.google.gson.Gson
+
+# Safely ignore warnings about other libraries since we are using Gson
+-dontwarn com.fasterxml.jackson.**
+-dontwarn org.json.**
+
+# Annotations
+-dontwarn javax.annotation.**
+
+# Findbugs
+-dontwarn edu.umd.cs.findbugs.annotations.SuppressFBWarnings
+
+# slf4j
+-dontwarn org.slf4j.**
+
+# Android Logger
+#-keep class com.noveogroup.android.log.** { *; }
