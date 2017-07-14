@@ -119,8 +119,6 @@ class EventDAO {
                     }
                 } while (cursor.moveToNext());
 
-                cursor.close();
-
                 logger.info("Got events from SQLite");
             }
         } catch (Exception e) {
