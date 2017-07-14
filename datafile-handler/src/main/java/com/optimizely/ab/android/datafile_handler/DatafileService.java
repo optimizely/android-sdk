@@ -47,7 +47,7 @@ public class DatafileService extends Service {
     static final String DATAFILE_VERSION = "3";
 
     @NonNull private final IBinder binder = new LocalBinder();
-    Logger logger = LoggerFactory.getLogger(getClass());
+    Logger logger = LoggerFactory.getLogger(DatafileService.class);
     private boolean isBound;
 
     /**
