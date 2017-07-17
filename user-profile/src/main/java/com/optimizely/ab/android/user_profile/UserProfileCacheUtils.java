@@ -35,8 +35,9 @@ public class UserProfileCacheUtils {
     /**
      * Transform a user profile JSONObject to a user profile map.
      *
-     * @param userProfilesJson
-     * @return
+     * @param userProfilesJson JSONObject representing the user profile from UserProfileService
+     * @return map of user id key and experiments with variations the user has participated in.
+     * @throws JSONException Exception if the json problem
      */
     public static Map<String, Map<String, Object>> convertJSONObjectToMap(JSONObject userProfilesJson) throws
             JSONException {
@@ -74,9 +75,9 @@ public class UserProfileCacheUtils {
     /**
      * Transform a user profile map to a user profile JSONObject.
      *
-     * @param userProfilesMap
-     * @return
-     * @throws Exception
+     * @param userProfilesMap map with user id as key and experiements varition map from there.
+     * @return jsonobjec of the user profile service
+     * @throws Exception if json is malformed or map is malformed, an exception can occur.
      */
     public static JSONObject convertMapToJSONObject(Map<String, Map<String, Object>> userProfilesMap) throws Exception {
         JSONObject userProfilesJson = new JSONObject();
