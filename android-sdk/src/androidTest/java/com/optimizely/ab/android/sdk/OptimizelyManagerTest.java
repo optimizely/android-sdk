@@ -28,14 +28,13 @@ import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecuto
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
-import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
+import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
-import com.optimizely.ab.config.parser.ConfigParseException;
-
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 
 import org.junit.Before;
@@ -250,7 +249,7 @@ public class OptimizelyManagerTest {
             fail("Timed out");
         }
 
-        verify(logger).error(eq("Unable to build optimizely instance"), any(Exception.class));
+        verify(logger).error(eq("Unable to build OptimizelyClient instance"), any(Exception.class));
 
     }
 
