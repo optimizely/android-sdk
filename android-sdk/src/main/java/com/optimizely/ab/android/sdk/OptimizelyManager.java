@@ -31,17 +31,16 @@ import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
-import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
-import com.optimizely.ab.android.event_handler.EventIntentService;
+import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
+import com.optimizely.ab.android.event_handler.EventIntentService;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
-import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.payload.Event;
 
 import org.slf4j.Logger;
@@ -133,6 +132,8 @@ public class OptimizelyManager {
         } catch (ConfigParseException e) {
             logger.error("Unable to parse compiled data file", e);
         } catch (Exception e) {
+            logger.error("Unable to build OptimizelyClient instance", e);
+        } catch (Error e) {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
 
@@ -360,7 +361,9 @@ public class OptimizelyManager {
                 }
             }
         } catch (Exception e) {
-            logger.error("Unable to build optimizely instance", e);
+            logger.error("Unable to build OptimizelyClient instance", e);
+        } catch (Error e) {
+            logger.error("Unable to build OptimizelyClient instance", e);
         }
     }
 
