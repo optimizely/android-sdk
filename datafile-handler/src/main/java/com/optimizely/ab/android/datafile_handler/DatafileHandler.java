@@ -45,7 +45,8 @@ public interface DatafileHandler {
     /**
      * Start background updates to the project datafile .
      *
-     * @param context        application context for download
+     * @param context application context for download
+     * @param projectId project id for background updates.
      * @param updateInterval frequency of updates in seconds
      */
     void startBackgroundUpdates(Context context, String projectId, Long updateInterval);
@@ -80,8 +81,8 @@ public interface DatafileHandler {
      * Has the file already been cached locally?
      *
      * @param context   application context for datafile cache
-     * @param projectId
-     * @return
+     * @param projectId projectId of the datafile
+     * @return true if the datafile is cached or false if not.
      */
     Boolean isDatafileSaved(Context context, String projectId);
 
