@@ -33,11 +33,11 @@ import java.util.concurrent.Executor;
  */
 public class DatafileLoader {
 
+    @NonNull private final DatafileCache datafileCache;
+    @NonNull private final DatafileClient datafileClient;
     @NonNull private final DatafileService datafileService;
     @NonNull private final Executor executor;
     @NonNull private final Logger logger;
-    @NonNull private final DatafileCache datafileCache;
-    @NonNull private final DatafileClient datafileClient;
 
     private boolean hasNotifiedListener = false;
 
@@ -54,9 +54,7 @@ public class DatafileLoader {
 
         new DatafileServiceConnection("projectId", datafileService.getApplicationContext(), new DatafileLoadedListener() {
             public void onDatafileLoaded(@Nullable String dataFile) {}
-
             public void onStop(Context context) {}
-
         });
     }
 
