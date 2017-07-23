@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -23,9 +23,11 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
@@ -33,6 +35,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -41,45 +44,56 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class CacheTest {
 
-    private static final String FILE_NAME = "foo.txt";
+    private static final String FILENAME = "foo.txt";
 
     private Cache cache;
+    private Logger logger;
 
     @Before
     public void setup() {
         Context context = InstrumentationRegistry.getTargetContext();
-        Logger logger = mock(Logger.class);
+        logger = mock(Logger.class);
         cache = new Cache(context, logger);
     }
 
     @Test
-    public void saveLoadAndDelete() throws IOException {
-        assertTrue(cache.save(FILE_NAME, "bar"));
-        String data = cache.load(FILE_NAME);
+    public void testSaveExistsLoadAndDelete() throws IOException {
+        assertTrue(cache.save(FILENAME, "bar"));
+        assertTrue(cache.exists(FILENAME));
+        String data = cache.load(FILENAME);
         assertEquals("bar", data);
-        assertTrue(cache.delete(FILE_NAME));
+        assertTrue(cache.delete(FILENAME));
     }
 
     @Test
-    public void deleteFileFail() {
-        assertFalse(cache.delete(FILE_NAME));
+    public void testDeleteFail() {
+        assertFalse(cache.delete(FILENAME));
+    }
+
+    @Test
+    public void testExistsFalse() {
+        assertFalse(cache.exists(FILENAME));
     }
 
     @Test
     public void testLoadFileNotFoundExceptionReturnsNull() throws FileNotFoundException {
         Context context = mock(Context.class);
-        Logger logger = mock(Logger.class);
         Cache cache = new Cache(context, logger);
-        when(context.openFileInput(FILE_NAME)).thenThrow(new FileNotFoundException());
-        assertNull(cache.load(FILE_NAME));
+        when(context.openFileInput(FILENAME)).thenThrow(new FileNotFoundException());
+        assertNull(cache.load(FILENAME));
+        verify(logger).warn("Unable to load file {}.", FILENAME);
     }
 
     @Test
-    public void testSaveFileNotFoundExceptionReturnsFalse() throws FileNotFoundException{
+    public void testSaveFail() throws IOException {
         Context context = mock(Context.class);
-        Logger logger = mock(Logger.class);
         Cache cache = new Cache(context, logger);
-        when(context.openFileInput(FILE_NAME)).thenThrow(new FileNotFoundException());
-        assertFalse(cache.save(FILE_NAME, "{}"));
+        FileOutputStream fileOutputStream = mock(FileOutputStream.class);
+
+        String data = "{}";
+        Mockito.doThrow(new IOException()).when(fileOutputStream).write(data.getBytes());
+        when(context.openFileOutput(FILENAME, Context.MODE_PRIVATE)).thenReturn(fileOutputStream);
+        assertFalse(cache.save(FILENAME, data));
+        verify(logger).error("Error saving file {}.", FILENAME);
     }
 }
