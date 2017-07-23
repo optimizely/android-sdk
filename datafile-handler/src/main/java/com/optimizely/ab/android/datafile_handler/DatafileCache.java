@@ -18,6 +18,7 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.android.shared.Cache;
 
@@ -26,51 +27,51 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 /**
- * Abstracts the actual data "file" {@link java.io.File}
+ * Abstracts the actual data "file" {@link java.io.File}.
  */
 public class DatafileCache {
 
-    private static final String OPTLY_DATA_FILE_NAME = "optly-data-file-%s.json";
+    private static final String FILENAME = "optly-data-file-%s.json";
 
     @NonNull private final Cache cache;
-    @NonNull private final String projectId;
+    @NonNull private final String filename;
     @NonNull private final Logger logger;
 
     public DatafileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
-        this.projectId = projectId;
+        this.filename = String.format(FILENAME, projectId);
         this.logger = logger;
+    }
+
+    public boolean delete() {
+        return cache.delete(filename);
+    }
+
+    public boolean exists() {
+        return cache.exists(filename);
+    }
+
+    @VisibleForTesting
+    public String getFileName() {
+        return filename;
     }
 
     @Nullable
     public JSONObject load() {
-        String optlyDatafile = cache.load(getFileName());
+        String datafile = cache.load(filename);
 
-        if (optlyDatafile == null) {
+        if (datafile == null) {
             return null;
         }
         try {
-            return new JSONObject(optlyDatafile);
+            return new JSONObject(datafile);
         } catch (JSONException e) {
             logger.error("Unable to parse data file", e);
             return null;
         }
-
-    }
-
-    public boolean delete() {
-        return cache.delete(getFileName());
-    }
-
-    public boolean exists() {
-        return cache.exists(getFileName());
     }
 
     public boolean save(String dataFile) {
-        return cache.save(getFileName(), dataFile);
-    }
-
-    public String getFileName() {
-        return String.format(OPTLY_DATA_FILE_NAME, projectId);
+        return cache.save(filename, dataFile);
     }
 }

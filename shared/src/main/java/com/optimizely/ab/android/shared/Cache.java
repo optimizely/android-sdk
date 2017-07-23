@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -25,10 +25,13 @@ import org.slf4j.Logger;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /**
- * Functionality common to all caches
+ * Functionality common to all caches.
+ *
  * @hide
  */
 public class Cache {
@@ -37,7 +40,7 @@ public class Cache {
     @NonNull private final Logger logger;
 
     /**
-     * Create new instances of {@link Cache}
+     * Create new instance of {@link Cache}.
      *
      * @param context any {@link Context instance}
      * @param logger  a {@link Logger} instances
@@ -49,17 +52,44 @@ public class Cache {
     }
 
     /**
-     * Load the cache file
+     * Delete the cache file.
      *
-     * @param fileName the path to the file
+     * @param filename the path to the file
+     * @return true if the file was deleted or false otherwise
+     * @hide
+     */
+    public boolean delete(String filename) {
+        return context.deleteFile(filename);
+    }
+
+    /**
+     * Check if the cache file exists.
+     *
+     * @param filename the path to the file
+     * @return true if the file exists or false otherwise
+     * @hide
+     */
+    public boolean exists(String filename) {
+        String[] files = context.fileList();
+        if (files == null) {
+            return false;
+        }
+        return Arrays.asList(files).contains(filename);
+    }
+
+    /**
+     * Load data from the cache file.
+     *
+     * @param filename the path to the file
      * @return the loaded cache file as String or null if the file cannot be loaded
      * @hide
      */
     @Nullable
-    public String load(String fileName) {
+    public String load(String filename) {
+        FileInputStream fileInputStream = null;
         try {
-            FileInputStream fis = context.openFileInput(fileName);
-            InputStreamReader inputStreamReader = new InputStreamReader(fis);
+            fileInputStream = context.openFileInput(filename);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             StringBuilder sb = new StringBuilder();
             String line;
@@ -68,49 +98,44 @@ public class Cache {
             }
             return sb.toString();
         } catch (Exception e) {
-            logger.warn("Unable to load file {}.", fileName);
+            logger.warn("Unable to load file {}.", filename);
             return null;
+        } finally {
+            try {
+                if (fileInputStream != null) {
+                    fileInputStream.close();
+                }
+            } catch (IOException e) {
+                logger.warn("Unable to close file {}.", filename);
+            }
         }
     }
 
     /**
-     * Delete the cache file
-     * @param fileName the path to the file
-     * @return true if the file was deleted or false otherwise
-     * @hide
-     */
-    public boolean delete(String fileName) {
-        return context.deleteFile(fileName);
-    }
-
-    /**
-     * Check if the cache file exists
-     * @param fileName the path to the file
-     * @return true if the file exists or false otherwise
-     * @hide
-     */
-    public boolean exists(String fileName) {
-        String file = load(fileName);
-        return file != null;
-    }
-
-    /**
-     * Save the existing cache file with new data
+     * Save data to the cache file and overwrite any existing data.
      *
-     * The original file will be overwritten.
-     * @param fileName the path to the file
-     * @param data the String data to write to the file
+     * @param filename the path to the file
+     * @param data     the String data to write to the file
      * @return true if the file was saved
      * @hide
      */
-    public boolean save(String fileName, String data) {
+    public boolean save(String filename, String data) {
+        FileOutputStream fileOutputStream = null;
         try {
-            FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
-            fos.write(data.getBytes());
+            fileOutputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
+            fileOutputStream.write(data.getBytes());
             return true;
         } catch (Exception e) {
-            logger.error("Error saving file {}.", fileName);
+            logger.error("Error saving file {}.", filename);
+            return false;
+        } finally {
+            if (fileOutputStream != null) {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    logger.warn("Unable to close file {}.", filename);
+                }
+            }
         }
-        return false;
     }
 }
