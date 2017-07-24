@@ -39,4 +39,4 @@
 -dontwarn org.slf4j.**
 
 # Android Logger
-#-keep class com.noveogroup.android.log.** { *; }
+-keep class com.noveogroup.android.log.** { *; }
