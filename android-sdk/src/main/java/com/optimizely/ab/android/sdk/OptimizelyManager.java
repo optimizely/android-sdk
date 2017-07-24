@@ -56,18 +56,17 @@ public class OptimizelyManager {
 
     @NonNull private OptimizelyClient optimizelyClient = new OptimizelyClient(null,
             LoggerFactory.getLogger(OptimizelyClient.class));
-    @NonNull private final String projectId;
-    @Nullable private OptimizelyStartListener optimizelyStartListener;
 
+    @NonNull private DatafileHandler datafileHandler;
     @NonNull private final long datafileDownloadInterval;
     @NonNull private final long eventDispatchInterval;
-
-    @Nullable private DatafileHandler datafileHandler = null;
-    @Nullable private Logger logger = null;
     @Nullable private EventHandler eventHandler = null;
-    @Nullable private ErrorHandler errorHandler = null;
-    @Nullable private UserProfileService userProfileService = null;
+    @NonNull private ErrorHandler errorHandler;
+    @NonNull private Logger logger;
+    @NonNull private final String projectId;
+    @NonNull private UserProfileService userProfileService;
 
+    @Nullable private OptimizelyStartListener optimizelyStartListener;
 
     OptimizelyManager(@NonNull String projectId,
                       @NonNull Logger logger,
@@ -603,7 +602,10 @@ public class OptimizelyManager {
                 try {
                     logger = LoggerFactory.getLogger(OptimizelyManager.class);
                 } catch (Exception e) {
-                    logger = LoggerFactory.getLogger("Optly.androidSdk");
+                    logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    logger.error("Unable to generate logger from class.");
+                } catch (Error e) {
+                    logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
                     logger.error("Unable to generate logger from class.");
                 }
             }
