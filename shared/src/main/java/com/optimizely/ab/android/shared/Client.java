@@ -100,13 +100,20 @@ public class Client {
 
     @Nullable
     public String readStream(@NonNull URLConnection urlConnection) {
+        Scanner scanner = null;
         try {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            Scanner s = new Scanner(in).useDelimiter("\\A");
-            return s.hasNext() ? s.next() : "";
+            scanner = new Scanner(in).useDelimiter("\\A");
+            return scanner.hasNext() ? scanner.next() : "";
         } catch (Exception e) {
             logger.warn("Error reading urlConnection stream.", e);
             return null;
+        }
+        finally {
+            if (scanner != null) {
+                // We assume that closing the scanner will close the associated input stream.
+                scanner.close();
+            }
         }
     }
 

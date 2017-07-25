@@ -89,7 +89,12 @@ public class DatafileClient {
                     return null;
                 } finally {
                     if (urlConnection != null) {
-                        urlConnection.disconnect();
+                        try {
+                            urlConnection.disconnect();
+                        }
+                        catch (Exception e) {
+                            logger.error("Error closing connection", e);
+                        }
                     }
                 }
             }

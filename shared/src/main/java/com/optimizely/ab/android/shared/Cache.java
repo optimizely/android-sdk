@@ -108,6 +108,9 @@ public class Cache {
             } catch (IOException e) {
                 logger.warn("Unable to close file {}.", filename);
             }
+            catch (Exception e) {
+                logger.warn("Unable to close file {}.", filename);
+            }
         }
     }
 
@@ -134,6 +137,10 @@ public class Cache {
                     fileOutputStream.close();
                 } catch (IOException e) {
                     logger.warn("Unable to close file {}.", filename);
+                }
+                catch (Exception e) {
+                    logger.warn("Unable to close file {}.", filename);
+
                 }
             }
         }
