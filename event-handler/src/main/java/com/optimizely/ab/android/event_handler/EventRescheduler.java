@@ -20,6 +20,7 @@ import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.support.annotation.NonNull;
 
@@ -68,17 +69,19 @@ public class EventRescheduler extends BroadcastReceiver {
                 broadcastIntent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
             context.startService(eventServiceIntent);
             logger.info("Rescheduling event flushing if necessary");
-        } else if (broadcastIntent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)
-                && broadcastIntent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
+        } else if (broadcastIntent.getAction().equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)) {
+            NetworkInfo networkInfo = broadcastIntent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+            if (networkInfo.getState() == NetworkInfo.State.CONNECTING) {
 
-            if (serviceScheduler.isScheduled(eventServiceIntent)) {
-                // If we get wifi and the event flushing service is scheduled preemptively
-                // flush events before the next interval occurs.  If sending fails even
-                // with wifi the service will be rescheduled on the interval.
-                // Wifi connection state changes all the time and starting services is expensive
-                // so it's important to only do this if we have stored events.
-                context.startService(eventServiceIntent);
-                logger.info("Preemptively flushing events since wifi became available");
+                if (serviceScheduler.isScheduled(eventServiceIntent)) {
+                    // If we get wifi and the event flushing service is scheduled preemptively
+                    // flush events before the next interval occurs.  If sending fails even
+                    // with wifi the service will be rescheduled on the interval.
+                    // Wifi connection state changes all the time and starting services is expensive
+                    // so it's important to only do this if we have stored events.
+                    context.startService(eventServiceIntent);
+                    logger.info("Preemptively flushing events since wifi became available");
+                }
             }
         } else {
             logger.warn("Received unsupported broadcast action to event rescheduler");
