@@ -22,8 +22,8 @@ import java.net.URL;
  * Event model
  */
 class Event {
-    private URL url;
-    private String requestBody;
+    private final URL url;
+    private final String requestBody;
 
     Event(URL url, String requestBody) {
         this.url = url;

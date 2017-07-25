@@ -58,8 +58,8 @@ public class OptimizelyManager {
             LoggerFactory.getLogger(OptimizelyClient.class));
 
     @NonNull private DatafileHandler datafileHandler;
-    @NonNull private final long datafileDownloadInterval;
-    @NonNull private final long eventDispatchInterval;
+    private final long datafileDownloadInterval;
+    private final long eventDispatchInterval;
     @Nullable private EventHandler eventHandler = null;
     @NonNull private ErrorHandler errorHandler;
     @NonNull private Logger logger;
@@ -323,6 +323,7 @@ public class OptimizelyManager {
         return projectId;
     }
 
+    @NonNull
     public DatafileHandler getDatafileHandler() {
         return datafileHandler;
     }
@@ -390,6 +391,7 @@ public class OptimizelyManager {
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
     }
 
+    @NonNull
     @VisibleForTesting
     public UserProfileService getUserProfileService() {
         return userProfileService;

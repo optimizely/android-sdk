@@ -70,7 +70,7 @@ public class OptimizelyDefaultAttributes {
         }
 
 
-        Map<String, String> attrMap = new HashMap<String, String>();
+        Map<String, String> attrMap = new HashMap<>();
 
         attrMap.put(DEVICE_MODEL_KEY, androidDeviceModel);
         attrMap.put(SDK_VERSION_KEY, androidSdkVersionName);

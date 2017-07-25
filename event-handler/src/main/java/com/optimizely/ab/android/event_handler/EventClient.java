@@ -30,9 +30,9 @@ import java.net.HttpURLConnection;
  * Makes network requests related to events
  */
 class EventClient {
-    private Client client;
+    private final Client client;
     // Package private and non final so it can easily be mocked for tests
-    private Logger logger;
+    private final Logger logger;
 
     EventClient(Client client, Logger logger) {
         this.client = client;
@@ -43,9 +43,10 @@ class EventClient {
         Client.Request<Boolean> request = new Client.Request<Boolean>() {
             @Override
             public Boolean execute() {
+                HttpURLConnection urlConnection = null;
                 try {
                     logger.info("Dispatching event: {}", event);
-                    HttpURLConnection urlConnection = client.openConnection(event.getURL());
+                    urlConnection = client.openConnection(event.getURL());
 
                     if (urlConnection == null) {
                         return Boolean.FALSE;
@@ -70,6 +71,20 @@ class EventClient {
                 } catch (IOException e) {
                     logger.error("Unable to send event: {}", event, e);
                     return Boolean.FALSE;
+                }
+                catch (Exception e) {
+                    logger.error("Unable to send event: {}", event, e);
+                    return Boolean.FALSE;
+                }
+                finally {
+                    if (urlConnection != null) {
+                        try {
+                            urlConnection.disconnect();
+                        }
+                        catch (Exception e) {
+                            logger.error("Unable to close connection", e);
+                        }
+                    }
                 }
             }
         };

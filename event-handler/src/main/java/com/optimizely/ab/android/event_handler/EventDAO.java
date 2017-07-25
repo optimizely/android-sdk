@@ -37,8 +37,9 @@ import java.util.List;
  */
 class EventDAO {
 
-    @NonNull Logger logger;
-    @NonNull private EventSQLiteOpenHelper dbHelper;
+    @NonNull
+    final Logger logger;
+    @NonNull private final EventSQLiteOpenHelper dbHelper;
 
     private EventDAO(@NonNull EventSQLiteOpenHelper dbHelper, @NonNull Logger logger) {
         this.dbHelper = dbHelper;
