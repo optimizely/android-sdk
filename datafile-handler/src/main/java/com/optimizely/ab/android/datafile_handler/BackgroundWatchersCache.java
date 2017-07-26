@@ -16,6 +16,7 @@
 
 package com.optimizely.ab.android.datafile_handler;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -31,17 +32,33 @@ import java.util.List;
 
 /**
  * Caches a json dict that saves state about which project IDs have background watching enabled.
+ * This is used by the rescheduler to determine if backgrounding was on for a project id.  If backgrounding is on,
+ * then when the device is restarted or the app is reinstalled, the rescheduler will kick in and reschedule the datafile background
+ * download.  In order to use this the rescheduler needs to be included in the application manifest.
+ * Calling {@link DatafileHandler#stopBackgroundUpdates(Context, String)} sets this background cache to false.
  */
 class BackgroundWatchersCache {
     static final String BACKGROUND_WATCHERS_FILE_NAME = "optly-background-watchers.json";
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
 
+    /**
+     * Create BackgroundWatchersCache Object.
+     *
+     * @param cache object for caching project id and whether watched or not.
+     * @param logger the logger to log errors and warnings.
+     */
     BackgroundWatchersCache(@NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
         this.logger = logger;
     }
 
+    /**
+     * Set the watching flag for the proejct id.
+     * @param projectId project id to set watching.
+     * @param watching flag to signify if the project is running in the background.
+     * @return boolean indicating whether the set succeed or not
+     */
     boolean setIsWatching(@NonNull String projectId, boolean watching) {
         if (projectId.isEmpty()) {
             logger.error("Passed in an empty string for projectId");
@@ -61,6 +78,11 @@ class BackgroundWatchersCache {
         return false;
     }
 
+    /**
+     * Return if the project is set to be watched in the background or not.
+     * @param projectId project id to test
+     * @return true if it has backgrounding, false if not.
+     */
     boolean isWatching(@NonNull String projectId) {
         if (projectId.isEmpty()) {
             logger.error("Passed in an empty string for projectId");
@@ -81,6 +103,10 @@ class BackgroundWatchersCache {
         return false;
     }
 
+    /**
+     * Get a list of all project ids that are being watched for backgrounding.
+     * @return a list of project ids
+     */
     List<String> getWatchingProjectIds() {
         List<String> projectIds = new ArrayList<>();
         try {
@@ -101,6 +127,11 @@ class BackgroundWatchersCache {
         return projectIds;
     }
 
+    /**
+     * Load the JSONObject from cache
+     * @return JSONObject if successful. JSONObject can be empty
+     * @throws JSONException if there was a problem parsing the JSON
+     */
     @Nullable
     private JSONObject load() throws JSONException {
         String backGroundWatchersFile = cache.load(BACKGROUND_WATCHERS_FILE_NAME);
@@ -112,10 +143,19 @@ class BackgroundWatchersCache {
         return new JSONObject(backGroundWatchersFile);
     }
 
+    /**
+     * Delete the background watchers cache file.
+     * @return true if successful and false if it failed.
+     */
     protected boolean delete() {
         return cache.delete(BACKGROUND_WATCHERS_FILE_NAME);
     }
 
+    /**
+     * Save the JSON string to the background cache file.
+     * @param backgroundWatchersJson JSON string containing projectid and whether watched or not.
+     * @return true if successful.
+     */
     private boolean save(String backgroundWatchersJson) {
         logger.info("Saving background watchers file {}.", BACKGROUND_WATCHERS_FILE_NAME);
         boolean saved = cache.save(BACKGROUND_WATCHERS_FILE_NAME, backgroundWatchersJson);

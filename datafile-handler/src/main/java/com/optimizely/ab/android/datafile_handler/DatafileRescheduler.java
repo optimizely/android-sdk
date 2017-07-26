@@ -31,8 +31,22 @@ import java.util.List;
 /**
  * Broadcast Receiver that handles app upgrade and phone restart broadcasts in order
  * to reschedule {@link DatafileService}
+ * In order to use this class you must include the declaration in your AndroidManifest.xml.
+ * <pre>
+ * {@code
+ * <receiver
+ *  android:name="DatafileRescheduler"
+ *  android:enabled="true"
+ *  android:exported="false">
+ *  <intent-filter>
+ *      <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+ *      <action android:name="android.intent.action.BOOT_COMPLETED" />
+ *  </intent-filter>
+ * </receiver>
+ * }
+ * </pre>
  *
- * @hide
+ * as well as set the download interval for datafile download in the Optimizely builder.
  */
 public class DatafileRescheduler extends BroadcastReceiver {
     Logger logger = LoggerFactory.getLogger(DatafileRescheduler.class);

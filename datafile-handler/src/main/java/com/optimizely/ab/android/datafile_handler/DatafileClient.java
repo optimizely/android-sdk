@@ -35,6 +35,11 @@ public class DatafileClient {
     @NonNull private final Client client;
     @NonNull private final Logger logger;
 
+    /**
+     * Create a DatafileClient Object.
+     * @param client Shared {@link Client} object
+     * @param logger logger for logging.
+     */
     public DatafileClient(@NonNull Client client, @NonNull Logger logger) {
         this.client = client;
         this.logger = logger;

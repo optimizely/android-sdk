@@ -32,6 +32,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 
+/**
+ * The DatafileServiceConnection is used to bind to a DatafileService.  The DatafileService does that actual download.
+ * The Service Connection kicks off the service after being connected.  The connection is unbound after a successful download.
+ */
 public class DatafileServiceConnection implements ServiceConnection {
 
     @NonNull private final Context context;
@@ -40,6 +44,12 @@ public class DatafileServiceConnection implements ServiceConnection {
 
     private boolean bound = false;
 
+    /**
+     * Create a datafile service connection object.
+     * @param projectId project id for service
+     * @param context current application context.
+     * @param listener listener to call after service download has completed.
+     */
     public DatafileServiceConnection(@NonNull String projectId, @NonNull Context context, @NonNull DatafileLoadedListener listener) {
         this.projectId = projectId;
         this.context = context;
@@ -47,7 +57,8 @@ public class DatafileServiceConnection implements ServiceConnection {
     }
 
     /**
-     * @hide
+     * Get the bound {@link DatafileService} and set it up for download.
+     *
      * @see ServiceConnection#onServiceConnected(ComponentName, IBinder)
      */
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -84,7 +95,7 @@ public class DatafileServiceConnection implements ServiceConnection {
     }
 
     /**
-     * @hide
+     * Call stop on the listener after the service has been disconnected.
      * @see ServiceConnection#onServiceDisconnected(ComponentName)
      */
     @Override
@@ -93,10 +104,18 @@ public class DatafileServiceConnection implements ServiceConnection {
        listener.onStop(context);
     }
 
+    /**
+     * Is the service bound?
+     * @return true if it is bound.
+     */
     public boolean isBound() {
         return bound;
     }
 
+    /**
+     * Set whether the service is bound or not.
+     * @param bound boolean flag.
+     */
     public void setBound(Boolean bound) {
         this.bound = bound;
     }

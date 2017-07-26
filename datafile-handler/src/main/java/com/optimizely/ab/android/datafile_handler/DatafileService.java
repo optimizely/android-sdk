@@ -35,8 +35,8 @@ import java.util.concurrent.Executors;
 
 /**
  * Service that handles loading the datafile from cache or downloads it from the CDN
- *
- * @hide
+ * These services will only be used if you are using our {@link DefaultDatafileHandler}.
+ * You can chose to implement your own handler and use all or part of this package.
  */
 public class DatafileService extends Service {
     /**
