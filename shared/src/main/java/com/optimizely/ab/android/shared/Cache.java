@@ -30,9 +30,9 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 
 /**
- * Functionality common to all caches.
+ * Functionality common to all caches.  This is a simple cache class that takes a filename and saves string data
+ * to that file.  It can then use that file name to load the data.
  *
- * @hide
  */
 public class Cache {
 
@@ -44,7 +44,6 @@ public class Cache {
      *
      * @param context any {@link Context instance}
      * @param logger  a {@link Logger} instances
-     * @hide
      */
     public Cache(@NonNull Context context, @NonNull Logger logger) {
         this.context = context;
@@ -56,7 +55,6 @@ public class Cache {
      *
      * @param filename the path to the file
      * @return true if the file was deleted or false otherwise
-     * @hide
      */
     public boolean delete(String filename) {
         return context.deleteFile(filename);
@@ -67,14 +65,10 @@ public class Cache {
      *
      * @param filename the path to the file
      * @return true if the file exists or false otherwise
-     * @hide
      */
     public boolean exists(String filename) {
         String[] files = context.fileList();
-        if (files == null) {
-            return false;
-        }
-        return Arrays.asList(files).contains(filename);
+        return files != null && Arrays.asList(files).contains(filename);
     }
 
     /**
@@ -82,7 +76,6 @@ public class Cache {
      *
      * @param filename the path to the file
      * @return the loaded cache file as String or null if the file cannot be loaded
-     * @hide
      */
     @Nullable
     public String load(String filename) {
@@ -105,11 +98,8 @@ public class Cache {
                 if (fileInputStream != null) {
                     fileInputStream.close();
                 }
-            } catch (IOException e) {
-                logger.warn("Unable to close file {}.", filename);
-            }
-            catch (Exception e) {
-                logger.warn("Unable to close file {}.", filename);
+            } catch (Exception e) {
+                logger.warn("Unable to close file {}.", filename, e);
             }
         }
     }
@@ -120,7 +110,6 @@ public class Cache {
      * @param filename the path to the file
      * @param data     the String data to write to the file
      * @return true if the file was saved
-     * @hide
      */
     public boolean save(String filename, String data) {
         FileOutputStream fileOutputStream = null;
@@ -135,11 +124,8 @@ public class Cache {
             if (fileOutputStream != null) {
                 try {
                     fileOutputStream.close();
-                } catch (IOException e) {
-                    logger.warn("Unable to close file {}.", filename);
-                }
-                catch (Exception e) {
-                    logger.warn("Unable to close file {}.", filename);
+                } catch (Exception e) {
+                    logger.warn("Unable to close file {}.", filename, e);
 
                 }
             }

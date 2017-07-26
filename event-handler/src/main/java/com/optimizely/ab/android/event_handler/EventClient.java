@@ -39,6 +39,11 @@ class EventClient {
         this.logger = logger;
     }
 
+    /**
+     * Attempt to send the event to the event url.
+     * @param event to send
+     * @return true if successful
+     */
     boolean sendEvent(final Event event) {
         Client.Request<Boolean> request = new Client.Request<Boolean>() {
             @Override
