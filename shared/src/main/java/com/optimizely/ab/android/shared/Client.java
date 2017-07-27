@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                        *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -30,8 +30,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Functionality common to all clients
- * @hide
+ * Functionality common to all clients using http connections
  */
 public class Client {
 
@@ -46,7 +45,6 @@ public class Client {
      *
      * @param optlyStorage an instance of {@link OptlyStorage}
      * @param logger       an instance of {@link Logger}
-     * @hide
      */
     public Client(@NonNull OptlyStorage optlyStorage, @NonNull Logger logger) {
         this.optlyStorage = optlyStorage;
@@ -58,7 +56,6 @@ public class Client {
      *
      * @param url a {@link URL} instance
      * @return an open {@link HttpURLConnection}
-     * @hide
      */
     @Nullable
     public HttpURLConnection openConnection(URL url) {
@@ -74,7 +71,6 @@ public class Client {
      * Adds a if-modified-since header to the open {@link URLConnection} if this value is
      * stored in {@link OptlyStorage}.
      * @param urlConnection an open {@link URLConnection}
-     * @hide
      */
     public void setIfModifiedSince(@NonNull URLConnection urlConnection) {
         long lastModified = optlyStorage.getLong(LAST_MODIFIED_HEADER_KEY, 0);
@@ -87,7 +83,6 @@ public class Client {
      * Retrieves the last-modified head from a {@link URLConnection} and saves it
      * in {@link OptlyStorage}.
      * @param urlConnection a {@link URLConnection} instance
-     * @hide
      */
     public void saveLastModified(@NonNull URLConnection urlConnection) {
         long lastModified = urlConnection.getLastModified();
@@ -100,13 +95,25 @@ public class Client {
 
     @Nullable
     public String readStream(@NonNull URLConnection urlConnection) {
+        Scanner scanner = null;
         try {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            Scanner s = new Scanner(in).useDelimiter("\\A");
-            return s.hasNext() ? s.next() : "";
+            scanner = new Scanner(in).useDelimiter("\\A");
+            return scanner.hasNext() ? scanner.next() : "";
         } catch (Exception e) {
             logger.warn("Error reading urlConnection stream.", e);
             return null;
+        }
+        finally {
+            if (scanner != null) {
+                // We assume that closing the scanner will close the associated input stream.
+                try {
+                    scanner.close();
+                }
+                catch (Exception e) {
+                    logger.error("Problem with closing the scanner on a input stream" , e);
+                }
+            }
         }
     }
 

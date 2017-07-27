@@ -29,7 +29,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Reference implementation of {@link EventHandler} for Android.
  * <p>
- * This is the main entry point to the Android Module
+ * This is the main entry point to the Android Module.  This event handler creates a service intent and starts it in the passed
+ * in context.  The intent service will attempt to send any and all queued events.
  */
 public class DefaultEventHandler implements EventHandler {
 
@@ -38,6 +39,10 @@ public class DefaultEventHandler implements EventHandler {
     Logger logger = LoggerFactory.getLogger(DefaultEventHandler.class);
     private long dispatchInterval = -1;
 
+    /**
+     * Private constructor
+     * @param context current context for service.
+     */
     private DefaultEventHandler(@NonNull Context context) {
         this.context = context;
     }

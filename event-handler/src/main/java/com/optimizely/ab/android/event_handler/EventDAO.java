@@ -34,23 +34,43 @@ import java.util.List;
 
 /**
  * Handles interactions with the SQLiteDatabase that store {@link Event} instances.
+ * This is the event queue for Android.
  */
 class EventDAO {
 
-    @NonNull Logger logger;
-    @NonNull private EventSQLiteOpenHelper dbHelper;
+    @NonNull
+    final Logger logger;
+    @NonNull private final EventSQLiteOpenHelper dbHelper;
 
+    /**
+     * Private constructor
+     *
+     * @param dbHelper helper for SQLite calls.
+     * @param logger where to log errors and warnings.
+     */
     private EventDAO(@NonNull EventSQLiteOpenHelper dbHelper, @NonNull Logger logger) {
         this.dbHelper = dbHelper;
         this.logger = logger;
     }
 
+    /**
+     * Static initializer for EventDAO.
+     * @param context current context
+     * @param projectId current project id
+     * @param logger where to log errors and warnings.
+     * @return a new instance of EventDAO.
+     */
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     static EventDAO getInstance(@NonNull Context context, @NonNull String projectId, @NonNull Logger logger) {
         EventSQLiteOpenHelper sqLiteOpenHelper = new EventSQLiteOpenHelper(context, projectId, null, EventSQLiteOpenHelper.VERSION, LoggerFactory.getLogger(EventSQLiteOpenHelper.class));
         return new EventDAO(sqLiteOpenHelper, logger);
     }
 
+    /**
+     * Store an event in SQLite
+     * @param event to store
+     * @return true if successful
+     */
     boolean storeEvent(@NonNull Event event) {
         logger.info("Inserting {} into db", event);
         ContentValues values = new ContentValues();
@@ -73,6 +93,10 @@ class EventDAO {
         return false;
     }
 
+    /**
+     * Get all the events in the SQLite queue
+     * @return a list of events.
+     */
     List<Pair<Long, Event>> getEvents() {
         List<Pair<Long, Event>> events = new LinkedList<>();
 
@@ -138,6 +162,11 @@ class EventDAO {
         return events;
     }
 
+    /**
+     * Remove an event from SQLite db.
+     * @param eventId id of the event to remove
+     * @return true on success.
+     */
     boolean removeEvent(long eventId) {
         // Define 'where' part of query.
         String selection = EventTable._ID + " = ?";
@@ -163,6 +192,9 @@ class EventDAO {
         return false;
     }
 
+    /**
+     * Close the SQLite DB.
+     */
     void closeDb() {
         try {
             dbHelper.close();

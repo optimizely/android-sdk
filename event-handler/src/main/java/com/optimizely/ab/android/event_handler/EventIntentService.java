@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
  * Intents sent to this service are handled in order and on a background thread.  Think of it as a
  * worker queue.
  *
- * @hide
  */
 public class EventIntentService extends IntentService {
     static final String EXTRA_URL = "com.optimizely.ab.android.EXTRA_URL";
@@ -52,7 +51,7 @@ public class EventIntentService extends IntentService {
     }
 
     /**
-     * @hide
+     * Create the event dispatcher {@link EventDispatcher}
      * @see IntentService#onCreate()
      */
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -72,7 +71,7 @@ public class EventIntentService extends IntentService {
     }
 
     /**
-     * @hide
+     * Dispatch event in intent.  This will also try to empty the event queue.
      * @see IntentService#onHandleIntent(Intent)
      */
 

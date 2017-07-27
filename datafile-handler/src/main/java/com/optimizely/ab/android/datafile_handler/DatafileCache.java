@@ -27,7 +27,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 /**
- * Abstracts the actual data "file" {@link java.io.File}.
+ * Abstracts the actual data "file" {@link java.io.File}. to a cached file
  */
 public class DatafileCache {
 
@@ -37,25 +37,47 @@ public class DatafileCache {
     @NonNull private final String filename;
     @NonNull private final Logger logger;
 
+    /**
+     * Create a DatafileCache Object
+     * @param projectId project id for cache
+     * @param cache shared generic file based {link Cache}
+     * @param logger logger to use
+     */
     public DatafileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
         this.filename = String.format(FILENAME, projectId);
         this.logger = logger;
     }
 
+    /**
+     * Delete the datafile cache
+     * @return true if successful
+     */
     public boolean delete() {
         return cache.delete(filename);
     }
 
+    /**
+     * Check to see if the datafile cache exists
+     * @return true if it exists
+     */
     public boolean exists() {
         return cache.exists(filename);
     }
 
+    /**
+     * Return the filename to the datafile cache
+     * @return filename for datafile cache
+     */
     @VisibleForTesting
     public String getFileName() {
         return filename;
     }
 
+    /**
+     * Loads the datafile from cache into a JSONObject
+     * @return JSONObject if exists or nulll if it doesn't or there was a problem
+     */
     @Nullable
     public JSONObject load() {
         String datafile = cache.load(filename);
@@ -71,6 +93,11 @@ public class DatafileCache {
         }
     }
 
+    /**
+     * Save a datafile to cache.
+     * @param dataFile to write to cache
+     * @return true if successful.
+     */
     public boolean save(String dataFile) {
         return cache.save(filename, dataFile);
     }

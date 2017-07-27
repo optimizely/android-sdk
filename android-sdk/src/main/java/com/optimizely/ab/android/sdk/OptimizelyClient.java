@@ -47,7 +47,7 @@ public class OptimizelyClient {
     private final Logger logger;
 
     @Nullable private Optimizely optimizely;
-    @Nullable private Map<String, String> defaultAttributes;
+    @NonNull private Map<String, String> defaultAttributes;
 
     OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
         this.optimizely = optimizely;
@@ -86,7 +86,7 @@ public class OptimizelyClient {
      * @return a new map of both the default attributes and attributes passed in.
      */
     private Map<String, String> getAllAttributes(@NonNull Map<String, String> attrs) {
-        Map<String,String> combinedMap = new HashMap<String,String>(defaultAttributes);
+        Map<String,String> combinedMap = new HashMap<>(defaultAttributes);
 
         // this essentially overrides defaultAttributes if the attrs passed in have the same key.
         combinedMap.putAll(attrs);
