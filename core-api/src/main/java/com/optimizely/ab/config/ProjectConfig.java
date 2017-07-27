@@ -224,6 +224,10 @@ public class ProjectConfig {
         return Collections.emptyList();
     }
 
+    public List<FeatureFlag> getFeatureFlags() {
+        return featureFlags;
+    }
+
     public List<Attribute> getAttributes() {
         return attributes;
     }

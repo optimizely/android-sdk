@@ -18,11 +18,11 @@ package com.optimizely.ab.config.parser;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.FeatureFlag;
 import com.optimizely.ab.config.Group;
-import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.audience.Audience;
 
 import javax.annotation.Nonnull;
 
@@ -40,11 +40,12 @@ final class GsonConfigParser implements ConfigParser {
             throw new ConfigParseException("Unable to parse empty json.");
         }
         Gson gson = new GsonBuilder()
-            .registerTypeAdapter(ProjectConfig.class, new ProjectConfigGsonDeserializer())
-            .registerTypeAdapter(Audience.class, new AudienceGsonDeserializer())
-            .registerTypeAdapter(Group.class, new GroupGsonDeserializer())
-            .registerTypeAdapter(Experiment.class, new ExperimentGsonDeserializer())
-            .create();
+                .registerTypeAdapter(Audience.class, new AudienceGsonDeserializer())
+                .registerTypeAdapter(Experiment.class, new ExperimentGsonDeserializer())
+                .registerTypeAdapter(FeatureFlag.class, new FeatureFlagGsonDeserializer())
+                .registerTypeAdapter(Group.class, new GroupGsonDeserializer())
+                .registerTypeAdapter(ProjectConfig.class, new ProjectConfigGsonDeserializer())
+                .create();
 
         try {
             return gson.fromJson(json, ProjectConfig.class);

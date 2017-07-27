@@ -11,12 +11,14 @@ import org.junit.runners.model.Statement;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.verification.VerificationMode;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -51,11 +53,22 @@ public class LogbackVerifier implements TestRule {
     }
 
     public void expectMessage(Level level, String msg) {
-        expectMessage(level, msg, null);
+        expectMessage(level, msg, (Class<? extends Throwable>) null);
     }
 
     public void expectMessage(Level level, String msg, Class<? extends Throwable> throwableClass) {
-        expectedEvents.add(new ExpectedLogEvent(level, msg, throwableClass));
+        expectMessage(level, msg, null, times(1));
+    }
+
+    public void expectMessage(Level level, String msg, VerificationMode times) {
+        expectMessage(level, msg, null, times);
+    }
+
+    public void expectMessage(Level level,
+                              String msg,
+                              Class<? extends Throwable> throwableClass,
+                              VerificationMode times) {
+        expectedEvents.add(new ExpectedLogEvent(level, msg, throwableClass, times));
     }
 
     private void before() {
@@ -66,7 +79,7 @@ public class LogbackVerifier implements TestRule {
 
     private void verify() throws Throwable {
         for (final ExpectedLogEvent expectedEvent : expectedEvents) {
-            Mockito.verify(appender).doAppend(argThat(new ArgumentMatcher<ILoggingEvent>() {
+            Mockito.verify(appender, expectedEvent.times).doAppend(argThat(new ArgumentMatcher<ILoggingEvent>() {
                 @Override
                 public boolean matches(final Object argument) {
                     return expectedEvent.matches((ILoggingEvent) argument);
@@ -83,11 +96,16 @@ public class LogbackVerifier implements TestRule {
         private final String message;
         private final Level level;
         private final Class<? extends Throwable> throwableClass;
+        private final VerificationMode times;
 
-        private ExpectedLogEvent(Level level, String message, Class<? extends Throwable> throwableClass) {
+        private ExpectedLogEvent(Level level,
+                                 String message,
+                                 Class<? extends Throwable> throwableClass,
+                                 VerificationMode times) {
             this.message = message;
             this.level = level;
             this.throwableClass = throwableClass;
+            this.times = times;
         }
 
         private boolean matches(ILoggingEvent actual) {

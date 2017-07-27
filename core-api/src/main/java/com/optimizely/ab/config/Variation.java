@@ -23,7 +23,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents the Optimizely Variation configuration.
@@ -36,6 +38,7 @@ public class Variation implements IdKeyMapped {
     private final String id;
     private final String key;
     private final List<LiveVariableUsageInstance> liveVariableUsageInstances;
+    private final Map<String, LiveVariableUsageInstance> variableIdToLiveVariableUsageInstanceMap;
 
     public Variation(String id, String key) {
         this(id, key, null);
@@ -47,7 +50,13 @@ public class Variation implements IdKeyMapped {
                      @JsonProperty("variables") List<LiveVariableUsageInstance> liveVariableUsageInstances) {
         this.id = id;
         this.key = key;
-        this.liveVariableUsageInstances = liveVariableUsageInstances;
+        if (liveVariableUsageInstances == null) {
+            this.liveVariableUsageInstances = Collections.emptyList();
+        }
+        else {
+            this.liveVariableUsageInstances = liveVariableUsageInstances;
+        }
+        this.variableIdToLiveVariableUsageInstanceMap = ProjectConfigUtils.generateIdMapping(this.liveVariableUsageInstances);
     }
 
     public @Nonnull String getId() {
@@ -60,6 +69,10 @@ public class Variation implements IdKeyMapped {
 
     public @Nullable List<LiveVariableUsageInstance> getLiveVariableUsageInstances() {
         return liveVariableUsageInstances;
+    }
+
+    public Map<String, LiveVariableUsageInstance> getVariableIdToLiveVariableUsageInstanceMap() {
+        return variableIdToLiveVariableUsageInstanceMap;
     }
 
     public boolean is(String otherKey) {

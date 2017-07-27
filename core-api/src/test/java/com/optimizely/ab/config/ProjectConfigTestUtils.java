@@ -450,12 +450,13 @@ public final class ProjectConfigTestUtils {
         assertThat(actual.getVersion(), is(expected.getVersion()));
         assertThat(actual.getRevision(), is(expected.getRevision()));
 
-        verifyGroups(actual.getGroups(), expected.getGroups());
-        verifyExperiments(actual.getExperiments(), expected.getExperiments());
         verifyAttributes(actual.getAttributes(), expected.getAttributes());
-        verifyEvents(actual.getEventTypes(), expected.getEventTypes());
         verifyAudiences(actual.getAudiences(), expected.getAudiences());
+        verifyEvents(actual.getEventTypes(), expected.getEventTypes());
+        verifyExperiments(actual.getExperiments(), expected.getExperiments());
+        verifyFeatureFlags(actual.getFeatureFlags(), expected.getFeatureFlags());
         verifyLiveVariables(actual.getLiveVariables(), expected.getLiveVariables());
+        verifyGroups(actual.getGroups(), expected.getGroups());
     }
 
     /**
@@ -479,6 +480,16 @@ public final class ProjectConfigTestUtils {
             verifyVariations(actualExperiment.getVariations(), expectedExperiment.getVariations());
             verifyTrafficAllocations(actualExperiment.getTrafficAllocation(),
                                      expectedExperiment.getTrafficAllocation());
+        }
+    }
+
+    private static void verifyFeatureFlags(List<FeatureFlag> actual, List<FeatureFlag> expected) {
+        assertEquals(expected.size(), actual.size());
+        for (int i = 0; i < actual.size(); i ++) {
+            FeatureFlag actualFeatureFlag = actual.get(i);
+            FeatureFlag expectedFeatureFlag = expected.get(i);
+
+            assertEquals(expectedFeatureFlag, actualFeatureFlag);
         }
     }
 

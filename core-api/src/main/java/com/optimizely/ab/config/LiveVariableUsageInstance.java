@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Represents the value of a live variable for a variation
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LiveVariableUsageInstance {
+public class LiveVariableUsageInstance implements IdMapped {
 
     private final String id;
     private final String value;

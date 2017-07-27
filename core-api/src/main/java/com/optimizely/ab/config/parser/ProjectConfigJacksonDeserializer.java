@@ -23,14 +23,14 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-
 import com.optimizely.ab.config.Attribute;
-import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.FeatureFlag;
 import com.optimizely.ab.config.Group;
 import com.optimizely.ab.config.LiveVariable;
 import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.audience.Audience;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,6 +51,7 @@ class ProjectConfigJacksonDeserializer extends JsonDeserializer<ProjectConfig> {
         String projectId = node.get("projectId").textValue();
         String revision = node.get("revision").textValue();
         String version = node.get("version").textValue();
+        int datafileVersion = Integer.parseInt(version);
 
         List<Group> groups = mapper.readValue(node.get("groups").toString(), new TypeReference<List<Group>>() {});
         List<Experiment> experiments = mapper.readValue(node.get("experiments").toString(),
@@ -66,13 +67,31 @@ class ProjectConfigJacksonDeserializer extends JsonDeserializer<ProjectConfig> {
 
         boolean anonymizeIP = false;
         List<LiveVariable> liveVariables = null;
-        if (version.equals(ProjectConfig.Version.V3.toString())) {
+        if (datafileVersion >= Integer.parseInt(ProjectConfig.Version.V3.toString())) {
             liveVariables = mapper.readValue(node.get("variables").toString(),
                                              new TypeReference<List<LiveVariable>>() {});
             anonymizeIP = node.get("anonymizeIP").asBoolean();
         }
 
-        return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
-                                 audiences, anonymizeIP, liveVariables);
+        List<FeatureFlag> featureFlags = null;
+        if (datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString())) {
+            featureFlags = mapper.readValue(node.get("featureFlags").toString(),
+                   new TypeReference<List<FeatureFlag>>() {});
+        }
+
+        return new ProjectConfig(
+                accountId,
+                anonymizeIP,
+                projectId,
+                revision,
+                version,
+                attributes,
+                audiences,
+                events,
+                experiments,
+                featureFlags,
+                groups,
+                liveVariables
+        );
     }
 }

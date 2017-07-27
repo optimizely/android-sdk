@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a FeatureFlag definition at the project level
@@ -33,6 +34,7 @@ public class FeatureFlag implements IdKeyMapped{
     private final String layerId;
     private final List<String> experimentIds;
     private final List<LiveVariable> variables;
+    private final Map<String, LiveVariable> variableKeyToLiveVariableMap;
 
     @JsonCreator
     public FeatureFlag(@JsonProperty("id") String id,
@@ -45,6 +47,7 @@ public class FeatureFlag implements IdKeyMapped{
         this.layerId = layerId;
         this.experimentIds = experimentIds;
         this.variables = variables;
+        this.variableKeyToLiveVariableMap = ProjectConfigUtils.generateNameMapping(variables);
     }
 
     public String getId() {
@@ -67,6 +70,10 @@ public class FeatureFlag implements IdKeyMapped{
         return variables;
     }
 
+    public Map<String, LiveVariable> getVariableKeyToLiveVariableMap() {
+        return variableKeyToLiveVariableMap;
+    }
+
     @Override
     public String toString() {
         return "FeatureFlag{" +
@@ -75,6 +82,33 @@ public class FeatureFlag implements IdKeyMapped{
                 ", layerId='" + layerId + '\'' +
                 ", experimentIds=" + experimentIds +
                 ", variables=" + variables +
+                ", variableKeyToLiveVariableMap=" + variableKeyToLiveVariableMap +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FeatureFlag that = (FeatureFlag) o;
+
+        if (!id.equals(that.id)) return false;
+        if (!key.equals(that.key)) return false;
+        if (!layerId.equals(that.layerId)) return false;
+        if (!experimentIds.equals(that.experimentIds)) return false;
+        if (!variables.equals(that.variables)) return false;
+        return variableKeyToLiveVariableMap.equals(that.variableKeyToLiveVariableMap);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + key.hashCode();
+        result = 31 * result + layerId.hashCode();
+        result = 31 * result + experimentIds.hashCode();
+        result = 31 * result + variables.hashCode();
+        result = 31 * result + variableKeyToLiveVariableMap.hashCode();
+        return result;
     }
 }

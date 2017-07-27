@@ -25,6 +25,7 @@ import com.google.gson.reflect.TypeToken;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.FeatureFlag;
 import com.optimizely.ab.config.Group;
 import com.optimizely.ab.config.LiveVariable;
 import com.optimizely.ab.config.ProjectConfig;
@@ -47,6 +48,7 @@ public class ProjectConfigGsonDeserializer implements JsonDeserializer<ProjectCo
         String projectId = jsonObject.get("projectId").getAsString();
         String revision = jsonObject.get("revision").getAsString();
         String version = jsonObject.get("version").getAsString();
+        int datafileVersion = Integer.parseInt(version);
 
         // generic list type tokens
         Type groupsType = new TypeToken<List<Group>>() {}.getType();
@@ -70,14 +72,32 @@ public class ProjectConfigGsonDeserializer implements JsonDeserializer<ProjectCo
         boolean anonymizeIP = false;
         // live variables should be null if using V2
         List<LiveVariable> liveVariables = null;
-        if (version.equals(ProjectConfig.Version.V3.toString())) {
+        if (datafileVersion >= Integer.parseInt(ProjectConfig.Version.V3.toString())) {
             Type liveVariablesType = new TypeToken<List<LiveVariable>>() {}.getType();
             liveVariables = context.deserialize(jsonObject.getAsJsonArray("variables"), liveVariablesType);
 
             anonymizeIP = jsonObject.get("anonymizeIP").getAsBoolean();
         }
 
-        return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
-                                 audiences, anonymizeIP, liveVariables);
+        List<FeatureFlag> featureFlags = null;
+        if (datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString())) {
+            Type featureFlagsType = new TypeToken<List<FeatureFlag>>() {}.getType();
+            featureFlags = context.deserialize(jsonObject.getAsJsonArray("featureFlags"), featureFlagsType);
+        }
+
+        return new ProjectConfig(
+                accountId,
+                anonymizeIP,
+                projectId,
+                revision,
+                version,
+                attributes,
+                audiences,
+                events,
+                experiments,
+                featureFlags,
+                groups,
+                liveVariables
+        );
     }
 }

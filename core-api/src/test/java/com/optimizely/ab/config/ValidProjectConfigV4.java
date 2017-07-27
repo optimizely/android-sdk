@@ -150,7 +150,7 @@ public class ValidProjectConfigV4 {
             )
     );
     private static final String         FEATURE_MULTI_VARIATE_FEATURE_ID = "3263342226";
-    private static final String         FEATURE_MULTI_VARIATE_FEATURE_KEY = "multi_variate_feature";
+    public  static final String         FEATURE_MULTI_VARIATE_FEATURE_KEY = "multi_variate_feature";
     private static final String         VARIABLE_FIRST_LETTER_ID = "675244127";
     private static final String         VARIABLE_FIRST_LETTER_KEY = "first_letter";
     private static final String         VARIABLE_FIRST_LETTER_DEFAULT_VALUE = "H";
@@ -608,7 +608,7 @@ public class ValidProjectConfigV4 {
                 experiments,
                 featureFlags,
                 groups,
-                null
+                Collections.<LiveVariable>emptyList()
         );
     }
 }

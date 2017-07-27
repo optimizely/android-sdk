@@ -20,6 +20,7 @@ import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Experiment.ExperimentStatus;
+import com.optimizely.ab.config.FeatureFlag;
 import com.optimizely.ab.config.Group;
 import com.optimizely.ab.config.LiveVariable;
 import com.optimizely.ab.config.LiveVariable.VariableStatus;
@@ -60,6 +61,7 @@ final class JsonSimpleConfigParser implements ConfigParser {
             String projectId = (String)rootObject.get("projectId");
             String revision = (String)rootObject.get("revision");
             String version = (String)rootObject.get("version");
+            int datafileVersion = Integer.parseInt(version);
 
             List<Experiment> experiments = parseExperiments((JSONArray)rootObject.get("experiments"));
 
@@ -72,14 +74,31 @@ final class JsonSimpleConfigParser implements ConfigParser {
 
             boolean anonymizeIP = false;
             List<LiveVariable> liveVariables = null;
-            if (version.equals(ProjectConfig.Version.V3.toString())) {
+            if (datafileVersion >= Integer.parseInt(ProjectConfig.Version.V3.toString())) {
                 liveVariables = parseLiveVariables((JSONArray)rootObject.get("variables"));
 
                 anonymizeIP = (Boolean)rootObject.get("anonymizeIP");
             }
 
-            return new ProjectConfig(accountId, projectId, version, revision, groups, experiments, attributes, events,
-                                     audiences, anonymizeIP, liveVariables);
+            List<FeatureFlag> featureFlags = null;
+            if (datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString())) {
+                featureFlags = parseFeatureFlags((JSONArray) rootObject.get("featureFlags"));
+            }
+
+            return new ProjectConfig(
+                    accountId,
+                    anonymizeIP,
+                    projectId,
+                    revision,
+                    version,
+                    attributes,
+                    audiences,
+                    events,
+                    experiments,
+                    featureFlags,
+                    groups,
+                    liveVariables
+            );
         } catch (Exception e) {
             throw new ConfigParseException("Unable to parse datafile: " + json, e);
         }
@@ -123,6 +142,42 @@ final class JsonSimpleConfigParser implements ConfigParser {
         }
 
         return experiments;
+    }
+
+    private List<String> parseExperimentIds(JSONArray experimentIdsJsonArray) {
+        List<String> experimentIds = new ArrayList<String>(experimentIdsJsonArray.size());
+
+        for (Object experimentIdObj : experimentIdsJsonArray) {
+            experimentIds.add((String)experimentIdObj);
+        }
+
+        return experimentIds;
+    }
+
+    private List<FeatureFlag> parseFeatureFlags(JSONArray featureFlagJson) {
+        List<FeatureFlag> featureFlags = new ArrayList<FeatureFlag>(featureFlagJson.size());
+
+        for (Object obj : featureFlagJson) {
+            JSONObject featureFlagObject = (JSONObject)obj;
+            String id = (String)featureFlagObject.get("id");
+            String key = (String)featureFlagObject.get("key");
+            String layerId = (String)featureFlagObject.get("layerId");
+
+            JSONArray experimentIdsJsonArray = (JSONArray)featureFlagObject.get("experimentIds");
+            List<String> experimentIds = parseExperimentIds(experimentIdsJsonArray);
+
+            List<LiveVariable> liveVariables = parseLiveVariables((JSONArray) featureFlagObject.get("variables"));
+
+            featureFlags.add(new FeatureFlag(
+                    id,
+                    key,
+                    layerId,
+                    experimentIds,
+                    liveVariables
+            ));
+        }
+
+        return featureFlags;
     }
 
     private List<Variation> parseVariations(JSONArray variationJson) {
@@ -189,11 +244,7 @@ final class JsonSimpleConfigParser implements ConfigParser {
         for (Object obj : eventJson) {
             JSONObject eventObject = (JSONObject)obj;
             JSONArray experimentIdsJson = (JSONArray)eventObject.get("experimentIds");
-            List<String> experimentIds = new ArrayList<String>(experimentIdsJson.size());
-
-            for (Object experimentIdObj : experimentIdsJson) {
-                experimentIds.add((String)experimentIdObj);
-            }
+            List<String> experimentIds = parseExperimentIds(experimentIdsJson);
 
             String id = (String)eventObject.get("id");
             String key = (String)eventObject.get("key");
