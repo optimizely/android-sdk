@@ -19,13 +19,14 @@ package com.optimizely.ab.event.internal.payload;
 public class EventMetric {
 
     public static final String REVENUE_METRIC_TYPE = "revenue";
+    public static final String NUMERIC_METRIC_TYPE = "value";
 
     private String name;
-    private long value;
+    private Number value;
 
     public EventMetric() { }
 
-    public EventMetric(String name, long value) {
+    public EventMetric(String name, Number value) {
         this.name = name;
         this.value = value;
     }
@@ -38,30 +39,29 @@ public class EventMetric {
         this.name = name;
     }
 
-    public long getValue() {
+    public Number getValue() {
         return value;
     }
 
-    public void setValue(long value) {
+    public void setValue(Number value) {
         this.value = value;
     }
 
-
     @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof EventMetric))
-            return false;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
 
-        EventMetric otherEventMetric = (EventMetric)other;
+        EventMetric that = (EventMetric) obj;
 
-        return name.equals(otherEventMetric.getName()) && value == otherEventMetric.getValue();
+        if (!name.equals(that.name)) return false;
+        return value.equals(that.value);
     }
-
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (int) (value ^ (value >>> 32));
+        int result = name.hashCode();
+        result = 31 * result + value.hashCode();
         return result;
     }
 

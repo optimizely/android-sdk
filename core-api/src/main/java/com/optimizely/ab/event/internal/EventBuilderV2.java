@@ -112,10 +112,16 @@ public class EventBuilderV2 extends EventBuilder {
 
         List<LayerState> layerStates = createLayerStates(projectConfig, experimentVariationMap);
 
-        Long eventValue = EventTagUtils.getRevenueValue(eventTags);
-        List<EventMetric> eventMetrics = Collections.emptyList();
-        if (eventValue != null) {
-            eventMetrics = Collections.singletonList(new EventMetric(EventMetric.REVENUE_METRIC_TYPE, eventValue));
+        List<EventMetric> eventMetrics = new ArrayList<EventMetric>();
+
+        Long revenueValue = EventTagUtils.getRevenueValue(eventTags);
+        if (revenueValue != null) {
+            eventMetrics.add(new EventMetric(EventMetric.REVENUE_METRIC_TYPE, revenueValue));
+        }
+
+        Double numericMetricValue = EventTagUtils.getNumericValue(eventTags);
+        if (numericMetricValue != null) {
+            eventMetrics.add(new EventMetric(EventMetric.NUMERIC_METRIC_TYPE, numericMetricValue));
         }
 
         Conversion conversionPayload = new Conversion();

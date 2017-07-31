@@ -17,7 +17,8 @@
 package com.optimizely.ab.internal;
 
 public enum ReservedEventKey {
-    REVENUE("revenue");
+    REVENUE("revenue"),
+    VALUE("value");
 
     private final String key;
 

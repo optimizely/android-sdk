@@ -47,4 +47,22 @@ public final class EventTagUtils {
         }
         return eventValue;
     }
+
+    /**
+     * Fetch the numeric metric value from event tags. "value" is a reserved keyword.
+     */
+    public static Double getNumericValue(@Nonnull Map<String, ?> eventTags) {
+        Double eventValue = null;
+        if (eventTags.containsKey(ReservedEventKey.VALUE.toString())) {
+            Object rawValue = eventTags.get(ReservedEventKey.VALUE.toString());
+            if (rawValue instanceof Number) {
+                eventValue = ((Number) rawValue).doubleValue();
+                logger.info("Parsed numeric metric value \"{}\" from event tags.", eventValue);
+            } else {
+                logger.warn("Failed to parse numeric metric value \"{}\" from event tags.", rawValue);
+            }
+        }
+
+        return eventValue;
+    }
 }
