@@ -82,20 +82,16 @@ public class UserProfileCacheUtils {
     public static JSONObject convertMapToJSONObject(Map<String, Map<String, Object>> userProfilesMap) throws Exception {
         JSONObject userProfilesJson = new JSONObject();
 
-        Iterator userProfileIterator = userProfilesMap.entrySet().iterator();
-        while (userProfileIterator.hasNext()) {
-            Map.Entry userProfileEntry = (Map.Entry) userProfileIterator.next();
+        for (Map.Entry<String, Map<String, Object>> userProfileEntry : userProfilesMap.entrySet()) {
             Map<String, Object> userProfileMap = (Map<String, Object>) userProfileEntry.getValue();
             String userId = (String) userProfileMap.get(userIdKey);
             Map<String, Map<String, String>> experimentBucketMap = (Map<String, Map<String, String>>)
                     userProfileMap.get(experimentBucketMapKey);
 
             JSONObject experimentBucketMapJson = new JSONObject();
-            Iterator experimentBucketMapIterator = experimentBucketMap.entrySet().iterator();
-            while (experimentBucketMapIterator.hasNext()) {
-                Map.Entry experimentBucketMapEntry = (Map.Entry) experimentBucketMapIterator.next();
+            for (Map.Entry<String, Map<String, String>> experimentBucketMapEntry : experimentBucketMap.entrySet()) {
                 String experimentId = (String) experimentBucketMapEntry.getKey();
-                Map<String, String> decisionsMap = (Map<String, String>) experimentBucketMapEntry.getValue();
+                Map<String, String> decisionsMap =  experimentBucketMapEntry.getValue();
                 JSONObject decisionJson = new JSONObject();
                 decisionJson.put(variationIdKey, decisionsMap.get
                         (variationIdKey));

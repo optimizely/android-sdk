@@ -61,7 +61,7 @@ public class OptimizelyManager {
     private final long datafileDownloadInterval;
     private final long eventDispatchInterval;
     @Nullable private EventHandler eventHandler = null;
-    @NonNull private ErrorHandler errorHandler;
+    @Nullable private ErrorHandler errorHandler;
     @NonNull private Logger logger;
     @NonNull private final String projectId;
     @NonNull private UserProfileService userProfileService;
