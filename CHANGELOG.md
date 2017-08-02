@@ -9,10 +9,10 @@ August 2, 2017
 - Better javadocs.
 - Cleanup any resource leaks.
 - Better exception handling to avoid any crashes.
-- Fix proguard rules
-- Fix logger issue
+- Fix proguard rules.
+- Fix logger issue.
 - Allow EventRescheduler to work with wifi change intent filter (you don't have to include that intent filter).
-- remove unused imports
+- Remove unused imports.
 
 *Breaking Changes*
 
