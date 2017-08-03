@@ -23,7 +23,6 @@ import com.optimizely.ab.android.shared.Client;
 
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 

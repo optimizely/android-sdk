@@ -47,7 +47,7 @@ public class OptimizelyClient {
     private final Logger logger;
 
     @Nullable private Optimizely optimizely;
-    @NonNull private Map<String, String> defaultAttributes;
+    @NonNull private Map<String, String> defaultAttributes = new HashMap<>();
 
     OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
         this.optimizely = optimizely;
@@ -59,7 +59,6 @@ public class OptimizelyClient {
         the public methods here were called before initialize.
         So, we start with an empty map of default attributes until the manager is initialized.
         */
-        defaultAttributes = Collections.EMPTY_MAP;
     }
 
     /**
