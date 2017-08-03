@@ -27,7 +27,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 /**
- * Abstracts the actual data "file" {@link java.io.File}. to a cached file
+ * Abstracts the actual datafile to a cached file containing the JSONObject as a string.
  */
 public class DatafileCache {
 
@@ -76,7 +76,7 @@ public class DatafileCache {
 
     /**
      * Loads the datafile from cache into a JSONObject
-     * @return JSONObject if exists or nulll if it doesn't or there was a problem
+     * @return JSONObject if exists or null if it doesn't or there was a problem
      */
     @Nullable
     public JSONObject load() {

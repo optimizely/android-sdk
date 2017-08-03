@@ -96,10 +96,10 @@ public class DatafileLoader {
 
         LoadDatafileFromCacheTask(@NonNull DatafileCache datafileCache,
                                   @NonNull DatafileLoader datafileLoader,
-                                  @Nullable DatafileLoadedListener dataFileLoadedListner) {
+                                  @Nullable DatafileLoadedListener dataFileLoadedListener) {
             this.datafileCache = datafileCache;
             this.datafileLoader = datafileLoader;
-            this.datafileLoadedListener = dataFileLoadedListner;
+            this.datafileLoadedListener = dataFileLoadedListener;
         }
 
         @Override

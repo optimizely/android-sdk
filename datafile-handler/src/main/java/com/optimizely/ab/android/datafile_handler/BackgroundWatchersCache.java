@@ -54,7 +54,7 @@ class BackgroundWatchersCache {
     }
 
     /**
-     * Set the watching flag for the proejct id.
+     * Set the watching flag for the project id.
      * @param projectId project id to set watching.
      * @param watching flag to signify if the project is running in the background.
      * @return boolean indicating whether the set succeed or not
