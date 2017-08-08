@@ -18,8 +18,10 @@ package com.optimizely.ab.bucketing;
 
 import ch.qos.logback.classic.Level;
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.FeatureFlag;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.TrafficAllocation;
+import com.optimizely.ab.config.ValidProjectConfigV4;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.internal.LogbackVerifier;
@@ -38,17 +40,22 @@ import java.util.Map;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigV3;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV4;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyMapOf;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -134,6 +141,109 @@ public class DecisionServiceTest {
         // ensure that a user with a saved user profile, sees the same variation regardless of audience evaluation
         assertEquals(variation,
                 decisionService.getVariation(experiment, userProfileId, Collections.<String, String>emptyMap()));
+    }
+
+    //========== get Variation for Feature tests ==========//
+
+    /**
+     * Verify that {@link DecisionService#getVariationForFeature(FeatureFlag, String, Map)}
+     * returns null when the {@link FeatureFlag} is not used in an experiments.
+     */
+    @Test
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
+    public void getVariationForFeatureReturnsNullWhenFeatureFlagExperimentIdsIsEmpty() {
+        FeatureFlag emptyFeatureFlag = mock(FeatureFlag.class);
+        when(emptyFeatureFlag.getExperimentIds()).thenReturn(Collections.<String>emptyList());
+        String featureKey = "testFeatureFlagKey";
+        when(emptyFeatureFlag.getKey()).thenReturn(featureKey);
+
+        DecisionService decisionService = new DecisionService(
+                mock(Bucketer.class),
+                mockErrorHandler,
+                validProjectConfig,
+                null);
+
+        logbackVerifier.expectMessage(Level.INFO,
+                "The feature flag \"" + featureKey + "\" is not used in any experiments");
+
+        assertNull(decisionService.getVariationForFeature(
+                emptyFeatureFlag,
+                genericUserId,
+                Collections.<String, String>emptyMap()));
+
+        verify(emptyFeatureFlag, times(1)).getExperimentIds();
+        verify(emptyFeatureFlag, times(1)).getKey();
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariationForFeature(FeatureFlag, String, Map)}
+     * returns null when the user is not bucketed into any experiments for the {@link FeatureFlag}.
+     */
+    @Test
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
+    public void getVariationForFeatureReturnsNullWhenItGetsNoVariationsForExperiments() {
+        FeatureFlag spyFeatureFlag = spy(ValidProjectConfigV4.FEATURE_FLAG_MULTI_VARIATE_FEATURE);
+
+        DecisionService spyDecisionService = spy(new DecisionService(
+                mock(Bucketer.class),
+                mockErrorHandler,
+                validProjectConfig,
+                null)
+        );
+
+        doReturn(null).when(spyDecisionService).getVariation(
+                any(Experiment.class),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        assertNull(spyDecisionService.getVariationForFeature(
+                spyFeatureFlag,
+                genericUserId,
+                Collections.<String, String>emptyMap()
+        ));
+
+        verify(spyFeatureFlag, times(2)).getExperimentIds();
+        verify(spyFeatureFlag, never()).getKey();
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariationForFeature(FeatureFlag, String, Map)}
+     * returns the variation of the experiment a user gets bucketed into for an experiment.
+     */
+    @Test
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
+    public void getVariationForFeatureReturnsVariationReturnedFromGetVarition() {
+        FeatureFlag spyFeatureFlag = spy(ValidProjectConfigV4.FEATURE_FLAG_MUTEX_GROUP_FEATURE);
+
+        DecisionService spyDecisionService = spy(new DecisionService(
+                mock(Bucketer.class),
+                mockErrorHandler,
+                validProjectConfigV4(),
+                null)
+        );
+
+        doReturn(null).when(spyDecisionService).getVariation(
+                eq(ValidProjectConfigV4.EXPERIMENT_MUTEX_GROUP_EXPERIMENT_1),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        doReturn(ValidProjectConfigV4.VARIATION_MUTEX_GROUP_EXP_2_VAR_1).when(spyDecisionService).getVariation(
+                eq(ValidProjectConfigV4.EXPERIMENT_MUTEX_GROUP_EXPERIMENT_2),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        assertEquals(ValidProjectConfigV4.VARIATION_MUTEX_GROUP_EXP_2_VAR_1,
+                spyDecisionService.getVariationForFeature(
+                        spyFeatureFlag,
+                        genericUserId,
+                        Collections.<String, String>emptyMap()
+                ));
+
+        verify(spyFeatureFlag, times(2)).getExperimentIds();
+        verify(spyFeatureFlag, never()).getKey();
     }
 
     //========= white list tests ==========/

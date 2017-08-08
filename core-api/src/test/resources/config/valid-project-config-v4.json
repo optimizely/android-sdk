@@ -300,6 +300,74 @@
           "endOfRange": 8000
         }
       ]
+    },
+    {
+      "id": "2606208781",
+      "policy": "random",
+      "experiments": [
+        {
+          "id": "4138322202",
+          "key": "mutex_group_2_experiment_1",
+          "layerId": "3755588495",
+          "status": "Running",
+          "variations": [
+            {
+              "id": "1394671166",
+              "key": "mutex_group_2_experiment_1_variation_1",
+              "variables": [
+                {
+                  "id": "2059187672",
+                  "value": "mutex_group_2_experiment_1_variation_1"
+                }
+              ]
+            }
+          ],
+          "audienceIds": [],
+          "forcedVariations": {},
+          "trafficAllocation": [
+            {
+              "entityId": "1394671166",
+              "endOfRange": 10000
+            }
+          ]
+        },
+        {
+          "id": "1786133852",
+          "key": "mutex_group_2_experiment_2",
+          "layerId": "3818002538",
+          "status": "Running",
+          "variations": [
+            {
+              "id": "1619235542",
+              "key": "mutex_group_2_experiment_2_variation_2",
+              "variables": [
+                {
+                  "id": "2059187672",
+                  "value": "mutex_group_2_experiment_2_variation_2"
+                }
+              ]
+            }
+          ],
+          "trafficAllocation": [
+            {
+              "entityId": "1619235542",
+              "endOfRange": 10000
+            }
+          ],
+          "audienceIds": [],
+          "forcedVariations": {}
+        }
+      ],
+      "trafficAllocation": [
+        {
+          "entityId": "4138322202",
+          "endOfRange": 5000
+        },
+        {
+          "entityId": "1786133852",
+          "endOfRange": 10000
+        }
+      ]
     }
   ],
   "featureFlags": [
@@ -370,7 +438,7 @@
       "id": "3263342226",
       "key": "multi_variate_feature",
       "layerId": "",
-      "experimentIds": [],
+      "experimentIds": ["3262035800"],
       "variables": [
         {
           "id": "675244127",
@@ -383,6 +451,20 @@
           "key": "rest_of_name",
           "type": "string",
           "defaultValue": "arry"
+        }
+      ]
+    },
+    {
+      "id": "3263342226",
+      "key": "mutex_group_feature",
+      "layerId": "",
+      "experimentIds": ["4138322202", "1786133852"],
+      "variables": [
+        {
+          "id": "2059187672",
+          "key": "correlating_variation_name",
+          "type": "string",
+          "defaultValue": "null"
         }
       ]
     }

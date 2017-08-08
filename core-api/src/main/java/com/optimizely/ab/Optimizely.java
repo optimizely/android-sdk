@@ -22,6 +22,9 @@ import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.FeatureFlag;
+import com.optimizely.ab.config.LiveVariable;
+import com.optimizely.ab.config.LiveVariableUsageInstance;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.ConfigParseException;
@@ -433,7 +436,57 @@ public class Optimizely {
                                                      @Nonnull String variableKey,
                                                      @Nonnull String userId,
                                                      @Nonnull Map<String, String> attributes) {
-        return null;
+        return getFeatureVariableValueForType(
+                featureKey,
+                variableKey,
+                userId,
+                attributes,
+                LiveVariable.VariableType.STRING);
+    }
+
+    @VisibleForTesting
+    String getFeatureVariableValueForType(@Nonnull String featureKey,
+                                                  @Nonnull String variableKey,
+                                                  @Nonnull String userId,
+                                                  @Nonnull Map<String, String> attributes,
+                                                  @Nonnull LiveVariable.VariableType variableType) {
+        FeatureFlag featureFlag = projectConfig.getFeatureKeyMapping().get(featureKey);
+        if (featureFlag == null) {
+            logger.info("No feature flag was found for key \"" + featureKey + "\".");
+            return null;
+        }
+
+        LiveVariable variable = featureFlag.getVariableKeyToLiveVariableMap().get(variableKey);
+        if (variable ==  null) {
+            logger.info("No feature variable was found for key \"" + variableKey + "\" in feature flag \"" +
+                    featureKey + "\".");
+            return null;
+        }
+        else if (!variable.getType().equals(variableType)) {
+            logger.info("The feature variable \"" + variableKey +
+                    "\" is actually of type \"" + variable.getType().toString() +
+                    "\" type. You tried to access it as type \"" + variableType.toString() +
+                    "\". Please use the appropriate feature variable accessor.");
+            return null;
+        }
+
+        String variableValue = variable.getDefaultValue();
+
+        Variation variation = decisionService.getVariationForFeature(featureFlag, userId, attributes);
+
+        if (variation != null) {
+            LiveVariableUsageInstance liveVariableUsageInstance =
+                    variation.getVariableIdToLiveVariableUsageInstanceMap().get(variable.getId());
+            variableValue = liveVariableUsageInstance.getValue();
+        }
+        else {
+            logger.info("User \"" + userId +
+                    "\" was not bucketed into any variation for feature flag \"" + featureKey +
+                    "\". The default value is being returned."
+            );
+        }
+
+        return variableValue;
     }
 
     //======== getVariation calls ========//

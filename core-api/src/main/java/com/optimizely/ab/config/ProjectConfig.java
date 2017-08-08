@@ -286,6 +286,10 @@ public class ProjectConfig {
         return variationToLiveVariableUsageInstanceMapping;
     }
 
+    public Map<String, FeatureFlag> getFeatureKeyMapping() {
+        return featureKeyMapping;
+    }
+
     @Override
     public String toString() {
         return "ProjectConfig{" +

@@ -18,6 +18,7 @@ package com.optimizely.ab.bucketing;
 
 import com.optimizely.ab.OptimizelyRuntimeException;
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.FeatureFlag;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.error.ErrorHandler;
@@ -130,6 +131,33 @@ public class DecisionService {
             return variation;
         }
         logger.info("User \"{}\" does not meet conditions to be in experiment \"{}\".", userId, experiment.getKey());
+
+        return null;
+    }
+
+    /**
+     * Get the variation the user is bucketed into for the FeatureFlag
+     * @param featureFlag The feature flag the user wants to access.
+     * @param userId User Identifier
+     * @param filteredAttributes A map of filtered attributes.
+     * @return null if the user is not bucketed into any variation
+     *      {@link Variation} the user is bucketed into if the user is successfully bucketed.
+     */
+    public @Nullable Variation getVariationForFeature(@Nonnull FeatureFlag featureFlag,
+                                                      @Nonnull String userId,
+                                                      @Nonnull Map<String, String> filteredAttributes) {
+        if (!featureFlag.getExperimentIds().isEmpty()) {
+            for (String experimentId : featureFlag.getExperimentIds()) {
+                Experiment experiment = projectConfig.getExperimentIdMapping().get(experimentId);
+                Variation variation = this.getVariation(experiment, userId, filteredAttributes);
+                if (variation != null) {
+                    return variation;
+                }
+            }
+        }
+        else {
+            logger.info("The feature flag \"" + featureFlag.getKey() + "\" is not used in any experiments.");
+        }
 
         return null;
     }
