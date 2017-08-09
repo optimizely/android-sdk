@@ -21,6 +21,7 @@ August 9, 2017
 - Pass context into OptimizelyManager.Builder.
 - UserProfileService added.
 - Background processes are not running by default.
+- Various handlers (EventHandler, DatafileHandler, ErrorHandler) can be overridden.
 
 ### 1.4.0-beta-RC2
 August 9, 2017
@@ -44,6 +45,7 @@ August 9, 2017
 - Pass context into OptimizelyManager.Builder.
 - UserProfileService added.
 - Background processes are not running by default.
+- Various handlers (EventHandler, DatafileHandler, ErrorHandler) can be overridden.
 
 ### 1.4.0-beta-RC1
 August 2, 2017
