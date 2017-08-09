@@ -1,12 +1,12 @@
 # Optimizely Android X SDK Changelog
-### 1.4.0-beta-RC2
+### 1.4.0
 August 9, 2017
 
-- Release candidate for 1.4.0
+- Release 1.4.0
 
 *Bug Fixes*
 
-- Add consumerProguardFiles
+- Add consumerProguardFiles.
 - Better javadocs.
 - Cleanup any resource leaks.
 - Better exception handling to avoid any crashes.
@@ -21,6 +21,31 @@ August 9, 2017
 - Pass context into OptimizelyManager.Builder.
 - UserProfileService added.
 - Background processes are not running by default.
+- Various handlers (EventHandler, DatafileHandler, ErrorHandler) can be overridden.
+
+### 1.4.0-beta-RC2
+August 9, 2017
+
+- Release candidate for 1.4.0
+
+*Bug Fixes*
+
+- Add consumerProguardFiles.
+- Better javadocs.
+- Cleanup any resource leaks.
+- Better exception handling to avoid any crashes.
+- Fix proguard rules.
+- Fix logger issue.
+- Allow EventRescheduler to work with wifi change intent filter (you don't have to include that intent filter).
+- Remove unused imports.
+
+*Breaking Changes*
+
+- Must include intent filter for EventRescheduler and DatafileRescheduler in the application manifest if the developer wants to use them (see the test-app manifest for an example).
+- Pass context into OptimizelyManager.Builder.
+- UserProfileService added.
+- Background processes are not running by default.
+- Various handlers (EventHandler, DatafileHandler, ErrorHandler) can be overridden.
 
 ### 1.4.0-beta-RC1
 August 2, 2017
