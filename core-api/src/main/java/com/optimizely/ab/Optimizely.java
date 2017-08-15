@@ -175,6 +175,16 @@ public class Optimizely {
             return null;
         }
 
+        sendImpression(projectConfig, experiment, userId, filteredAttributes, variation);
+
+        return variation;
+    }
+
+    private void sendImpression(@Nonnull ProjectConfig projectConfig,
+                                @Nonnull Experiment experiment,
+                                @Nonnull String userId,
+                                @Nonnull Map<String, String> filteredAttributes,
+                                @Nonnull Variation variation) {
         if (experiment.isRunning()) {
             LogEvent impressionEvent = eventBuilder.createImpressionEvent(
                     projectConfig,
@@ -196,8 +206,6 @@ public class Optimizely {
         } else {
             logger.info("Experiment has \"Launched\" status so not dispatching event during activation.");
         }
-
-        return variation;
     }
 
     //======== track calls ========//
@@ -293,10 +301,9 @@ public class Optimizely {
      * @param userId The ID of the user.
      * @return True if the feature is enabled.
      *         False if the feature is disabled.
-     *         Will always return True if toggling the feature is disabled.
-     *         Will return Null if the feature is not found.
+     *         False if the feature is not found.
      */
-    public @Nullable Boolean isFeatureEnabled(@Nonnull String featureKey,
+    public @Nonnull Boolean isFeatureEnabled(@Nonnull String featureKey,
                                               @Nonnull String userId) {
         return isFeatureEnabled(featureKey, userId, Collections.<String, String>emptyMap());
     }
@@ -310,13 +317,43 @@ public class Optimizely {
      * @param attributes The user's attributes.
      * @return True if the feature is enabled.
      *         False if the feature is disabled.
-     *         Will always return True if toggling the feature is disabled.
-     *         Will return Null if the feature is not found.
+     *         False if the feature is not found.
      */
-    public @Nullable Boolean isFeatureEnabled(@Nonnull String featureKey,
+    public @Nonnull Boolean isFeatureEnabled(@Nonnull String featureKey,
                                               @Nonnull String userId,
                                               @Nonnull Map<String, String> attributes) {
-        return getFeatureVariableBoolean(featureKey, "", userId, attributes);
+        FeatureFlag featureFlag = projectConfig.getFeatureKeyMapping().get(featureKey);
+        if (featureFlag == null) {
+            logger.info("No feature flag was found for key \"" + featureKey + "\".");
+            return false;
+        }
+
+        Map<String, String> filteredAttributes = filterAttributes(projectConfig, attributes);
+
+        Variation variation = decisionService.getVariationForFeature(featureFlag, userId, filteredAttributes);
+
+        if (variation != null) {
+            Experiment experiment = projectConfig.getExperimentForVariationId(variation.getId());
+            if (experiment != null) {
+                // the user is in an experiment for the feature
+                sendImpression(
+                        projectConfig,
+                        experiment,
+                        userId,
+                        filteredAttributes,
+                        variation);
+            }
+            else {
+                logger.info("The user \"" + userId +
+                        "\" is not being experimented on in feature \"" + featureKey + "\".");
+            }
+            logger.info("Feature \"" + featureKey + "\" is enabled for user \"" + userId + "\".");
+            return true;
+        }
+        else {
+            logger.info("Feature \"" + featureKey + "\" is not enabled for user \"" + userId + "\".");
+            return false;
+        }
     }
 
     /**

@@ -20,9 +20,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.audience.Condition;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -80,6 +82,7 @@ public class ProjectConfig {
     // other mappings
     private final Map<String, List<Experiment>> liveVariableIdToExperimentsMapping;
     private final Map<String, Map<String, LiveVariableUsageInstance>> variationToLiveVariableUsageInstanceMapping;
+    private final Map<String, Experiment> variationIdToExperimentMapping;
 
     // v2 constructor
     public ProjectConfig(String accountId, String projectId, String version, String revision, List<Group> groups,
@@ -146,6 +149,14 @@ public class ProjectConfig {
         allExperiments.addAll(aggregateGroupExperiments(groups));
         this.experiments = Collections.unmodifiableList(allExperiments);
 
+        Map<String, Experiment> variationIdToExperimentMap = new HashMap<String, Experiment>();
+        for (Experiment experiment : this.experiments) {
+            for (Variation variation: experiment.getVariations()) {
+                variationIdToExperimentMap.put(variation.getId(), experiment);
+            }
+        }
+        this.variationIdToExperimentMapping = Collections.unmodifiableMap(variationIdToExperimentMap);
+
         // generate the name mappers
         this.attributeKeyMapping = ProjectConfigUtils.generateNameMapping(attributes);
         this.eventNameMapping = ProjectConfigUtils.generateNameMapping(this.events);
@@ -170,6 +181,10 @@ public class ProjectConfig {
             this.variationToLiveVariableUsageInstanceMapping =
                     ProjectConfigUtils.generateVariationToLiveVariableUsageInstancesMap(this.experiments);
         }
+    }
+
+    public @Nullable Experiment getExperimentForVariationId(String variationId) {
+        return this.variationIdToExperimentMapping.get(variationId);
     }
 
     private List<Experiment> aggregateGroupExperiments(List<Group> groups) {

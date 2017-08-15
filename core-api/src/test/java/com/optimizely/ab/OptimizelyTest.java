@@ -23,6 +23,7 @@ import com.optimizely.ab.bucketing.DecisionService;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.FeatureFlag;
 import com.optimizely.ab.config.LiveVariable;
 import com.optimizely.ab.config.LiveVariableUsageInstance;
 import com.optimizely.ab.config.ProjectConfig;
@@ -36,6 +37,7 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
+import com.optimizely.ab.event.internal.payload.Feature;
 import com.optimizely.ab.internal.LogbackVerifier;
 import com.optimizely.ab.notification.NotificationListener;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -97,6 +99,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assume.assumeTrue;
@@ -2369,6 +2372,166 @@ public class OptimizelyTest {
         );
 
         assertEquals(expectedValue, value);
+    }
+
+    /**
+     * Verify {@link Optimizely#isFeatureEnabled(String, String)} calls into
+     * {@link Optimizely#isFeatureEnabled(String, String, Map)} and they both
+     * return False
+     * when the APIs are called with an feature key that is not in the datafile.
+     * @throws Exception
+     */
+    @Test
+    public void isFeatureEnabledReturnsFalseWhenFeatureFlagKeyIsInvalid() throws Exception {
+
+        String invalidFeatureKey = "nonexistent feature key";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .withDecisionService(mockDecisionService)
+                .build());
+
+        assertFalse(spyOptimizely.isFeatureEnabled(invalidFeatureKey, genericUserId));
+
+        logbackVerifier.expectMessage(
+                Level.INFO,
+                "No feature flag was found for key \"" + invalidFeatureKey + "\"."
+        );
+        verify(spyOptimizely, times(1)).isFeatureEnabled(
+                eq(invalidFeatureKey),
+                eq(genericUserId),
+                eq(Collections.<String, String>emptyMap())
+        );
+        verify(mockDecisionService, never()).getVariation(
+                any(Experiment.class),
+                anyString(),
+                anyMapOf(String.class, String.class));
+        verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
+    }
+
+    /**
+     * Verify {@link Optimizely#isFeatureEnabled(String, String)} calls into
+     * {@link Optimizely#isFeatureEnabled(String, String, Map)} and they both
+     * return False
+     * when the user is not bucketed into any variation for the feature.
+     * @throws Exception
+     */
+    @Test
+    public void isFeatureEnabledReturnsFalseWhenUserIsNotBucketedIntoAnyVariation() throws Exception {
+        assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        String validFeatureKey = FEATURE_MULTI_VARIATE_FEATURE_KEY;
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .withDecisionService(mockDecisionService)
+                .build());
+
+        doReturn(null).when(mockDecisionService).getVariationForFeature(
+                any(FeatureFlag.class),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        assertFalse(spyOptimizely.isFeatureEnabled(validFeatureKey, genericUserId));
+
+        logbackVerifier.expectMessage(
+                Level.INFO,
+                "Feature \"" + validFeatureKey +
+                        "\" is not enabled for user \"" + genericUserId + "\"."
+        );
+        verify(spyOptimizely).isFeatureEnabled(
+                eq(validFeatureKey),
+                eq(genericUserId),
+                eq(Collections.<String, String>emptyMap())
+        );
+        verify(mockDecisionService).getVariationForFeature(
+                eq(FEATURE_FLAG_MULTI_VARIATE_FEATURE),
+                eq(genericUserId),
+                eq(Collections.<String, String>emptyMap())
+        );
+        verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
+    }
+
+    /**
+     * Verify {@link Optimizely#isFeatureEnabled(String, String)} calls into
+     * {@link Optimizely#isFeatureEnabled(String, String, Map)} and they both
+     * return True
+     * when the user is bucketed into a variation for the feature.
+     * An impression event should not be dispatched since the user was not bucketed into an Experiment.
+     * @throws Exception
+     */
+    @Test
+    public void isFeatureEnabledReturnsTrueButDoesNotSendWhenUserIsBucketedIntoVariationWithoutExperiment() throws Exception {
+        assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        String validFeatureKey = FEATURE_MULTI_VARIATE_FEATURE_KEY;
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .withDecisionService(mockDecisionService)
+                .build());
+
+        doReturn(new Variation("variationId", "variationKey")).when(mockDecisionService).getVariationForFeature(
+                eq(FEATURE_FLAG_MULTI_VARIATE_FEATURE),
+                eq(genericUserId),
+                eq(Collections.<String, String>emptyMap())
+        );
+
+        assertTrue(spyOptimizely.isFeatureEnabled(validFeatureKey, genericUserId));
+
+        logbackVerifier.expectMessage(
+                Level.INFO,
+                "The user \"" + genericUserId +
+                        "\" is not being experimented on in feature \"" + validFeatureKey + "\"."
+        );
+        logbackVerifier.expectMessage(
+                Level.INFO,
+                "Feature \"" + validFeatureKey +
+                        "\" is enabled for user \"" + genericUserId + "\"."
+        );
+        verify(spyOptimizely).isFeatureEnabled(
+                eq(validFeatureKey),
+                eq(genericUserId),
+                eq(Collections.<String, String>emptyMap())
+        );
+        verify(mockDecisionService).getVariationForFeature(
+                eq(FEATURE_FLAG_MULTI_VARIATE_FEATURE),
+                eq(genericUserId),
+                eq(Collections.<String, String>emptyMap())
+        );
+        verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
+    }
+
+    /** Integration Test
+     * Verify {@link Optimizely#isFeatureEnabled(String, String, Map)}
+     * returns True
+     * when the user is bucketed into a variation for the feature.
+     * The user is also bucketed into an experiment, so we verify that an event is dispatched.
+     * @throws Exception
+     */
+    @Test
+    public void isFeatureEnabledReturnsTrueAndDispatchesEventWhenUserIsBucketedIntoAnExperiment() throws Exception {
+        assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        String validFeatureKey = FEATURE_MULTI_VARIATE_FEATURE_KEY;
+
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build();
+
+        assertTrue(optimizely.isFeatureEnabled(
+                validFeatureKey,
+                genericUserId,
+                Collections.singletonMap(ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE)
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.INFO,
+                "Feature \"" + validFeatureKey +
+                        "\" is enabled for user \"" + genericUserId + "\"."
+        );
+        verify(mockEventHandler, times(1)).dispatchEvent(any(LogEvent.class));
     }
 
     //======== Helper methods ========//
