@@ -37,10 +37,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static android.app.Service.START_FLAG_REDELIVERY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
@@ -57,6 +59,7 @@ import static org.mockito.Mockito.when;
 public class DatafileServiceTest {
 
     private ListeningExecutorService executor;
+    private static final int MAX_ITERATION = 100;
 
     @Rule
     public final ServiceTestRule mServiceRule = new ServiceTestRule();
@@ -68,11 +71,16 @@ public class DatafileServiceTest {
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
-    @Ignore
     public void testBinding() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, DatafileService.class);
-        IBinder binder = mServiceRule.bindService(intent);
+        IBinder binder = null;
+        int it = 0;
+
+        while((binder = mServiceRule.bindService(intent)) == null && it < MAX_ITERATION){
+            it++;
+        }
+
         final Context targetContext = InstrumentationRegistry.getTargetContext();
         Logger logger = mock(Logger.class);
         DatafileCache datafileCache = new DatafileCache("1", new Cache(targetContext, logger), logger);
@@ -90,17 +98,22 @@ public class DatafileServiceTest {
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
-    @Ignore
     public void testValidStart() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, DatafileService.class);
-        IBinder binder = mServiceRule.bindService(intent);
+        IBinder binder = null;
+        int it = 0;
+
+        while((binder = mServiceRule.bindService(intent)) == null && it < MAX_ITERATION){
+            it++;
+        }
+
         intent.putExtra(DatafileService.EXTRA_PROJECT_ID, "1");
         DatafileService datafileService = ((DatafileService.LocalBinder) binder).getService();
         Logger logger = mock(Logger.class);
         datafileService.logger = logger;
-        datafileService.onStartCommand(intent, 0, 0);
-        verify(logger).info("Started watching project {} in the background", "1");
+        int val = datafileService.onStartCommand(intent, 0, 0);
+        assertEquals(val, START_FLAG_REDELIVERY);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -108,7 +121,13 @@ public class DatafileServiceTest {
     public void testNullIntentStart() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, DatafileService.class);
-        IBinder binder = mServiceRule.bindService(intent);
+        IBinder binder = null;
+        int it = 0;
+
+        while((binder = mServiceRule.bindService(intent)) == null && it < MAX_ITERATION){
+            it++;
+        }
+        mServiceRule.bindService(intent);
         DatafileService datafileService = ((DatafileService.LocalBinder) binder).getService();
         Logger logger = mock(Logger.class);
         datafileService.logger = logger;
@@ -118,11 +137,16 @@ public class DatafileServiceTest {
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
-    @Ignore
     public void testNoProjectIdIntentStart() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
         Intent intent = new Intent(context, DatafileService.class);
-        IBinder binder = mServiceRule.bindService(intent);
+        IBinder binder = null;
+        int it = 0;
+
+        while((binder = mServiceRule.bindService(intent)) == null && it < MAX_ITERATION){
+            it++;
+        }
+
         DatafileService datafileService = ((DatafileService.LocalBinder) binder).getService();
         Logger logger = mock(Logger.class);
         datafileService.logger = logger;
@@ -132,6 +156,27 @@ public class DatafileServiceTest {
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
+    public void testUnbind() throws TimeoutException {
+        Context context = InstrumentationRegistry.getTargetContext();
+        Intent intent = new Intent(context, DatafileService.class);
+        IBinder binder = null;
+        int it = 0;
+
+        while((binder = mServiceRule.bindService(intent)) == null && it < MAX_ITERATION){
+            it++;
+        }
+
+        DatafileService datafileService = ((DatafileService.LocalBinder) binder).getService();
+        Logger logger = mock(Logger.class);
+        datafileService.logger = logger;
+
+        datafileService.onUnbind(intent);
+        verify(logger).info("All clients are unbound from data file service");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    @Test
+    @Ignore
     public void testIntentExtraData(){
         Context context = mock(Context.class);
         when(context.getPackageName()).thenReturn("com.optly");

@@ -23,6 +23,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
 import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
 import android.support.test.runner.AndroidJUnit4;
@@ -55,6 +56,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import  com.optimizely.ab.android.sdk.test.R;
 
 /**
  * Tests for {@link OptimizelyManager}
@@ -107,6 +110,24 @@ public class OptimizelyManagerTest {
     }
 
     @Test
+    public void initializeInt() {
+
+        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+
+        assertEquals(OptimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+
+        assertNotNull(optimizelyManager.getOptimizely());
+        assertNotNull(optimizelyManager.getDatafileHandler());
+
+    }
+
+    @Test
+    public void intializeWithMyDataFileHandler() {
+
+    }
+    @Test
     public void initializeWithEmptyDatafile() {
         Context context = mock(Context.class);
         Context appContext = mock(Context.class);
@@ -134,6 +155,19 @@ public class OptimizelyManagerTest {
 
     @Test
     public void initializeWithNullDatafile() {
+        Context context = mock(Context.class);
+        Context appContext = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getPackageName()).thenReturn("com.optly");
+
+        String emptyString = null;
+
+        optimizelyManager.initialize(context, emptyString);
+        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
+    }
+
+    @Test
+    public void load() {
         Context context = mock(Context.class);
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);

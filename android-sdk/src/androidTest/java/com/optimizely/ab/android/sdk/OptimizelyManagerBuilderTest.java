@@ -26,12 +26,14 @@ import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningEx
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.OptimizelyRuntimeException;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.internal.payload.Event;
 import com.optimizely.ab.notification.NotificationListener;
 
@@ -72,16 +74,25 @@ public class OptimizelyManagerBuilderTest {
 
     @Test
     public void testBuilderWith() {
+        ErrorHandler errorHandler = new ErrorHandler() {
+            @Override
+            public <T extends OptimizelyRuntimeException> void handleError(T exception) throws T {
+                logger.error("Inside error handler", exception);
+            }
+        };
+
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId).withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getTargetContext()))
                 .withDatafileDownloadInterval(30L)
                 .withEventDispatchInterval(30L)
                 .withDatafileHandler(new DefaultDatafileHandler())
+                .withErrorHandler(errorHandler)
                 .withEventHandler(DefaultEventHandler.getInstance(InstrumentationRegistry.getTargetContext()))
                 .withLogger(logger).build(InstrumentationRegistry.getTargetContext());
 
         assertNotNull(manager);
         assertNotNull(manager.getDatafileHandler());
         assertNotNull(manager.getUserProfileService());
+        assertNotNull(manager.getErrorHandler(InstrumentationRegistry.getTargetContext()));
         assertNotNull(manager.getEventHandler(InstrumentationRegistry.getTargetContext()));
     }
 
