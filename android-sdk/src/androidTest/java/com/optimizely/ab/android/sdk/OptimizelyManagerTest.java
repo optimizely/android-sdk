@@ -124,10 +124,6 @@ public class OptimizelyManagerTest {
     }
 
     @Test
-    public void intializeWithMyDataFileHandler() {
-
-    }
-    @Test
     public void initializeWithEmptyDatafile() {
         Context context = mock(Context.class);
         Context appContext = mock(Context.class);
