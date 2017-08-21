@@ -161,7 +161,7 @@ final class JsonSimpleConfigParser implements ConfigParser {
             JSONObject featureFlagObject = (JSONObject)obj;
             String id = (String)featureFlagObject.get("id");
             String key = (String)featureFlagObject.get("key");
-            String layerId = (String)featureFlagObject.get("layerId");
+            String layerId = (String)featureFlagObject.get("rolloutId");
 
             JSONArray experimentIdsJsonArray = (JSONArray)featureFlagObject.get("experimentIds");
             List<String> experimentIds = parseExperimentIds(experimentIdsJsonArray);

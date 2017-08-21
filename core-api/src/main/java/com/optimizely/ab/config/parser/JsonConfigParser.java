@@ -157,7 +157,7 @@ final class JsonConfigParser implements ConfigParser {
             JSONObject featureFlagObject = (JSONObject) obj;
             String id = featureFlagObject.getString("id");
             String key = featureFlagObject.getString("key");
-            String layerId = featureFlagObject.getString("layerId");
+            String layerId = featureFlagObject.getString("rolloutId");
 
             List<String> experimentIds = parseExperimentIds(featureFlagObject.getJSONArray("experimentIds"));
 

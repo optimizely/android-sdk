@@ -31,7 +31,7 @@ public class FeatureFlag implements IdKeyMapped{
 
     private final String id;
     private final String key;
-    private final String layerId;
+    private final String rolloutId;
     private final List<String> experimentIds;
     private final List<LiveVariable> variables;
     private final Map<String, LiveVariable> variableKeyToLiveVariableMap;
@@ -39,12 +39,12 @@ public class FeatureFlag implements IdKeyMapped{
     @JsonCreator
     public FeatureFlag(@JsonProperty("id") String id,
                        @JsonProperty("key") String key,
-                       @JsonProperty("layerId") String layerId,
+                       @JsonProperty("rolloutId") String rolloutId,
                        @JsonProperty("experimentIds") List<String> experimentIds,
                        @JsonProperty("variables") List<LiveVariable> variables) {
         this.id = id;
         this.key = key;
-        this.layerId = layerId;
+        this.rolloutId = rolloutId;
         this.experimentIds = experimentIds;
         this.variables = variables;
         this.variableKeyToLiveVariableMap = ProjectConfigUtils.generateNameMapping(variables);
@@ -58,8 +58,8 @@ public class FeatureFlag implements IdKeyMapped{
         return key;
     }
 
-    public String getLayerId() {
-        return layerId;
+    public String getRolloutId() {
+        return rolloutId;
     }
 
     public List<String> getExperimentIds() {
@@ -79,7 +79,7 @@ public class FeatureFlag implements IdKeyMapped{
         return "FeatureFlag{" +
                 "id='" + id + '\'' +
                 ", key='" + key + '\'' +
-                ", layerId='" + layerId + '\'' +
+                ", rolloutId='" + rolloutId + '\'' +
                 ", experimentIds=" + experimentIds +
                 ", variables=" + variables +
                 ", variableKeyToLiveVariableMap=" + variableKeyToLiveVariableMap +
@@ -95,7 +95,7 @@ public class FeatureFlag implements IdKeyMapped{
 
         if (!id.equals(that.id)) return false;
         if (!key.equals(that.key)) return false;
-        if (!layerId.equals(that.layerId)) return false;
+        if (!rolloutId.equals(that.rolloutId)) return false;
         if (!experimentIds.equals(that.experimentIds)) return false;
         if (!variables.equals(that.variables)) return false;
         return variableKeyToLiveVariableMap.equals(that.variableKeyToLiveVariableMap);
@@ -105,7 +105,7 @@ public class FeatureFlag implements IdKeyMapped{
     public int hashCode() {
         int result = id.hashCode();
         result = 31 * result + key.hashCode();
-        result = 31 * result + layerId.hashCode();
+        result = 31 * result + rolloutId.hashCode();
         result = 31 * result + experimentIds.hashCode();
         result = 31 * result + variables.hashCode();
         result = 31 * result + variableKeyToLiveVariableMap.hashCode();

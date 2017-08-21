@@ -125,7 +125,7 @@ final class GsonHelpers {
     static FeatureFlag parseFeatureFlag(JsonObject featureFlagJson, JsonDeserializationContext context) {
         String id = featureFlagJson.get("id").getAsString();
         String key = featureFlagJson.get("key").getAsString();
-        String layerId = featureFlagJson.get("layerId").getAsString();
+        String layerId = featureFlagJson.get("rolloutId").getAsString();
 
         JsonArray experimentIdsJson = featureFlagJson.getAsJsonArray("experimentIds");
         List<String> experimentIds = new ArrayList<String>();

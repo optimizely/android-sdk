@@ -374,14 +374,14 @@
     {
       "id": "4195505407",
       "key": "boolean_feature",
-      "layerId": "",
+      "rolloutId": "",
       "experimentIds": [],
       "variables": []
     },
     {
       "id": "3926744821",
       "key": "double_single_variable_feature",
-      "layerId": "",
+      "rolloutId": "",
       "experimentIds": [],
       "variables": [
         {
@@ -395,7 +395,7 @@
     {
       "id": "3281420120",
       "key": "integer_single_variable_feature",
-      "layerId": "",
+      "rolloutId": "",
       "experimentIds": [],
       "variables": [
         {
@@ -409,7 +409,7 @@
     {
       "id": "2591051011",
       "key": "boolean_single_variable_feature",
-      "layerId": "",
+      "rolloutId": "",
       "experimentIds": [],
       "variables": [
         {
@@ -423,7 +423,7 @@
     {
       "id": "2079378557",
       "key": "string_single_variable_feature",
-      "layerId": "",
+      "rolloutId": "",
       "experimentIds": [],
       "variables": [
         {
@@ -437,7 +437,7 @@
     {
       "id": "3263342226",
       "key": "multi_variate_feature",
-      "layerId": "",
+      "rolloutId": "",
       "experimentIds": ["3262035800"],
       "variables": [
         {
@@ -457,7 +457,7 @@
     {
       "id": "3263342226",
       "key": "mutex_group_feature",
-      "layerId": "",
+      "rolloutId": "",
       "experimentIds": ["4138322202", "1786133852"],
       "variables": [
         {
