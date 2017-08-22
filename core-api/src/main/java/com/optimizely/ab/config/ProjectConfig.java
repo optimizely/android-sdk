@@ -66,6 +66,7 @@ public class ProjectConfig {
     private final List<FeatureFlag> featureFlags;
     private final List<Group> groups;
     private final List<LiveVariable> liveVariables;
+    private final List<Rollout> rollouts;
 
     // key to entity mappings
     private final Map<String, Attribute> attributeKeyMapping;
@@ -108,7 +109,8 @@ public class ProjectConfig {
                 experiments,
                 null,
                 groups,
-                liveVariables
+                liveVariables,
+                null
         );
     }
 
@@ -124,7 +126,8 @@ public class ProjectConfig {
                          List<Experiment> experiments,
                          List<FeatureFlag> featureFlags,
                          List<Group> groups,
-                         List<LiveVariable> liveVariables) {
+                         List<LiveVariable> liveVariables,
+                         List<Rollout> rollouts) {
 
         this.accountId = accountId;
         this.projectId = projectId;
@@ -140,6 +143,12 @@ public class ProjectConfig {
         }
         else {
             this.featureFlags = Collections.unmodifiableList(featureFlags);
+        }
+        if (rollouts == null) {
+            this.rollouts = Collections.emptyList();
+        }
+        else {
+            this.rollouts = Collections.unmodifiableList(rollouts);
         }
 
         this.groups = Collections.unmodifiableList(groups);
@@ -243,6 +252,10 @@ public class ProjectConfig {
         return featureFlags;
     }
 
+    public List<Rollout> getRollouts() {
+        return rollouts;
+    }
+
     public List<Attribute> getAttributes() {
         return attributes;
     }
@@ -312,22 +325,26 @@ public class ProjectConfig {
                 ", projectId='" + projectId + '\'' +
                 ", revision='" + revision + '\'' +
                 ", version='" + version + '\'' +
-                ", anonymizeIP='" + anonymizeIP + '\'' +
-                ", groups=" + groups +
-                ", experiments=" + experiments +
+                ", anonymizeIP=" + anonymizeIP +
                 ", attributes=" + attributes +
-                ", events=" + events +
                 ", audiences=" + audiences +
+                ", events=" + events +
+                ", experiments=" + experiments +
+                ", featureFlags=" + featureFlags +
+                ", groups=" + groups +
                 ", liveVariables=" + liveVariables +
-                ", experimentKeyMapping=" + experimentKeyMapping +
+                ", rollouts=" + rollouts +
                 ", attributeKeyMapping=" + attributeKeyMapping +
-                ", liveVariableKeyMapping=" + liveVariableKeyMapping +
                 ", eventNameMapping=" + eventNameMapping +
+                ", experimentKeyMapping=" + experimentKeyMapping +
+                ", featureKeyMapping=" + featureKeyMapping +
+                ", liveVariableKeyMapping=" + liveVariableKeyMapping +
                 ", audienceIdMapping=" + audienceIdMapping +
                 ", experimentIdMapping=" + experimentIdMapping +
                 ", groupIdMapping=" + groupIdMapping +
                 ", liveVariableIdToExperimentsMapping=" + liveVariableIdToExperimentsMapping +
                 ", variationToLiveVariableUsageInstanceMapping=" + variationToLiveVariableUsageInstanceMapping +
+                ", variationIdToExperimentMapping=" + variationIdToExperimentMapping +
                 '}';
     }
 }

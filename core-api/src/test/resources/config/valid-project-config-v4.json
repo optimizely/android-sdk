@@ -423,7 +423,7 @@
     {
       "id": "2079378557",
       "key": "string_single_variable_feature",
-      "rolloutId": "",
+      "rolloutId": "1058508303",
       "experimentIds": [],
       "variables": [
         {
@@ -465,6 +465,39 @@
           "key": "correlating_variation_name",
           "type": "string",
           "defaultValue": "null"
+        }
+      ]
+    }
+  ],
+  "rollouts": [
+    {
+      "id": "1058508303",
+      "experiments": [
+        {
+          "id": "1785077004",
+          "key": "1785077004",
+          "status": "Running",
+          "layerId": "1058508303",
+          "audienceIds": [],
+          "forcedVariations": {},
+          "variations": [
+            {
+              "id": "1566407342",
+              "key": "1566407342",
+              "variables": [
+                {
+                  "id": "2077511132",
+                  "value": "lumos"
+                }
+              ]
+            }
+          ],
+          "trafficAllocation": [
+            {
+              "entityId": "1566407342",
+              "endOfRange": 5000
+            }
+          ]
         }
       ]
     }

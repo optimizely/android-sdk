@@ -16,6 +16,10 @@
  */
 package com.optimizely.ab.config;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
@@ -25,19 +29,32 @@ import java.util.List;
  * @see <a href="http://developers.optimizely.com/server/reference/index.html#json">Project JSON</a>
  */
 @Immutable
-public class Rollout extends Layer implements IdMapped {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Rollout implements IdMapped {
 
-    public Rollout(String id,
-                   String policy,
-                   List<Experiment> experiments) {
-        super(id, policy, experiments);
+    private final String id;
+    private final List<Experiment> experiments;
+
+    @JsonCreator
+    public Rollout(@JsonProperty("id") String id,
+                   @JsonProperty("experiments") List<Experiment> experiments) {
+        this.id = id;
+        this.experiments = experiments;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    public List<Experiment> getExperiments() {
+        return experiments;
     }
 
     @Override
     public String toString() {
         return "Rollout{" +
                 "id='" + id + '\'' +
-                ", policy='" + policy + '\'' +
                 ", experiments=" + experiments +
                 '}';
     }

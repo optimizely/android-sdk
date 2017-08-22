@@ -29,6 +29,7 @@ import com.optimizely.ab.config.FeatureFlag;
 import com.optimizely.ab.config.Group;
 import com.optimizely.ab.config.LiveVariable;
 import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.Rollout;
 import com.optimizely.ab.config.audience.Audience;
 
 import java.lang.reflect.Type;
@@ -80,9 +81,12 @@ public class ProjectConfigGsonDeserializer implements JsonDeserializer<ProjectCo
         }
 
         List<FeatureFlag> featureFlags = null;
+        List<Rollout> rollouts = null;
         if (datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString())) {
             Type featureFlagsType = new TypeToken<List<FeatureFlag>>() {}.getType();
             featureFlags = context.deserialize(jsonObject.getAsJsonArray("featureFlags"), featureFlagsType);
+            Type rolloutsType = new TypeToken<List<Rollout>>() {}.getType();
+            rollouts = context.deserialize(jsonObject.get("rollouts").getAsJsonArray(), rolloutsType);
         }
 
         return new ProjectConfig(
@@ -97,7 +101,8 @@ public class ProjectConfigGsonDeserializer implements JsonDeserializer<ProjectCo
                 experiments,
                 featureFlags,
                 groups,
-                liveVariables
+                liveVariables,
+                rollouts
         );
     }
 }

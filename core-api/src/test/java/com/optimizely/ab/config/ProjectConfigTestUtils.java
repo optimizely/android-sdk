@@ -457,6 +457,7 @@ public final class ProjectConfigTestUtils {
         verifyFeatureFlags(actual.getFeatureFlags(), expected.getFeatureFlags());
         verifyLiveVariables(actual.getLiveVariables(), expected.getLiveVariables());
         verifyGroups(actual.getGroups(), expected.getGroups());
+        verifyRollouts(actual.getRollouts(), expected.getRollouts());
     }
 
     /**
@@ -613,6 +614,23 @@ public final class ProjectConfigTestUtils {
                 assertThat(actualLiveVariable.getDefaultValue(), is(expectedLiveVariable.getDefaultValue()));
                 assertThat(actualLiveVariable.getType(), is(expectedLiveVariable.getType()));
                 assertThat(actualLiveVariable.getStatus(), is(expectedLiveVariable.getStatus()));
+            }
+        }
+    }
+
+    private static void verifyRollouts(List<Rollout> actual, List<Rollout> expected) {
+        if (expected == null) {
+            assertNull(actual);
+        }
+        else {
+            assertEquals(expected.size(), actual.size());
+
+            for (int i = 0; i < actual.size(); i++) {
+                Rollout actualRollout = actual.get(i);
+                Rollout expectedRollout = expected.get(i);
+
+                assertEquals(expectedRollout.getId(), actualRollout.getId());
+                verifyExperiments(actualRollout.getExperiments(), expectedRollout.getExperiments());
             }
         }
     }

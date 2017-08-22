@@ -27,6 +27,7 @@ import com.optimizely.ab.config.LiveVariable.VariableStatus;
 import com.optimizely.ab.config.LiveVariable.VariableType;
 import com.optimizely.ab.config.LiveVariableUsageInstance;
 import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.Rollout;
 import com.optimizely.ab.config.TrafficAllocation;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.audience.AndCondition;
@@ -81,8 +82,10 @@ final class JsonSimpleConfigParser implements ConfigParser {
             }
 
             List<FeatureFlag> featureFlags = null;
+            List<Rollout> rollouts = null;
             if (datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString())) {
                 featureFlags = parseFeatureFlags((JSONArray) rootObject.get("featureFlags"));
+                rollouts = parseRollouts((JSONArray) rootObject.get("rollouts"));
             }
 
             return new ProjectConfig(
@@ -97,7 +100,8 @@ final class JsonSimpleConfigParser implements ConfigParser {
                     experiments,
                     featureFlags,
                     groups,
-                    liveVariables
+                    liveVariables,
+                    rollouts
             );
         } catch (Exception e) {
             throw new ConfigParseException("Unable to parse datafile: " + json, e);
@@ -347,6 +351,20 @@ final class JsonSimpleConfigParser implements ConfigParser {
         }
 
         return liveVariableUsageInstances;
+    }
+
+    private List<Rollout> parseRollouts(JSONArray rolloutsJson) {
+        List<Rollout> rollouts = new ArrayList<Rollout>(rolloutsJson.size());
+
+        for (Object obj : rolloutsJson) {
+            JSONObject rolloutObject = (JSONObject) obj;
+            String id = (String) rolloutObject.get("id");
+            List<Experiment> experiments = parseExperiments((JSONArray) rolloutObject.get("experiments"));
+
+            rollouts.add(new Rollout(id, experiments));
+        }
+
+        return rollouts;
     }
 }
 
