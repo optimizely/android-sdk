@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Top-level container class for Optimizely functionality.
@@ -613,6 +614,42 @@ public class Optimizely {
         Map<String, String> filteredAttributes = filterAttributes(projectConfig, attributes);
 
         return decisionService.getVariation(experiment,userId,filteredAttributes);
+    }
+
+    /**
+     * Force a user into a variation for a given experiment.
+     * The forced variation value does not persist across application launches.
+     * If the experiment key is not in the project file, this call fails and returns false.
+     * If the variationKey is not in the experiment, this call fails.
+     * @param experimentKey The key for the experiment.
+     * @param userId The user ID to be used for bucketing.
+     * @param variationKey The variation key to force the user into.  If the variation key is null
+     *                     then the forcedVariation for that experiment is removed.
+     *
+     * @return boolean A boolean value that indicates if the set completed successfully.
+     */
+    public boolean setForcedVariation(@Nonnull String experimentKey,
+                                      @Nonnull String userId,
+                                      @Nullable String variationKey) {
+
+
+        return projectConfig.setForcedVariation(experimentKey, userId, variationKey);
+    }
+
+    /**
+     * Gets the forced variation for a given user and experiment.
+     * This method just calls into the {@link com.optimizely.ab.config.ProjectConfig#getForcedVariation(String, String)}
+     * method of the same signature.
+     *
+     * @param experimentKey The key for the experiment.
+     * @param userId The user ID to be used for bucketing.
+     *
+     * @return The variation the user was bucketed into. This value can be null if the
+     * forced variation fails.
+     */
+    public @Nullable Variation getForcedVariation(@Nonnull String experimentKey,
+                                        @Nonnull String userId) {
+        return projectConfig.getForcedVariation(experimentKey, userId);
     }
 
     /**

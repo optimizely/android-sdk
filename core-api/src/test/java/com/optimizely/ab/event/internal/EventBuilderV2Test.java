@@ -70,7 +70,6 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -172,8 +171,8 @@ public class EventBuilderV2Test {
 
         // verify that no Feature is created for "unknownAtrribute" -> "blahValue"
         for (Feature feature : impression.getUserFeatures()) {
-            assertNotEquals(feature.getName(), "unknownAttribute");
-            assertNotEquals(feature.getValue(), "blahValue");
+            assertFalse(feature.getName() == "unknownAttribute");
+            assertFalse(feature.getValue() == "blahValue");
         }
     }
 

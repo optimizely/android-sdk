@@ -39,14 +39,16 @@ import java.util.List;
 import java.util.Map;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigV3;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV4;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyMap;
 import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -58,6 +60,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 public class DecisionServiceTest {
 
@@ -90,11 +93,11 @@ public class DecisionServiceTest {
     //========= getVariation tests =========/
 
     /**
-     * Verify that {@link DecisionService#getVariation(Experiment, String, Map)} gives precedence to forced variation bucketing
-     * over audience evaluation.
+     * Verify that {@link DecisionService#getVariation(Experiment, String, Map)}
+     * gives precedence to forced variation bucketing over audience evaluation.
      */
     @Test
-    public void getVariationForcedVariationPrecedesAudienceEval() throws Exception {
+    public void getVariationWhitelistedPrecedesAudienceEval() throws Exception {
         Bucketer bucketer = spy(new Bucketer(validProjectConfig));
         DecisionService decisionService = spy(new DecisionService(bucketer, mockErrorHandler, validProjectConfig, null));
         Experiment experiment = validProjectConfig.getExperiments().get(0);
@@ -112,6 +115,100 @@ public class DecisionServiceTest {
         verify(decisionService, never()).getStoredVariation(eq(experiment), any(UserProfile.class));
     }
 
+    /**
+     * Verify that {@link DecisionService#getVariation(Experiment, String, Map)}
+     * gives precedence to forced variation bucketing over whitelisting.
+     */
+    @Test
+    public void getForcedVariationBeforeWhitelisting() throws Exception {
+        Bucketer bucketer = new Bucketer(validProjectConfig);
+        DecisionService decisionService = spy(new DecisionService(bucketer, mockErrorHandler, validProjectConfig, null));
+        Experiment experiment = validProjectConfig.getExperiments().get(0);
+        Variation whitelistVariation = experiment.getVariations().get(0);
+        Variation expectedVariation = experiment.getVariations().get(1);
+
+        // user excluded without audiences and whitelisting
+        assertNull(decisionService.getVariation(experiment, genericUserId, Collections.<String, String>emptyMap()));
+
+        logbackVerifier.expectMessage(Level.INFO, "User \"" + genericUserId + "\" does not meet conditions to be in experiment \"etag1\".");
+
+        // set the runtimeForcedVariation
+        validProjectConfig.setForcedVariation(experiment.getKey(), whitelistedUserId, expectedVariation.getKey());
+        // no attributes provided for a experiment that has an audience
+        assertThat(decisionService.getVariation(experiment, whitelistedUserId, Collections.<String, String>emptyMap()), is(expectedVariation));
+
+        //verify(decisionService).getForcedVariation(experiment.getKey(), whitelistedUserId);
+        verify(decisionService, never()).getStoredVariation(eq(experiment), any(UserProfile.class));
+        assertEquals(decisionService.getWhitelistedVariation(experiment, whitelistedUserId), whitelistVariation);
+        assertTrue(validProjectConfig.setForcedVariation(experiment.getKey(), whitelistedUserId,null));
+        assertNull(validProjectConfig.getForcedVariation(experiment.getKey(), whitelistedUserId));
+        assertThat(decisionService.getVariation(experiment, whitelistedUserId, Collections.<String, String>emptyMap()), is(whitelistVariation));
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariation(Experiment, String, Map)}
+     * gives precedence to forced variation bucketing over audience evaluation.
+     */
+    @Test
+    public void getVariationForcedPrecedesAudienceEval() throws Exception {
+        Bucketer bucketer = spy(new Bucketer(validProjectConfig));
+        DecisionService decisionService = spy(new DecisionService(bucketer, mockErrorHandler, validProjectConfig, null));
+        Experiment experiment = validProjectConfig.getExperiments().get(0);
+        Variation expectedVariation = experiment.getVariations().get(1);
+
+        // user excluded without audiences and whitelisting
+        assertNull(decisionService.getVariation(experiment, genericUserId, Collections.<String, String>emptyMap()));
+
+        logbackVerifier.expectMessage(Level.INFO, "User \"" + genericUserId + "\" does not meet conditions to be in experiment \"etag1\".");
+
+        // set the runtimeForcedVariation
+        validProjectConfig.setForcedVariation(experiment.getKey(), genericUserId, expectedVariation.getKey());
+        // no attributes provided for a experiment that has an audience
+        assertThat(decisionService.getVariation(experiment, genericUserId, Collections.<String, String>emptyMap()), is(expectedVariation));
+
+        verify(decisionService, never()).getStoredVariation(eq(experiment), any(UserProfile.class));
+        assertEquals(validProjectConfig.setForcedVariation(experiment.getKey(), genericUserId,null), true);
+        assertNull(validProjectConfig.getForcedVariation(experiment.getKey(), genericUserId));
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariation(Experiment, String, Map)}
+     * gives precedence to forced variation bucketing over user profile.
+     */
+    @Test
+    public void getVariationForcedBeforeUserProfile() throws Exception {
+        Experiment experiment = validProjectConfig.getExperiments().get(0);
+        Variation variation = experiment.getVariations().get(0);
+        Bucketer bucketer = spy(new Bucketer(validProjectConfig));
+        Decision decision = new Decision(variation.getId());
+        UserProfile userProfile = new UserProfile(userProfileId,
+                Collections.singletonMap(experiment.getId(), decision));
+        UserProfileService userProfileService = mock(UserProfileService.class);
+        when(userProfileService.lookup(userProfileId)).thenReturn(userProfile.toMap());
+
+        DecisionService decisionService = spy(new DecisionService(bucketer,
+                mockErrorHandler, validProjectConfig, userProfileService));
+
+        // ensure that normal users still get excluded from the experiment when they fail audience evaluation
+        assertNull(decisionService.getVariation(experiment, genericUserId, Collections.<String, String>emptyMap()));
+
+        logbackVerifier.expectMessage(Level.INFO,
+                "User \"" + genericUserId + "\" does not meet conditions to be in experiment \""
+                        + experiment.getKey() + "\".");
+
+        // ensure that a user with a saved user profile, sees the same variation regardless of audience evaluation
+        assertEquals(variation,
+                decisionService.getVariation(experiment, userProfileId, Collections.<String, String>emptyMap()));
+
+        Variation forcedVariation = experiment.getVariations().get(1);
+        validProjectConfig.setForcedVariation(experiment.getKey(), userProfileId, forcedVariation.getKey());
+        assertEquals(forcedVariation,
+                decisionService.getVariation(experiment, userProfileId, Collections.<String, String>emptyMap()));
+        assertTrue(validProjectConfig.setForcedVariation(experiment.getKey(), userProfileId, null));
+        assertNull(validProjectConfig.getForcedVariation(experiment.getKey(), userProfileId));
+
+
+    }
 
     /**
      * Verify that {@link DecisionService#getVariation(Experiment, String, Map)}
@@ -141,6 +238,45 @@ public class DecisionServiceTest {
         // ensure that a user with a saved user profile, sees the same variation regardless of audience evaluation
         assertEquals(variation,
                 decisionService.getVariation(experiment, userProfileId, Collections.<String, String>emptyMap()));
+
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariation(Experiment, String, Map)}
+     * gives a null variation on a Experiment that is not running. Set the forced variation.
+     * And, test to make sure that after setting forced variation, the getVariation still returns
+     * null.
+     */
+    @Test
+    public void getVariationOnNonRunningExperimentWithForcedVariation() {
+        Experiment experiment = validProjectConfig.getExperiments().get(1);
+        assertFalse(experiment.isRunning());
+        Variation variation = experiment.getVariations().get(0);
+        Bucketer bucketer = new Bucketer(validProjectConfig);
+
+        DecisionService decisionService = spy(new DecisionService(bucketer,
+                mockErrorHandler, validProjectConfig, null));
+
+        // ensure that the not running variation returns null with no forced variation set.
+        assertNull(decisionService.getVariation(experiment, "userId", Collections.<String, String>emptyMap()));
+
+        // we call getVariation 3 times on an experiment that is not running.
+        logbackVerifier.expectMessage(Level.INFO,
+                "Experiment \"etag2\" is not running.", times(3));
+
+        // set a forced variation on the user that got back null
+        assertTrue(validProjectConfig.setForcedVariation(experiment.getKey(), "userId", variation.getKey()));
+
+        // ensure that a user with a forced variation set
+        // still gets back a null variation if the variation is not running.
+        assertNull(decisionService.getVariation(experiment, "userId", Collections.<String, String>emptyMap()));
+
+        // set the forced variation back to null
+        assertTrue(validProjectConfig.setForcedVariation(experiment.getKey(), "userId", null));
+        // test one more time that the getVariation returns null for the experiment that is not running.
+        assertNull(decisionService.getVariation(experiment, "userId", Collections.<String, String>emptyMap()));
+
+
     }
 
     //========== get Variation for Feature tests ==========//
@@ -252,7 +388,7 @@ public class DecisionServiceTest {
      * Test {@link DecisionService#getWhitelistedVariation(Experiment, String)} correctly returns a whitelisted variation.
      */
     @Test
-    public void getForcedVariationReturnsForcedVariation() {
+    public void getWhitelistedReturnsForcedVariation() {
         Bucketer bucketer = new Bucketer(validProjectConfig);
         DecisionService decisionService = new DecisionService(bucketer, mockErrorHandler, validProjectConfig, null);
 
@@ -266,7 +402,7 @@ public class DecisionServiceTest {
      * when an invalid variation key is found in the forced variations mapping.
      */
     @Test
-    public void getForcedVariationWithInvalidVariation() throws Exception {
+    public void getWhitelistedWithInvalidVariation() throws Exception {
         String userId = "testUser1";
         String invalidVariationKey = "invalidVarKey";
 
@@ -297,7 +433,7 @@ public class DecisionServiceTest {
      * Verify that {@link DecisionService#getWhitelistedVariation(Experiment, String)} returns null when user is not whitelisted.
      */
     @Test
-    public void getForcedVariationReturnsNullWhenUserIsNotWhitelisted() throws Exception {
+    public void getWhitelistedReturnsNullWhenUserIsNotWhitelisted() throws Exception {
         Bucketer bucketer = new Bucketer(validProjectConfig);
         DecisionService decisionService = new DecisionService(bucketer, mockErrorHandler, validProjectConfig, null);
 

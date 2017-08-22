@@ -33,6 +33,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+
 
 import org.junit.Before;
 import org.junit.Test;
@@ -194,5 +197,152 @@ public class ProjectConfigTest {
     public void verifyAnonymizeIPIsFalseByDefault() throws Exception {
         ProjectConfig v2ProjectConfig = ProjectConfigTestUtils.validProjectConfigV2();
         assertFalse(v2ProjectConfig.getAnonymizeIP());
+    }
+
+    /**
+     * Invalid User IDs
+
+     User ID is null
+     User ID is an empty string
+     Invalid Experiment IDs
+
+     Experiment key does not exist in the datafile
+     Experiment key is null
+     Experiment key is an empty string
+     Invalid Variation IDs [set only]
+
+     Variation key does not exist in the datafile
+     Variation key is null
+     Variation key is an empty string
+     Multiple set calls [set only]
+
+     Call set variation with different variations on one user/experiment to confirm that each set is expected.
+     Set variation on multiple variations for one user.
+     Set variations for multiple users.
+     */
+    /* UserID test */
+    @Test
+    @SuppressFBWarnings("NP")
+    public void setForcedVariationNullUserId() {
+        boolean b = projectConfig.setForcedVariation("etag1", null, "vtag1");
+        assertFalse(b);
+    }
+    @Test
+    @SuppressFBWarnings("NP")
+    public void getForcedVariationNullUserId() {
+        assertNull(projectConfig.getForcedVariation("etag1", null));
+    }
+
+    @Test
+    public void setForcedVariationEmptyUserId() {
+        assertFalse(projectConfig.setForcedVariation("etag1", "", "vtag1"));
+    }
+    @Test
+    public void getForcedVariationEmptyUserId() {
+        assertNull(projectConfig.getForcedVariation("etag1", ""));
+    }
+
+    /* Invalid Experiement */
+    @Test
+    @SuppressFBWarnings("NP")
+    public void setForcedVariationNullExperimentKey() {
+        assertFalse(projectConfig.setForcedVariation(null, "testUser1", "vtag1"));
+    }
+    @Test
+    @SuppressFBWarnings("NP")
+    public void getForcedVariationNullExperimentKey() {
+        assertNull(projectConfig.getForcedVariation(null, "testUser1"));
+    }
+
+    @Test
+    public void setForcedVariationWrongExperimentKey() {
+        assertFalse(projectConfig.setForcedVariation("wrongKey", "testUser1", "vtag1"));
+
+    }
+    @Test
+    public void getForcedVariationWrongExperimentKey() {
+        assertNull(projectConfig.getForcedVariation("wrongKey", "testUser1"));
+    }
+
+    @Test
+    public void setForcedVariationEmptyExperimentKey() {
+        assertFalse(projectConfig.setForcedVariation("", "testUser1", "vtag1"));
+
+    }
+    @Test
+    public void getForcedVariationEmptyExperimentKey() {
+        assertNull(projectConfig.getForcedVariation("", "testUser1"));
+    }
+
+    /* Invalid Variation Id (set only */
+    @Test
+    public void setForcedVariationWrongVariationKey() {
+        assertFalse(projectConfig.setForcedVariation("etag1", "testUser1", "vtag3"));
+    }
+
+    @Test
+    public void setForcedVariationNullVariationKey() {
+        assertFalse(projectConfig.setForcedVariation("etag1", "testUser1", null));
+        assertNull(projectConfig.getForcedVariation("etag1", "testUser1"));
+    }
+
+    @Test
+    public void setForcedVariationEmptyVariationKey() {
+        assertFalse(projectConfig.setForcedVariation("etag1", "testUser1", ""));
+    }
+
+    /* Multiple set calls (set only */
+    @Test
+    public void setForcedVariationDifferentVariations() {
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser1", "vtag1"));
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser1", "vtag2"));
+        assertEquals(projectConfig.getForcedVariation("etag1", "testUser1").getKey(), "vtag2");
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser1", null));
+    }
+
+    @Test
+    public void setForcedVariationMultipleVariationsExperiments() {
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser1", "vtag1"));
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser2", "vtag2"));
+        assertTrue(projectConfig.setForcedVariation("etag2", "testUser1", "vtag3"));
+        assertTrue(projectConfig.setForcedVariation("etag2", "testUser2", "vtag4"));
+        assertEquals(projectConfig.getForcedVariation("etag1", "testUser1").getKey(), "vtag1");
+        assertEquals(projectConfig.getForcedVariation("etag1", "testUser2").getKey(), "vtag2");
+        assertEquals(projectConfig.getForcedVariation("etag2", "testUser1").getKey(), "vtag3");
+        assertEquals(projectConfig.getForcedVariation("etag2", "testUser2").getKey(), "vtag4");
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser1", null));
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser2", null));
+        assertTrue(projectConfig.setForcedVariation("etag2", "testUser1", null));
+        assertTrue(projectConfig.setForcedVariation("etag2", "testUser2", null));
+        assertNull(projectConfig.getForcedVariation("etag1", "testUser1"));
+        assertNull(projectConfig.getForcedVariation("etag1", "testUser2"));
+        assertNull(projectConfig.getForcedVariation("etag2", "testUser1"));
+        assertNull(projectConfig.getForcedVariation("etag2", "testUser2"));
+
+
+    }
+
+    @Test
+    public void setForcedVariationMultipleUsers() {
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser1", "vtag1"));
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser2", "vtag1"));
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser3", "vtag1"));
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser4", "vtag1"));
+
+        assertEquals(projectConfig.getForcedVariation("etag1", "testUser1").getKey(), "vtag1");
+        assertEquals(projectConfig.getForcedVariation("etag1", "testUser2").getKey(), "vtag1");
+        assertEquals(projectConfig.getForcedVariation("etag1", "testUser3").getKey(), "vtag1");
+        assertEquals(projectConfig.getForcedVariation("etag1", "testUser4").getKey(), "vtag1");
+
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser1", null));
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser2", null));
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser3", null));
+        assertTrue(projectConfig.setForcedVariation("etag1", "testUser4", null));
+
+        assertNull(projectConfig.getForcedVariation("etag1", "testUser1"));
+        assertNull(projectConfig.getForcedVariation("etag1", "testUser2"));
+        assertNull(projectConfig.getForcedVariation("etag2", "testUser1"));
+        assertNull(projectConfig.getForcedVariation("etag2", "testUser2"));
+
     }
 }

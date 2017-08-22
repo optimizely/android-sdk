@@ -82,8 +82,14 @@ public class DecisionService {
             return null;
         }
 
+        // look for forced bucketing first.
+        Variation variation = projectConfig.getForcedVariation(experiment.getKey(), userId);
+
         // check for whitelisting
-        Variation variation = getWhitelistedVariation(experiment, userId);
+        if (variation == null) {
+            variation = getWhitelistedVariation(experiment, userId);
+        }
+
         if (variation != null) {
             return variation;
         }
