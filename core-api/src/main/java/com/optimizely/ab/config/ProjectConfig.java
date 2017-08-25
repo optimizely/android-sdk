@@ -391,7 +391,7 @@ public class ProjectConfig {
             if (removedVariationId != null) {
                 Variation removedVariation = experiment.getVariationIdToVariationMap().get(removedVariationId);
                 if (removedVariation != null) {
-                    logger.debug("Variation mapped to experiment \"%s\" has been removed for user \"%s\"", experiment.getKey(), userId);
+                    logger.debug("Variation mapped to experiment \"{}\" has been removed for user \"{}\"", experiment.getKey(), userId);
                 }
                 else {
                     logger.debug("Removed forced variation that did not exist in experiment");
@@ -404,7 +404,7 @@ public class ProjectConfig {
         }
         else {
             String previous = experimentToVariation.put(experiment.getId(), variation.getId());
-            logger.debug("Set variation \"%s\" for experiment \"%s\" and user \"%s\" in the forced variation map.",
+            logger.debug("Set variation \"{}\" for experiment \"{}\" and user \"{}\" in the forced variation map.",
                     variation.getKey(), experiment.getKey(), userId);
             if (previous != null) {
                 Variation previousVariation = experiment.getVariationIdToVariationMap().get(previous);
@@ -445,20 +445,20 @@ public class ProjectConfig {
         if (experimentToVariation != null) {
             Experiment experiment = getExperimentKeyMapping().get(experimentKey);
             if (experiment == null)  {
-                logger.debug("No experiment \"%s\" mapped to user \"%s\" in the forced variation map ", experimentKey, userId);
+                logger.debug("No experiment \"{}\" mapped to user \"{}\" in the forced variation map ", experimentKey, userId);
                 return null;
             }
             String variationId = experimentToVariation.get(experiment.getId());
             if (variationId != null) {
                 Variation variation =  experiment.getVariationIdToVariationMap().get(variationId);
                 if (variation != null) {
-                    logger.debug("Variation \"%s\" is mapped to experiment \"%s\" and user \"%s\" in the forced variation map",
+                    logger.debug("Variation \"{}\" is mapped to experiment \"{}\" and user \"{}\" in the forced variation map",
                             variation.getKey(), experimentKey, userId);
                     return variation;
                 }
             }
             else {
-                logger.debug("No variation for experiment \"%s\" mapped to user \"%s\" in the forced variation map ", experimentKey, userId);
+                logger.debug("No variation for experiment \"{}\" mapped to user \"{}\" in the forced variation map ", experimentKey, userId);
             }
         }
         return null;
