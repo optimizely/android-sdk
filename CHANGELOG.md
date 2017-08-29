@@ -1,4 +1,19 @@
 # Optimizely Java X SDK Changelog
+## 1.8.0
+
+August 29, 2017
+
+This release adds support for numeric metrics and forced bucketing (in code as opposed to whitelisting via project file).
+
+### New Features
+
+- Added `setForcedVariation` and `getForcedVariation`
+- Added any numeric metric to event metrics.
+
+### Breaking Changes
+
+- Nothing breaking from 1.7.0
+
 ## 1.7.0
 
 July 12, 2017
