@@ -432,6 +432,52 @@ public class OptimizelyClient {
         }
     }
 
+    /**
+     * Force a user into a variation for a given experiment.
+     * The forced variation value does not persist across application launches.
+     * If the experiment key is not in the project file, this call fails and returns false.
+     * If the variationKey is not in the experiment, this call fails.
+     * @param experimentKey The key for the experiment.
+     * @param userId The user ID to be used for bucketing.
+     * @param variationKey The variation key to force the user into.  If the variation key is null
+     *                     then the forcedVariation for that experiment is removed.
+     *
+     * @return boolean A boolean value that indicates if the set completed successfully.
+     */
+    public boolean setForcedVariation(@NonNull String experimentKey,
+                                      @NonNull String userId,
+                                      @Nullable String variationKey) {
+
+        if (isValid()) {
+            return optimizely.setForcedVariation(experimentKey, userId, variationKey);
+        } else {
+            logger.warn("Optimizely is not initialized, could not set forced variation");
+        }
+
+        return false;
+    }
+
+    /**
+     * Gets the forced variation for a given user and experiment.
+     * The forced variation value does not persist across application launches.
+     * It is runtime only.
+     * @param experimentKey The key for the experiment.
+     * @param userId The user ID to be used for bucketing.
+     *
+     * @return The variation the user was bucketed into. This value can be null if the
+     * forced variation fails.
+     */
+    public @Nullable Variation getForcedVariation(@NonNull String experimentKey,
+                                                  @NonNull String userId) {
+        if (isValid()) {
+            return optimizely.getForcedVariation(experimentKey, userId);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get forced variation");
+        }
+
+        return null;
+    }
+
     //======== Notification listeners ========//
 
     /**

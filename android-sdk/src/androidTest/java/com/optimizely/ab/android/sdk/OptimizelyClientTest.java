@@ -78,6 +78,44 @@ public class OptimizelyClientTest {
 
     }
 
+    public void testGoodActivation1Forced() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
+
+        assertTrue(didSetForced);
+        Variation v = optimizelyClient.activate("android_experiment_key", "1");
+        assertNotNull(v);
+        assertEquals(v.getKey(), "var_2");
+        v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
+        assertEquals(v.getKey(), "var_2");
+
+        didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", null);
+
+        assertTrue(didSetForced);
+
+        assertNull(optimizelyClient.getForcedVariation("android_experiment_key", "1"));
+    }
+
+    @Test
+    public void testGoodActivation2Forced() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        final HashMap<String, String> attributes = new HashMap<>();
+        boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
+
+        assertTrue(didSetForced);
+        Variation v = optimizelyClient.activate("android_experiment_key", "1", attributes);
+        assertNotNull(v);
+        assertEquals(v.getKey(), "var_2");
+        v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
+        assertEquals(v.getKey(), "var_2");
+
+        didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", null);
+
+        assertTrue(didSetForced);
+
+        assertNull(optimizelyClient.getForcedVariation("android_experiment_key", "1"));
+    }
+
     @Test
     public void testGoodActivation2() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
@@ -87,6 +125,28 @@ public class OptimizelyClientTest {
     }
 
     @Test
+    public void testBadActivation2Forced() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
+
+        assertFalse(didSetForced);
+        Variation v = optimizelyClient.activate("1", "1", new HashMap<String, String>());
+        verify(logger).warn("Optimizely is not initialized, could not activate experiment {} " +
+                "for user {} with attributes", "1", "1");
+        assertNull(v);
+        v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
+        assertNull(v);
+
+        didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", null);
+
+        assertFalse(didSetForced);
+
+        assertNull(optimizelyClient.getForcedVariation("android_experiment_key", "1"));
+
+    }
+
+
+    @Test
     public void testBadActivation2() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
         optimizelyClient.activate("1", "1", new HashMap<String, String>());
@@ -94,6 +154,26 @@ public class OptimizelyClientTest {
                 "for user {} with attributes", "1", "1");
     }
 
+    @Test
+    public void testGoodTrack1Forced() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
+
+        assertTrue(didSetForced);
+        Variation v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
+        assertEquals(v.getKey(), "var_2");
+
+        optimizelyClient.track("test_event", "1");
+
+        verifyZeroInteractions(logger);
+
+        didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", null);
+
+        assertTrue(didSetForced);
+
+        assertNull(optimizelyClient.getForcedVariation("android_experiment_key", "1"));
+
+    }
 
     @Test
     public void testGoodTrack1() {
@@ -177,11 +257,63 @@ public class OptimizelyClientTest {
     }
 
     @Test
+    public void testGoodGetVariation1Forced() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
+
+        assertTrue(didSetForced);
+        Variation v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
+
+        assertEquals(v.getKey(), "var_2");
+
+        v = optimizelyClient.getVariation("android_experiment_key", "1");
+
+        assertEquals(v.getKey(), "var_2");
+
+        didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", null);
+
+        assertTrue(didSetForced);
+
+        assertNull(optimizelyClient.getForcedVariation("android_experiment_key", "1"));
+
+    }
+
+    @Test
     public void testBadGetVariation1() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.getVariation("android_experiment_key", "1");
+
+        Variation v = optimizelyClient.getVariation("android_experiment_key", "1");
+
+        assertNull(v);
+
         verify(logger).warn("Optimizely is not initialized, could not get variation for experiment {} " +
                 "for user {}", "android_experiment_key", "1");
+
+    }
+
+    @Test
+    public void testBadGetVariation1Forced() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
+
+        assertFalse(didSetForced);
+        Variation v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
+
+        assertNull(v);
+
+        v = optimizelyClient.getVariation("android_experiment_key", "1");
+
+        assertNull(v);
+
+        verify(logger).warn("Optimizely is not initialized, could not get variation for experiment {} " +
+                "for user {}", "android_experiment_key", "1");
+
+        didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", null);
+
+        assertFalse(didSetForced);
+
+        assertNull(optimizelyClient.getForcedVariation("android_experiment_key", "1"));
+
     }
 
     @Test
