@@ -87,7 +87,7 @@ public class OptimizelyClientTest {
         boolean done = true;
 
         try {
-            Field decisionField = optimizely.getClass().getDeclaredField("decisionService");
+              Field decisionField = optimizely.getClass().getDeclaredField("decisionService");
             decisionField.setAccessible(true);
             DecisionService decisionService = (DecisionService)decisionField.get(optimizely);
             setProjectConfig(optimizely, config);
@@ -235,6 +235,27 @@ public class OptimizelyClientTest {
     }
 
     @Test
+    public void testBadTrack1Forced() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
+
+        assertFalse(didSetForced);
+        optimizelyClient.track("test_event", "1");
+        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {}",
+                "test_event",
+                "1");
+
+        Variation v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
+        assertNull(v);
+
+        didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", null);
+
+        assertFalse(didSetForced);
+
+        assertNull(optimizelyClient.getForcedVariation("android_experiment_key", "1"));
+    }
+
+    @Test
     public void testGoodTrack2Forced() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         final HashMap<String, String> attributes = new HashMap<>();
@@ -299,6 +320,29 @@ public class OptimizelyClientTest {
     }
 
     @Test
+    public void testBadTrack2Forced() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        final HashMap<String, String> attributes = new HashMap<>();
+
+        boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
+
+        assertFalse(didSetForced);
+        optimizelyClient.track("event1", "1", attributes);
+        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
+                "with attributes", "event1", "1");
+
+        Variation v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
+        assertNull(v);
+
+        didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", null);
+
+        assertFalse(didSetForced);
+
+        assertNull(optimizelyClient.getForcedVariation("android_experiment_key", "1"));
+
+    }
+
+    @Test
     public void testGoodTrack3Forced() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
 
@@ -337,6 +381,27 @@ public class OptimizelyClientTest {
         optimizelyClient.track("event1", "1", 1L);
         verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
                 "with value {}", "event1", "1", 1L);
+    }
+
+    @Test
+    public void testBadTrack3Forced() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+
+        boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
+
+        assertFalse(didSetForced);
+        optimizelyClient.track("event1", "1", 1L);
+        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
+                "with value {}", "event1", "1", 1L);
+
+        Variation v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
+        assertNull(v);
+
+        didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", null);
+
+        assertFalse(didSetForced);
+
+        assertNull(optimizelyClient.getForcedVariation("android_experiment_key", "1"));
     }
 
     @Test
@@ -381,6 +446,29 @@ public class OptimizelyClientTest {
         optimizelyClient.track("event1", "1", attributes, 1L);
         verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
                 "with value {} and attributes", "event1", "1", 1L);
+    }
+
+    @Test
+    public void testBadTrack4Forced() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        final HashMap<String, String> attributes = new HashMap<>();
+
+        boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
+
+        assertFalse(didSetForced);
+
+        optimizelyClient.track("event1", "1", attributes, 1L);
+        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
+                "with value {} and attributes", "event1", "1", 1L);
+
+        Variation v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
+        assertNull(v);
+
+        didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", null);
+
+        assertFalse(didSetForced);
+
+        assertNull(optimizelyClient.getForcedVariation("android_experiment_key", "1"));
     }
 
     @Test
