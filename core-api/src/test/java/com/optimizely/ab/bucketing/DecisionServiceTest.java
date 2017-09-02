@@ -20,6 +20,8 @@ import ch.qos.logback.classic.Level;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.FeatureFlag;
 import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.ProjectConfigTestUtils;
+import com.optimizely.ab.config.Rollout;
 import com.optimizely.ab.config.TrafficAllocation;
 import com.optimizely.ab.config.ValidProjectConfigV4;
 import com.optimizely.ab.config.Variation;
@@ -39,19 +41,27 @@ import java.util.List;
 import java.util.Map;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigV3;
-import static com.optimizely.ab.config.ProjectConfigTestUtils.validConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV4;
+import static com.optimizely.ab.config.ValidProjectConfigV4.ATTRIBUTE_HOUSE_KEY;
+import static com.optimizely.ab.config.ValidProjectConfigV4.ATTRIBUTE_NATIONALITY_KEY;
+import static com.optimizely.ab.config.ValidProjectConfigV4.AUDIENCE_ENGLISH_CITIZENS_VALUE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.AUDIENCE_GRYFFINDOR_VALUE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_FLAG_MULTI_VARIATE_FEATURE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_MULTI_VARIATE_FEATURE_KEY;
+import static com.optimizely.ab.config.ValidProjectConfigV4.ROLLOUT_2;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -60,7 +70,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
 
 public class DecisionServiceTest {
 
@@ -75,6 +84,7 @@ public class DecisionServiceTest {
     @Mock private ErrorHandler mockErrorHandler;
 
     private static ProjectConfig noAudienceProjectConfig;
+    private static ProjectConfig v4ProjectConfig;
     private static ProjectConfig validProjectConfig;
     private static Experiment whitelistedExperiment;
     private static Variation whitelistedVariation;
@@ -82,6 +92,7 @@ public class DecisionServiceTest {
     @BeforeClass
     public static void setUp() throws Exception {
         validProjectConfig = validProjectConfigV3();
+        v4ProjectConfig = validProjectConfigV4();
         noAudienceProjectConfig = noAudienceProjectConfigV3();
         whitelistedExperiment = validProjectConfig.getExperimentIdMapping().get("223");
         whitelistedVariation = whitelistedExperiment.getVariationKeyToVariationMap().get("vtag1");
@@ -283,7 +294,7 @@ public class DecisionServiceTest {
 
     /**
      * Verify that {@link DecisionService#getVariationForFeature(FeatureFlag, String, Map)}
-     * returns null when the {@link FeatureFlag} is not used in an experiments.
+     * returns null when the {@link FeatureFlag} is not used in an experiments or rollouts.
      */
     @Test
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
@@ -292,6 +303,7 @@ public class DecisionServiceTest {
         when(emptyFeatureFlag.getExperimentIds()).thenReturn(Collections.<String>emptyList());
         String featureKey = "testFeatureFlagKey";
         when(emptyFeatureFlag.getKey()).thenReturn(featureKey);
+        when(emptyFeatureFlag.getRolloutId()).thenReturn("");
 
         DecisionService decisionService = new DecisionService(
                 mock(Bucketer.class),
@@ -300,7 +312,12 @@ public class DecisionServiceTest {
                 null);
 
         logbackVerifier.expectMessage(Level.INFO,
-                "The feature flag \"" + featureKey + "\" is not used in any experiments");
+                "The feature flag \"" + featureKey + "\" is not used in any experiments.");
+        logbackVerifier.expectMessage(Level.INFO,
+                "The feature flag \"" + featureKey + "\" is not used in a rollout.");
+        logbackVerifier.expectMessage(Level.INFO,
+                "The user \"" + genericUserId + "\" was not bucketed into a rollout for feature flag \"" +
+                        featureKey + "\".");
 
         assertNull(decisionService.getVariationForFeature(
                 emptyFeatureFlag,
@@ -308,17 +325,18 @@ public class DecisionServiceTest {
                 Collections.<String, String>emptyMap()));
 
         verify(emptyFeatureFlag, times(1)).getExperimentIds();
-        verify(emptyFeatureFlag, times(1)).getKey();
+        verify(emptyFeatureFlag, times(1)).getRolloutId();
+        verify(emptyFeatureFlag, times(3)).getKey();
     }
 
     /**
      * Verify that {@link DecisionService#getVariationForFeature(FeatureFlag, String, Map)}
-     * returns null when the user is not bucketed into any experiments for the {@link FeatureFlag}.
+     * returns null when the user is not bucketed into any experiments or rollouts for the {@link FeatureFlag}.
      */
     @Test
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
-    public void getVariationForFeatureReturnsNullWhenItGetsNoVariationsForExperiments() {
-        FeatureFlag spyFeatureFlag = spy(ValidProjectConfigV4.FEATURE_FLAG_MULTI_VARIATE_FEATURE);
+    public void getVariationForFeatureReturnsNullWhenItGetsNoVariationsForExperimentsAndRollouts() {
+        FeatureFlag spyFeatureFlag = spy(FEATURE_FLAG_MULTI_VARIATE_FEATURE);
 
         DecisionService spyDecisionService = spy(new DecisionService(
                 mock(Bucketer.class),
@@ -327,20 +345,32 @@ public class DecisionServiceTest {
                 null)
         );
 
+        // do not bucket to any experiments
         doReturn(null).when(spyDecisionService).getVariation(
                 any(Experiment.class),
                 anyString(),
                 anyMapOf(String.class, String.class)
         );
+        // do not bucket to any rollouts
+        doReturn(null).when(spyDecisionService).getVariationForFeatureInRollout(
+                any(FeatureFlag.class),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
 
+        // try to get a variation back from the decision service for the feature flag
         assertNull(spyDecisionService.getVariationForFeature(
                 spyFeatureFlag,
                 genericUserId,
                 Collections.<String, String>emptyMap()
         ));
 
+        logbackVerifier.expectMessage(Level.INFO,
+                "The user \"" + genericUserId + "\" was not bucketed into a rollout for feature flag \"" +
+                        FEATURE_MULTI_VARIATE_FEATURE_KEY + "\".");
+
         verify(spyFeatureFlag, times(2)).getExperimentIds();
-        verify(spyFeatureFlag, never()).getKey();
+        verify(spyFeatureFlag, times(1)).getKey();
     }
 
     /**
@@ -349,7 +379,7 @@ public class DecisionServiceTest {
      */
     @Test
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
-    public void getVariationForFeatureReturnsVariationReturnedFromGetVarition() {
+    public void getVariationForFeatureReturnsVariationReturnedFromGetVariation() {
         FeatureFlag spyFeatureFlag = spy(ValidProjectConfigV4.FEATURE_FLAG_MUTEX_GROUP_FEATURE);
 
         DecisionService spyDecisionService = spy(new DecisionService(
@@ -382,7 +412,379 @@ public class DecisionServiceTest {
         verify(spyFeatureFlag, never()).getKey();
     }
 
-    //========= white list tests ==========/
+    /**
+     * Verify that when getting a {@link Variation} for a {@link FeatureFlag} in
+     * {@link DecisionService#getVariationForFeature(FeatureFlag, String, Map)},
+     * check first if the user is bucketed to an {@link Experiment}
+     * then check if the user is not bucketed to an experiment,
+     * check for a {@link Rollout}.
+     */
+    @Test
+    public void getVariationForFeatureReturnsVariationFromExperimentBeforeRollout() {
+        FeatureFlag featureFlag = FEATURE_FLAG_MULTI_VARIATE_FEATURE;
+        Experiment featureExperiment = v4ProjectConfig.getExperimentIdMapping().get(featureFlag.getExperimentIds().get(0));
+        assertNotNull(featureExperiment);
+        Rollout featureRollout = v4ProjectConfig.getRolloutIdMapping().get(featureFlag.getRolloutId());
+        Variation experimentVariation = featureExperiment.getVariations().get(0);
+        Variation rolloutVariation = featureRollout.getExperiments().get(0).getVariations().get(0);
+
+        DecisionService decisionService = spy(new DecisionService(
+                mock(Bucketer.class),
+                mockErrorHandler,
+                v4ProjectConfig,
+                null
+                )
+        );
+
+        // return variation for experiment
+        doReturn(experimentVariation)
+                .when(decisionService).getVariation(
+                eq(featureExperiment),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        // return variation for rollout
+        doReturn(rolloutVariation)
+                .when(decisionService).getVariationForFeatureInRollout(
+                eq(featureFlag),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        // make sure we get the right variation back
+        assertEquals(experimentVariation,
+                decisionService.getVariationForFeature(featureFlag,
+                        genericUserId,
+                        Collections.<String, String>emptyMap()
+                )
+        );
+
+        // make sure we do not even check for rollout bucketing
+        verify(decisionService, never()).getVariationForFeatureInRollout(
+                any(FeatureFlag.class),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        // make sure we ask for experiment bucketing once
+        verify(decisionService, times(1)).getVariation(
+                any(Experiment.class),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify that when getting a {@link Variation} for a {@link FeatureFlag} in
+     * {@link DecisionService#getVariationForFeature(FeatureFlag, String, Map)},
+     * check first if the user is bucketed to an {@link Rollout}
+     * if the user is not bucketed to an experiment.
+     */
+    @Test
+    public void getVariationForFeatureReturnsVariationFromRolloutWhenExperimentFails() {
+        FeatureFlag featureFlag = FEATURE_FLAG_MULTI_VARIATE_FEATURE;
+        Experiment featureExperiment = v4ProjectConfig.getExperimentIdMapping().get(featureFlag.getExperimentIds().get(0));
+        assertNotNull(featureExperiment);
+        Rollout featureRollout = v4ProjectConfig.getRolloutIdMapping().get(featureFlag.getRolloutId());
+        Variation rolloutVariation = featureRollout.getExperiments().get(0).getVariations().get(0);
+
+        DecisionService decisionService = spy(new DecisionService(
+                        mock(Bucketer.class),
+                        mockErrorHandler,
+                        v4ProjectConfig,
+                        null
+                )
+        );
+
+        // return variation for experiment
+        doReturn(null)
+                .when(decisionService).getVariation(
+                eq(featureExperiment),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        // return variation for rollout
+        doReturn(rolloutVariation)
+                .when(decisionService).getVariationForFeatureInRollout(
+                eq(featureFlag),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        // make sure we get the right variation back
+        assertEquals(rolloutVariation,
+                decisionService.getVariationForFeature(featureFlag,
+                        genericUserId,
+                        Collections.<String, String>emptyMap()
+                )
+        );
+
+        // make sure we do not even check for rollout bucketing
+        verify(decisionService,times(1)).getVariationForFeatureInRollout(
+                any(FeatureFlag.class),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        // make sure we ask for experiment bucketing once
+        verify(decisionService, times(1)).getVariation(
+                any(Experiment.class),
+                anyString(),
+                anyMapOf(String.class, String.class)
+        );
+
+        logbackVerifier.expectMessage(
+                Level.INFO,
+                "The user \"" + genericUserId + "\" was bucketed into a rollout for feature flag \"" +
+                        featureFlag.getKey() + "\"."
+        );
+    }
+
+        //========== getVariationForFeatureInRollout tests ==========//
+
+    /**
+     * Verify that {@link DecisionService#getVariationForFeatureInRollout(FeatureFlag, String, Map)}
+     * returns null when trying to bucket a user into a {@link FeatureFlag}
+     * that does not have a {@link Rollout} attached.
+     */
+    @Test
+    public void getVariationForFeatureInRolloutReturnsNullWhenFeatureIsNotAttachedToRollout() {
+        FeatureFlag mockFeatureFlag = mock(FeatureFlag.class);
+        when(mockFeatureFlag.getRolloutId()).thenReturn("");
+        String featureKey = "featureKey";
+        when(mockFeatureFlag.getKey()).thenReturn(featureKey);
+
+        DecisionService decisionService = new DecisionService(
+                mock(Bucketer.class),
+                mockErrorHandler,
+                validProjectConfig,
+                null
+        );
+
+        assertNull(decisionService.getVariationForFeatureInRollout(
+                mockFeatureFlag,
+                genericUserId,
+                Collections.<String, String>emptyMap()
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.INFO,
+                "The feature flag \"" + featureKey + "\" is not used in a rollout."
+        );
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariationForFeatureInRollout(FeatureFlag, String, Map)}
+     * return null when a user is excluded from every rule of a rollout due to traffic allocation.
+     */
+    @Test
+    public void getVariationForFeatureInRolloutReturnsNullWhenUserIsExcludedFromAllTraffic() {
+        Bucketer mockBucketer = mock(Bucketer.class);
+        when(mockBucketer.bucket(any(Experiment.class), anyString())).thenReturn(null);
+
+        DecisionService decisionService = new DecisionService(
+                mockBucketer,
+                mockErrorHandler,
+                v4ProjectConfig,
+                null
+        );
+
+        assertNull(decisionService.getVariationForFeatureInRollout(
+                FEATURE_FLAG_MULTI_VARIATE_FEATURE,
+                genericUserId,
+                Collections.singletonMap(
+                        ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE
+                )
+        ));
+
+        // with fall back bucketing, the user has at most 2 chances to get bucketed with traffic allocation
+        // one chance with the audience rollout rule
+        // one chance with the everyone else rule
+        verify(mockBucketer, atMost(2)).bucket(any(Experiment.class), anyString());
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariationForFeatureInRollout(FeatureFlag, String, Map)}
+     * returns null when a user is excluded from every rule of a rollout due to targeting
+     * and also fails traffic allocation in the everyone else rollout.
+     */
+    @Test
+    public void getVariationForFeatureInRolloutReturnsNullWhenUserFailsAllAudiencesAndTraffic() {
+        Bucketer mockBucketer = mock(Bucketer.class);
+        when(mockBucketer.bucket(any(Experiment.class), anyString())).thenReturn(null);
+
+        DecisionService decisionService = new DecisionService(
+                mockBucketer,
+                mockErrorHandler,
+                v4ProjectConfig,
+                null
+        );
+
+        assertNull(decisionService.getVariationForFeatureInRollout(
+                FEATURE_FLAG_MULTI_VARIATE_FEATURE,
+                genericUserId,
+                Collections.<String, String>emptyMap()
+        ));
+
+        // user is only bucketed once for the everyone else rule
+        verify(mockBucketer, times(1)).bucket(any(Experiment.class), anyString());
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariationForFeatureInRollout(FeatureFlag, String, Map)}
+     * returns the variation of "Everyone Else" rule
+     * when the user fails targeting for all rules, but is bucketed into the "Everyone Else" rule.
+     */
+    @Test
+    public void getVariationForFeatureInRolloutReturnsVariationWhenUserFailsAllAudienceButSatisfiesTraffic() {
+        Bucketer mockBucketer = mock(Bucketer.class);
+        Rollout rollout = ROLLOUT_2;
+        Experiment everyoneElseRule = rollout.getExperiments().get(rollout.getExperiments().size() - 1);
+        Variation expectedVariation = everyoneElseRule.getVariations().get(0);
+        when(mockBucketer.bucket(eq(everyoneElseRule), anyString())).thenReturn(expectedVariation);
+
+        DecisionService decisionService = new DecisionService(
+                mockBucketer,
+                mockErrorHandler,
+                v4ProjectConfig,
+                null
+        );
+
+        assertEquals(expectedVariation,
+                decisionService.getVariationForFeatureInRollout(
+                        FEATURE_FLAG_MULTI_VARIATE_FEATURE,
+                        genericUserId,
+                        Collections.<String, String>emptyMap()
+                )
+        );
+
+        // verify user is only bucketed once for everyone else rule
+        verify(mockBucketer, times(1)).bucket(any(Experiment.class), anyString());
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariationForFeatureInRollout(FeatureFlag, String, Map)}
+     * returns the variation of "Everyone Else" rule
+     * when the user passes targeting for a rule, but was failed the traffic allocation for that rule,
+     * and is bucketed successfully into the "Everyone Else" rule.
+     */
+    @Test
+    public void getVariationForFeatureInRolloutReturnsVariationWhenUserFailsTrafficInRuleAndPassesInEveryoneElse() {
+        Bucketer mockBucketer = mock(Bucketer.class);
+        Rollout rollout = ROLLOUT_2;
+        Experiment everyoneElseRule = rollout.getExperiments().get(rollout.getExperiments().size() - 1);
+        Variation expectedVariation = everyoneElseRule.getVariations().get(0);
+        when(mockBucketer.bucket(any(Experiment.class), anyString())).thenReturn(null);
+        when(mockBucketer.bucket(eq(everyoneElseRule), anyString())).thenReturn(expectedVariation);
+
+        DecisionService decisionService = new DecisionService(
+                mockBucketer,
+                mockErrorHandler,
+                v4ProjectConfig,
+                null
+        );
+
+        assertEquals(expectedVariation,
+                decisionService.getVariationForFeatureInRollout(
+                        FEATURE_FLAG_MULTI_VARIATE_FEATURE,
+                        genericUserId,
+                        Collections.singletonMap(
+                                ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE
+                        )
+                )
+        );
+
+        // verify user is only bucketed once for everyone else rule
+        verify(mockBucketer, times(2)).bucket(any(Experiment.class), anyString());
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariationForFeatureInRollout(FeatureFlag, String, Map)}
+     * returns the variation of "Everyone Else" rule
+     * when the user passes targeting for a rule, but was failed the traffic allocation for that rule,
+     * and is bucketed successfully into the "Everyone Else" rule.
+     * Fallback bucketing should not evaluate any other audiences.
+     *  Even though the user would satisfy a later rollout rule, they are never evaluated for it or bucketed into it.
+     */
+    @Test
+    public void getVariationForFeatureInRolloutReturnsVariationWhenUserFailsTrafficInRuleButWouldPassForAnotherRuleAndPassesInEveryoneElse() {
+        Bucketer mockBucketer = mock(Bucketer.class);
+        Rollout rollout = ROLLOUT_2;
+        Experiment englishCitizensRule = rollout.getExperiments().get(2);
+        Variation englishCitizenVariation = englishCitizensRule.getVariations().get(0);
+        Experiment everyoneElseRule = rollout.getExperiments().get(rollout.getExperiments().size() - 1);
+        Variation expectedVariation = everyoneElseRule.getVariations().get(0);
+        when(mockBucketer.bucket(any(Experiment.class), anyString())).thenReturn(null);
+        when(mockBucketer.bucket(eq(everyoneElseRule), anyString())).thenReturn(expectedVariation);
+        when(mockBucketer.bucket(eq(englishCitizensRule), anyString())).thenReturn(englishCitizenVariation);
+
+        DecisionService decisionService = new DecisionService(
+                mockBucketer,
+                mockErrorHandler,
+                v4ProjectConfig,
+                null
+        );
+
+        assertEquals(expectedVariation,
+                decisionService.getVariationForFeatureInRollout(
+                        FEATURE_FLAG_MULTI_VARIATE_FEATURE,
+                        genericUserId,
+                        ProjectConfigTestUtils.createMapOfObjects(
+                                ProjectConfigTestUtils.createListOfObjects(
+                                        ATTRIBUTE_HOUSE_KEY, ATTRIBUTE_NATIONALITY_KEY
+                                ),
+                                ProjectConfigTestUtils.createListOfObjects(
+                                        AUDIENCE_GRYFFINDOR_VALUE, AUDIENCE_ENGLISH_CITIZENS_VALUE
+                                )
+                        )
+                )
+        );
+
+        // verify user is only bucketed once for everyone else rule
+        verify(mockBucketer, times(2)).bucket(any(Experiment.class), anyString());
+    }
+
+    /**
+     * Verify that {@link DecisionService#getVariationForFeatureInRollout(FeatureFlag, String, Map)}
+     * returns the variation of "English Citizens" rule
+     * when the user fails targeting for previous rules, but passes targeting and traffic for Rule 3.
+     */
+    @Test
+    public void getVariationForFeatureInRolloutReturnsVariationWhenUserFailsTargetingInPreviousRulesButPassesRule3() {
+        Bucketer mockBucketer = mock(Bucketer.class);
+        Rollout rollout = ROLLOUT_2;
+        Experiment englishCitizensRule = rollout.getExperiments().get(2);
+        Variation englishCitizenVariation = englishCitizensRule.getVariations().get(0);
+        Experiment everyoneElseRule = rollout.getExperiments().get(rollout.getExperiments().size() - 1);
+        Variation everyoneElseVariation = everyoneElseRule.getVariations().get(0);
+        when(mockBucketer.bucket(any(Experiment.class), anyString())).thenReturn(null);
+        when(mockBucketer.bucket(eq(everyoneElseRule), anyString())).thenReturn(everyoneElseVariation);
+        when(mockBucketer.bucket(eq(englishCitizensRule), anyString())).thenReturn(englishCitizenVariation);
+
+        DecisionService decisionService = new DecisionService(
+                mockBucketer,
+                mockErrorHandler,
+                v4ProjectConfig,
+                null
+        );
+
+        assertEquals(englishCitizenVariation,
+                decisionService.getVariationForFeatureInRollout(
+                        FEATURE_FLAG_MULTI_VARIATE_FEATURE,
+                        genericUserId,
+                        Collections.singletonMap(
+                                ATTRIBUTE_NATIONALITY_KEY, AUDIENCE_ENGLISH_CITIZENS_VALUE
+                        )
+                )
+        );
+
+        // verify user is only bucketed once for everyone else rule
+        verify(mockBucketer, times(1)).bucket(any(Experiment.class), anyString());
+    }
+
+        //========= white list tests ==========/
 
     /**
      * Test {@link DecisionService#getWhitelistedVariation(Experiment, String)} correctly returns a whitelisted variation.

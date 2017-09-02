@@ -37,7 +37,6 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
-import com.optimizely.ab.event.internal.payload.Feature;
 import com.optimizely.ab.internal.LogbackVerifier;
 import com.optimizely.ab.notification.NotificationListener;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -53,13 +52,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Collections;
-import java.util.ArrayList;
+import java.util.Map;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV3;
@@ -80,14 +79,17 @@ import static com.optimizely.ab.config.ValidProjectConfigV4.EXPERIMENT_LAUNCHED_
 import static com.optimizely.ab.config.ValidProjectConfigV4.EXPERIMENT_MULTIVARIATE_EXPERIMENT_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.EXPERIMENT_PAUSED_EXPERIMENT_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_FLAG_MULTI_VARIATE_FEATURE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_FLAG_SINGLE_VARIABLE_DOUBLE;
 import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_MULTI_VARIATE_FEATURE_KEY;
-import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_SINGLE_VARIABLE_STRING_KEY;
+import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_SINGLE_VARIABLE_BOOLEAN_KEY;
+import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_SINGLE_VARIABLE_DOUBLE_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.MULTIVARIATE_EXPERIMENT_FORCED_VARIATION_USER_ID_GRED;
 import static com.optimizely.ab.config.ValidProjectConfigV4.PAUSED_EXPERIMENT_FORCED_VARIATION_USER_ID_CONTROL;
-import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_FIRST_LETTER_DEFAULT_VALUE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_BOOLEAN_VARIABLE_DEFAULT_VALUE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_BOOLEAN_VARIABLE_KEY;
+import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_DOUBLE_DEFAULT_VALUE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_DOUBLE_VARIABLE_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_FIRST_LETTER_KEY;
-import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_STRING_VARIABLE_DEFAULT_VALUE;
-import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_STRING_VARIABLE_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIATION_MULTIVARIATE_EXPERIMENT_GRED;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIATION_MULTIVARIATE_EXPERIMENT_GRED_KEY;
 import static com.optimizely.ab.event.LogEvent.RequestMethod;
@@ -2504,16 +2506,16 @@ public class OptimizelyTest {
     /**
      * Verify {@link Optimizely#getFeatureVariableValueForType(String, String, String, Map, LiveVariable.VariableType)}
      * returns the String default value of a live variable
-     * when the feature is not attached to an experiment.
+     * when the feature is not attached to an experiment or a rollout.
      * @throws ConfigParseException
      */
     @Test
-    public void getFeatureVariableValueForTypeReturnsDefaultValueWhenFeatureIsNotAttached() throws ConfigParseException {
+    public void getFeatureVariableValueForTypeReturnsDefaultValueWhenFeatureIsNotAttachedToExperimentOrRollout() throws ConfigParseException {
         assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
 
-        String validFeatureKey = FEATURE_SINGLE_VARIABLE_STRING_KEY;
-        String validVariableKey = VARIABLE_STRING_VARIABLE_KEY;
-        String defaultValue = VARIABLE_STRING_VARIABLE_DEFAULT_VALUE;
+        String validFeatureKey = FEATURE_SINGLE_VARIABLE_BOOLEAN_KEY;
+        String validVariableKey = VARIABLE_BOOLEAN_VARIABLE_KEY;
+        String defaultValue = VARIABLE_BOOLEAN_VARIABLE_DEFAULT_VALUE;
         Map<String, String> attributes = Collections.singletonMap(ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE);
 
         Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
@@ -2525,28 +2527,41 @@ public class OptimizelyTest {
                 validVariableKey,
                 genericUserId,
                 attributes,
-                LiveVariable.VariableType.STRING);
+                LiveVariable.VariableType.BOOLEAN);
         assertEquals(defaultValue, value);
 
         logbackVerifier.expectMessage(
                 Level.INFO,
                 "The feature flag \"" + validFeatureKey + "\" is not used in any experiments."
         );
+        logbackVerifier.expectMessage(
+                Level.INFO,
+                "The feature flag \"" + validFeatureKey + "\" is not used in a rollout."
+        );
+        logbackVerifier.expectMessage(
+                Level.INFO,
+                "User \"" + genericUserId + "\" was not bucketed into any variation for feature flag \"" +
+                        validFeatureKey + "\". The default value \"" +
+                        defaultValue + "\" for \"" +
+                        validVariableKey + "\" is being returned."
+        );
     }
 
     /**
      * Verify {@link Optimizely#getFeatureVariableValueForType(String, String, String, Map, LiveVariable.VariableType)}
      * returns the String default value for a live variable
-     * when the feature is attached to an experiment, but the user is excluded from the experiment.
+     * when the feature is attached to an experiment and no rollout, but the user is excluded from the experiment.
      * @throws ConfigParseException
      */
     @Test
     public void getFeatureVariableValueReturnsDefaultValueWhenFeatureIsAttachedToOneExperimentButFailsTargeting() throws ConfigParseException {
         assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
 
-        String validFeatureKey = FEATURE_MULTI_VARIATE_FEATURE_KEY;
-        String validVariableKey = VARIABLE_FIRST_LETTER_KEY;
-        String expectedValue = VARIABLE_FIRST_LETTER_DEFAULT_VALUE;
+        String validFeatureKey = FEATURE_SINGLE_VARIABLE_DOUBLE_KEY;
+        String validVariableKey = VARIABLE_DOUBLE_VARIABLE_KEY;
+        String expectedValue = VARIABLE_DOUBLE_DEFAULT_VALUE;
+        FeatureFlag featureFlag = FEATURE_FLAG_SINGLE_VARIABLE_DOUBLE;
+        Experiment experiment = validProjectConfig.getExperimentIdMapping().get(featureFlag.getExperimentIds().get(0));
 
         Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
                 .withConfig(validProjectConfig)
@@ -2556,16 +2571,26 @@ public class OptimizelyTest {
                 validFeatureKey,
                 validVariableKey,
                 genericUserId,
-                Collections.singletonMap(ATTRIBUTE_HOUSE_KEY, "Slytherin"),
-                LiveVariable.VariableType.STRING
+                Collections.singletonMap(ATTRIBUTE_HOUSE_KEY, "Ravenclaw"),
+                LiveVariable.VariableType.DOUBLE
         );
         assertEquals(expectedValue, valueWithImproperAttributes);
 
         logbackVerifier.expectMessage(
                 Level.INFO,
+                "User \"" + genericUserId + "\" does not meet conditions to be in experiment \"" +
+                        experiment.getKey() + "\"."
+        );
+        logbackVerifier.expectMessage(
+                Level.INFO,
+                "The feature flag \"" + validFeatureKey + "\" is not used in a rollout."
+        );
+        logbackVerifier.expectMessage(
+                Level.INFO,
                 "User \"" + genericUserId +
                         "\" was not bucketed into any variation for feature flag \"" + validFeatureKey +
-                        "\". The default value is being returned."
+                        "\". The default value \"" + expectedValue +
+                        "\" for \"" + validVariableKey + "\" is being returned."
         );
     }
 

@@ -53,7 +53,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Top-level container class for Optimizely functionality.
@@ -562,7 +561,8 @@ public class Optimizely {
         else {
             logger.info("User \"" + userId +
                     "\" was not bucketed into any variation for feature flag \"" + featureKey +
-                    "\". The default value is being returned."
+                    "\". The default value \"" + variableValue +
+                    "\" for \"" + variableKey + "\" is being returned."
             );
         }
 

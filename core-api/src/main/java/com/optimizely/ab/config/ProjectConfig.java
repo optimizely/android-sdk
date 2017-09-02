@@ -87,6 +87,7 @@ public class ProjectConfig {
     private final Map<String, Audience> audienceIdMapping;
     private final Map<String, Experiment> experimentIdMapping;
     private final Map<String, Group> groupIdMapping;
+    private final Map<String, Rollout> rolloutIdMapping;
 
     // other mappings
     private final Map<String, List<Experiment>> liveVariableIdToExperimentsMapping;
@@ -192,6 +193,7 @@ public class ProjectConfig {
         this.audienceIdMapping = ProjectConfigUtils.generateIdMapping(audiences);
         this.experimentIdMapping = ProjectConfigUtils.generateIdMapping(this.experiments);
         this.groupIdMapping = ProjectConfigUtils.generateIdMapping(groups);
+        this.rolloutIdMapping = ProjectConfigUtils.generateIdMapping(this.rollouts);
 
         if (liveVariables == null) {
             this.liveVariables = null;
@@ -316,6 +318,10 @@ public class ProjectConfig {
 
     public Map<String, Group> getGroupIdMapping() {
         return groupIdMapping;
+    }
+
+    public Map<String, Rollout> getRolloutIdMapping() {
+        return rolloutIdMapping;
     }
 
     public Map<String, LiveVariable> getLiveVariableKeyMapping() {
@@ -488,6 +494,7 @@ public class ProjectConfig {
                 ", audienceIdMapping=" + audienceIdMapping +
                 ", experimentIdMapping=" + experimentIdMapping +
                 ", groupIdMapping=" + groupIdMapping +
+                ", rolloutIdMapping=" + rolloutIdMapping +
                 ", liveVariableIdToExperimentsMapping=" + liveVariableIdToExperimentsMapping +
                 ", variationToLiveVariableUsageInstanceMapping=" + variationToLiveVariableUsageInstanceMapping +
                 ", forcedVariationMapping=" + forcedVariationMapping +
