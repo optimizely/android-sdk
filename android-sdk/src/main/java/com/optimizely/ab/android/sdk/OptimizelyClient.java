@@ -464,7 +464,7 @@ public class OptimizelyClient {
      * @param experimentKey The key for the experiment.
      * @param userId The user ID to be used for bucketing.
      *
-     * @return The variation the user was bucketed into. This value can be null if the
+     * @return The variation the user will be bucketed into. This value can be null if the
      * forced variation fails.
      */
     public @Nullable Variation getForcedVariation(@NonNull String experimentKey,
