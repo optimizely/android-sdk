@@ -22,6 +22,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
+import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.bucketing.DecisionService;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
@@ -63,18 +64,19 @@ public class OptimizelyClientTest {
     private Logger logger = mock(Logger.class);
     private Optimizely optimizely;
     private EventHandler eventHandler;
+    private Bucketer bucketer = mock(Bucketer.class);
 
     private String testProjectId = "7595190003";
 
     private String minDatafile = "{\"groups\": [], \"projectId\": \"8504447126\", \"variables\": [{\"defaultValue\": \"true\", \"type\": \"boolean\", \"id\": \"8516291943\", \"key\": \"test_variable\"}], \"version\": \"3\", \"experiments\": [{\"status\": \"Running\", \"key\": \"android_experiment_key\", \"layerId\": \"8499056327\", \"trafficAllocation\": [{\"entityId\": \"8509854340\", \"endOfRange\": 5000}, {\"entityId\": \"8505434669\", \"endOfRange\": 10000}], \"audienceIds\": [], \"variations\": [{\"variables\": [], \"id\": \"8509854340\", \"key\": \"var_1\"}, {\"variables\": [], \"id\": \"8505434669\", \"key\": \"var_2\"}], \"forcedVariations\": {}, \"id\": \"8509139139\"}], \"audiences\": [], \"anonymizeIP\": true, \"attributes\": [], \"revision\": \"7\", \"events\": [{\"experimentIds\": [\"8509139139\"], \"id\": \"8505434668\", \"key\": \"test_event\"}], \"accountId\": \"8362480420\"}";
 
-    private boolean setProjectConfig(Object o, ProjectConfig config) {
+    private boolean setProperty(String propertyName, Object o, Object property) {
         boolean done = true;
         Field configField = null;
         try {
-            configField = o.getClass().getDeclaredField("projectConfig");
+            configField = o.getClass().getDeclaredField(propertyName);
             configField.setAccessible(true);
-            configField.set(o, config);
+            configField.set(o, property);
         }
         catch (NoSuchFieldException e) {
             e.printStackTrace();
@@ -87,6 +89,10 @@ public class OptimizelyClientTest {
         return done;
     }
 
+    private boolean setProjectConfig(Object o, ProjectConfig config) {
+        return setProperty("projectConfig", o, config);
+    }
+
     private boolean spyOnConfig() {
         ProjectConfig config = spy(optimizely.getProjectConfig());
         boolean done = true;
@@ -97,6 +103,7 @@ public class OptimizelyClientTest {
             DecisionService decisionService = (DecisionService)decisionField.get(optimizely);
             setProjectConfig(optimizely, config);
             setProjectConfig(decisionService, config);
+            setProperty("bucketer", decisionService, bucketer);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             done = false;
@@ -112,6 +119,7 @@ public class OptimizelyClientTest {
     public void setUp() throws Exception {
         eventHandler = spy(DefaultEventHandler.getInstance(InstrumentationRegistry.getTargetContext()));
         optimizely = Optimizely.builder(minDatafile, eventHandler).build();
+        when(bucketer.bucket(optimizely.getProjectConfig().getExperiments().get(0), "1")).thenReturn(optimizely.getProjectConfig().getExperiments().get(0).getVariations().get(0));
         spyOnConfig();
     }
 
@@ -123,12 +131,16 @@ public class OptimizelyClientTest {
 
     }
 
+    @Test
     public void testGoodForcedActivation() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        // bucket will always return var_1
+        Variation v = optimizelyClient.activate("android_experiment_key", "1");
+        assertEquals(v.getKey(), "var_1");
         boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
 
         assertTrue(didSetForced);
-        Variation v = optimizelyClient.activate("android_experiment_key", "1");
+        v = optimizelyClient.activate("android_experiment_key", "1");
         assertNotNull(v);
         assertEquals(v.getKey(), "var_2");
         v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
@@ -145,10 +157,14 @@ public class OptimizelyClientTest {
     public void testGoodForceAActivationAttrib() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         final HashMap<String, String> attributes = new HashMap<>();
+        // bucket will always return var_1
+        Variation v = optimizelyClient.activate("android_experiment_key", "1", attributes);
+        assertEquals(v.getKey(), "var_1");
+
         boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
 
         assertTrue(didSetForced);
-        Variation v = optimizelyClient.activate("android_experiment_key", "1", attributes);
+        v = optimizelyClient.activate("android_experiment_key", "1", attributes);
         assertNotNull(v);
         assertEquals(v.getKey(), "var_2");
         v = optimizelyClient.getForcedVariation("android_experiment_key", "1");
