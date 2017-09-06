@@ -27,3 +27,4 @@ script:
   - ./gradlew cleanAllModules
   - ./gradlew testAllModulesTravis
   - if [[ -n $TRAVIS_TAG ]]; then ./gradlew ship; fi
+dist: precise
