@@ -35,6 +35,7 @@ import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 
@@ -110,6 +111,16 @@ public class OptimizelyManagerTest {
     }
 
     @Test
+    public void initializeIntUseForcedVariation() {
+        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+
+        assertTrue(optimizelyManager.getOptimizely().setForcedVariation("android_experiment_key", "1", "var_1"));
+        Variation variation = optimizelyManager.getOptimizely().getForcedVariation("android_experiment_key", "1");
+        assertEquals(variation.getKey(), "var_1");
+        assertTrue(optimizelyManager.getOptimizely().setForcedVariation("android_experiment_key", "1", null));
+    }
+
+    @Test
     public void initializeInt() {
 
         optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
@@ -122,7 +133,6 @@ public class OptimizelyManagerTest {
         assertNotNull(optimizelyManager.getDatafileHandler());
 
     }
-
     @Test
     public void initializeWithEmptyDatafile() {
         Context context = mock(Context.class);
