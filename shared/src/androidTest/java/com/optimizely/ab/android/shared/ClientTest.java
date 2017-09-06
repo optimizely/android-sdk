@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
@@ -60,8 +62,18 @@ public class ClientTest {
 
     @Test
     public void setIfModifiedSinceHasValueInStorage() {
-        when(optlyStorage.getLong(Client.LAST_MODIFIED_HEADER_KEY, 0)).thenReturn(100L);
+        URL url = null;
+
+        try {
+            url = new URL("http://www.optimizely.com");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        when(optlyStorage.getLong(Client.LAST_MODIFIED_HEADER_KEY + url.toString(), 0)).thenReturn(100L);
         URLConnection urlConnection = mock(URLConnection.class);
+        when(urlConnection.getURL()).thenReturn(url);
+
         client.setIfModifiedSince(urlConnection);
         verify(urlConnection).setIfModifiedSince(100L);
     }
@@ -76,10 +88,18 @@ public class ClientTest {
 
     @Test
     public void saveLastModifiedWhenExists() {
+        URL url = null;
+
+        try {
+            url = new URL("http://www.optimizely.com");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         URLConnection urlConnection = mock(URLConnection.class);
         when(urlConnection.getLastModified()).thenReturn(100L);
+        when(urlConnection.getURL()).thenReturn(url);
         client.saveLastModified(urlConnection);
-        verify(optlyStorage).saveLong(Client.LAST_MODIFIED_HEADER_KEY, 100L);
+        verify(optlyStorage).saveLong(Client.LAST_MODIFIED_HEADER_KEY + url.toString(), 100L);
     }
 
     @Test
