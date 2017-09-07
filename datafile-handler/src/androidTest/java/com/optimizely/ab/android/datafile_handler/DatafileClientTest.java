@@ -38,6 +38,7 @@ import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -84,6 +85,70 @@ public class DatafileClientTest {
         verify(client).readStream(urlConnection);
         verify(urlConnection).disconnect();
     }
+
+    @Test
+    public void testLastModified() throws IOException {
+        URL url1 = new URL(DatafileService.getDatafileUrl("1"));
+        URL url2 = new URL(DatafileService.getDatafileUrl("2"));
+        when(client.openConnection(url1)).thenReturn(urlConnection);
+        when(urlConnection.getResponseCode()).thenReturn(200).thenReturn(304).thenReturn(200).thenReturn(304);
+        when(client.openConnection(url2)).thenReturn(urlConnection);
+        when(client.readStream(urlConnection)).thenReturn("{}");
+
+        // first call returns the project file {}
+        datafileClient.request(url1.toString());
+
+        ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
+        ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
+        verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(3), captor3.getValue());
+        Object response = captor1.getValue().execute();
+        assertTrue(String.class.isInstance(response));
+        assertEquals("{}", response);
+
+        verify(logger).info("Requesting data file from {}", url1);
+        verify(client).saveLastModified(urlConnection);
+        verify(client).readStream(urlConnection);
+        verify(urlConnection).disconnect();
+
+        // second call returns 304 so the response is a empty string.
+        datafileClient.request(url1.toString());
+
+        captor1 = ArgumentCaptor.forClass(Client.Request.class);
+        captor2 = ArgumentCaptor.forClass(Integer.class);
+        captor3 = ArgumentCaptor.forClass(Integer.class);
+        verify(client, times(2)).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(3), captor3.getValue());
+        response = captor1.getValue().execute();
+        assertTrue(String.class.isInstance(response));
+        assertEquals("", response);
+
+        verify(logger).info("Data file has not been modified on the cdn");
+        verify(urlConnection, times(2)).disconnect();
+
+        datafileClient.request(url2.toString());
+
+        captor1 = ArgumentCaptor.forClass(Client.Request.class);
+        captor2 = ArgumentCaptor.forClass(Integer.class);
+        captor3 = ArgumentCaptor.forClass(Integer.class);
+        verify(client, times(3)).execute(captor1.capture(), captor2.capture(), captor3.capture());
+        assertEquals(Integer.valueOf(2), captor2.getValue());
+        assertEquals(Integer.valueOf(3), captor3.getValue());
+        response = captor1.getValue().execute();
+        assertTrue(String.class.isInstance(response));
+        assertEquals("{}", response);
+
+        verify(logger, times(2)).info("Requesting data file from {}", url1);
+        verify(client, times(2)).saveLastModified(urlConnection);
+        verify(client, times(2)).readStream(urlConnection);
+        verify(urlConnection, times(3)).disconnect();
+
+
+    }
+
 
     @Test
     public void request201() throws IOException {
