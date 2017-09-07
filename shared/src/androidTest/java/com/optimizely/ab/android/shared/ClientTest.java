@@ -70,7 +70,7 @@ public class ClientTest {
             e.printStackTrace();
         }
 
-        when(optlyStorage.getLong(Client.LAST_MODIFIED_HEADER_KEY + url.toString(), 0)).thenReturn(100L);
+        when(optlyStorage.getLong(url.toString(), 0)).thenReturn(100L);
         URLConnection urlConnection = mock(URLConnection.class);
         when(urlConnection.getURL()).thenReturn(url);
 
@@ -80,7 +80,16 @@ public class ClientTest {
 
     @Test
     public void saveLastModifiedNoHeader() {
+        URL url = null;
+
+        try {
+            url = new URL("http://www.optimizely.com");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         URLConnection urlConnection = mock(URLConnection.class);
+        when(urlConnection.getURL()).thenReturn(url);
+
         when(urlConnection.getLastModified()).thenReturn(0L);
         client.saveLastModified(urlConnection);
         verify(logger).warn("CDN response didn't have a last modified header");
@@ -99,7 +108,7 @@ public class ClientTest {
         when(urlConnection.getLastModified()).thenReturn(100L);
         when(urlConnection.getURL()).thenReturn(url);
         client.saveLastModified(urlConnection);
-        verify(optlyStorage).saveLong(Client.LAST_MODIFIED_HEADER_KEY + url.toString(), 100L);
+        verify(optlyStorage).saveLong(url.toString(), 100L);
     }
 
     @Test
