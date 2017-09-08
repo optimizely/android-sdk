@@ -71,7 +71,7 @@ public class MainActivityEspressoTest {
                 @Override
                 protected void before() throws Throwable {
                     super.before();
-                    countingIdlingResource = CountingIdlingResourceManager.getIdlingResource();
+                    countingIdlingResource = new CountingIdlingResource("optly", true);
                     // To prove that the test fails, omit this call:
                     Espresso.registerIdlingResources(countingIdlingResource);
                 }

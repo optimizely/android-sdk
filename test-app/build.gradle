@@ -28,10 +28,13 @@ android {
 
 dependencies {
     // Includes the Optimizely X Full Stack Java SDK, event handler, and user profile
-    compile project(':android-sdk')
+    compile (project(':android-sdk')) {
+    	exclude group: 'com.fasterxml.jackson.core', module: 'jackson-annotations'    
+    }
     // compile 'com.optimizely.ab:android-sdk:1.0.0'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
+    compile "com.noveogroup.android:android-logger:$android_logger_ver"
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
