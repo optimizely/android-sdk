@@ -77,8 +77,8 @@ public class DatafileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_BACKOFF_TIMEOUT), captor2.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_RETRIES_POWER), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
@@ -96,15 +96,15 @@ public class DatafileClientTest {
         HttpURLConnection urlConnection2 = mock(HttpURLConnection.class);
         when(urlConnection.getURL()).thenReturn(url1);
         when(urlConnection2.getURL()).thenReturn(url2);
-        when(urlConnection.getLastModified()).thenReturn(200L);
-        when(urlConnection2.getLastModified()).thenReturn(100L);
+        when(urlConnection.getLastModified()).thenReturn(0L);
+        when(urlConnection2.getLastModified()).thenReturn(0L);
         when(client.openConnection(url1)).thenReturn(urlConnection);
         Answer<Integer> answer = new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 HttpURLConnection connection = (HttpURLConnection) invocation.getMock();
                 URL url = connection.getURL();
                 if (url == url1) {
-                    if (connection.getLastModified() == 200L) {
+                    if (connection.getLastModified() == 0L) {
                         when(connection.getLastModified()).thenReturn(300L);
                         return 200;
                     }
@@ -113,7 +113,7 @@ public class DatafileClientTest {
                     }
                 }
                 else if (url == url2) {
-                    if (connection.getLastModified() == 100L) {
+                    if (connection.getLastModified() == 0L) {
                         when(connection.getLastModified()).thenReturn(200L);
                         return 200;
                     }
@@ -141,8 +141,8 @@ public class DatafileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_BACKOFF_TIMEOUT), captor2.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_RETRIES_POWER), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
@@ -159,8 +159,8 @@ public class DatafileClientTest {
         captor2 = ArgumentCaptor.forClass(Integer.class);
         captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client, times(2)).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_BACKOFF_TIMEOUT), captor2.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_RETRIES_POWER), captor3.getValue());
         response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("", response);
@@ -174,8 +174,8 @@ public class DatafileClientTest {
         captor2 = ArgumentCaptor.forClass(Integer.class);
         captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client, times(3)).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_BACKOFF_TIMEOUT), captor2.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_RETRIES_POWER), captor3.getValue());
         response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
@@ -202,8 +202,8 @@ public class DatafileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_BACKOFF_TIMEOUT), captor2.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_RETRIES_POWER), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
@@ -227,8 +227,8 @@ public class DatafileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_BACKOFF_TIMEOUT), captor2.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_RETRIES_POWER), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertTrue(String.class.isInstance(response));
         assertEquals("{}", response);
@@ -250,8 +250,8 @@ public class DatafileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_BACKOFF_TIMEOUT), captor2.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_RETRIES_POWER), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertNull(response);
 
@@ -271,8 +271,8 @@ public class DatafileClientTest {
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> captor3 = ArgumentCaptor.forClass(Integer.class);
         verify(client).execute(captor1.capture(), captor2.capture(), captor3.capture());
-        assertEquals(Integer.valueOf(2), captor2.getValue());
-        assertEquals(Integer.valueOf(3), captor3.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_BACKOFF_TIMEOUT), captor2.getValue());
+        assertEquals(Integer.valueOf(DatafileClient.REQUEST_RETRIES_POWER), captor3.getValue());
         Object response = captor1.getValue().execute();
         assertNull(response);
 
@@ -284,14 +284,14 @@ public class DatafileClientTest {
     @Test
     public void handlesNullResponse() throws MalformedURLException {
         URL url = new URL(DatafileService.getDatafileUrl("1"));
-        when(client.execute(any(Client.Request.class), eq(2), eq(3))).thenReturn(null);
+        when(client.execute(any(Client.Request.class), eq(DatafileClient.REQUEST_BACKOFF_TIMEOUT), eq(DatafileClient.REQUEST_RETRIES_POWER))).thenReturn(null);
         assertNull(datafileClient.request(url.toString()));
     }
 
     @Test
     public void handlesEmptyStringResponse() throws MalformedURLException {
         URL url = new URL(DatafileService.getDatafileUrl("1"));
-        when(client.execute(any(Client.Request.class), eq(2), eq(3))).thenReturn("");
+        when(client.execute(any(Client.Request.class), eq(DatafileClient.REQUEST_BACKOFF_TIMEOUT), eq(DatafileClient.REQUEST_RETRIES_POWER))).thenReturn("");
         assertEquals("", datafileClient.request(url.toString()));
     }
 }
