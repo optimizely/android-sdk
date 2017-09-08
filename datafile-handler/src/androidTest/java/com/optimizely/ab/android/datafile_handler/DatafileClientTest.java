@@ -23,12 +23,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -88,12 +91,48 @@ public class DatafileClientTest {
 
     @Test
     public void testLastModified() throws IOException {
-        URL url1 = new URL(DatafileService.getDatafileUrl("1"));
-        URL url2 = new URL(DatafileService.getDatafileUrl("2"));
+        final URL url1 = new URL(DatafileService.getDatafileUrl("1"));
+        final URL url2 = new URL(DatafileService.getDatafileUrl("2"));
+        HttpURLConnection urlConnection2 = mock(HttpURLConnection.class);
+        when(urlConnection.getURL()).thenReturn(url1);
+        when(urlConnection2.getURL()).thenReturn(url2);
+        when(urlConnection.getLastModified()).thenReturn(200L);
+        when(urlConnection2.getLastModified()).thenReturn(100L);
         when(client.openConnection(url1)).thenReturn(urlConnection);
-        when(urlConnection.getResponseCode()).thenReturn(200).thenReturn(304).thenReturn(200).thenReturn(304);
-        when(client.openConnection(url2)).thenReturn(urlConnection);
+        Answer<Integer> answer = new Answer<Integer>() {
+            public Integer answer(InvocationOnMock invocation) throws Throwable {
+                HttpURLConnection connection = (HttpURLConnection) invocation.getMock();
+                URL url = connection.getURL();
+                if (url == url1) {
+                    if (connection.getLastModified() == 200L) {
+                        when(connection.getLastModified()).thenReturn(300L);
+                        return 200;
+                    }
+                    else {
+                        return 304;
+                    }
+                }
+                else if (url == url2) {
+                    if (connection.getLastModified() == 100L) {
+                        when(connection.getLastModified()).thenReturn(200L);
+                        return 200;
+                    }
+                    else {
+                        return 304;
+                    }
+                }
+                //Object[] arguments = invocation.getArguments();
+                //String string = (String) arguments[0];
+                return 0;
+            }
+        };
+
+        when(urlConnection.getResponseCode()).thenAnswer(answer);
+        when(urlConnection2.getResponseCode()).thenAnswer(answer);
+
+        when(client.openConnection(url2)).thenReturn(urlConnection2);
         when(client.readStream(urlConnection)).thenReturn("{}");
+        when(client.readStream(urlConnection2)).thenReturn("{}");
 
         // first call returns the project file {}
         datafileClient.request(url1.toString());
@@ -142,9 +181,9 @@ public class DatafileClientTest {
         assertEquals("{}", response);
 
         verify(logger, times(2)).info("Requesting data file from {}", url1);
-        verify(client, times(2)).saveLastModified(urlConnection);
-        verify(client, times(2)).readStream(urlConnection);
-        verify(urlConnection, times(3)).disconnect();
+        verify(client).saveLastModified(urlConnection2);
+        verify(client).readStream(urlConnection2);
+        verify(urlConnection2).disconnect();
 
 
     }
