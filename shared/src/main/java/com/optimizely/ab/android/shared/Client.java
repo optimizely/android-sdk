@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class Client {
 
-    static final String LAST_MODIFIED_HEADER_KEY = "com.optimizely.ab.android.LAST_MODIFIED_HEADER";
     static final int MAX_BACKOFF_TIMEOUT = (int) Math.pow(2, 5);
 
     @NonNull private final OptlyStorage optlyStorage;
@@ -73,7 +72,12 @@ public class Client {
      * @param urlConnection an open {@link URLConnection}
      */
     public void setIfModifiedSince(@NonNull URLConnection urlConnection) {
-        long lastModified = optlyStorage.getLong(LAST_MODIFIED_HEADER_KEY, 0);
+        if (urlConnection == null || urlConnection.getURL() == null) {
+            logger.error("Invalid connection");
+            return;
+        }
+
+        long lastModified = optlyStorage.getLong(urlConnection.getURL().toString(), 0);
         if (lastModified > 0) {
             urlConnection.setIfModifiedSince(lastModified);
         }
@@ -85,9 +89,14 @@ public class Client {
      * @param urlConnection a {@link URLConnection} instance
      */
     public void saveLastModified(@NonNull URLConnection urlConnection) {
+        if (urlConnection == null || urlConnection.getURL() == null) {
+            logger.error("Invalid connection");
+            return;
+        }
+
         long lastModified = urlConnection.getLastModified();
         if (lastModified > 0) {
-            optlyStorage.saveLong(LAST_MODIFIED_HEADER_KEY, urlConnection.getLastModified());
+            optlyStorage.saveLong(urlConnection.getURL().toString(), urlConnection.getLastModified());
         } else {
             logger.warn("CDN response didn't have a last modified header");
         }
