@@ -18,6 +18,8 @@ package com.optimizely.ab.android.datafile_handler;
 
 import com.optimizely.ab.android.shared.Client;
 
+import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,6 +91,13 @@ public class DatafileClientTest {
         verify(urlConnection).disconnect();
     }
 
+    /**
+     * testLastModified - This is a test to see if given two projects, the last modified for datafile download is project specific.
+     * Two URLs url1 and url2 are both datafile urls, url1 is requested from the data client twice, while url2 is only asked for once.
+     * The first time the last modified is 0 and the second time, if it is non-zero, then it is the current last modified and a 304 is returned.
+     *
+     * @throws IOException
+     */
     @Test
     public void testLastModified() throws IOException {
         final URL url1 = new URL(DatafileService.getDatafileUrl("1"));
@@ -109,6 +118,7 @@ public class DatafileClientTest {
                         return 200;
                     }
                     else {
+                        assertEquals(connection.getLastModified(), 300L);
                         return 304;
                     }
                 }
@@ -118,6 +128,7 @@ public class DatafileClientTest {
                         return 200;
                     }
                     else {
+                        assertEquals(connection.getLastModified(), 200L);
                         return 304;
                     }
                 }
