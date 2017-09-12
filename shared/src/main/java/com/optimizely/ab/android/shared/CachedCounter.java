@@ -21,12 +21,12 @@ import android.content.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CashedCounter {
+public class CachedCounter {
     private final Cache cache;
     private final Logger logger = LoggerFactory.getLogger("CachedCounter");
     private final Context context;
     private final static String fileName = "OptlyCachedCounterKey";
-    public CashedCounter(Context context) {
+    public CachedCounter(Context context) {
         this.context = context;
         this.cache = new Cache(context, logger);
         if (!cache.exists(fileName)) {
