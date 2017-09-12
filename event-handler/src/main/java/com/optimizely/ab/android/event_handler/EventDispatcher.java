@@ -19,7 +19,6 @@ package com.optimizely.ab.android.event_handler;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 import android.util.Pair;
 
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
@@ -56,8 +55,6 @@ class EventDispatcher {
         this.eventClient = eventClient;
         this.serviceScheduler = serviceScheduler;
         this.logger = logger;
-        // we don't need to keep in memory list of events
-        //CountingIdlingResourceManager.getIdlingResource(context);
     }
 
     void dispatch(@NonNull Intent intent) {
