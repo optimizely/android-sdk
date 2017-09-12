@@ -166,6 +166,9 @@ public class DatafileLoader {
             if (dataFile == null || !dataFile.isEmpty()) {
                 datafileLoader.notify(datafileLoadedListener, dataFile);
             }
+            else {
+                datafileLoadedListener.onStop(datafileService.getApplicationContext());
+            }
             datafileService.stop();
         }
     }
