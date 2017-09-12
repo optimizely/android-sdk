@@ -210,11 +210,7 @@ public class DecisionService {
         for (int i = 0; i < rolloutRulesLength - 1; i++) {
             Experiment rolloutRule= rollout.getExperiments().get(i);
             Audience audience = projectConfig.getAudienceIdMapping().get(rolloutRule.getAudienceIds().get(0));
-            if (!rolloutRule.isActive()) {
-                logger.debug("Did not attempt to bucket user into rollout rule for audience \"" +
-                        audience.getName() + "\" since the rule is not active.");
-            }
-            else if (ExperimentUtils.isUserInExperiment(projectConfig, rolloutRule, filteredAttributes)) {
+            if (ExperimentUtils.isUserInExperiment(projectConfig, rolloutRule, filteredAttributes)) {
                 logger.debug("Attempting to bucket user \"" + userId +
                         "\" into rollout rule for audience \"" + audience.getName() +
                         "\".");
