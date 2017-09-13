@@ -79,7 +79,7 @@ public class DatafileLoader {
         logger.info("Refreshing data file");
     }
 
-    private void notify(@Nullable DatafileLoadedListener datafileLoadedListener, @Nullable String dataFile) {
+    private void  notify(@Nullable DatafileLoadedListener datafileLoadedListener, @Nullable String dataFile) {
         // The listener should be notified ONCE and ONLY ONCE with a valid datafile or null
         // If there are no activities bound there is no need to notify
         if (datafileLoadedListener != null && datafileService.isBound() && !hasNotifiedListener) {
@@ -166,10 +166,15 @@ public class DatafileLoader {
             if (dataFile == null || !dataFile.isEmpty()) {
                 datafileLoader.notify(datafileLoadedListener, dataFile);
             }
-            else {
+
+            datafileService.stop();
+
+            if (datafileLoader.hasNotifiedListener) {
+                // we're done here. meaning, we have notified you of either the cache coming in or of a new file.
+                // so, we are notifying you that the data file service has stopped.
                 datafileLoadedListener.onStop(datafileService.getApplicationContext());
             }
-            datafileService.stop();
+
         }
     }
 }

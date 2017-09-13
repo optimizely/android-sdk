@@ -241,10 +241,6 @@ public class OptimizelyManager {
 
             @Override
             public void onStop(Context context) {
-                // something happened,  however, we should still call onstart
-                if (optimizelyStartListener != null) {
-                    optimizelyStartListener.onStart(getOptimizely());
-                }
                 stop(context);
             }
         };
