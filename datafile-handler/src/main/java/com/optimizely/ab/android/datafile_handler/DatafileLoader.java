@@ -79,7 +79,7 @@ public class DatafileLoader {
         logger.info("Refreshing data file");
     }
 
-    private void  notify(@Nullable DatafileLoadedListener datafileLoadedListener, @Nullable String dataFile) {
+    private void notify(@Nullable DatafileLoadedListener datafileLoadedListener, @Nullable String dataFile) {
         // The listener should be notified ONCE and ONLY ONCE with a valid datafile or null
         // If there are no activities bound there is no need to notify
         if (datafileLoadedListener != null && datafileService.isBound() && !hasNotifiedListener) {
