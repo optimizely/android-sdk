@@ -41,7 +41,8 @@ public class DatafileLoader {
 
     private boolean hasNotifiedListener = false;
 
-    public DatafileLoader(@NonNull DatafileService datafileService,
+    public DatafileLoader(@NonNull Context context,
+                          @NonNull DatafileService datafileService,
                           @NonNull DatafileClient datafileClient,
                           @NonNull DatafileCache datafileCache,
                           @NonNull Executor executor,
@@ -52,7 +53,7 @@ public class DatafileLoader {
         this.datafileCache = datafileCache;
         this.executor = executor;
 
-        new DatafileServiceConnection("projectId", datafileService.getApplicationContext(), new DatafileLoadedListener() {
+        new DatafileServiceConnection("projectId", context.getApplicationContext(), new DatafileLoadedListener() {
             public void onDatafileLoaded(@Nullable String dataFile) {}
             public void onStop(Context context) {}
         });

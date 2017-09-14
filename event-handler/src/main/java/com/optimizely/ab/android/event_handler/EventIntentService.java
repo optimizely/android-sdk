@@ -18,14 +18,17 @@ package com.optimizely.ab.android.event_handler;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.android.shared.ServiceWorkScheduled;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * worker queue.
  *
  */
-public class EventIntentService extends IntentService {
+public class EventIntentService extends IntentService implements ServiceWorkScheduled {
     static final String EXTRA_URL = "com.optimizely.ab.android.EXTRA_URL";
     static final String EXTRA_REQUEST_BODY = "com.optimizely.ab.android.EXTRA_REQUEST_BODY";
     static final String EXTRA_INTERVAL = "com.optimizely.ab.android.EXTRA_INTERVAL";
@@ -59,15 +62,7 @@ public class EventIntentService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
-        OptlyStorage optlyStorage = new OptlyStorage(this);
-        EventClient eventClient = new EventClient(new Client(optlyStorage,
-                LoggerFactory.getLogger(Client.class)), LoggerFactory.getLogger(EventClient.class));
-        EventDAO eventDAO = EventDAO.getInstance(this, "1", LoggerFactory.getLogger(EventDAO.class));
-        ServiceScheduler serviceScheduler = new ServiceScheduler(
-                (AlarmManager) getSystemService(ALARM_SERVICE),
-                new ServiceScheduler.PendingIntentFactory(this),
-                LoggerFactory.getLogger(ServiceScheduler.class));
-        eventDispatcher = new EventDispatcher(this, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
+        initialize(this);
     }
 
     /**
@@ -77,6 +72,11 @@ public class EventIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        onWork(this, intent);
+    }
+
+    @Override
+    public void onWork(@NonNull Context context, @Nullable Intent intent) {
         if (intent == null) {
             logger.warn("Handled a null intent");
             return;
@@ -88,5 +88,20 @@ public class EventIntentService extends IntentService {
         } else {
             logger.warn("Unable to create dependencies needed by intent handler");
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public void initialize(@NonNull Context context) {
+        OptlyStorage optlyStorage = new OptlyStorage(context);
+        EventClient eventClient = new EventClient(new Client(optlyStorage,
+                LoggerFactory.getLogger(Client.class)), LoggerFactory.getLogger(EventClient.class));
+        EventDAO eventDAO = EventDAO.getInstance(context, "1", LoggerFactory.getLogger(EventDAO.class));
+        ServiceScheduler serviceScheduler = new ServiceScheduler(
+                (AlarmManager) context.getSystemService(ALARM_SERVICE),
+                new ServiceScheduler.PendingIntentFactory(context),
+                LoggerFactory.getLogger(ServiceScheduler.class));
+        eventDispatcher = new EventDispatcher(context, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
+
     }
 }

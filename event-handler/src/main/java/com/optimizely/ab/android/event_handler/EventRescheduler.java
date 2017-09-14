@@ -17,12 +17,18 @@
 package com.optimizely.ab.android.event_handler;
 
 import android.app.AlarmManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.app.job.JobWorkItem;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
+import com.optimizely.ab.android.shared.JobWorkService;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.slf4j.Logger;
@@ -84,7 +90,7 @@ public class EventRescheduler extends BroadcastReceiver {
     void reschedule(@NonNull Context context, @NonNull Intent broadcastIntent, @NonNull Intent eventServiceIntent, @NonNull ServiceScheduler serviceScheduler) {
         if (broadcastIntent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
                 broadcastIntent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
-            context.startService(eventServiceIntent);
+            startService(context,  eventServiceIntent);
             logger.info("Rescheduling event flushing if necessary");
         } else if (broadcastIntent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)
                 && broadcastIntent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
@@ -95,11 +101,27 @@ public class EventRescheduler extends BroadcastReceiver {
                     // with wifi the service will be rescheduled on the interval.
                     // Wifi connection state changes all the time and starting services is expensive
                     // so it's important to only do this if we have stored events.
-                    context.startService(eventServiceIntent);
+                    startService(context, eventServiceIntent);
                     logger.info("Preemptively flushing events since wifi became available");
                 }
         } else {
             logger.warn("Received unsupported broadcast action to event rescheduler");
         }
+    }
+
+    private void startService(Context context, Intent intent) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int JOBID = 2112;
+            JobInfo jobInfo = new JobInfo.Builder(JOBID,
+                    new ComponentName(context, JobWorkService.class)).setOverrideDeadline(0).build();
+            JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+            jobScheduler.enqueue(jobInfo, new JobWorkItem(intent));
+
+        }
+        else {
+            context.startService(intent);
+        }
+
     }
 }

@@ -63,6 +63,7 @@ public class DatafileLoaderTest {
     private Client client;
     private Logger logger;
     private DatafileLoadedListener datafileLoadedListener;
+    Context context = InstrumentationRegistry.getTargetContext();
 
     @Before
     public void setup() {
@@ -86,7 +87,7 @@ public class DatafileLoaderTest {
     public void loadFromCDNWhenNoCachedFile() throws MalformedURLException, JSONException {
         final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileService, datafileClient, datafileCache, executor, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
 
@@ -107,7 +108,7 @@ public class DatafileLoaderTest {
     public void loadWhenCacheFileExistsAndCDNNotModified() {
         final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileService, datafileClient, datafileCache, executor, logger);
         datafileCache.save("{}");
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("");
@@ -129,7 +130,7 @@ public class DatafileLoaderTest {
     public void noCacheAndLoadFromCDNFails() {
         final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileService, datafileClient, datafileCache, executor, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn(null);
 
@@ -151,7 +152,7 @@ public class DatafileLoaderTest {
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("1", cache, logger);
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileService, datafileClient, datafileCache, executor, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
         when(cache.exists(datafileCache.getFileName())).thenReturn(true);
