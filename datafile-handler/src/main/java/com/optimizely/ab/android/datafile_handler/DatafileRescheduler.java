@@ -28,6 +28,7 @@ import android.support.annotation.NonNull;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.JobWorkService;
+import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,9 +84,12 @@ public class DatafileRescheduler extends BroadcastReceiver {
      */
     static class Dispatcher {
 
-        @NonNull private final Context context;
-        @NonNull private final BackgroundWatchersCache backgroundWatchersCache;
-        @NonNull private final Logger logger;
+        @NonNull
+        private final Context context;
+        @NonNull
+        private final BackgroundWatchersCache backgroundWatchersCache;
+        @NonNull
+        private final Logger logger;
 
         Dispatcher(@NonNull Context context, @NonNull BackgroundWatchersCache backgroundWatchersCache, @NonNull Logger logger) {
             this.context = context;
@@ -97,32 +101,11 @@ public class DatafileRescheduler extends BroadcastReceiver {
             List<String> projectIds = backgroundWatchersCache.getWatchingProjectIds();
             for (String projectId : projectIds) {
                 intent.putExtra(DatafileService.EXTRA_PROJECT_ID, projectId);
-                startService(context, intent);
+                ServiceScheduler.startService(context, DatafileService.JOB_ID, intent);
 
                 logger.info("Rescheduled data file watching for project {}", projectId);
             }
 
         }
-        private void startService(Context context, Intent intent) {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                JobInfo jobInfo = new JobInfo.Builder(DatafileService.JOB_ID,
-                        new ComponentName(context, JobWorkService.class))
-                        // schedule it to run any time between 1 - 5 minutes
-                        .setMinimumLatency(JobWorkService.ONE_MINUTE)
-                        .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
-                        .build();
-
-                JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-
-                jobScheduler.enqueue(jobInfo, new JobWorkItem(intent));
-
-            }
-            else {
-                context.startService(intent);
-            }
-
-        }
     }
-
-
 }

@@ -29,7 +29,7 @@ import android.support.annotation.RequiresApi;
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
-import com.optimizely.ab.android.shared.ServiceWorkScheduled;
+import com.optimizely.ab.android.shared.JobWorkScheduledService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ import java.util.concurrent.Executors;
  * These services will only be used if you are using our {@link DefaultDatafileHandler}.
  * You can chose to implement your own handler and use all or part of this package.
  */
-public class DatafileService extends Service implements ServiceWorkScheduled {
+public class DatafileService extends Service implements JobWorkScheduledService {
     /**
      * Extra containing the project id this instance of Optimizely was built with
      */

@@ -90,7 +90,7 @@ public class EventRescheduler extends BroadcastReceiver {
     void reschedule(@NonNull Context context, @NonNull Intent broadcastIntent, @NonNull Intent eventServiceIntent, @NonNull ServiceScheduler serviceScheduler) {
         if (broadcastIntent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
                 broadcastIntent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
-            startService(context,  eventServiceIntent);
+            ServiceScheduler.startService(context,  EventIntentService.JOB_ID, eventServiceIntent);
             logger.info("Rescheduling event flushing if necessary");
         } else if (broadcastIntent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)
                 && broadcastIntent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
@@ -101,7 +101,7 @@ public class EventRescheduler extends BroadcastReceiver {
                     // with wifi the service will be rescheduled on the interval.
                     // Wifi connection state changes all the time and starting services is expensive
                     // so it's important to only do this if we have stored events.
-                    startService(context, eventServiceIntent);
+                    ServiceScheduler.startService(context, EventIntentService.JOB_ID, eventServiceIntent);
                     logger.info("Preemptively flushing events since wifi became available");
                 }
         } else {
@@ -109,22 +109,4 @@ public class EventRescheduler extends BroadcastReceiver {
         }
     }
 
-    private void startService(Context context, Intent intent) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            JobInfo jobInfo = new JobInfo.Builder(EventIntentService.JOB_ID,
-                    new ComponentName(context, JobWorkService.class))
-                    // schedule it to run any time between 1 - 5 minutes
-                    .setMinimumLatency(JobWorkService.ONE_MINUTE)
-                    .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
-                    .build();
-            JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-
-            jobScheduler.enqueue(jobInfo, new JobWorkItem(intent));
-
-        }
-        else {
-            context.startService(intent);
-        }
-
-    }
 }

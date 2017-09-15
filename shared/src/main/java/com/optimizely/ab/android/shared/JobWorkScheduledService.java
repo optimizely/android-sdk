@@ -26,7 +26,7 @@ import android.support.annotation.Nullable;
  * within the Service onHandleIntent or onStartCommand.  If we are Android O or later, the job service will hold a handle to this interface and call
  * it if and when the job service is called.
  */
-public interface ServiceWorkScheduled {
+public interface JobWorkScheduledService {
     void initialize(@NonNull Context context);
     void onWork(@NonNull Context context, @Nullable Intent intent);
 }

@@ -16,7 +16,6 @@
 
 package com.optimizely.ab.android.event_handler;
 
-import android.app.AlarmManager;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +27,7 @@ import android.support.annotation.RequiresApi;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.shared.ServiceWorkScheduled;
+import com.optimizely.ab.android.shared.JobWorkScheduledService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * worker queue.
  *
  */
-public class EventIntentService extends IntentService implements ServiceWorkScheduled {
+public class EventIntentService extends IntentService implements JobWorkScheduledService {
     static final String EXTRA_URL = "com.optimizely.ab.android.EXTRA_URL";
     static final String EXTRA_REQUEST_BODY = "com.optimizely.ab.android.EXTRA_REQUEST_BODY";
     static final String EXTRA_INTERVAL = "com.optimizely.ab.android.EXTRA_INTERVAL";

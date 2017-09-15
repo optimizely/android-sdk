@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import org.slf4j.Logger;
@@ -113,6 +114,7 @@ public class ServiceScheduler {
             try {
                 id = (Integer) Class.forName(clazz).getDeclaredField("JOB_ID").get(null);
                 jobScheduler.cancel(id);
+                pendingIntent.cancel();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (NoSuchFieldException e) {
@@ -201,4 +203,41 @@ public class ServiceScheduler {
             return PendingIntent.getService(context, 0, intent, flag);
         }
     }
+
+    public static void startService(Context context, Integer jobId, Intent intent) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (ServiceScheduler.getScheduled(context, jobId) != null) {
+                return;
+            }
+            JobInfo jobInfo = new JobInfo.Builder(jobId,
+                    new ComponentName(context, JobWorkService.class))
+                    // schedule it to run any time between 1 - 5 minutes
+                    .setMinimumLatency(JobWorkService.ONE_MINUTE)
+                    .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
+                    .build();
+            JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+            jobScheduler.enqueue(jobInfo, new JobWorkItem(intent));
+
+        }
+        else {
+            context.startService(intent);
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public static JobInfo getScheduled(Context context, Integer jobId) {
+        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        for (JobInfo jobInfo : jobScheduler.getAllPendingJobs()) {
+            if (jobInfo.getId() == jobId) {
+                return jobInfo;
+            }
+        }
+
+        return null;
+    }
+
+
+
 }
