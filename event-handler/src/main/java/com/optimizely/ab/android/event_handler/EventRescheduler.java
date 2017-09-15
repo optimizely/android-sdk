@@ -70,7 +70,7 @@ public class EventRescheduler extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (context != null && intent != null) {
             ServiceScheduler serviceScheduler = new ServiceScheduler(
-                    (AlarmManager) context.getSystemService(ALARM_SERVICE),
+                    context,
                     new ServiceScheduler.PendingIntentFactory(context),
                     LoggerFactory.getLogger(ServiceScheduler.class));
             Intent eventServiceIntent = new Intent(context, EventIntentService.class);
@@ -111,9 +111,12 @@ public class EventRescheduler extends BroadcastReceiver {
 
     private void startService(Context context, Intent intent) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            int JOBID = 2112;
-            JobInfo jobInfo = new JobInfo.Builder(JOBID,
-                    new ComponentName(context, JobWorkService.class)).setOverrideDeadline(0).build();
+            JobInfo jobInfo = new JobInfo.Builder(EventIntentService.JOB_ID,
+                    new ComponentName(context, JobWorkService.class))
+                    // schedule it to run any time between 1 - 5 minutes
+                    .setMinimumLatency(JobWorkService.ONE_MINUTE)
+                    .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
+                    .build();
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
             jobScheduler.enqueue(jobInfo, new JobWorkItem(intent));

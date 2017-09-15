@@ -46,6 +46,8 @@ public class EventIntentService extends IntentService implements ServiceWorkSche
     static final String EXTRA_URL = "com.optimizely.ab.android.EXTRA_URL";
     static final String EXTRA_REQUEST_BODY = "com.optimizely.ab.android.EXTRA_REQUEST_BODY";
     static final String EXTRA_INTERVAL = "com.optimizely.ab.android.EXTRA_INTERVAL";
+    public static final Integer JOB_ID = 2112;
+
     Logger logger = LoggerFactory.getLogger(EventIntentService.class);
     @Nullable EventDispatcher eventDispatcher;
 
@@ -98,7 +100,7 @@ public class EventIntentService extends IntentService implements ServiceWorkSche
                 LoggerFactory.getLogger(Client.class)), LoggerFactory.getLogger(EventClient.class));
         EventDAO eventDAO = EventDAO.getInstance(context, "1", LoggerFactory.getLogger(EventDAO.class));
         ServiceScheduler serviceScheduler = new ServiceScheduler(
-                (AlarmManager) context.getSystemService(ALARM_SERVICE),
+                context,
                 new ServiceScheduler.PendingIntentFactory(context),
                 LoggerFactory.getLogger(ServiceScheduler.class));
         eventDispatcher = new EventDispatcher(context, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));

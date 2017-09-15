@@ -105,9 +105,13 @@ public class DatafileRescheduler extends BroadcastReceiver {
         }
         private void startService(Context context, Intent intent) {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                int JOBID = 2113;
-                JobInfo jobInfo = new JobInfo.Builder(JOBID,
-                        new ComponentName(context, JobWorkService.class)).setOverrideDeadline(0).build();
+                JobInfo jobInfo = new JobInfo.Builder(DatafileService.JOB_ID,
+                        new ComponentName(context, JobWorkService.class))
+                        // schedule it to run any time between 1 - 5 minutes
+                        .setMinimumLatency(JobWorkService.ONE_MINUTE)
+                        .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
+                        .build();
+
                 JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
                 jobScheduler.enqueue(jobInfo, new JobWorkItem(intent));

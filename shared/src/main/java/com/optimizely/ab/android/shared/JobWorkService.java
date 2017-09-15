@@ -19,6 +19,7 @@ import android.util.Log;
 //BEGIN_INCLUDE(service)
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class JobWorkService extends JobService {
+    public static final int ONE_MINUTE = 60 * 1000;
     private NotificationManager mNM;
     private CommandProcessor mCurProcessor;
     /**
