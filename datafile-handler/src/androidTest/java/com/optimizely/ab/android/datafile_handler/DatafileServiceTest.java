@@ -90,7 +90,7 @@ public class DatafileServiceTest {
 
 
         DatafileService datafileService = ((DatafileService.LocalBinder) binder).getService();
-        DatafileLoader datafileLoader = new DatafileLoader(context, datafileService, datafileClient, datafileCache, MoreExecutors.newDirectExecutorService(), mock(Logger.class));
+        DatafileLoader datafileLoader = new DatafileLoader(datafileService, datafileClient, datafileCache, MoreExecutors.newDirectExecutorService(), mock(Logger.class));
         datafileService.getDatafile("1", datafileLoader, datafileLoadedListener);
 
         assertTrue(datafileService.isBound());

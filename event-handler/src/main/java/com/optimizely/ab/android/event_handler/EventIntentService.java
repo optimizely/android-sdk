@@ -63,7 +63,7 @@ public class EventIntentService extends IntentService implements JobWorkSchedule
     public void onCreate() {
         super.onCreate();
 
-        initialize(this);
+        initialize();
     }
 
     /**
@@ -73,11 +73,11 @@ public class EventIntentService extends IntentService implements JobWorkSchedule
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        onWork(this, intent);
+        onWork(intent);
     }
 
     @Override
-    public void onWork(@NonNull Context context, @Nullable Intent intent) {
+    public void onWork(@Nullable Intent intent) {
         if (intent == null) {
             logger.warn("Handled a null intent");
             return;
@@ -93,16 +93,16 @@ public class EventIntentService extends IntentService implements JobWorkSchedule
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
-    public void initialize(@NonNull Context context) {
-        OptlyStorage optlyStorage = new OptlyStorage(context);
+    public void initialize() {
+        OptlyStorage optlyStorage = new OptlyStorage(this);
         EventClient eventClient = new EventClient(new Client(optlyStorage,
                 LoggerFactory.getLogger(Client.class)), LoggerFactory.getLogger(EventClient.class));
-        EventDAO eventDAO = EventDAO.getInstance(context, "1", LoggerFactory.getLogger(EventDAO.class));
+        EventDAO eventDAO = EventDAO.getInstance(this, "1", LoggerFactory.getLogger(EventDAO.class));
         ServiceScheduler serviceScheduler = new ServiceScheduler(
-                context,
-                new ServiceScheduler.PendingIntentFactory(context),
+                this,
+                new ServiceScheduler.PendingIntentFactory(this),
                 LoggerFactory.getLogger(ServiceScheduler.class));
-        eventDispatcher = new EventDispatcher(context, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
+        eventDispatcher = new EventDispatcher(this, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
 
     }
 }

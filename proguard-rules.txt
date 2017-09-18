@@ -21,6 +21,7 @@
 
 # Optimizely
 -keep class com.optimizely.ab.android.shared.JobWorkService
+-keep class com.optimizely.ab.android.shared.ServiceScheduler
 
 # Gson
 -keepnames class com.google.gson.Gson

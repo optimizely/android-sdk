@@ -83,7 +83,7 @@ public class DatafileServiceConnection implements ServiceConnection {
                     new Cache(context.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
                     LoggerFactory.getLogger(DatafileCache.class));
 
-            DatafileLoader datafileLoader = new DatafileLoader(context, datafileService,
+            DatafileLoader datafileLoader = new DatafileLoader(datafileService,
                     datafileClient,
                     datafileCache,
                     Executors.newSingleThreadExecutor(),

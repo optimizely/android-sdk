@@ -27,6 +27,6 @@ import android.support.annotation.Nullable;
  * it if and when the job service is called.
  */
 public interface JobWorkScheduledService {
-    void initialize(@NonNull Context context);
-    void onWork(@NonNull Context context, @Nullable Intent intent);
+    void initialize();
+    void onWork(@Nullable Intent intent);
 }

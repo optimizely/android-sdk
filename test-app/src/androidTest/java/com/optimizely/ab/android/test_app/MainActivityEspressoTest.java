@@ -114,7 +114,7 @@ public class MainActivityEspressoTest {
                     Context applicationContext = context.getApplicationContext();
                     ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(applicationContext);
                     AlarmManager alarmManager = (AlarmManager) applicationContext.getSystemService(Context.ALARM_SERVICE);
-                    serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory, LoggerFactory.getLogger(ServiceScheduler.class));
+                    serviceScheduler = new ServiceScheduler(applicationContext, pendingIntentFactory, LoggerFactory.getLogger(ServiceScheduler.class));
                 }
 
                 @Override

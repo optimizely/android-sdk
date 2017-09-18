@@ -50,7 +50,6 @@ public class ServiceScheduler {
      * @hide
      */
     public ServiceScheduler(@NonNull Context context, @NonNull PendingIntentFactory pendingIntentFactory, @NonNull Logger logger) {
-        //this.alarmManager = alarmManager;
         this.pendingIntentFactory = pendingIntentFactory;
         this.logger = logger;
         this.context = context;
@@ -86,12 +85,18 @@ public class ServiceScheduler {
 
     private void setRepeating(long interval, PendingIntent pendingIntent, Intent intent) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int jobId = getJobId(intent);
+            if (jobId == -1) {
+                logger.error("Problem getting job id");
+                return;
+            }
+
             JobScheduler jobScheduler = (JobScheduler)
                     context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            JobInfo.Builder builder = new JobInfo.Builder(1,
+            JobInfo.Builder builder = new JobInfo.Builder(jobId,
                     new ComponentName(context.getApplicationContext(),
                             JobWorkService.class.getName()));
-            builder.setPeriodic(interval);
+            builder.setPeriodic(interval, interval);
             builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
 
             if (jobScheduler.enqueue(builder.build(), new JobWorkItem(intent)) <= 0) {
@@ -128,6 +133,22 @@ public class ServiceScheduler {
             alarmManager.cancel(pendingIntent);
             pendingIntent.cancel();
         }
+    }
+
+    private int getJobId(Intent intent) {
+        String clazz = intent.getComponent().getClassName();
+        Integer id = null;
+        try {
+            id = (Integer) Class.forName(clazz).getDeclaredField("JOB_ID").get(null);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return id == null ? -1 : id;
     }
 
     /**

@@ -16,14 +16,22 @@
 
 package com.optimizely.ab.android.shared;
 
+import android.app.IntentService;
 import android.app.NotificationManager;
+import android.app.Service;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.app.job.JobWorkItem;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * This is an example of implementing a {@link JobService} that dispatches work enqueued in
@@ -33,8 +41,8 @@ import android.util.Log;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class JobWorkService extends JobService {
     public static final int ONE_MINUTE = 60 * 1000;
-    private NotificationManager mNM;
     private CommandProcessor mCurProcessor;
+    private int startId = 1;
     /**
      * This is a task to dequeue and process work in the background.
      */
@@ -58,11 +66,22 @@ public class JobWorkService extends JobService {
                 Log.i("JobWorkService", "Processing work: " + work + ", component: " + componentClass);
                 try {
                     clazz = Class.forName(componentClass);
-                    Object intentService = clazz.newInstance();
-                    if (intentService instanceof JobWorkScheduledService) {
-                        JobWorkScheduledService serviceWorkScheduled = (JobWorkScheduledService) intentService;
-                        serviceWorkScheduled.initialize(getApplicationContext());
-                        serviceWorkScheduled.onWork(getApplicationContext(), work.getIntent());
+                    Object service = clazz.newInstance();
+                    setContext((Service) service);
+
+                    if (service instanceof JobWorkScheduledService) {
+                        JobWorkScheduledService serviceWorkScheduled = (JobWorkScheduledService) service;
+                        serviceWorkScheduled.initialize();
+                        serviceWorkScheduled.onWork(work.getIntent());
+                    }
+                    else {
+                        if (service instanceof IntentService) {
+                            IntentService intentService = (IntentService) service;
+                            intentService.onCreate();
+                            callOnHandleIntent(intentService, work.getIntent());
+                        } else {
+                            callOnStartCommand((Service) service, work.getIntent());
+                        }
                     }
                 } catch (Exception e) {
                     Log.e("JobSerivice", "Error creating ServiceWorkScheduled", e);
@@ -102,6 +121,34 @@ public class JobWorkService extends JobService {
         // because the job needs to stop for some reason before it has completed all of
         // its work, so we would like it to remain to finish that work in the future.
         return true;
+    }
+
+    private void setContext(Service service) {
+        callMethod(ContextWrapper.class, service, "attachBaseContext", new Class[] { Context.class }, getApplicationContext());
+    }
+
+    private void callOnStartCommand(Service service, Intent intent) {
+        callMethod(Service.class, service, "onStartService", new Class[] { Intent.class, Integer.class, Integer.class}, intent, 0, startId++);
+    }
+
+    private void callOnHandleIntent(IntentService intentService, Intent intent) {
+        callMethod(IntentService.class, intentService, "onHandleIntent", new Class[] { Intent.class }, intent);
+    }
+
+    private void callMethod(Class clazz, Object object, String methodName, Class[] parameterTypes, Object... parameters ) {
+        try {
+            Method method = clazz.getDeclaredMethod(methodName, parameterTypes);
+            method.setAccessible(true);
+            method.invoke(object, parameters);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
     }
 }
 //END_INCLUDE(service)

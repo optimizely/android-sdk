@@ -61,7 +61,7 @@ public class DatafileService extends Service implements JobWorkScheduledService 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        onWork(this, intent);
+        onWork(intent);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -105,26 +105,26 @@ public class DatafileService extends Service implements JobWorkScheduledService 
     }
 
     @Override
-    public void initialize(@NonNull Context context) {
+    public void initialize() {
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
-    public void onWork(@NonNull Context context, @Nullable Intent intent) {
+    public void onWork(@Nullable Intent intent) {
         if (intent != null) {
             if (intent.hasExtra(EXTRA_PROJECT_ID)) {
                 String projectId = intent.getStringExtra(EXTRA_PROJECT_ID);
                 DatafileClient datafileClient = new DatafileClient(
-                        new Client(new OptlyStorage(context.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
+                        new Client(new OptlyStorage(this.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
                         LoggerFactory.getLogger(DatafileClient.class));
                 DatafileCache datafileCache = new DatafileCache(
                         projectId,
-                        new Cache(context.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
+                        new Cache(this.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
                         LoggerFactory.getLogger(DatafileCache.class));
 
                 String datafileUrl = getDatafileUrl(projectId);
-                DatafileLoader datafileLoader = new DatafileLoader(context, this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
+                DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
                 datafileLoader.getDatafile(datafileUrl, null);
             } else {
                 logger.warn("Data file service received an intent with no project id extra");
