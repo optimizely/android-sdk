@@ -21,7 +21,7 @@ import android.content.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CachedCounter {
+public class CachedCounter implements CountingIdlingResourceInterface {
     private final Cache cache;
     private final Logger logger = LoggerFactory.getLogger("CachedCounter");
     private final Context context;
@@ -34,22 +34,20 @@ public class CachedCounter {
         }
     }
 
-    synchronized public int increment() {
+    synchronized public void increment() {
         String value = cache.load(fileName);
         Integer val = Integer.valueOf(value);
         val += 1;
         cache.save(fileName, val.toString());
-        return val;
     }
 
-    synchronized public int decrement() {
+    synchronized public void decrement() {
         String value = cache.load(fileName);
         Integer val = Integer.valueOf(value);
         if (val == 0) {
-            return -1;
+            return;
         }
         val -= 1;
         cache.save(fileName, val.toString());
-        return val;
     }
 }

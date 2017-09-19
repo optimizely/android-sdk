@@ -29,17 +29,17 @@ import java.util.List;
  */
 public class CountingIdlingResourceManager {
 
-    @Nullable private static CachedCounter countingIdlingResource;
+    @Nullable private static CountingIdlingResourceInterface countingIdlingResource;
     @NonNull private static List<Pair<String, String>> eventList = new LinkedList<>();
 
-    @Nullable public static CachedCounter getIdlingResource(Context context) {
+    @Nullable public static CountingIdlingResourceInterface getIdlingResource(Context context) {
         if (countingIdlingResource == null) {
             countingIdlingResource = new CachedCounter(context);
         }
         return countingIdlingResource;
     }
 
-    public static void setIdlingResource(@NonNull CachedCounter countingIdlingResource) {
+    public static void setIdlingResource(@NonNull CountingIdlingResourceInterface countingIdlingResource) {
         CountingIdlingResourceManager.countingIdlingResource = countingIdlingResource;
     }
 
