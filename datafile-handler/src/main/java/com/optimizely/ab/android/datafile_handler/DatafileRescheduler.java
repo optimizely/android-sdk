@@ -84,12 +84,9 @@ public class DatafileRescheduler extends BroadcastReceiver {
      */
     static class Dispatcher {
 
-        @NonNull
-        private final Context context;
-        @NonNull
-        private final BackgroundWatchersCache backgroundWatchersCache;
-        @NonNull
-        private final Logger logger;
+        @NonNull private final Context context;
+        @NonNull private final BackgroundWatchersCache backgroundWatchersCache;
+        @NonNull private final Logger logger;
 
         Dispatcher(@NonNull Context context, @NonNull BackgroundWatchersCache backgroundWatchersCache, @NonNull Logger logger) {
             this.context = context;

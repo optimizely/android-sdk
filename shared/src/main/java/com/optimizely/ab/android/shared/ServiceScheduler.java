@@ -100,7 +100,7 @@ public class ServiceScheduler {
             builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
 
             if (jobScheduler.enqueue(builder.build(), new JobWorkItem(intent)) <= 0) {
-                Log.e("ServiceScheduler", "Some error while scheduling the job");
+                logger.error("ServiceScheduler", "Some error while scheduling the job");
             }
 
         }
@@ -121,11 +121,11 @@ public class ServiceScheduler {
                 jobScheduler.cancel(id);
                 pendingIntent.cancel();
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                logger.error("Error in Cancel ", e);
             } catch (NoSuchFieldException e) {
-                e.printStackTrace();
+                logger.error("Error in Cancel ", e);
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                logger.error("Error in Cancel ", e);
             }
         }
         else {
@@ -141,11 +141,11 @@ public class ServiceScheduler {
         try {
             id = (Integer) Class.forName(clazz).getDeclaredField("JOB_ID").get(null);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+           logger.error("Error getting JOB_ID from " + clazz, e);
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            logger.error("Error getting JOB_ID from " + clazz, e);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.error("Error getting JOB_ID from " + clazz, e);
         }
 
         return id == null ? -1 : id;

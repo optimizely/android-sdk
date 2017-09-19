@@ -30,6 +30,9 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -43,6 +46,7 @@ public class JobWorkService extends JobService {
     public static final int ONE_MINUTE = 60 * 1000;
     private CommandProcessor mCurProcessor;
     private int startId = 1;
+    Logger logger = LoggerFactory.getLogger("JobWorkService");
     /**
      * This is a task to dequeue and process work in the background.
      */
@@ -63,7 +67,7 @@ public class JobWorkService extends JobService {
             while (!(cancelled=isCancelled()) && (work=mParams.dequeueWork()) != null) {
                 String componentClass = work.getIntent().getComponent().getClassName();
                 Class<?> clazz = null;
-                Log.i("JobWorkService", "Processing work: " + work + ", component: " + componentClass);
+                logger.info("JobWorkService", "Processing work: " + work + ", component: " + componentClass);
                 try {
                     clazz = Class.forName(componentClass);
                     Object service = clazz.newInstance();
@@ -84,13 +88,13 @@ public class JobWorkService extends JobService {
                         }
                     }
                 } catch (Exception e) {
-                    Log.e("JobSerivice", "Error creating ServiceWorkScheduled", e);
+                    logger.error("JobSerivice", "Error creating ServiceWorkScheduled", e);
                 }
                 // Tell system we have finished processing the work.
-                Log.i("JobWorkService", "Done with: " + work);
+                logger.error("JobWorkService", "Done with: " + work);
             }
             if (cancelled) {
-                Log.i("JobWorkService", "CANCELLED!");
+                logger.error("JobWorkService", "CANCELLED!");
             }
             return null;
         }
@@ -142,11 +146,11 @@ public class JobWorkService extends JobService {
             method.invoke(object, parameters);
 
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+           logger.error("Error calling method " + methodName, e);
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            logger.error("Error calling method " + methodName, e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error("Error calling method " + methodName, e);
         }
 
     }
