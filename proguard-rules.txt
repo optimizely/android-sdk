@@ -20,8 +20,18 @@
 ## https://developers.optimizely.com/x/solutions/sdks/reference/index.html?language=android&platform=mobile#installation
 
 # Optimizely
--keep class com.optimizely.ab.android.datafile_handler.DatafileService { java.lang.Integer JOB_ID; } 
--keep class com.optimizely.ab.android.event_handler.EventIntentService { java.lang.Integer JOB_ID; }
+-keep class com.optimizely.ab.android.datafile_handler.DatafileService
+-keepclassmembers class  com.optimizely.ab.android.datafile_handler.DatafileService {
+    public *;    
+}
+-keep class com.optimizely.ab.android.event_handler.EventIntentService
+-keepclassmembers class  com.optimizely.ab.android.event_handler.EventIntentService {
+    public *;    
+}
+-keep class com.optimizely.ab.config.**
+-keepclassmembers class  com.optimizely.ab.config.** {
+    *;    
+}
 
 # Gson
 -keepnames class com.google.gson.Gson
