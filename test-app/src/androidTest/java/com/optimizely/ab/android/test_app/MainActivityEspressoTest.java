@@ -62,12 +62,6 @@ import static junit.framework.Assert.assertTrue;
 @LargeTest
 public class MainActivityEspressoTest {
 
-//    public static class CountingIdlingResourceImpl extends CountingIdlingResource, implements CountingIdlingResourceInterface {
-//        CountingIdlingResourceImpl(String str, boolean debug) {
-//            super(str, debug);
-//        }
-//    }
-
     private Context context = InstrumentationRegistry.getTargetContext();
     private CountingIdlingResource countingIdlingResource;
     private ServiceScheduler serviceScheduler;

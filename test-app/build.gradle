@@ -65,4 +65,5 @@ dependencies {
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
     // androidTestCompile 'com.optimizely.ab:android-sdk:1.0.0'
     androidTestCompile project(':android-sdk')
+    androidTestCompile project(path: ':shared')
 }
