@@ -24,7 +24,7 @@ jobs:
           name: Run Tests
           command: ./gradlew testAllModulesTravis
       - store_artifacts:
-              path: test-app/build/reports
+          path: test-app/build/reports
           destination: reports
       - store_test_results:
-              path: test-app/build/test-results
+          path: test-app/build/test-results
