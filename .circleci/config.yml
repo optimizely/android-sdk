@@ -27,6 +27,7 @@ jobs:
           path: test-app/build/test-results
   test:
     override:
+    steps:
       # start the emulator
       - emulator -avd circleci-android22 -no-audio -no-window:
           background: true
