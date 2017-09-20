@@ -20,26 +20,39 @@ jobs:
       - run:
           name: Run Tests
           command: ./gradlew lint test
+      - run:
+          name: Create avd
+       #   command: echo no | avdmanager create avd -n testEmulator -k "system-images;android-23;google_apis;armeabi-v7a"
+          command: echo no | avdmanager create avd -n testEmulator -k "system-images;android-24;default;armeabi-v7a"
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Start emulator
+          command: /opt/android-sdk-linux/emulator/emulator -avd testEmulator -no-audio -no-window
+          background: true
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Wait for emulator
+          command: ./android-wait-for-boot.sh
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Remove lock screen
+          command: adb shell input keyevent 82
+          environment:
+            TERM: dumb
+
+      - run:
+          name: Unit testing
+          command: ./gradlew testAllModulesTravis
+          environment:
+            TERM: dumb
       - store_artifacts:
           path: test-app/build/reports
           destination: reports
       - store_test_results:
           path: test-app/build/test-results
-  test:
-    override:
-    steps:
-      # start the emulator
-      - emulator -avd circleci-android22 -no-audio -no-window:
-          background: true
-          parallel: true
-      # wait for it to have booted
-      - circle-android wait-for-boot
-      # unlock the emulator screen
-      - sleep 30
-      - adb shell input keyevent 82
-      # run tests  against the emulator.
-      - ./gradlew testAllModulesTravis
-      # copy the build outputs to artifacts
-      - cp -r test-app/build/outputs $CIRCLE_ARTIFACTS
-      # copy the test results to the test results directory.
-      - cp -r test-app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
