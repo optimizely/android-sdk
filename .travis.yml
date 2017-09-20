@@ -19,6 +19,7 @@ cache:
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
+  - android list targets
   - echo no | android create avd --force -n test -t android-24 --abi default/armeabi-v7a
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
