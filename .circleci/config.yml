@@ -13,9 +13,6 @@ jobs:
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
-      - run:
-          name: Copy Licences
-          command: cp -r licenses/. $ANDROID_HOME/licenses
       - save_cache:
           paths:
             - ~/.gradle
