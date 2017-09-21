@@ -90,6 +90,6 @@ workflows:
       - test_api_version_25:
           requires:
             - build
-      - test_api_version_26:
+      - test_api_version_17:
           requires:
             - build
