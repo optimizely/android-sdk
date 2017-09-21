@@ -21,13 +21,13 @@ jobs:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "test-app/build.gradle" }}
   test_api_version_25:
-      working_directory: ~/android-code
-      docker:
-          - image: circleci/android:api-26-alpha
-      environment:
-        JVM_OPTS: -Xmx3200m
-      steps:
-        - checkout
+    working_directory: ~/android-code
+    docker:
+      - image: circleci/android:api-26-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
       - run:
           name: Setup emulator
           command: sdkmanager "system-images;android-25;google_apis;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-25;google_apis;armeabi-v7a"
@@ -52,31 +52,31 @@ jobs:
       - store_test_results:
           path: test-app/build/test-results              
   test_api_version_26:
-      working_directory: ~/android-code
-      docker:
-          - image: circleci/android:api-26-alpha
-      environment:
-        JVM_OPTS: -Xmx3200m
-      steps:
-        - checkout
-        - run:
-            name: Setup emulator
-            command: sdkmanager "system-images;android-26;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-26;default;armeabi-v7a"
-        - run:
-            name: Launch emulator
-            command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel on
-            background: true
-        - run:
-            name: Wait emulator
-            command: |
-              # wait for it to have booted
-              circle-android wait-for-boot
-              # unlock the emulator screen
-              sleep 30
-              adb shell input keyevent 82
-        - run:
-            name: Run Tests
-            command: ./gradlew testAllModulesTravis
+    working_directory: ~/android-code
+    docker:
+      - image: circleci/android:api-26-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - run:
+          name: Setup emulator
+          command: sdkmanager "system-images;android-26;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-26;default;armeabi-v7a"
+      - run:
+          name: Launch emulator
+          command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel on
+          background: true
+      - run:
+          name: Wait emulator
+          command: |
+            # wait for it to have booted
+            circle-android wait-for-boot
+            # unlock the emulator screen
+            sleep 30
+            adb shell input keyevent 82
+      - run:
+          name: Run Tests
+          command: ./gradlew testAllModulesTravis
       - store_artifacts:
           path: test-app/build/reports
           destination: reports
