@@ -35,6 +35,7 @@ jobs:
       - run:
           name: List SDK
           command: sdkmanager --list
+
       - run:
           name: Setup emulator
           command: sdkmanager "system-images;android-26;google_apis;x86" && echo "no" | avdmanager create avd -n test -k "system-images;android-26;google_apis;x86"
