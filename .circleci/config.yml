@@ -20,7 +20,7 @@ jobs:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "test-app/build.gradle" }}
-  test_api_version_25:
+  test_api_version_26:
     working_directory: ~/android-code
     docker:
       - image: circleci/android:api-26-alpha
@@ -36,7 +36,7 @@ jobs:
           command: sdkmanager --list
       - run:
           name: Setup emulator
-          command: sdkmanager "system-images;android-25;google_apis;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-25;google_apis;armeabi-v7a"
+          command: sdkmanager "system-images;android-26;google_apis;x86" && echo "no" | avdmanager create avd -n test -k "system-images;android-26;google_apis;x86"
       - run:
           name: Launch emulator
           command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel on
@@ -93,7 +93,7 @@ workflows:
   build_test:
     jobs:
       - build
-      - test_api_version_25:
+      - test_api_version_26:
           requires:
             - build
       - test_api_version_17:
