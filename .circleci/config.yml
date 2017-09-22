@@ -26,6 +26,7 @@ jobs:
       - image: circleci/android:api-26-alpha
     environment:
       JVM_OPTS: -Xmx3200m
+      JAVA_OPTIONS: -Djava.io.tmpdir=/var/tmp
     steps:
       - checkout
       - run:
