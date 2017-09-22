@@ -39,7 +39,7 @@ jobs:
           command: sdkmanager "system-images;android-26;google_apis;x86" && echo "no" | avdmanager create avd -n test -k "system-images;android-26;google_apis;x86"
       - run:
           name: Launch emulator
-          command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-x86 -avd test -noaudio -no-boot-anim -no-window -accel on
+          command: export ANDROID_SDK_ROOT=${ANDROID_HOME} && export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-x86 -avd test -noaudio -no-boot-anim -no-window -accel on
           background: true
       - run:
           name: Wait emulator
