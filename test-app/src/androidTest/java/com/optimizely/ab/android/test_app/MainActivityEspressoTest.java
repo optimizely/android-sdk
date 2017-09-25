@@ -30,6 +30,7 @@ import android.view.WindowManager;
 
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.event_handler.EventIntentService;
+import com.optimizely.ab.android.shared.CountingIdlingResourceInterface;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -51,6 +52,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.supportsInputMethods;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
@@ -71,7 +73,19 @@ public class MainActivityEspressoTest {
                 @Override
                 protected void before() throws Throwable {
                     super.before();
-                    countingIdlingResource = CountingIdlingResourceManager.getIdlingResource();
+                    countingIdlingResource = new CountingIdlingResource("optly", true);
+                    CountingIdlingResourceInterface wrapper = new CountingIdlingResourceInterface() {
+                        @Override
+                        public void increment() {
+                            countingIdlingResource.increment();
+                        }
+
+                        @Override
+                        public void decrement() {
+                            countingIdlingResource.decrement();
+                        }
+                    };
+                    CountingIdlingResourceManager.setIdlingResource(wrapper);
                     // To prove that the test fails, omit this call:
                     Espresso.registerIdlingResources(countingIdlingResource);
                 }

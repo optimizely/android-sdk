@@ -362,6 +362,10 @@ public class OptimizelyManager {
             }
         } catch (Exception e) {
             logger.error("Unable to build OptimizelyClient instance", e);
+            if (optimizelyStartListener != null) {
+                logger.info("Sending Optimizely instance to listener may be null on failure");
+                optimizelyStartListener.onStart(optimizelyClient);
+            }
         } catch (Error e) {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
@@ -522,7 +526,7 @@ public class OptimizelyManager {
          * cached datafile.  If you set this to -1, you disable background updates.  If you don't set
          * a download interval (or set to less than 0), then no background updates will be scheduled or occur.
          *
-         * @param interval the interval
+         * @param interval the interval in seconds
          * @return this {@link Builder} instance
          */
         public Builder withDatafileDownloadInterval(long interval) {
@@ -565,7 +569,7 @@ public class OptimizelyManager {
          * If you set this to -1, you disable background updates.  If you don't set
          * a event dispatch interval, then no background updates will be scheduled or occur.
          *
-         * @param interval the interval
+         * @param interval the interval in seconds
          * @return this {@link Builder} instance
          */
         public Builder withEventDispatchInterval(long interval) {
