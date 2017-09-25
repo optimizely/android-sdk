@@ -55,7 +55,6 @@ dependencies {
     compile "com.noveogroup.android:android-logger:$android_logger_ver"
     compile "com.optimizely.ab:core-api:$java_core_ver"
     compile "com.google.code.gson:gson:$gson_ver"
-    compile "com.android.support.test.espresso:espresso-idling-resource:$espresso_ver"
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '2.0.1'
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
