@@ -227,7 +227,8 @@ public class ServiceScheduler {
 
     public static void startService(Context context, Integer jobId, Intent intent) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (ServiceScheduler.getScheduled(context, jobId) != null) {
+
+            if (!ServiceScheduler.isScheduled(context, jobId)) {
                 return;
             }
             JobInfo jobInfo = new JobInfo.Builder(jobId,
@@ -248,15 +249,16 @@ public class ServiceScheduler {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public static JobInfo getScheduled(Context context, Integer jobId) {
-        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        for (JobInfo jobInfo : jobScheduler.getAllPendingJobs()) {
-            if (jobInfo.getId() == jobId) {
-                return jobInfo;
+    private static boolean isScheduled(Context context, Integer jobId) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            for (JobInfo jobInfo : jobScheduler.getAllPendingJobs()) {
+                if (jobInfo.getId() == jobId) {
+                    return true;
+                }
             }
         }
-
-        return null;
+        return false;
     }
 
 

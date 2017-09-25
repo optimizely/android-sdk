@@ -217,8 +217,8 @@ public class OptimizelyManagerTest {
         verify(startListener).onStart(any(OptimizelyClient.class));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void injectOptimizelyNullListener() {
         Context context = mock(Context.class);
         PackageManager packageManager = mock(PackageManager.class);

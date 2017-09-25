@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.JobWorkService;
@@ -52,6 +53,7 @@ import static org.mockito.Mockito.when;
  * Tests for {@link ServiceScheduler}
  */
 @RunWith(AndroidJUnit4.class)
+@SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
 public class ServiceSchedulerTest {
 
     private OptlyStorage optlyStorage;
