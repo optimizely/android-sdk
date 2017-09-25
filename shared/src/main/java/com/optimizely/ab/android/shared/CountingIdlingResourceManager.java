@@ -16,65 +16,55 @@
 
 package com.optimizely.ab.android.shared;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.test.espresso.idling.CountingIdlingResource;
 import android.util.Pair;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Manages an Espresso {@link CountingIdlingResource}
+ * Manages an Espresso like CountingIdlingResource
  */
-@VisibleForTesting
 public class CountingIdlingResourceManager {
 
-    @Nullable private static CountingIdlingResource countingIdlingResource;
+    @Nullable private static CountingIdlingResourceInterface countingIdlingResource;
     @NonNull private static List<Pair<String, String>> eventList = new LinkedList<>();
 
-    @VisibleForTesting
-    @Nullable
-    public static CountingIdlingResource getIdlingResource() {
+    @Nullable public static CountingIdlingResourceInterface getIdlingResource(Context context) {
         if (countingIdlingResource == null) {
-            countingIdlingResource = new CountingIdlingResource("optimizely", true);
+            countingIdlingResource = new CachedCounter(context);
         }
         return countingIdlingResource;
     }
 
-    @VisibleForTesting
-    public static void setIdlingResource(@NonNull CountingIdlingResource countingIdlingResource) {
+    public static void setIdlingResource(@NonNull CountingIdlingResourceInterface countingIdlingResource) {
         CountingIdlingResourceManager.countingIdlingResource = countingIdlingResource;
     }
 
-    @VisibleForTesting
     public static void increment() {
         if (countingIdlingResource != null) {
             countingIdlingResource.increment();
         }
     }
 
-    @VisibleForTesting
     public static void decrement() {
         if (countingIdlingResource != null) {
             countingIdlingResource.decrement();
         }
     }
 
-    @VisibleForTesting
     public static void recordEvent(Pair<String, String> event) {
         if (countingIdlingResource != null) {
             eventList.add(event);
         }
     }
 
-    @VisibleForTesting
     public static void clearEvents() {
         eventList.clear();
     }
-
-    @VisibleForTesting
+    
     public static List<Pair<String, String>> getEvents() {
         return eventList;
     }
