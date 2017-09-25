@@ -166,7 +166,15 @@ public class DatafileLoader {
             if (dataFile == null || !dataFile.isEmpty()) {
                 datafileLoader.notify(datafileLoadedListener, dataFile);
             }
+
             datafileService.stop();
+
+            if (datafileLoader.hasNotifiedListener) {
+                // we're done here. meaning, we have notified you of either the cache coming in or of a new file.
+                // so, we are notifying you that the data file service has stopped.
+                datafileLoadedListener.onStop(datafileService.getApplicationContext());
+            }
+
         }
     }
 }

@@ -362,6 +362,10 @@ public class OptimizelyManager {
             }
         } catch (Exception e) {
             logger.error("Unable to build OptimizelyClient instance", e);
+            if (optimizelyStartListener != null) {
+                logger.info("Sending Optimizely instance to listener may be null on failure");
+                optimizelyStartListener.onStart(optimizelyClient);
+            }
         } catch (Error e) {
             logger.error("Unable to build OptimizelyClient instance", e);
         }

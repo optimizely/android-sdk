@@ -30,6 +30,10 @@ import java.net.URL;
  * Makes requests to the Optly CDN to get the datafile
  */
 public class DatafileClient {
+    // the numerical base for the exponential backoff
+    public static final int REQUEST_BACKOFF_TIMEOUT = 2;
+    // power the number of retries
+    public static final int REQUEST_RETRIES_POWER = 3;
 
     @NonNull private final Client client;
     @NonNull private final Logger logger;
