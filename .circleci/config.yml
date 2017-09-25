@@ -58,6 +58,7 @@ jobs:
           destination: reports
       - store_test_results:
           path: test-app/build/test-results              
+
   test_api_version_17:
     working_directory: ~/android-code
     docker:
