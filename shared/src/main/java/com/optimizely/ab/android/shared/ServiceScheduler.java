@@ -18,9 +18,16 @@ package com.optimizely.ab.android.shared;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.app.job.JobWorkItem;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import org.slf4j.Logger;
 
@@ -31,20 +38,21 @@ import org.slf4j.Logger;
 // TODO Unit test coverage
 public class ServiceScheduler {
 
-    @NonNull private final AlarmManager alarmManager;
+   // @NonNull private final AlarmManager alarmManager;
     @NonNull private final PendingIntentFactory pendingIntentFactory;
     @NonNull private final Logger logger;
+    @NonNull private final Context context;
 
     /**
-     * @param alarmManager         an instance of {@link AlarmManager}
+     * @param context         an instance of {@link Context}
      * @param pendingIntentFactory an instance of {@link PendingIntentFactory}
      * @param logger               an instance of {@link Logger}
      * @hide
      */
-    public ServiceScheduler(@NonNull AlarmManager alarmManager, @NonNull PendingIntentFactory pendingIntentFactory, @NonNull Logger logger) {
-        this.alarmManager = alarmManager;
+    public ServiceScheduler(@NonNull Context context, @NonNull PendingIntentFactory pendingIntentFactory, @NonNull Logger logger) {
         this.pendingIntentFactory = pendingIntentFactory;
         this.logger = logger;
+        this.context = context;
     }
 
     /**
@@ -68,9 +76,79 @@ public class ServiceScheduler {
         }
 
         PendingIntent pendingIntent = pendingIntentFactory.getPendingIntent(intent);
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, interval, interval, pendingIntent);
+
+        setRepeating(interval, pendingIntent, intent);
 
         logger.info("Scheduled {}", intent.getComponent().toShortString());
+    }
+
+
+    private void setRepeating(long interval, PendingIntent pendingIntent, Intent intent) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int jobId = getJobId(intent);
+            if (jobId == -1) {
+                logger.error("Problem getting job id");
+                return;
+            }
+
+            JobScheduler jobScheduler = (JobScheduler)
+                    context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            JobInfo.Builder builder = new JobInfo.Builder(jobId,
+                    new ComponentName(context.getApplicationContext(),
+                            JobWorkService.class.getName()));
+            builder.setPeriodic(interval, interval);
+            builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+
+            if (jobScheduler.enqueue(builder.build(), new JobWorkItem(intent)) <= 0) {
+                logger.error("ServiceScheduler", "Some error while scheduling the job");
+            }
+
+        }
+        else {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, interval, interval, pendingIntent);
+        }
+    }
+
+    private void cancelRepeating(PendingIntent pendingIntent, Intent intent) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            JobScheduler jobScheduler = (JobScheduler)
+                    context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            String clazz = intent.getComponent().getClassName();
+            Integer id = null;
+            try {
+                id = (Integer) Class.forName(clazz).getDeclaredField("JOB_ID").get(null);
+                jobScheduler.cancel(id);
+                pendingIntent.cancel();
+            } catch (IllegalAccessException e) {
+                logger.error("Error in Cancel ", e);
+            } catch (NoSuchFieldException e) {
+                logger.error("Error in Cancel ", e);
+            } catch (ClassNotFoundException e) {
+                logger.error("Error in Cancel ", e);
+            }
+        }
+        else {
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntent);
+            pendingIntent.cancel();
+        }
+    }
+
+    private int getJobId(Intent intent) {
+        String clazz = intent.getComponent().getClassName();
+        Integer id = null;
+        try {
+            id = (Integer) Class.forName(clazz).getDeclaredField("JOB_ID").get(null);
+        } catch (IllegalAccessException e) {
+           logger.error("Error getting JOB_ID from " + clazz, e);
+        } catch (NoSuchFieldException e) {
+            logger.error("Error getting JOB_ID from " + clazz, e);
+        } catch (ClassNotFoundException e) {
+            logger.error("Error getting JOB_ID from " + clazz, e);
+        }
+
+        return id == null ? -1 : id;
     }
 
     /**
@@ -84,8 +162,7 @@ public class ServiceScheduler {
         if (intent != null) {
             try {
                 PendingIntent pendingIntent = pendingIntentFactory.getPendingIntent(intent);
-                alarmManager.cancel(pendingIntent);
-                pendingIntent.cancel();
+                cancelRepeating(pendingIntent, intent);
                 logger.info("Unscheduled {}", intent.getComponent().toShortString());
             } catch (Exception e) {
                 logger.debug("Failed to unschedule service", e);
@@ -147,4 +224,43 @@ public class ServiceScheduler {
             return PendingIntent.getService(context, 0, intent, flag);
         }
     }
+
+    public static void startService(Context context, Integer jobId, Intent intent) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            if (!ServiceScheduler.isScheduled(context, jobId)) {
+                return;
+            }
+            JobInfo jobInfo = new JobInfo.Builder(jobId,
+                    new ComponentName(context, JobWorkService.class))
+                    // schedule it to run any time between 1 - 5 minutes
+                    .setMinimumLatency(JobWorkService.ONE_MINUTE)
+                    .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
+                    .build();
+            JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+            jobScheduler.enqueue(jobInfo, new JobWorkItem(intent));
+
+        }
+        else {
+            context.startService(intent);
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private static boolean isScheduled(Context context, Integer jobId) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            for (JobInfo jobInfo : jobScheduler.getAllPendingJobs()) {
+                if (jobInfo.getId() == jobId) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
 }

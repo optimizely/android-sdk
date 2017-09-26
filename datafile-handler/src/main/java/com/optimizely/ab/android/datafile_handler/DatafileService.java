@@ -17,16 +17,19 @@
 package com.optimizely.ab.android.datafile_handler;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
+import com.optimizely.ab.android.shared.JobWorkScheduledService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +41,14 @@ import java.util.concurrent.Executors;
  * These services will only be used if you are using our {@link DefaultDatafileHandler}.
  * You can chose to implement your own handler and use all or part of this package.
  */
-public class DatafileService extends Service {
+public class DatafileService extends Service implements JobWorkScheduledService {
     /**
      * Extra containing the project id this instance of Optimizely was built with
      */
     public static final String EXTRA_PROJECT_ID = "com.optimizely.ab.android.EXTRA_PROJECT_ID";
     public static final String FORMAT_VERSIONED_CDN_URL = "https://cdn.optimizely.com/public/%s/datafile_v%s.json";
     static final String DATAFILE_VERSION = "3";
+    public static final Integer JOB_ID = 2113;
 
     @NonNull private final IBinder binder = new LocalBinder();
     Logger logger = LoggerFactory.getLogger(DatafileService.class);
@@ -57,26 +61,7 @@ public class DatafileService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null) {
-            if (intent.hasExtra(EXTRA_PROJECT_ID)) {
-                String projectId = intent.getStringExtra(EXTRA_PROJECT_ID);
-                DatafileClient datafileClient = new DatafileClient(
-                        new Client(new OptlyStorage(getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
-                        LoggerFactory.getLogger(DatafileClient.class));
-                DatafileCache datafileCache = new DatafileCache(
-                        projectId,
-                        new Cache(getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
-                        LoggerFactory.getLogger(DatafileCache.class));
-
-                String datafileUrl = getDatafileUrl(projectId);
-                DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
-                datafileLoader.getDatafile(datafileUrl, null);
-            } else {
-                logger.warn("Data file service received an intent with no project id extra");
-            }
-        } else {
-            logger.warn("Data file service received a null intent");
-        }
+        onWork(intent);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -117,6 +102,37 @@ public class DatafileService extends Service {
     public void getDatafile(String projectId, DatafileLoader datafileLoader, DatafileLoadedListener loadedListener) {
         String datafileUrl = getDatafileUrl(projectId);
         datafileLoader.getDatafile(datafileUrl, loadedListener);
+    }
+
+    @Override
+    public void initialize() {
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public void onWork(@Nullable Intent intent) {
+        if (intent != null) {
+            if (intent.hasExtra(EXTRA_PROJECT_ID)) {
+                String projectId = intent.getStringExtra(EXTRA_PROJECT_ID);
+                DatafileClient datafileClient = new DatafileClient(
+                        new Client(new OptlyStorage(this.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
+                        LoggerFactory.getLogger(DatafileClient.class));
+                DatafileCache datafileCache = new DatafileCache(
+                        projectId,
+                        new Cache(this.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
+                        LoggerFactory.getLogger(DatafileCache.class));
+
+                String datafileUrl = getDatafileUrl(projectId);
+                DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
+                datafileLoader.getDatafile(datafileUrl, null);
+            } else {
+                logger.warn("Data file service received an intent with no project id extra");
+            }
+        } else {
+            logger.warn("Data file service received a null intent");
+        }
+
     }
 
     public class LocalBinder extends Binder {

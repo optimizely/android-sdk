@@ -63,6 +63,7 @@ public class DatafileLoaderTest {
     private Client client;
     private Logger logger;
     private DatafileLoadedListener datafileLoadedListener;
+    Context context = InstrumentationRegistry.getTargetContext();
 
     @Before
     public void setup() {
