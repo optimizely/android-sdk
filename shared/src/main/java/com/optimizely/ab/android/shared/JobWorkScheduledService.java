@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
 /****************************************************************************
  * Copyright 2017, Optimizely, Inc. and contributors                        *
  *                                                                          *
@@ -15,13 +13,20 @@
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
  ***************************************************************************/
--->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.optimizely.ab.android.shared">
+package com.optimizely.ab.android.shared;
 
-    <application>
-        <service android:name=".JobWorkService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-    </application>
-</manifest>
+import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+/**
+ * This interface is implemented by any service that wants to run in the background.  If it is pre-Android O it will not be called except from
+ * within the Service onHandleIntent or onStartCommand.  If we are Android O or later, the job service will hold a handle to this interface and call
+ * it if and when the job service is called.
+ */
+public interface JobWorkScheduledService {
+    void initialize();
+    void onWork(@Nullable Intent intent);
+}

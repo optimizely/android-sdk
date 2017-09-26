@@ -52,6 +52,23 @@ public class ServiceSchedulerTest {
 
     private Context context;
 
+    public static class MyIntent extends IntentService {
+
+        // if you want to schedule an intent for Android O or greater, the intent has to have the public
+        // job id or it will not be scheduled.
+        public static final Integer JOB_ID = 2112;
+
+        public MyIntent() {
+            super("MyItentServiceTest");
+
+        }
+
+        @Override
+        protected void onHandleIntent(@Nullable Intent intent) {
+
+        }
+    }
+
     @Before
     public void setup() {
         context = getTargetContext();
@@ -60,25 +77,9 @@ public class ServiceSchedulerTest {
     @Test
     public void testScheduler() {
 
-        class MyIntent extends IntentService {
-
-            public MyIntent() {
-                super("MyItentServiceTest");
-
-            }
-
-            @Override
-            protected void onHandleIntent(@Nullable Intent intent) {
-
-            }
-        }
-
-
-        AlarmManager alarmManager = (AlarmManager) context
-                .getSystemService(Context.ALARM_SERVICE);
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
                 .PendingIntentFactory(context.getApplicationContext());
-        ServiceScheduler serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory,
+        ServiceScheduler serviceScheduler = new ServiceScheduler(context, pendingIntentFactory,
                 LoggerFactory.getLogger(ServiceScheduler.class));
 
 

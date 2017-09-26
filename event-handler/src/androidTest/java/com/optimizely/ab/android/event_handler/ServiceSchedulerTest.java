@@ -18,17 +18,26 @@ package com.optimizely.ab.android.event_handler;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.app.job.JobWorkItem;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.optimizely.ab.android.shared.JobWorkService;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 
 import static junit.framework.Assert.assertEquals;
@@ -36,6 +45,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,23 +53,33 @@ import static org.mockito.Mockito.when;
  * Tests for {@link ServiceScheduler}
  */
 @RunWith(AndroidJUnit4.class)
+@SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
 public class ServiceSchedulerTest {
 
     private OptlyStorage optlyStorage;
     private ServiceScheduler.PendingIntentFactory pendingIntentFactory;
     private AlarmManager alarmManager;
+    private JobScheduler jobScheduler;
     private Logger logger;
     private ServiceScheduler serviceScheduler;
     private Context context;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Before
     public void setup() {
-        context = InstrumentationRegistry.getTargetContext();
+        context      = mock(Context.class);
         optlyStorage = mock(OptlyStorage.class);
         alarmManager = mock(AlarmManager.class);
+        jobScheduler = mock(JobScheduler.class);
+
+        when(context.getApplicationContext()).thenReturn(context);
+
+        when(context.getSystemService(Context.ALARM_SERVICE)).thenReturn(alarmManager);
+        when(context.getSystemService(Context.JOB_SCHEDULER_SERVICE)).thenReturn(jobScheduler);
+
         pendingIntentFactory = mock(ServiceScheduler.PendingIntentFactory.class);
         logger = mock(Logger.class);
-        serviceScheduler = new ServiceScheduler(alarmManager, pendingIntentFactory, logger);
+        serviceScheduler = new ServiceScheduler(context, pendingIntentFactory, logger);
     }
 
     @Test
@@ -72,7 +92,18 @@ public class ServiceSchedulerTest {
 
         serviceScheduler.schedule(intent, AlarmManager.INTERVAL_HOUR);
 
-        verify(alarmManager).setInexactRepeating(AlarmManager.ELAPSED_REALTIME, AlarmManager.INTERVAL_HOUR, AlarmManager.INTERVAL_HOUR, pendingIntent);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ArgumentCaptor<JobInfo> jobInfoArgumentCaptor = ArgumentCaptor.forClass(JobInfo.class);
+            ArgumentCaptor<JobWorkItem> workItemArgumentCaptor = ArgumentCaptor.forClass(JobWorkItem.class);
+
+            verify(jobScheduler).enqueue(jobInfoArgumentCaptor.capture(), workItemArgumentCaptor.capture());
+
+            assertEquals(jobInfoArgumentCaptor.getValue().getIntervalMillis(), AlarmManager.INTERVAL_HOUR );
+
+        }
+        else {
+            verify(alarmManager).setInexactRepeating(AlarmManager.ELAPSED_REALTIME, AlarmManager.INTERVAL_HOUR, AlarmManager.INTERVAL_HOUR, pendingIntent);
+        }
         verify(logger).info("Scheduled {}", intent.getComponent().toShortString());
         pendingIntent.cancel();
     }
@@ -95,7 +126,18 @@ public class ServiceSchedulerTest {
         intent.putExtra(EventIntentService.EXTRA_INTERVAL, duration);
         serviceScheduler.schedule(intent, duration);
 
-        verify(alarmManager).setInexactRepeating(AlarmManager.ELAPSED_REALTIME, duration, duration, pendingIntent);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ArgumentCaptor<JobInfo> jobInfoArgumentCaptor = ArgumentCaptor.forClass(JobInfo.class);
+            ArgumentCaptor<JobWorkItem> workItemArgumentCaptor = ArgumentCaptor.forClass(JobWorkItem.class);
+
+            verify(jobScheduler).enqueue(jobInfoArgumentCaptor.capture(), workItemArgumentCaptor.capture());
+
+            assertEquals(jobInfoArgumentCaptor.getValue().getIntervalMillis(), duration );
+        }
+        else {
+            verify(alarmManager).setInexactRepeating(AlarmManager.ELAPSED_REALTIME, duration, duration, pendingIntent);
+        }
+
         verify(logger).info("Scheduled {}", intent.getComponent().toShortString());
         pendingIntent.cancel();
     }
@@ -104,7 +146,7 @@ public class ServiceSchedulerTest {
     public void testAlreadyScheduledAlarm() {
         final Intent intent = new Intent(context, EventIntentService.class);
         when(pendingIntentFactory.hasPendingIntent(intent)).thenReturn(true);
-        when(pendingIntentFactory.getPendingIntent(intent)).thenReturn(PendingIntent.getService(InstrumentationRegistry.getTargetContext(), 1, intent, 0));
+        when(pendingIntentFactory.getPendingIntent(intent)).thenReturn(getPendingIntent());
 
         serviceScheduler.schedule(intent, AlarmManager.INTERVAL_HOUR);
 
@@ -153,7 +195,12 @@ public class ServiceSchedulerTest {
         final Intent intent = new Intent(context, EventIntentService.class);
         when(pendingIntentFactory.getPendingIntent(intent)).thenReturn(pendingIntent);
         serviceScheduler.unschedule(intent);
-        verify(alarmManager).cancel(pendingIntent);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            verify(jobScheduler).cancel(EventIntentService.JOB_ID);
+        }
+        else {
+            verify(alarmManager).cancel(pendingIntent);
+        }
         verify(logger).info("Unscheduled {}", intent.getComponent().toShortString());
     }
 

@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 
@@ -96,7 +97,8 @@ public class DefaultEventHandler implements EventHandler {
         intent.putExtra(EventIntentService.EXTRA_REQUEST_BODY, logEvent.getBody());
         intent.putExtra(EventIntentService.EXTRA_INTERVAL, dispatchInterval);
 
-        context.startService(intent);
+        ServiceScheduler.startService(context, EventIntentService.JOB_ID, intent);
+
         logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
     }
 }

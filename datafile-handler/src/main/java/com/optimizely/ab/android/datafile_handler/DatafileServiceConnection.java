@@ -74,13 +74,13 @@ public class DatafileServiceConnection implements ServiceConnection {
         final DatafileService datafileService = binder.getService();
         if (datafileService != null) {
             DatafileClient datafileClient = new DatafileClient(
-                    new Client(new OptlyStorage(datafileService.getApplicationContext()),
+                    new Client(new OptlyStorage(context.getApplicationContext()),
                             LoggerFactory.getLogger(OptlyStorage.class)),
                     LoggerFactory.getLogger(DatafileClient.class));
 
             DatafileCache datafileCache = new DatafileCache(
                     projectId,
-                    new Cache(datafileService.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
+                    new Cache(context.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
                     LoggerFactory.getLogger(DatafileCache.class));
 
             DatafileLoader datafileLoader = new DatafileLoader(datafileService,

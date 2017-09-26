@@ -111,6 +111,14 @@ public class OptimizelyManager {
         this.optimizelyStartListener = optimizelyStartListener;
     }
 
+    private void notifyStartListener() {
+        if (optimizelyStartListener != null) {
+            optimizelyStartListener.onStart(getOptimizely());
+            optimizelyStartListener = null;
+        }
+
+    }
+
     /**
      * Initialize Optimizely Synchronously
      * <p>
@@ -232,16 +240,13 @@ public class OptimizelyManager {
                     // We should always call the callback even with the dummy
                     // instances.  Devs might gate the rest of their app
                     // based on the loading of Optimizely
-                    OptimizelyStartListener optimizelyStartListener = getOptimizelyStartListener();
-                    if (optimizelyStartListener != null) {
-                        optimizelyStartListener.onStart(getOptimizely());
-                    }
+                    notifyStartListener();
                 }
             }
 
             @Override
             public void onStop(Context context) {
-                stop(context);
+
             }
         };
     }
@@ -345,7 +350,7 @@ public class OptimizelyManager {
                     public void onStartComplete(UserProfileService userProfileService) {
                         if (optimizelyStartListener != null) {
                             logger.info("Sending Optimizely instance to listener");
-                            optimizelyStartListener.onStart(optimizelyClient);
+                            notifyStartListener();
                         } else {
                             logger.info("No listener to send Optimizely to");
                         }
@@ -355,7 +360,7 @@ public class OptimizelyManager {
             else {
                 if (optimizelyStartListener != null) {
                     logger.info("Sending Optimizely instance to listener");
-                    optimizelyStartListener.onStart(optimizelyClient);
+                    notifyStartListener();
                 } else {
                     logger.info("No listener to send Optimizely to");
                 }
@@ -364,7 +369,7 @@ public class OptimizelyManager {
             logger.error("Unable to build OptimizelyClient instance", e);
             if (optimizelyStartListener != null) {
                 logger.info("Sending Optimizely instance to listener may be null on failure");
-                optimizelyStartListener.onStart(optimizelyClient);
+                notifyStartListener();
             }
         } catch (Error e) {
             logger.error("Unable to build OptimizelyClient instance", e);
