@@ -61,6 +61,8 @@ public class ServiceScheduler {
      * Previously scheduled services matching this intent will be unscheduled.  They will
      * match even if the interval is different.
      *
+     * For API 26 and higher, the JobScheduler is used.  APIs below 26 still use the AlarmService
+     *
      * @param intent   an {@link Intent}
      * @param interval the interval in MS
      * @hide
@@ -225,10 +227,18 @@ public class ServiceScheduler {
         }
     }
 
+    /**
+     * Start a service either through the context or enqueued to the JobService to be run in a minute.
+     * For example, the BroadcastReceivers use this to handle all versions of the API.
+     *
+     * @param context - Application context
+     * @param jobId - job id for the job to start if it is a job
+     * @param intent - Intent you want to run.
+     */
     public static void startService(Context context, Integer jobId, Intent intent) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            if (!ServiceScheduler.isScheduled(context, jobId)) {
+            if (ServiceScheduler.isScheduled(context, jobId, intent)) {
                 return;
             }
             JobInfo jobInfo = new JobInfo.Builder(jobId,
@@ -249,11 +259,13 @@ public class ServiceScheduler {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private static boolean isScheduled(Context context, Integer jobId) {
+    private static boolean isScheduled(Context context, Integer jobId, Intent intent) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
             for (JobInfo jobInfo : jobScheduler.getAllPendingJobs()) {
-                if (jobInfo.getId() == jobId) {
+                // we only don't allow rescheduling of periodic jobs.  jobs for individual
+                // intents such as events are allowed and can end up queued in the job service queue.
+                if (jobInfo.getId() == jobId && jobInfo.isPeriodic()) {
                     return true;
                 }
             }

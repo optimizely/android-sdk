@@ -29,7 +29,6 @@ import android.support.annotation.RequiresApi;
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
-import com.optimizely.ab.android.shared.JobWorkScheduledService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,7 @@ import java.util.concurrent.Executors;
  * These services will only be used if you are using our {@link DefaultDatafileHandler}.
  * You can chose to implement your own handler and use all or part of this package.
  */
-public class DatafileService extends Service implements JobWorkScheduledService {
+public class DatafileService extends Service {
     /**
      * Extra containing the project id this instance of Optimizely was built with
      */
@@ -61,7 +60,27 @@ public class DatafileService extends Service implements JobWorkScheduledService 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        onWork(intent);
+        if (intent != null) {
+            if (intent.hasExtra(EXTRA_PROJECT_ID)) {
+                String projectId = intent.getStringExtra(EXTRA_PROJECT_ID);
+                DatafileClient datafileClient = new DatafileClient(
+                        new Client(new OptlyStorage(this.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
+                        LoggerFactory.getLogger(DatafileClient.class));
+                DatafileCache datafileCache = new DatafileCache(
+                        projectId,
+                        new Cache(this.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
+                        LoggerFactory.getLogger(DatafileCache.class));
+
+                String datafileUrl = getDatafileUrl(projectId);
+                DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
+                datafileLoader.getDatafile(datafileUrl, null);
+            } else {
+                logger.warn("Data file service received an intent with no project id extra");
+            }
+        } else {
+            logger.warn("Data file service received a null intent");
+        }
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -102,37 +121,6 @@ public class DatafileService extends Service implements JobWorkScheduledService 
     public void getDatafile(String projectId, DatafileLoader datafileLoader, DatafileLoadedListener loadedListener) {
         String datafileUrl = getDatafileUrl(projectId);
         datafileLoader.getDatafile(datafileUrl, loadedListener);
-    }
-
-    @Override
-    public void initialize() {
-
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-    @Override
-    public void onWork(@Nullable Intent intent) {
-        if (intent != null) {
-            if (intent.hasExtra(EXTRA_PROJECT_ID)) {
-                String projectId = intent.getStringExtra(EXTRA_PROJECT_ID);
-                DatafileClient datafileClient = new DatafileClient(
-                        new Client(new OptlyStorage(this.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
-                        LoggerFactory.getLogger(DatafileClient.class));
-                DatafileCache datafileCache = new DatafileCache(
-                        projectId,
-                        new Cache(this.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
-                        LoggerFactory.getLogger(DatafileCache.class));
-
-                String datafileUrl = getDatafileUrl(projectId);
-                DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
-                datafileLoader.getDatafile(datafileUrl, null);
-            } else {
-                logger.warn("Data file service received an intent with no project id extra");
-            }
-        } else {
-            logger.warn("Data file service received a null intent");
-        }
-
     }
 
     public class LocalBinder extends Binder {

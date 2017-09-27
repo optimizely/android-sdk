@@ -27,6 +27,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
@@ -37,8 +38,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * This is an example of implementing a {@link JobService} that dispatches work enqueued in
- * to it.  The class shows how to interact with the service.
+ * This is adapted from an example of implementing a {@link JobService} that dispatches work enqueued
+ * to it.  The class shows how to interact with the service.  The JobWorkService uses the same intents that are used for pre-AndroidO.
+ * It instantiates the service or intent service, sets up its context, and calls the service on the appropriate thread.  All the IntentService
+ * or Service needs to do is implement a static public int JOB_ID.  Then, you can use the scheduler to schedule intents and they will run
+ * as a job schedulers service or for pre-AndroidO as a AlarmService.
  */
 //BEGIN_INCLUDE(service)
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -73,25 +77,30 @@ public class JobWorkService extends JobService {
                     Object service = clazz.newInstance();
                     setContext((Service) service);
 
-                    if (service instanceof JobWorkScheduledService) {
-                        JobWorkScheduledService serviceWorkScheduled = (JobWorkScheduledService) service;
-                        serviceWorkScheduled.initialize();
-                        serviceWorkScheduled.onWork(work.getIntent());
-                    }
-                    else {
-                        if (service instanceof IntentService) {
-                            IntentService intentService = (IntentService) service;
-                            intentService.onCreate();
-                            callOnHandleIntent(intentService, work.getIntent());
-                        } else {
-                            callOnStartCommand((Service) service, work.getIntent());
-                        }
+                    if (service instanceof IntentService) {
+                        IntentService intentService = (IntentService) service;
+                        intentService.onCreate();
+                        callOnHandleIntent(intentService, work.getIntent());
+                    } else {
+                        Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
+                        final Service mainService = (Service)service;
+                        final Intent manServiceIntent = work.getIntent();
+
+                        mainHandler.post(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                // run code
+                                callOnStartCommand(mainService, manServiceIntent);
+                            }
+                        });
+
                     }
                 } catch (Exception e) {
                     logger.error("JobSerivice", "Error creating ServiceWorkScheduled", e);
                 }
                 // Tell system we have finished processing the work.
-                logger.error("JobWorkService", "Done with: " + work);
+                logger.info("JobWorkService", "Done with: " + work);
             }
             if (cancelled) {
                 logger.error("JobWorkService", "CANCELLED!");
@@ -132,7 +141,7 @@ public class JobWorkService extends JobService {
     }
 
     private void callOnStartCommand(Service service, Intent intent) {
-        callMethod(Service.class, service, "onStartService", new Class[] { Intent.class, Integer.class, Integer.class}, intent, 0, startId++);
+        callMethod(Service.class, service, "onStartCommand", new Class[] { Intent.class, int.class, int.class}, intent, 0, 1);
     }
 
     private void callOnHandleIntent(IntentService intentService, Intent intent) {
