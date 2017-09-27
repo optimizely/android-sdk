@@ -21,7 +21,7 @@ September 26, 2017
 *New Features*
 
 - Numeric metrics
-- Clientside forced variations.
+- Client-side programmatic forced variations.
 
 ### 1.4.0
 August 9, 2017

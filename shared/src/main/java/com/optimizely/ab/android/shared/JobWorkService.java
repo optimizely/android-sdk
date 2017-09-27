@@ -69,7 +69,7 @@ public class JobWorkService extends JobService {
              * async task complete.
              */
             while (!(cancelled=isCancelled()) && (work=mParams.dequeueWork()) != null) {
-                String componentClass = work.getIntent().getComponent().getClassName();
+                final String componentClass = work.getIntent().getComponent().getClassName();
                 Class<?> clazz = null;
                 logger.info("JobWorkService", "Processing work: " + work + ", component: " + componentClass);
                 try {
@@ -91,7 +91,12 @@ public class JobWorkService extends JobService {
                             @Override
                             public void run() {
                                 // run code
-                                callOnStartCommand(mainService, manServiceIntent);
+                                try {
+                                    callOnStartCommand(mainService, manServiceIntent);
+                                }
+                                catch (Exception e) {
+                                    logger.error("Problem running service {}", componentClass, e);
+                                }
                             }
                         });
 

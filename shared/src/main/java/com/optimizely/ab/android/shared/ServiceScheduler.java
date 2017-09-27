@@ -121,7 +121,7 @@ public class ServiceScheduler {
             try {
                 id = (Integer) Class.forName(clazz).getDeclaredField("JOB_ID").get(null);
                 // only cancel periodic services
-                if (ServiceScheduler.isScheduled(context, id, intent)) {
+                if (ServiceScheduler.isScheduled(context, id)) {
                     jobScheduler.cancel(id);
                     pendingIntent.cancel();
                 }
@@ -241,7 +241,7 @@ public class ServiceScheduler {
     public static void startService(Context context, Integer jobId, Intent intent) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            if (ServiceScheduler.isScheduled(context, jobId, intent)) {
+            if (ServiceScheduler.isScheduled(context, jobId)) {
                 return;
             }
             JobInfo jobInfo = new JobInfo.Builder(jobId,
@@ -262,7 +262,7 @@ public class ServiceScheduler {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private static boolean isScheduled(Context context, Integer jobId, Intent intent) {
+    private static boolean isScheduled(Context context, Integer jobId) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
             for (JobInfo jobInfo : jobScheduler.getAllPendingJobs()) {
