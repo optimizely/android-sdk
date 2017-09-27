@@ -120,8 +120,11 @@ public class ServiceScheduler {
             Integer id = null;
             try {
                 id = (Integer) Class.forName(clazz).getDeclaredField("JOB_ID").get(null);
-                jobScheduler.cancel(id);
-                pendingIntent.cancel();
+                // only cancel periodic services
+                if (ServiceScheduler.isScheduled(context, id, intent)) {
+                    jobScheduler.cancel(id);
+                    pendingIntent.cancel();
+                }
             } catch (IllegalAccessException e) {
                 logger.error("Error in Cancel ", e);
             } catch (NoSuchFieldException e) {
