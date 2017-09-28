@@ -1,9 +1,7 @@
 dependencies {
     compile project(':core-api')
 
-    provided group: 'com.google.code.findbugs', name: 'annotations', version: findbugsVersion
-    provided group: 'com.google.code.findbugs', name: 'jsr305', version: findbugsVersion
-    provided group: 'com.google.code.gson', name: 'gson', version: gsonVersion
+    compileOnly group: 'com.google.code.gson', name: 'gson', version: gsonVersion
 
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: httpClientVersion
 }

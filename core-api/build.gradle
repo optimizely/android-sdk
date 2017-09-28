@@ -2,14 +2,14 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jacksonVersion
 
-    provided group: 'com.google.code.findbugs', name: 'annotations', version: findbugsVersion
-    provided group: 'com.google.code.findbugs', name: 'jsr305', version: findbugsVersion
+    compile group: 'com.google.code.findbugs', name: 'annotations', version: findbugsVersion
+    compile group: 'com.google.code.findbugs', name: 'jsr305', version: findbugsVersion
 
     // an assortment of json parsers
-    provided group: 'com.google.code.gson', name: 'gson', version: gsonVersion, optional
-    provided group: 'org.json', name: 'json', version: jsonVersion, optional
-    provided group: 'com.googlecode.json-simple', name: 'json-simple', version: jsonSimpleVersion, optional
-    provided group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion, optional
+    compileOnly group: 'com.google.code.gson', name: 'gson', version: gsonVersion, optional
+    compileOnly group: 'org.json', name: 'json', version: jsonVersion, optional
+    compileOnly group: 'com.googlecode.json-simple', name: 'json-simple', version: jsonSimpleVersion, optional
+    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion, optional
 }
 
 task generateVersionFile {
