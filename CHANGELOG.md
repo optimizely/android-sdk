@@ -1,4 +1,30 @@
 # Optimizely Java X SDK Changelog
+## 2.0.0 Beta
+September 29, 2017
+
+This release is a beta release supporting feature flags and rollouts.
+
+### New Features
+#### Feature Flag Accessors
+You can now use feature flags in the Java SDK. You can experiment on features and rollout features through the Optimizely UI.
+
+- `isFeatureEnabled`
+- `getFeatureVariableBoolean`
+- `getFeatureVariableDouble`
+- `getFeatureVariableInteger`
+- `getFeatureVariableString`
+
+### Breaking Changes
+
+- Remove Live Variables accessors
+  - `getVariableString`
+  - `getVariableBoolean`
+  - `getVariableInteger`
+  - `getVariableDouble`
+- Remove track with revenue as a parameter. Pass the revenue value as an event tag instead
+  - `track(String, String, long)`
+  - `track(String, String, Map<String, String>, long)`
+
 ## 1.8.0
 
 August 29, 2017
