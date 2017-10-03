@@ -25,15 +25,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Schedules {@link android.app.Service}es to run.
- * @hide
+ *
  */
 // TODO Unit test coverage
 public class ServiceScheduler {
@@ -47,7 +48,6 @@ public class ServiceScheduler {
      * @param context         an instance of {@link Context}
      * @param pendingIntentFactory an instance of {@link PendingIntentFactory}
      * @param logger               an instance of {@link Logger}
-     * @hide
      */
     public ServiceScheduler(@NonNull Context context, @NonNull PendingIntentFactory pendingIntentFactory, @NonNull Logger logger) {
         this.pendingIntentFactory = pendingIntentFactory;
@@ -65,7 +65,6 @@ public class ServiceScheduler {
      *
      * @param intent   an {@link Intent}
      * @param interval the interval in MS
-     * @hide
      */
     public void schedule(Intent intent, long interval) {
         if (interval < 1) {
@@ -89,7 +88,12 @@ public class ServiceScheduler {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int jobId = getJobId(intent);
             if (jobId == -1) {
-                logger.error("Problem getting job id");
+                logger.error("Problem getting scheduled job id");
+                return;
+            }
+
+            if (isScheduled(context, jobId)) {
+                logger.info("Job already started");
                 return;
             }
 
@@ -97,11 +101,35 @@ public class ServiceScheduler {
                     context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
             JobInfo.Builder builder = new JobInfo.Builder(jobId,
                     new ComponentName(context.getApplicationContext(),
-                            JobWorkService.class.getName()));
+                            ScheduledJobService.class.getName()));
             builder.setPeriodic(interval, interval);
+            builder.setPersisted(true);
             builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+            builder.setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_LINEAR);
 
-            if (jobScheduler.enqueue(builder.build(), new JobWorkItem(intent)) <= 0) {
+            intent.putExtra(JobWorkService.INTENT_EXTRA_JWS_PERIODIC, interval);
+            PersistableBundle persistableBundle = new PersistableBundle();
+
+            for (String key : intent.getExtras().keySet()) {
+                Object object = intent.getExtras().get(key);
+                switch (object.getClass().getSimpleName()) {
+                    case "String":
+                        persistableBundle.putString(key, (String) object);
+                        break;
+                    case "long":
+                    case "Long":
+                        persistableBundle.putLong(key, (Long) object);
+                        break;
+                    default:
+                        logger.info("No conversion for {}", object.getClass().getSimpleName());
+                }
+            }
+
+            persistableBundle.putString(ScheduledJobService.INTENT_EXTRA_COMPONENT_NAME, intent.getComponent().getClassName());
+
+            builder.setExtras(persistableBundle);
+
+            if (jobScheduler.schedule(builder.build()) <= 0) {
                 logger.error("ServiceScheduler", "Some error while scheduling the job");
             }
 
@@ -120,10 +148,10 @@ public class ServiceScheduler {
             Integer id = null;
             try {
                 id = (Integer) Class.forName(clazz).getDeclaredField("JOB_ID").get(null);
+                pendingIntent.cancel();
                 // only cancel periodic services
                 if (ServiceScheduler.isScheduled(context, id)) {
                     jobScheduler.cancel(id);
-                    pendingIntent.cancel();
                 }
             } catch (IllegalAccessException e) {
                 logger.error("Error in Cancel ", e);
@@ -161,7 +189,6 @@ public class ServiceScheduler {
      *
      * The {@link Intent} must equal the intent that was originally sent to {@link #schedule(Intent, long)}
      * @param intent an service starting {@link Intent} instance
-     * @hide
      */
     public void unschedule(Intent intent) {
         if (intent != null) {
@@ -179,7 +206,6 @@ public class ServiceScheduler {
      * Is an {@link Intent} for a service scheduled
      * @param intent the intent in question
      * @return is it scheduled or not
-     * @hide
      */
     public boolean isScheduled(Intent intent) {
         return pendingIntentFactory.hasPendingIntent(intent);
@@ -192,7 +218,6 @@ public class ServiceScheduler {
      * the alarm back after the last event.
      *
      * Putting this in it's class makes mocking much easier when testing out {@link ServiceScheduler#schedule(Intent, long)}
-     * @hide
      */
     public static class PendingIntentFactory {
 
@@ -206,7 +231,6 @@ public class ServiceScheduler {
          * Has a {@link PendingIntent} already been created for the provided {@link Intent}
          * @param intent an instance of {@link Intent}
          * @return true if a {@link PendingIntent} was already created
-         * @hide
          */
         public boolean hasPendingIntent(Intent intent) {
             // FLAG_NO_CREATE will cause null to be returned if this Intent hasn't been created yet.
@@ -219,7 +243,6 @@ public class ServiceScheduler {
          * Gets a {@link PendingIntent} for an {@link Intent}
          * @param intent an instance of {@link Intent}
          * @return a {@link PendingIntent}
-         * @hide
          */
         public PendingIntent getPendingIntent(Intent intent) {
             return getPendingIntent(intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -241,9 +264,6 @@ public class ServiceScheduler {
     public static void startService(Context context, Integer jobId, Intent intent) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            if (ServiceScheduler.isScheduled(context, jobId)) {
-                return;
-            }
             JobInfo jobInfo = new JobInfo.Builder(jobId,
                     new ComponentName(context, JobWorkService.class))
                     // schedule it to run any time between 1 - 5 minutes

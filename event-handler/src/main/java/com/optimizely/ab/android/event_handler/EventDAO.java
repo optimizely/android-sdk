@@ -152,6 +152,8 @@ class EventDAO {
             if (cursor != null && !cursor.isClosed()) {
                 try {
                     cursor.close();
+                    logger.info("Closed database");
+
                 }
                 catch (Exception e) {
                     logger.error("Error closing db cursor", e);
