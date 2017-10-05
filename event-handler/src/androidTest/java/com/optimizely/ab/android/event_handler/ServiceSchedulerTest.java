@@ -94,9 +94,8 @@ public class ServiceSchedulerTest {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ArgumentCaptor<JobInfo> jobInfoArgumentCaptor = ArgumentCaptor.forClass(JobInfo.class);
-            ArgumentCaptor<JobWorkItem> workItemArgumentCaptor = ArgumentCaptor.forClass(JobWorkItem.class);
 
-            verify(jobScheduler).enqueue(jobInfoArgumentCaptor.capture(), workItemArgumentCaptor.capture());
+            verify(jobScheduler).schedule(jobInfoArgumentCaptor.capture());
 
             assertEquals(jobInfoArgumentCaptor.getValue().getIntervalMillis(), AlarmManager.INTERVAL_HOUR );
 
@@ -128,9 +127,8 @@ public class ServiceSchedulerTest {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ArgumentCaptor<JobInfo> jobInfoArgumentCaptor = ArgumentCaptor.forClass(JobInfo.class);
-            ArgumentCaptor<JobWorkItem> workItemArgumentCaptor = ArgumentCaptor.forClass(JobWorkItem.class);
 
-            verify(jobScheduler).enqueue(jobInfoArgumentCaptor.capture(), workItemArgumentCaptor.capture());
+            verify(jobScheduler).schedule(jobInfoArgumentCaptor.capture());
 
             assertEquals(jobInfoArgumentCaptor.getValue().getIntervalMillis(), duration );
         }
@@ -196,7 +194,7 @@ public class ServiceSchedulerTest {
         when(pendingIntentFactory.getPendingIntent(intent)).thenReturn(pendingIntent);
         serviceScheduler.unschedule(intent);
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            verify(jobScheduler).cancel(EventIntentService.JOB_ID);
+            verify(jobScheduler).getAllPendingJobs();
         }
         else {
             verify(alarmManager).cancel(pendingIntent);
