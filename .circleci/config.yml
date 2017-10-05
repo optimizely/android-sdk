@@ -90,6 +90,20 @@ jobs:
           destination: reports
       - store_test_results:
           path: test-app/build/test-results
+  deploy:
+    working_directory: ~/android-code
+    docker:
+      - image: circleci/android:api-26-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - deploy:
+          name: Push to bintray
+          command: if [ "${CIRCLE_TAG}" ]; then
+                      ./gradlew ship
+                   fi
+                  
 workflows:
   version: 2
   build_test:
@@ -101,3 +115,8 @@ workflows:
       - test_api_version_17:
           requires:
             - build
+      - deploy:
+          requires:
+            - test_api_version_17
+            - test_api_version_25
+          tag: /.*/
