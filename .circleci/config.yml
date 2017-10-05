@@ -119,4 +119,6 @@ workflows:
           requires:
             - test_api_version_17
             - test_api_version_25
-          tag: /.*/
+          filters:
+            tags:
+              only: /.*/              
