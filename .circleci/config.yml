@@ -100,10 +100,10 @@ jobs:
       - checkout
       - deploy:
           name: Push to bintray
-          command: if [ "${CIRCLE_TAG}" ]; then
-                      ./gradlew ship
-                   fi
-                  
+          command: |
+            if [ "${CIRCLE_TAG}" ]; then
+              ./gradlew ship
+            fi
 workflows:
   version: 2
   build_test:
