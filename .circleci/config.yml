@@ -100,10 +100,10 @@ jobs:
       - checkout
       - deploy:
           name: Push to bintray
-          command: if [ "${CIRCLE_TAG}" ]; then
-                      ./gradlew ship
-                   fi
-                  
+          command: |
+            if [ "${CIRCLE_TAG}" ]; then
+              ./gradlew ship
+            fi
 workflows:
   version: 2
   build_test:
@@ -119,4 +119,6 @@ workflows:
           requires:
             - test_api_version_17
             - test_api_version_25
-          tag: /.*/
+          filters:
+            tags:
+              only: /.*/              
