@@ -22,6 +22,7 @@
 
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:name=".MyApplication"
@@ -55,7 +56,8 @@
          <receiver
              android:name="com.optimizely.ab.android.datafile_handler.DatafileRescheduler"
              android:enabled="true"
-             android:exported="false">
+             android:exported="false"
+             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
              <intent-filter>
                  <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                  <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -68,7 +70,8 @@
         <receiver
             android:name="com.optimizely.ab.android.event_handler.EventRescheduler"
             android:enabled="true"
-            android:exported="false">
+            android:exported="false"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

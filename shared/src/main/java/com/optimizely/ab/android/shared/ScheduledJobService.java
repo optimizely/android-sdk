@@ -20,13 +20,13 @@ import android.app.IntentService;
 import android.app.Service;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.app.job.JobWorkItem;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.annotation.RequiresApi;
 
 import org.slf4j.Logger;
@@ -36,20 +36,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * This is adapted from an example of implementing a {@link JobService} that dispatches work enqueued
- * to it.  The class shows how to interact with the service.  The JobWorkService uses the same intents that are used for pre-AndroidO.
- * It instantiates the service or intent service, sets up its context, and calls the service on the appropriate thread.  All the IntentService
- * or Service needs to do is implement a static public int JOB_ID.  Then, you can use the scheduler to schedule intents and they will run
- * as a job schedulers service or for pre-AndroidO as a AlarmService.
+ * A JobService class used for scheduled just.  We recreate the intent and pass it to the appropriate service.
  */
+
 //BEGIN_INCLUDE(service)
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class JobWorkService extends JobService {
-    public static final String INTENT_EXTRA_JWS_PERIODIC = "com.optimizely.ab.android.shared.JobService.Periodic";
+public class ScheduledJobService extends JobService {
+    public static final String INTENT_EXTRA_COMPONENT_NAME = "com.optimizely.ab.android.shared.JobService.ComponentName";
     public static final int ONE_MINUTE = 60 * 1000;
     private CommandProcessor mCurProcessor;
     private int startId = 1;
-    Logger logger = LoggerFactory.getLogger(JobWorkService.class);
+    Logger logger = LoggerFactory.getLogger(ScheduledJobService.class);
     /**
      * This is a task to dequeue and process work in the background.
      */
@@ -60,8 +57,6 @@ public class JobWorkService extends JobService {
         }
         @Override
         protected Void doInBackground(Void... params) {
-            boolean cancelled;
-            JobWorkItem work;
             /**
              * Iterate over available work.  Once dequeueWork() returns null, the
              * job's work queue is empty and the job has stopped, so we can let this
@@ -70,29 +65,40 @@ public class JobWorkService extends JobService {
              * Even if we are cancelled for any reason, it should still service all items in the queue if it can.
              *
              */
-            while (!(cancelled = isCancelled()) && (work=mParams.dequeueWork()) != null) {
-                final String componentClass = work.getIntent().getComponent().getClassName();
-                Class<?> clazz = null;
-                logger.info("Processing work: " + work + ", component: " + componentClass);
+                logger.info("Processing schueduled service");
                 try {
-                    clazz = Class.forName(componentClass);
+                    PersistableBundle persistableBundle = mParams.getExtras();
+                    Class clazz = Class.forName(persistableBundle.getString(ScheduledJobService.INTENT_EXTRA_COMPONENT_NAME));
                     Object service = clazz.newInstance();
                     setContext((Service) service);
 
-                    if ((cancelled = isCancelled())) {
-                        logger.info("JobService was cancelled with items still in the queue.  Attempting to service all items");
+                    Intent intent = new Intent(getApplicationContext(), clazz );
+
+                    for (String key : persistableBundle.keySet()) {
+                        Object object = persistableBundle.get(key);
+                        switch (object.getClass().getSimpleName()) {
+                            case "String":
+                                intent.putExtra(key, (String) object);
+                                break;
+                            case "long":
+                            case "Long":
+                                intent.putExtra(key, (Long) object);
+                                break;
+                            default:
+                                logger.info("Extra key of type {}", object.getClass().getSimpleName());
+                                break;
+                        }
                     }
 
                     if (service instanceof IntentService) {
                         IntentService intentService = (IntentService) service;
                         intentService.onCreate();
-                        callOnHandleIntent(intentService, work.getIntent());
-                        completeWork(mParams, work);
+                        callOnHandleIntent(intentService, intent);
+                        jobFinished(mParams, false);
                     } else {
                         Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
                         final Service mainService = (Service)service;
-                        final JobWorkItem workItem = work;
-                        final Intent manServiceIntent = work.getIntent();
+                        final Intent manServiceIntent = intent;
 
                         mainHandler.post(new Runnable() {
 
@@ -101,24 +107,18 @@ public class JobWorkService extends JobService {
                                 // run code
                                 try {
                                     callOnStartCommand(mainService, manServiceIntent);
-                                    completeWork(mParams, workItem);
+                                    jobFinished(mParams, false);
                                 }
                                 catch (Exception e) {
-                                    logger.error("Problem running service {}", componentClass, e);
+                                    logger.error("Problem running service ", e);
                                 }
                             }
                         });
 
                     }
                 } catch (Exception e) {
-                    logger.error("Error creating ServiceWorkScheduled", e);
+                    logger.error("Error creating ScheduledJobService", e);
                 }
-                // Tell system we have finished processing the work.
-                logger.info("Done with: " + work);
-            }
-            if (cancelled) {
-                logger.error("CANCELLED!");
-            }
             return null;
         }
     }
@@ -169,7 +169,7 @@ public class JobWorkService extends JobService {
             method.invoke(object, parameters);
 
         } catch (NoSuchMethodException e) {
-           logger.error("Error calling method " + methodName, e);
+            logger.error("Error calling method " + methodName, e);
         } catch (InvocationTargetException e) {
             logger.error("Error calling method " + methodName, e);
         } catch (IllegalAccessException e) {
@@ -178,31 +178,5 @@ public class JobWorkService extends JobService {
 
     }
 
-    private void completeWork(JobParameters jobParameters, JobWorkItem jobWorkItem) {
-        Intent intent = jobWorkItem.getIntent();
-        if (intent != null && intent.hasExtra(INTENT_EXTRA_JWS_PERIODIC)) {
-            logger.info("Periodic work item completed ");
-            jobParameters.completeWork(jobWorkItem);
-            //reschedule(jobWorkItem);
-        }
-        else {
-            logger.info("work item completed");
-            jobParameters.completeWork(jobWorkItem);
-
-        }
-
-    }
-
-    private void reschedule(JobWorkItem item) {
-        ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
-                .PendingIntentFactory(getApplicationContext());
-        ServiceScheduler serviceScheduler = new ServiceScheduler(getApplicationContext(), pendingIntentFactory,
-                LoggerFactory.getLogger(ServiceScheduler.class));
-
-        Intent intent = item.getIntent();
-
-        serviceScheduler.schedule(intent, intent.getLongExtra(INTENT_EXTRA_JWS_PERIODIC, -1));
-
-    }
 }
 //END_INCLUDE(service)

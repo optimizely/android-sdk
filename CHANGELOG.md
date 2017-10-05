@@ -1,4 +1,30 @@
 # Optimizely Android X SDK Changelog
+### 1.5.0
+September 26, 2017
+
+- Release 1.5.0
+
+*New Features*
+
+- Numeric metrics
+- Client-side programmatic forced variations.
+
+
+*Bug Fixes*
+
+- Remove Espresso dependency
+- Narrow proguard rules
+- Last modified fixed so that multiple project files can be used.
+- Call start listener if there is an exception.
+- Example of overriding Gson and android-logger in test-app gradle file.
+- Fix crash on API 17 (missing annotation).
+- Support for Android O (please see developer docs for details). Basically, Android O and above will use JobScheduler and pre Android O will continue to use AlarmService.  This is done through a class called the JobWorkService which allows you to keep your Service and IntentService intact.  Developers can piggyback on this method and keep thier IntentServices and use the JobWorkService.
+
+*Breaking Changes*
+
+- Same as 1.4.0 see below.
+- Need to add permissions to both receivers in your manifest if you plan on using the EventRescheduler or the DatafileRescheduler (see test_app manifest for example) https://github.com/optimizely/android-sdk/blob/master/test-app/src/main/AndroidManifest.xml
+
 ### 1.4.0
 August 9, 2017
 
