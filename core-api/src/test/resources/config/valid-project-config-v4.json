@@ -449,7 +449,7 @@
     {
       "id": "3281420120",
       "key": "integer_single_variable_feature",
-      "rolloutId": "",
+      "rolloutId": "2048875663",
       "experimentIds": [],
       "variables": [
         {
@@ -675,6 +675,32 @@
             {
               "entityId": "3137445031",
               "endOfRange": 5000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2048875663",
+      "experiments": [
+        {
+          "id": "3794675122",
+          "key": "3794675122",
+          "status": "Running",
+          "layerId": "2048875663",
+          "audienceIds": [],
+          "forcedVariations": {},
+          "variations": [
+            {
+              "id": "589640735",
+              "key": "589640735",
+              "variables": []
+            }
+          ],
+          "trafficAllocation": [
+            {
+              "entityId": "589640735",
+              "endOfRange": 10000
             }
           ]
         }

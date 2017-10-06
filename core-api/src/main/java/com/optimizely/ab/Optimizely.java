@@ -556,7 +556,12 @@ public class Optimizely {
         if (variation != null) {
             LiveVariableUsageInstance liveVariableUsageInstance =
                     variation.getVariableIdToLiveVariableUsageInstanceMap().get(variable.getId());
-            variableValue = liveVariableUsageInstance.getValue();
+            if (liveVariableUsageInstance != null) {
+                variableValue = liveVariableUsageInstance.getValue();
+            }
+            else {
+                variableValue = variable.getDefaultValue();
+            }
         }
         else {
             logger.info("User \"" + userId +

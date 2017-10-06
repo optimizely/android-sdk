@@ -80,9 +80,11 @@ import static com.optimizely.ab.config.ValidProjectConfigV4.EXPERIMENT_MULTIVARI
 import static com.optimizely.ab.config.ValidProjectConfigV4.EXPERIMENT_PAUSED_EXPERIMENT_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_FLAG_MULTI_VARIATE_FEATURE;
 import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_FLAG_SINGLE_VARIABLE_DOUBLE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_FLAG_SINGLE_VARIABLE_INTEGER;
 import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_MULTI_VARIATE_FEATURE_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_SINGLE_VARIABLE_BOOLEAN_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_SINGLE_VARIABLE_DOUBLE_KEY;
+import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_SINGLE_VARIABLE_INTEGER_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.MULTIVARIATE_EXPERIMENT_FORCED_VARIATION_USER_ID_GRED;
 import static com.optimizely.ab.config.ValidProjectConfigV4.PAUSED_EXPERIMENT_FORCED_VARIATION_USER_ID_CONTROL;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_BOOLEAN_VARIABLE_DEFAULT_VALUE;
@@ -90,6 +92,7 @@ import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_BOOLEAN_VAR
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_DOUBLE_DEFAULT_VALUE;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_DOUBLE_VARIABLE_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_FIRST_LETTER_KEY;
+import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_INTEGER_VARIABLE_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIATION_MULTIVARIATE_EXPERIMENT_GRED;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIATION_MULTIVARIATE_EXPERIMENT_GRED_KEY;
 import static com.optimizely.ab.event.LogEvent.RequestMethod;
@@ -2626,6 +2629,36 @@ public class OptimizelyTest {
                 genericUserId,
                 Collections.singletonMap(ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE),
                 LiveVariable.VariableType.STRING
+        );
+
+        assertEquals(expectedValue, value);
+    }
+
+    /**
+     * Verify {@link Optimizely#getFeatureVariableValueForType(String, String, String, Map, LiveVariable.VariableType)}
+     * returns the default value for the feature variable
+     * when there is no variable usage present for the variation the user is bucketed into.
+     * @throws ConfigParseException
+     */
+    @Test
+    public void getFeatureVariableValueReturnsDefaultValueWhenNoVariationUsageIsPresent() throws ConfigParseException {
+        assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        String validFeatureKey = FEATURE_SINGLE_VARIABLE_INTEGER_KEY;
+        String validVariableKey = VARIABLE_INTEGER_VARIABLE_KEY;
+        LiveVariable variable = FEATURE_FLAG_SINGLE_VARIABLE_INTEGER.getVariableKeyToLiveVariableMap().get(validVariableKey);
+        String expectedValue = variable.getDefaultValue();
+
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build();
+
+        String value = optimizely.getFeatureVariableValueForType(
+                validFeatureKey,
+                validVariableKey,
+                genericUserId,
+                Collections.<String, String>emptyMap(),
+                LiveVariable.VariableType.INTEGER
         );
 
         assertEquals(expectedValue, value);
