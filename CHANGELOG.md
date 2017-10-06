@@ -1,4 +1,13 @@
 # Optimizely Java X SDK Changelog
+
+## 2.0.0 Beta 2
+October 5, 2017
+
+This release is a second beta release supporting feature flags and rollouts. It includes all the same new features and breaking changes as the last beta release.
+
+### Bug Fixes
+Fall back to default feature variable value when there is no variable usage in the variation a user is bucketed into. For more information see [PR #149](https://github.com/optimizely/java-sdk/pull/149).
+
 ## 2.0.0 Beta
 September 29, 2017
 

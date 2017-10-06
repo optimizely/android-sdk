@@ -21,4 +21,4 @@ cache:
 branches:
   only:
   - master
-  - /^\d+\.\d+\.\d+(-SNAPSHOT|-alpha|-beta)?$/ # trigger builds on tags which are semantically versioned to ship the SDK.
+  - /^\d+\.\d+\.\d+(-SNAPSHOT|-alpha|-beta)?\d*$/ # trigger builds on tags which are semantically versioned to ship the SDK.
