@@ -1,6 +1,6 @@
 # Optimizely Android X SDK Changelog
 ### 1.5.0
-September 26, 2017
+October 30, 2017
 
 - Release 1.5.0
 
@@ -24,6 +24,8 @@ September 26, 2017
 
 - Same as 1.4.0 see below.
 - Need to add permissions to both receivers in your manifest if you plan on using the EventRescheduler or the DatafileRescheduler (see test_app manifest for example) https://github.com/optimizely/android-sdk/blob/master/test-app/src/main/AndroidManifest.xml
+- Updated build tools and target to API 26
+- Also for Android O, you must register for the SUPPLICANT_CONNECTION_CHANGE_ACTION intent filter in code (see the test-app for an example).
 
 ### 1.4.0
 August 9, 2017

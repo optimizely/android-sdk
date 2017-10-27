@@ -120,7 +120,7 @@ public class OptimizelyManager {
     }
 
     /**
-     * Initialize Optimizely Synchronously
+     * Initialize Optimizely Synchronously and downloads the latest datafile in the background to cache.
      * <p>
      * Instantiates and returns an {@link OptimizelyClient} instance. Will also cache the instance
      * for future lookups via getClient
@@ -150,7 +150,8 @@ public class OptimizelyManager {
     }
 
     /**
-     * Initialize Optimizely Synchronously
+     * Initialize Optimizely Synchronously. Load the resource, use it to initialize Optimizely, do a download of the datafile
+     * in the background to cache.
      * <p>
      * Instantiates and returns an {@link OptimizelyClient} instance. Will also cache the instance
      * for future lookups via getClient. The datafile should be stored in res/raw.
@@ -173,7 +174,7 @@ public class OptimizelyManager {
     }
 
     /**
-     * Initialize Optimizely Synchronously
+     * Initialize Optimizely Synchronously.  This one uses the cached datafile and expects it to exist.
      * <p>
      * Instantiates and returns an {@link OptimizelyClient} instance using the datafile cached on disk
      * if not available then it will return a dummy instance.

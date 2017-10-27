@@ -16,10 +16,14 @@
 package com.optimizely.ab.android.test_app;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.optimizely.ab.android.datafile_handler.DatafileHandler;
+import com.optimizely.ab.android.event_handler.EventRescheduler;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
@@ -49,26 +53,16 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-//        if (optimizelyManager.isDatafileCached(this) == true) {
-//            optimizelyManager.initialize(this);
-//            String userId = myApplication.getAnonUserId();
-//            Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId);
-//            Intent intent = null;
-//            // variation is nullable so we should check for null values
-//            if (backgroundVariation != null) {
-//                // Show activity based on the variation the user got bucketed into
-//                if (backgroundVariation.getKey().equals("variation_a")) {
-//                    intent = new Intent(myApplication.getBaseContext(), VariationAActivity.class);
-//                } else if (backgroundVariation.getKey().equals("variation_b")) {
-//                    intent = new Intent(myApplication.getBaseContext(), VariationBActivity.class);
-//                }
-//            }
-//
-//            startActivity(intent);
-//
-//            return;
-//        }
 
+        // Example of initialize from raw file and use cached file after that.
+//        DatafileHandler datafileHandler = optimizelyManager.getDatafileHandler();
+//        if (datafileHandler != null && datafileHandler.isDatafileSaved(myApplication, MyApplication.PROJECT_ID)) {
+//            String dataFile = datafileHandler.loadSavedDatafile(myApplication, MyApplication.PROJECT_ID);
+//            optimizelyManager.initialize(myApplication, dataFile);
+//        }
+//        else {
+//            optimizelyManager.initialize(myApplication, R.raw.datafile);
+//        }
         // Initialize Optimizely asynchronously
         optimizelyManager.initialize(this, new OptimizelyStartListener() {
 
@@ -94,6 +88,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                         intent = new Intent(myApplication.getBaseContext(), VariationBActivity.class);
                     }
                 }
+
+                // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
+                // in the manifest.
+                EventRescheduler eventRescheduler = new EventRescheduler();
+
+                getApplicationContext().registerReceiver(eventRescheduler, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
 
                 startActivity(intent);
 
