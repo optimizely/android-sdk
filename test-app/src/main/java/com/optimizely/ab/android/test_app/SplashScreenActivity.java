@@ -55,14 +55,14 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 
         // Example of initialize from raw file and use cached file after that.
-//        DatafileHandler datafileHandler = optimizelyManager.getDatafileHandler();
-//        if (datafileHandler != null && datafileHandler.isDatafileSaved(myApplication, MyApplication.PROJECT_ID)) {
-//            String dataFile = datafileHandler.loadSavedDatafile(myApplication, MyApplication.PROJECT_ID);
-//            optimizelyManager.initialize(myApplication, dataFile);
-//        }
-//        else {
-//            optimizelyManager.initialize(myApplication, R.raw.datafile);
-//        }
+        if (false) {
+
+            if (optimizelyManager.isDatafileCached(myApplication)) {
+                optimizelyManager.initialize(myApplication);
+            } else {
+                optimizelyManager.initialize(myApplication, R.raw.datafile);
+            }
+        }
         // Initialize Optimizely asynchronously
         optimizelyManager.initialize(this, new OptimizelyStartListener() {
 
