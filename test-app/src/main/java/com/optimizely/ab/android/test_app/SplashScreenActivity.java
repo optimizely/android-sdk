@@ -60,7 +60,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             if (optimizelyManager.isDatafileCached(myApplication)) {
                 optimizelyManager.initialize(myApplication);
             } else {
-                optimizelyManager.initialize(myApplication, R.raw.datafile);
+                optimizelyManager.initialize(myApplication, R.raw.data_file);
             }
         }
         // Initialize Optimizely asynchronously
