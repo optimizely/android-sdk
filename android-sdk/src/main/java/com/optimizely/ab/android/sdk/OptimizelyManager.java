@@ -120,8 +120,8 @@ public class OptimizelyManager {
     }
 
     /**
-     * Initialize Optimizely Synchronously using the datafile pass in while downloading the latest datafile in the background from the CDN to cache.
-     * It should be noted that even though it initiates a download of the datafile to cache. This method does not use that cached datafile.
+     * Initialize Optimizely Synchronously using the datafile passed in while downloading the latest datafile in the background from the CDN to cache.
+     * It should be noted that even though it initiates a download of the datafile to cache, this method does not use that cached datafile.
      * You can always test if a datafile exists in cache with {@link #isDatafileCached(Context)}.
      * <p>
      * Instantiates and returns an {@link OptimizelyClient} instance. It will also cache the instance
@@ -154,7 +154,7 @@ public class OptimizelyManager {
     /**
      * Initialize Optimizely Synchronously by loading the resource, use it to initialize Optimizely,
      * and downloading the latest datafile from the CDN in the background to cache.
-     * It should be noted that even though it initiates a download of the datafile to cache. This method does not use that cached datafile.
+     * It should be noted that even though it initiates a download of the datafile to cache, this method does not use that cached datafile.
      * You can always test if a datafile exists in cache with {@link #isDatafileCached(Context)}.
      * <p>
      * Instantiates and returns an {@link OptimizelyClient} instance. Will also cache the instance
@@ -178,7 +178,7 @@ public class OptimizelyManager {
     }
 
     /**
-     * Initialize Optimizely Synchronously.  This one uses the cached datafile and expects it to exist.
+     * Initialize Optimizely Synchronously. This one uses the cached datafile and expects it to exist.
      * You can use {@link #isDatafileCached(Context)} to see if the datafile exists in cache prior to this call.
      * <p>
      * Instantiates and returns an {@link OptimizelyClient} instance using the datafile cached on disk
