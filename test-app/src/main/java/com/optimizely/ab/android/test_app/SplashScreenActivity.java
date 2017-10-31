@@ -54,12 +54,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         boolean INITIALIZE_ASYNCHRONOUSLY = true;
 
-        // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
-        // in the manifest.
-        EventRescheduler eventRescheduler = new EventRescheduler();
-
-        getApplicationContext().registerReceiver(eventRescheduler, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
-
         // Example of initialize from raw file and use cached file after that.
         if (!INITIALIZE_ASYNCHRONOUSLY) {
 
@@ -102,5 +96,14 @@ public class SplashScreenActivity extends AppCompatActivity {
                 }
             });
         }
+
+        // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
+        // in the manifest.
+        if (optimizelyManager.getOptimizely().isValid()) {
+            EventRescheduler eventRescheduler = new EventRescheduler();
+
+            getApplicationContext().registerReceiver(eventRescheduler, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+        }
+
     }
 }
