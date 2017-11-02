@@ -40,3 +40,5 @@
 
 # Android Logger
 #-keep class com.noveogroup.android.log.** { *; }
+
+-keep class com.fasterxml.jackson.** { *; }

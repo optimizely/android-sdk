@@ -16,13 +16,17 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    lintOptions {
+        abortOnError false
     }
 
     packagingOptions {
@@ -36,12 +40,12 @@ android {
 dependencies {
     // Includes the Optimizely X Full Stack Java SDK, event handler, and user profile
     compile (project(':android-sdk')) {
-        exclude group: 'com.google.code.gson', module:'gson'
+        //exclude group: 'com.google.code.gson', module:'gson'
         exclude group: 'com.noveogroup.android', module:'android-logger'
     }
     // compile 'com.optimizely.ab:android-sdk:1.0.0'
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:appcompat-v7:27.0.0'
+    compile 'com.android.support:design:27.0.0'
     // EXAMPLE REPLACE noveogroup android-looger with slf4j-android logger
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-android
     compile group: 'org.slf4j', name: 'slf4j-android', version: '1.7.7'
@@ -51,11 +55,12 @@ dependencies {
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
     testCompile "com.noveogroup.android:android-logger:$android_logger_ver"
+    testCompile "com.android.support:support-annotations:27.0.0"
     // testCompile 'com.optimizely.ab:android-sdk:1.0.0'
     testCompile project(':android-sdk')
 
     androidTestCompile("com.android.support.test:runner:$support_test_runner_ver")
-    androidTestCompile "com.android.support:support-annotations:24.2.1"
+    androidTestCompile "com.android.support:support-annotations:27.0.0"
     // Set this dependency to use JUnit 4 rules
     androidTestCompile "com.android.support.test:rules:$support_test_runner_ver"
     // Set this dependency to build and run Espresso tests
