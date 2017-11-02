@@ -55,6 +55,7 @@ dependencies {
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
     testCompile "com.noveogroup.android:android-logger:$android_logger_ver"
+    testCompile "com.android.support:support-annotations:27.0.0"
     // testCompile 'com.optimizely.ab:android-sdk:1.0.0'
     testCompile project(':android-sdk')
 
