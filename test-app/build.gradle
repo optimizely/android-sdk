@@ -16,7 +16,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -36,7 +36,7 @@ android {
 dependencies {
     // Includes the Optimizely X Full Stack Java SDK, event handler, and user profile
     compile (project(':android-sdk')) {
-        exclude group: 'com.google.code.gson', module:'gson'
+        //exclude group: 'com.google.code.gson', module:'gson'
         exclude group: 'com.noveogroup.android', module:'android-logger'
     }
     // compile 'com.optimizely.ab:android-sdk:1.0.0'
