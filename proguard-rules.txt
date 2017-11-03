@@ -33,6 +33,13 @@
     *;    
 }
 
+# Keep Payload classes that get sent to Optimizely's backend
+-keep class com.optimizely.ab.event.internal.payload.** { *; }
+
+# Keep these for logging purposes
+-keep class com.optimizely.ab.bucketing.DecisionService { *; }
+-keep class com.optimizely.ab.Optimizely { *; }
+
 # Gson
 -keepnames class com.google.gson.Gson
 
