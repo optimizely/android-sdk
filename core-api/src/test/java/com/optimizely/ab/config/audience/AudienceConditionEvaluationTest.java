@@ -16,10 +16,12 @@
  */
 package com.optimizely.ab.config.audience;
 
+import com.optimizely.ab.config.Experiment;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -186,5 +188,29 @@ public class AudienceConditionEvaluationTest {
         verify(orCondition1, times(1)).evaluate(testUserAttributes);
         // shouldn't be called due to short-circuiting in 'And' evaluation
         verify(orCondition2, times(0)).evaluate(testUserAttributes);
+    }
+
+    /**
+     * Verify that {@link UserAttribute#evaluate(Map)}
+     * called when its attribute value is null
+     * returns True when the user's attribute value is also null
+     *          True when the attribute is not in the map
+     *          False when empty string is used.
+     * @throws Exception
+     */
+    @Test
+    public void nullValueEvaluate() throws Exception {
+        String attributeName = "attribute_name";
+        String attributeType = "attribute_type";
+        String attributeValue = null;
+        UserAttribute nullValueAttribute = new UserAttribute(
+                attributeName,
+                attributeType,
+                attributeValue
+        );
+
+        assertTrue(nullValueAttribute.evaluate(Collections.<String, String>emptyMap()));
+        assertTrue(nullValueAttribute.evaluate(Collections.singletonMap(attributeName, attributeValue)));
+        assertFalse(nullValueAttribute.evaluate((Collections.singletonMap(attributeName, ""))));
     }
 }

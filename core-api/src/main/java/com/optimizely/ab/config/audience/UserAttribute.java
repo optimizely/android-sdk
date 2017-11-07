@@ -17,6 +17,7 @@
 package com.optimizely.ab.config.audience;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public class UserAttribute implements Condition {
     private final String type;
     private final String value;
 
-    public UserAttribute(@Nonnull String name, @Nonnull String type, @Nonnull String value) {
+    public UserAttribute(@Nonnull String name, @Nonnull String type, @Nullable String value) {
         this.name = name;
         this.type = type;
         this.value = value;
@@ -51,7 +52,17 @@ public class UserAttribute implements Condition {
     public boolean evaluate(Map<String, String> attributes) {
         String userAttributeValue = attributes.get(name);
 
-        return value.equals(userAttributeValue);
+        if (value != null) { // if there is a value in the condition
+            // check user attribute value is equal
+            return value.equals(userAttributeValue);
+        }
+        else if (userAttributeValue != null) { // if the datafile value is null but user has a value for this attribute
+            // return false since null != nonnull
+            return false;
+        }
+        else { // both are null
+            return true;
+        }
     }
 
     @Override
@@ -63,23 +74,22 @@ public class UserAttribute implements Condition {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof UserAttribute))
-            return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        UserAttribute otherConditionObj = (UserAttribute)other;
+        UserAttribute that = (UserAttribute) o;
 
-        return name.equals(otherConditionObj.getName()) && type.equals(otherConditionObj.getType())
-            && value.equals(otherConditionObj.getValue());
+        if (!name.equals(that.name)) return false;
+        if (!type.equals(that.type)) return false;
+        return value != null ? value.equals(that.value) : that.value == null;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + name.hashCode();
-        result = prime * result + type.hashCode();
-        result = prime * result + value.hashCode();
+        int result = name.hashCode();
+        result = 31 * result + type.hashCode();
+        result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
     }
 }

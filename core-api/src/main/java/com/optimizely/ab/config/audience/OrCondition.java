@@ -16,18 +16,16 @@
  */
 package com.optimizely.ab.config.audience;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.Nonnull;
 
 /**
  * Represents an 'Or' conditions condition operation.
  */
 @Immutable
 public class OrCondition implements Condition {
-
     private final List<Condition> conditions;
 
     public OrCondition(@Nonnull List<Condition> conditions) {

@@ -16,13 +16,13 @@
  */
 package com.optimizely.ab.internal;
 
-import com.optimizely.ab.config.audience.Audience;
-import com.optimizely.ab.config.audience.Condition;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Experiment.ExperimentStatus;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.TrafficAllocation;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.config.audience.Audience;
+import com.optimizely.ab.config.audience.Condition;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -32,6 +32,10 @@ import java.util.Map;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV4;
+import static com.optimizely.ab.config.ValidProjectConfigV4.ATTRIBUTE_NATIONALITY_KEY;
+import static com.optimizely.ab.config.ValidProjectConfigV4.AUDIENCE_WITH_MISSING_VALUE_VALUE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.EXPERIMENT_WITH_MALFORMED_AUDIENCE_KEY;
 import static com.optimizely.ab.internal.ExperimentUtils.isExperimentActive;
 import static com.optimizely.ab.internal.ExperimentUtils.isUserInExperiment;
 import static org.junit.Assert.assertFalse;
@@ -44,11 +48,13 @@ public class ExperimentUtilsTest {
 
     private static ProjectConfig projectConfig;
     private static ProjectConfig noAudienceProjectConfig;
+    private static ProjectConfig v4ProjectConfig;
 
     @BeforeClass
     public static void setUp() throws IOException {
         projectConfig = validProjectConfigV2();
         noAudienceProjectConfig = noAudienceProjectConfigV2();
+        v4ProjectConfig = validProjectConfigV4();
     }
 
     /**
@@ -150,6 +156,26 @@ public class ExperimentUtilsTest {
         Map<String, String> attributes = Collections.singletonMap("browser_type", "firefox");
 
         assertFalse(isUserInExperiment(projectConfig, experiment, attributes));
+    }
+
+    /**
+     * If there are audiences with attributes on the experiment, but one of the attribute values is null,
+     * they must explicitly pass in null in order for us to evaluate this. Otherwise we will say they do not match.
+     */
+    @Test
+    public void isUserInExperimentHandlesNullValue() {
+        Experiment experiment = v4ProjectConfig.getExperimentKeyMapping().get(EXPERIMENT_WITH_MALFORMED_AUDIENCE_KEY);
+        Map<String, String> satisfiesFirstCondition = Collections.singletonMap(ATTRIBUTE_NATIONALITY_KEY,
+                AUDIENCE_WITH_MISSING_VALUE_VALUE);
+        Map<String, String> attributesWithNull = Collections.singletonMap(ATTRIBUTE_NATIONALITY_KEY, null);
+        Map<String, String> nonMatchingMap = Collections.singletonMap(ATTRIBUTE_NATIONALITY_KEY, "American");
+
+        assertTrue(isUserInExperiment(v4ProjectConfig, experiment, satisfiesFirstCondition));
+        assertTrue(isUserInExperiment(v4ProjectConfig, experiment, attributesWithNull));
+        assertFalse(isUserInExperiment(v4ProjectConfig, experiment, nonMatchingMap));
+
+        // It should explicitly be set to null otherwise we will return false on empty maps
+        assertFalse(isUserInExperiment(v4ProjectConfig, experiment, Collections.<String, String>emptyMap()));
     }
 
     /**

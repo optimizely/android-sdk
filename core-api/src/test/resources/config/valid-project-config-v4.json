@@ -19,6 +19,11 @@
       "id": "4194404272",
       "name": "english_citizens",
       "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"nationality\", \"type\": \"custom_dimension\", \"value\":\"English\"}]]]"
+    },
+    {
+      "id": "2196265320",
+      "name": "audience_with_missing_value",
+      "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"nationality\", \"type\": \"custom_dimension\", \"value\": \"English\"}, {\"name\": \"nationality\", \"type\": \"custom_dimension\"}]]]"
     }
   ],
   "attributes": [
@@ -265,6 +270,27 @@
         }
       ],
       "audienceIds": [],
+      "forcedVariations": {}
+    },
+    {
+      "id": "748215081",
+      "key": "experiment_with_malformed_audience",
+      "layerId": "1238149537",
+      "status": "Running",
+      "variations": [
+        {
+          "id": "535538389",
+          "key": "var1",
+          "variables": []
+        }
+      ],
+      "trafficAllocation": [
+        {
+          "entityId": "535538389",
+          "endOfRange": 10000
+        }
+      ],
+      "audienceIds": ["2196265320"],
       "forcedVariations": {}
     }
   ],

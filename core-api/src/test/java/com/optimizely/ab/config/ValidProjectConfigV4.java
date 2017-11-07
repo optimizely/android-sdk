@@ -83,6 +83,31 @@ public class ValidProjectConfigV4 {
                                     CUSTOM_DIMENSION_TYPE,
                                     AUDIENCE_ENGLISH_CITIZENS_VALUE)))))))
     );
+    private static final String     AUDIENCE_WITH_MISSING_VALUE_ID = "2196265320";
+    private static final String     AUDIENCE_WITH_MISSING_VALUE_KEY = "audience_with_missing_value";
+    public  static final String     AUDIENCE_WITH_MISSING_VALUE_VALUE = "English";
+    private static final UserAttribute ATTRIBUTE_WITH_VALUE = new UserAttribute(
+            ATTRIBUTE_NATIONALITY_KEY,
+            CUSTOM_DIMENSION_TYPE,
+            AUDIENCE_WITH_MISSING_VALUE_VALUE
+    );
+    private static final UserAttribute ATTRIBUTE_WITHOUT_VALUE = new UserAttribute(
+            ATTRIBUTE_NATIONALITY_KEY,
+            CUSTOM_DIMENSION_TYPE,
+            null
+    );
+    private static final Audience   AUDIENCE_WITH_MISSING_VALUE = new Audience(
+            AUDIENCE_WITH_MISSING_VALUE_ID,
+            AUDIENCE_WITH_MISSING_VALUE_KEY,
+            new AndCondition(Collections.<Condition>singletonList(
+                    new OrCondition(Collections.<Condition>singletonList(
+                            new OrCondition(ProjectConfigTestUtils.<Condition>createListOfObjects(
+                                    ATTRIBUTE_WITH_VALUE,
+                                    ATTRIBUTE_WITHOUT_VALUE
+                            ))
+                    ))
+            ))
+    );
 
     // features
     private static final String     FEATURE_BOOLEAN_FEATURE_ID = "4195505407";
@@ -703,6 +728,32 @@ public class ValidProjectConfigV4 {
             GROUP_2_ID
     );
 
+    private static final String     EXPERIMENT_WITH_MALFORMED_AUDIENCE_ID = "748215081";
+    public  static final String     EXPERIMENT_WITH_MALFORMED_AUDIENCE_KEY = "experiment_with_malformed_audience";
+    private static final String     LAYER_EXPERIMENT_WITH_MALFORMED_AUDIENCE_ID = "1238149537";
+    private static final String     VARIATION_EXPERIMENT_WITH_MALFORMED_AUDIENCE_ID = "535538389";
+    public  static final String     VARIATION_EXPERIMENT_WITH_MALFORMED_AUDIENCE_KEY = "var1";
+    private static final Variation  VARIATION_EXPERIMENT_WITH_MALFORMED_AUDIENCE = new Variation(
+            VARIATION_EXPERIMENT_WITH_MALFORMED_AUDIENCE_ID,
+            VARIATION_EXPERIMENT_WITH_MALFORMED_AUDIENCE_KEY,
+            Collections.<LiveVariableUsageInstance>emptyList()
+    );
+    private static final Experiment EXPERIMENT_WITH_MALFORMED_AUDIENCE = new Experiment(
+            EXPERIMENT_WITH_MALFORMED_AUDIENCE_ID,
+            EXPERIMENT_WITH_MALFORMED_AUDIENCE_KEY,
+            Experiment.ExperimentStatus.RUNNING.toString(),
+            LAYER_EXPERIMENT_WITH_MALFORMED_AUDIENCE_ID,
+            Collections.singletonList(AUDIENCE_WITH_MISSING_VALUE_ID),
+            Collections.singletonList(VARIATION_EXPERIMENT_WITH_MALFORMED_AUDIENCE),
+            Collections.<String, String>emptyMap(),
+            Collections.singletonList(
+                    new TrafficAllocation(
+                            VARIATION_EXPERIMENT_WITH_MALFORMED_AUDIENCE_ID,
+                            10000
+                    )
+            )
+    );
+
     // generate groups
     private static final Group      GROUP_1 = new Group(
             GROUP_1_ID,
@@ -962,6 +1013,7 @@ public class ValidProjectConfigV4 {
         audiences.add(AUDIENCE_GRYFFINDOR);
         audiences.add(AUDIENCE_SLYTHERIN);
         audiences.add(AUDIENCE_ENGLISH_CITIZENS);
+        audiences.add(AUDIENCE_WITH_MISSING_VALUE);
 
         // list events
         List<EventType> events = new ArrayList<EventType>();
@@ -976,6 +1028,7 @@ public class ValidProjectConfigV4 {
         experiments.add(EXPERIMENT_DOUBLE_FEATURE_EXPERIMENT);
         experiments.add(EXPERIMENT_PAUSED_EXPERIMENT);
         experiments.add(EXPERIMENT_LAUNCHED_EXPERIMENT);
+        experiments.add(EXPERIMENT_WITH_MALFORMED_AUDIENCE);
 
         // list featureFlags
         List<FeatureFlag> featureFlags = new ArrayList<FeatureFlag>();

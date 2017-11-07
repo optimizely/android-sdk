@@ -16,11 +16,10 @@
  */
 package com.optimizely.ab.config.audience;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an 'And' conditions condition operation.
@@ -29,7 +28,6 @@ import javax.annotation.concurrent.Immutable;
 public class AndCondition implements Condition {
 
     private final List<Condition> conditions;
-
     public AndCondition(@Nonnull List<Condition> conditions) {
         this.conditions = conditions;
     }
