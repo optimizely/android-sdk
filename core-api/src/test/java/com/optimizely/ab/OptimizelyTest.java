@@ -1,25 +1,24 @@
-/**
- *
- *    Copyright 2016-2017, Optimizely and contributors
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
+/****************************************************************************
+ * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ *                                                                          *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ *                                                                          *
+ *    http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ ***************************************************************************/
 package com.optimizely.ab;
 
-import ch.qos.logback.classic.Level;
 import com.google.common.collect.ImmutableMap;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.bucketing.DecisionService;
+import com.optimizely.ab.bucketing.FeatureDecision;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
@@ -39,7 +38,7 @@ import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.internal.LogbackVerifier;
 import com.optimizely.ab.notification.NotificationListener;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -59,6 +58,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import ch.qos.logback.classic.Level;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV3;
@@ -87,6 +89,7 @@ import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_SINGLE_VARIA
 import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_SINGLE_VARIABLE_INTEGER_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.MULTIVARIATE_EXPERIMENT_FORCED_VARIATION_USER_ID_GRED;
 import static com.optimizely.ab.config.ValidProjectConfigV4.PAUSED_EXPERIMENT_FORCED_VARIATION_USER_ID_CONTROL;
+import static com.optimizely.ab.config.ValidProjectConfigV4.ROLLOUT_2_ID;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_BOOLEAN_VARIABLE_DEFAULT_VALUE;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_BOOLEAN_VARIABLE_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_DOUBLE_DEFAULT_VALUE;
@@ -2611,13 +2614,15 @@ public class OptimizelyTest {
         String validVariableKey = VARIABLE_FIRST_LETTER_KEY;
         LiveVariable variable = FEATURE_FLAG_MULTI_VARIATE_FEATURE.getVariableKeyToLiveVariableMap().get(validVariableKey);
         String expectedValue = VARIATION_MULTIVARIATE_EXPERIMENT_GRED.getVariableIdToLiveVariableUsageInstanceMap().get(variable.getId()).getValue();
+        Experiment multivariateExperiment = validProjectConfig.getExperimentKeyMapping().get(EXPERIMENT_MULTIVARIATE_EXPERIMENT_KEY);
 
         Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
                 .withConfig(validProjectConfig)
                 .withDecisionService(mockDecisionService)
                 .build();
 
-        doReturn(VARIATION_MULTIVARIATE_EXPERIMENT_GRED).when(mockDecisionService).getVariationForFeature(
+        FeatureDecision featureDecision = new FeatureDecision(multivariateExperiment, VARIATION_MULTIVARIATE_EXPERIMENT_GRED, FeatureDecision.DecisionSource.EXPERIMENT);
+        doReturn(featureDecision).when(mockDecisionService).getVariationForFeature(
                 FEATURE_FLAG_MULTI_VARIATE_FEATURE,
                 genericUserId,
                 Collections.singletonMap(ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE)
@@ -2717,7 +2722,8 @@ public class OptimizelyTest {
                 .withDecisionService(mockDecisionService)
                 .build());
 
-        doReturn(null).when(mockDecisionService).getVariationForFeature(
+        FeatureDecision featureDecision = new FeatureDecision(null, null, null);
+        doReturn(featureDecision).when(mockDecisionService).getVariationForFeature(
                 any(FeatureFlag.class),
                 anyString(),
                 anyMapOf(String.class, String.class)
@@ -2746,8 +2752,7 @@ public class OptimizelyTest {
     /**
      * Verify {@link Optimizely#isFeatureEnabled(String, String)} calls into
      * {@link Optimizely#isFeatureEnabled(String, String, Map)} and they both
-     * return True
-     * when the user is bucketed into a variation for the feature.
+     * return True when the user is bucketed into a variation for the feature.
      * An impression event should not be dispatched since the user was not bucketed into an Experiment.
      * @throws Exception
      */
@@ -2762,7 +2767,12 @@ public class OptimizelyTest {
                 .withDecisionService(mockDecisionService)
                 .build());
 
-        doReturn(new Variation("variationId", "variationKey")).when(mockDecisionService).getVariationForFeature(
+        // Should be an experiment from the rollout associated with the feature, but for this test
+        // it doesn't matter. Just use any valid experiment.
+        Experiment experiment = validProjectConfig.getRolloutIdMapping().get(ROLLOUT_2_ID).getExperiments().get(0);
+        Variation variation = new Variation("variationId", "variationKey");
+        FeatureDecision featureDecision = new FeatureDecision(experiment, variation, FeatureDecision.DecisionSource.ROLLOUT);
+        doReturn(featureDecision).when(mockDecisionService).getVariationForFeature(
                 eq(FEATURE_FLAG_MULTI_VARIATE_FEATURE),
                 eq(genericUserId),
                 eq(Collections.<String, String>emptyMap())
@@ -2773,7 +2783,7 @@ public class OptimizelyTest {
         logbackVerifier.expectMessage(
                 Level.INFO,
                 "The user \"" + genericUserId +
-                        "\" is not being experimented on in feature \"" + validFeatureKey + "\"."
+                        "\" is not included in an experiment for feature \"" + validFeatureKey + "\"."
         );
         logbackVerifier.expectMessage(
                 Level.INFO,

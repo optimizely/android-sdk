@@ -826,7 +826,7 @@ public class ValidProjectConfigV4 {
     );
 
     // rollouts
-    private static final String     ROLLOUT_2_ID = "813411034";
+    public  static final String     ROLLOUT_2_ID = "813411034";
     private static final Experiment ROLLOUT_2_RULE_1 = new Experiment(
             "3421010877",
             "3421010877",
