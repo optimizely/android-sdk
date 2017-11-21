@@ -134,6 +134,51 @@ public class OptimizelyManagerTest {
 
     }
     @Test
+    public void initializeSync() {
+        /*
+         * Scenario#1: when datafile is not Empty
+         * Scenario#2: when datafile is Empty
+        */
+        optimizelyManager.initializeSync(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+
+        assertEquals(OptimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+
+        assertNotNull(optimizelyManager.getOptimizely());
+        assertNotNull(optimizelyManager.getDatafileHandler());
+
+    }
+    @Test
+    public void initializeSyncWithEmptyDatafile() {
+        Context context = mock(Context.class);
+        Context appContext = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getPackageName()).thenReturn("com.optly");
+        optimizelyManager.initializeSync(context, R.raw.datafile);
+        verify(logger).error(eq("Unable to parse compiled data file"), any(Exception.class));
+    }
+    @Test
+    public void initializeAsync() {
+        /*
+         * Scenario#1: when datafile is not Empty
+         * Scenario#2: when datafile is Empty
+        */
+        optimizelyManager.initializeAsync(InstrumentationRegistry.getTargetContext(), R.raw.datafile, new OptimizelyStartListener() {
+            @Override
+            public void onStart(OptimizelyClient optimizely) {
+                assertNotNull(optimizelyManager.getOptimizely());
+                assertNotNull(optimizelyManager.getDatafileHandler());
+            }
+        });
+
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+
+        assertEquals(OptimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+
+
+    }
+    @Test
     public void initializeWithEmptyDatafile() {
         Context context = mock(Context.class);
         Context appContext = mock(Context.class);

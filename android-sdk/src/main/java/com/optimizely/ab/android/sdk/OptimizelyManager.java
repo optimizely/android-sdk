@@ -171,10 +171,65 @@ public class OptimizelyManager {
             return initialize(context, datafile);
         } catch (IOException e) {
             logger.error("Unable to load compiled data file", e);
+        }catch (Exception ex){
+            logger.error("Unable to parse compiled data file",ex);
         }
 
         // return dummy client if not able to initialize a valid one
         return optimizelyClient;
+    }
+
+    /**
+     * Initialize Optimizely Synchronously. This one uses the cached datafile and also take raw data file id.
+     * <p>
+     * Instantiates and returns an {@link OptimizelyClient} instance using the datafile cached on disk
+     * if not available then it will expect that raw data file should exist on given id.
+     * and initialize using raw file
+     *
+     * @param context any {@link Context} instance
+     * @return an {@link OptimizelyClient} instance
+     */
+    public OptimizelyClient initializeSync(@NonNull Context context,@RawRes int datafileRes) {
+        if (isDatafileCached(context)) {
+           optimizelyClient = initialize(context);
+        } else {
+            optimizelyClient = initialize(context,datafileRes);
+        }
+
+        return optimizelyClient;
+    }
+
+    /**
+     * This method does the same thing except it can be used with a generic {@link Context}.
+     * @param context                 any type of context instance
+     * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
+     * @see #initialize(Activity, OptimizelyStartListener)
+     */
+    public void initializeAsync(@NonNull final Context context, @RawRes final int datafileRes, @NonNull OptimizelyStartListener optimizelyStartListener) {
+        if (!isAndroidVersionSupported()) {
+            return;
+        }
+        this.optimizelyStartListener = optimizelyStartListener;
+        datafileHandler.downloadDatafile(context, projectId, new DatafileLoadedListener() {
+            @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+            @Override
+            public void onDatafileLoaded(@Nullable String datafile) {
+                // App is being used, i.e. in the foreground
+                if (datafile != null && !datafile.isEmpty()) {
+                    injectOptimizely(context, userProfileService, datafile);
+                } else {
+                    //if datafile is null than it should be able to take from cache and if not present
+                    //in Cache than should be able to get from raw data file
+                   optimizelyClient= initializeSync(context,datafileRes);
+                   notifyStartListener();
+                }
+            }
+
+            @Override
+            public void onStop(Context context) {
+
+            }
+        });
     }
 
     /**
