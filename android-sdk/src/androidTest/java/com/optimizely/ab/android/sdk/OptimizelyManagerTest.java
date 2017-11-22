@@ -151,11 +151,12 @@ public class OptimizelyManagerTest {
     }
     @Test
     public void initializeSyncWithEmptyDatafile() {
+        //for this case to pass empty the data file or enter any garbage data given on R.raw.emptydatafile this path
         Context context = mock(Context.class);
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
-        optimizelyManager.initializeSync(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+        optimizelyManager.initializeSync(InstrumentationRegistry.getTargetContext(), R.raw.emptydatafile);
         verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
     }
     @Test
