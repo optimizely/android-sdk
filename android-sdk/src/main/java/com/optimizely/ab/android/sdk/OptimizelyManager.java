@@ -171,8 +171,8 @@ public class OptimizelyManager {
             return initialize(context, datafile);
         } catch (IOException e) {
             logger.error("Unable to load compiled data file", e);
-        }catch (Exception ex){
-            logger.error("Unable to parse compiled data file",ex);
+        }catch (NullPointerException e){
+            logger.error("Unable to find compiled data file in raw resource",e);
         }
 
         // return dummy client if not able to initialize a valid one
@@ -209,7 +209,7 @@ public class OptimizelyManager {
         if (!isAndroidVersionSupported()) {
             return;
         }
-        this.optimizelyStartListener = optimizelyStartListener;
+        setOptimizelyStartListener(optimizelyStartListener);
         datafileHandler.downloadDatafile(context, projectId, new DatafileLoadedListener() {
             @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
             @Override

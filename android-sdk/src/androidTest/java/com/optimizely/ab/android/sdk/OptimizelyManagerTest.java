@@ -155,8 +155,8 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
-        optimizelyManager.initializeSync(context, R.raw.datafile);
-        verify(logger).error(eq("Unable to parse compiled data file"), any(Exception.class));
+        optimizelyManager.initializeSync(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
     }
     @Test
     public void initializeAsync() {
@@ -169,6 +169,7 @@ public class OptimizelyManagerTest {
             public void onStart(OptimizelyClient optimizely) {
                 assertNotNull(optimizelyManager.getOptimizely());
                 assertNotNull(optimizelyManager.getDatafileHandler());
+                assertNull(optimizelyManager.getOptimizelyStartListener());
             }
         });
 
