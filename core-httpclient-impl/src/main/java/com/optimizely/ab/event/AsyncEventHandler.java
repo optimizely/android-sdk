@@ -29,6 +29,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,15 @@ import javax.annotation.CheckForNull;
  */
 public class AsyncEventHandler implements EventHandler, Closeable {
 
+    // The following static values are public so that they can be tweaked if necessary.
+    // These are the recommended settings for http protocol.  https://hc.apache.org/httpcomponents-client-ga/tutorial/html/connmgmt.html
+    // The maximum number of connections allowed across all routes.
+    private int maxTotalConnections = 200;
+    // The maximum number of connections allowed for a route
+    private int maxPerRoute = 20;
+    // Defines period of inactivity in milliseconds after which persistent connections must be re-validated prior to being leased to the consumer.
+    private int validateAfterInactivity = 5000;
+
     private static final Logger logger = LoggerFactory.getLogger(AsyncEventHandler.class);
     private static final ProjectConfigResponseHandler EVENT_RESPONSE_HANDLER = new ProjectConfigResponseHandler();
 
@@ -58,13 +68,22 @@ public class AsyncEventHandler implements EventHandler, Closeable {
     private final BlockingQueue<LogEvent> logEventQueue;
 
     public AsyncEventHandler(int queueCapacity, int numWorkers) {
+        this(queueCapacity, numWorkers, 200, 20, 5000);
+    }
+
+    public AsyncEventHandler(int queueCapacity, int numWorkers, int maxConnections, int connectionsPerRoute, int validateAfter) {
         if (queueCapacity <= 0) {
             throw new IllegalArgumentException("queue capacity must be > 0");
         }
 
+        this.maxTotalConnections = maxConnections;
+        this.maxPerRoute = connectionsPerRoute;
+        this.validateAfterInactivity = validateAfter;
+
         this.logEventQueue = new ArrayBlockingQueue<LogEvent>(queueCapacity);
         this.httpClient = HttpClients.custom()
             .setDefaultRequestConfig(HttpClientUtils.DEFAULT_REQUEST_CONFIG)
+                .setConnectionManager(poolingHttpClientConnectionManager())
             .disableCookieManagement()
             .build();
 
@@ -76,6 +95,15 @@ public class AsyncEventHandler implements EventHandler, Closeable {
             EventDispatchWorker worker = new EventDispatchWorker();
             workerExecutor.submit(worker);
         }
+    }
+
+    private PoolingHttpClientConnectionManager poolingHttpClientConnectionManager()
+    {
+        PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager();
+        poolingHttpClientConnectionManager.setMaxTotal(maxTotalConnections);
+        poolingHttpClientConnectionManager.setDefaultMaxPerRoute(maxPerRoute);
+        poolingHttpClientConnectionManager.setValidateAfterInactivity(validateAfterInactivity);
+        return poolingHttpClientConnectionManager;
     }
 
     @Override
