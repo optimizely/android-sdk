@@ -46,6 +46,7 @@ import javax.annotation.Nullable;
  */
 public class DecisionService {
 
+    public static final String BUCKETING_ATTRIBUTE = "$opt_bucketing_id";
     private final Bucketer bucketer;
     private final ErrorHandler errorHandler;
     private final ProjectConfig projectConfig;
@@ -99,6 +100,7 @@ public class DecisionService {
 
         // fetch the user profile map from the user profile service
         UserProfile userProfile = null;
+        
         if (userProfileService != null) {
             try {
                 Map<String, Object> userProfileMap = userProfileService.lookup(userId);
@@ -127,7 +129,11 @@ public class DecisionService {
         }
 
         if (ExperimentUtils.isUserInExperiment(projectConfig, experiment, filteredAttributes)) {
-            variation = bucketer.bucket(experiment, userId);
+            String bucketingId = userId;
+            if (filteredAttributes.containsKey(BUCKETING_ATTRIBUTE)) {
+                bucketingId = filteredAttributes.get(BUCKETING_ATTRIBUTE);
+            }
+            variation = bucketer.bucket(experiment, bucketingId);
 
             if (variation != null) {
                 if (userProfileService != null) {
@@ -204,14 +210,19 @@ public class DecisionService {
 
         // for all rules before the everyone else rule
         int rolloutRulesLength = rollout.getExperiments().size();
+        String bucketingId = userId;
+        if (filteredAttributes.containsKey(BUCKETING_ATTRIBUTE)) {
+            bucketingId = filteredAttributes.get(BUCKETING_ATTRIBUTE);
+        }
         Variation variation;
         for (int i = 0; i < rolloutRulesLength - 1; i++) {
             Experiment rolloutRule = rollout.getExperiments().get(i);
             Audience audience = projectConfig.getAudienceIdMapping().get(rolloutRule.getAudienceIds().get(0));
             if (ExperimentUtils.isUserInExperiment(projectConfig, rolloutRule, filteredAttributes)) {
-                logger.debug("Attempting to bucket user \"{}\" into rollout rule for audience \"{}\".",
-                        userId, audience.getName());
-                variation = bucketer.bucket(rolloutRule, userId);
+                logger.debug("Attempting to bucket user \"" + userId +
+                        "\" into rollout rule for audience \"" + audience.getName() +
+                        "\".");
+                variation = bucketer.bucket(rolloutRule, bucketingId);
                 if (variation == null) {
                     logger.debug("User \"{}\" was excluded due to traffic allocation.", userId);
                     break;
@@ -226,7 +237,7 @@ public class DecisionService {
 
         // get last rule which is the everyone else rule
         Experiment everyoneElseRule = rollout.getExperiments().get(rolloutRulesLength - 1);
-        variation = bucketer.bucket(everyoneElseRule, userId); // ignore audience
+        variation = bucketer.bucket(everyoneElseRule, bucketingId); // ignore audience
         if (variation == null) {
             logger.debug("User \"{}\" was excluded from the \"Everyone Else\" rule for feature flag \"{}\".",
                     userId, featureFlag.getKey());

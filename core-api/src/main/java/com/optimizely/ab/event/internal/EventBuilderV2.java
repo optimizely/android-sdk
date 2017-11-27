@@ -17,6 +17,7 @@
 package com.optimizely.ab.event.internal;
 
 import com.optimizely.ab.annotations.VisibleForTesting;
+import com.optimizely.ab.bucketing.DecisionService;
 import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
@@ -49,6 +50,7 @@ public class EventBuilderV2 extends EventBuilder {
 
     static final String IMPRESSION_ENDPOINT = "https://logx.optimizely.com/log/decision";
     static final String CONVERSION_ENDPOINT = "https://logx.optimizely.com/log/event";
+    static final String ATTRIBUTE_KEY_FOR_BUCKETING_ATTRIBUTE = "optimizely_bucketing_id";
 
     @VisibleForTesting
     public final ClientEngine clientEngine;
@@ -159,13 +161,22 @@ public class EventBuilderV2 extends EventBuilder {
             String attributeKey = attributeEntry.getKey();
             Attribute attribute = attributeKeyMapping.get(attributeKey);
 
+            if (attributeEntry.getKey() == DecisionService.BUCKETING_ATTRIBUTE) {
+                features.add(new Feature(com.optimizely.ab.bucketing.DecisionService.BUCKETING_ATTRIBUTE,
+                        ATTRIBUTE_KEY_FOR_BUCKETING_ATTRIBUTE,
+                        Feature.CUSTOM_ATTRIBUTE_FEATURE_TYPE,
+                        attributeEntry.getValue(), true));
+                continue;
+            }
+
             if (attribute == null) {
                 logger.warn("Attempting to use unknown attribute key: {}. Attribute will be ignored", attributeKey);
                 continue;
             }
 
             features.add(new Feature(attribute.getId(), attributeKey, Feature.CUSTOM_ATTRIBUTE_FEATURE_TYPE,
-                                     attributeEntry.getValue(), true));
+                        attributeEntry.getValue(), true));
+
         }
 
         return features;

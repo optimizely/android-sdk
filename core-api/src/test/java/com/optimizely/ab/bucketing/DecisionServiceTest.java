@@ -42,6 +42,7 @@ import ch.qos.logback.classic.Level;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigV3;
+import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV3;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.validProjectConfigV4;
 import static com.optimizely.ab.config.ValidProjectConfigV4.ATTRIBUTE_HOUSE_KEY;
@@ -1035,4 +1036,21 @@ public class DecisionServiceTest {
         assertEquals(variation, decisionService.getVariation(experiment, userProfileId, Collections.<String, String>emptyMap()));
         verify(userProfileService).save(expectedUserProfile.toMap());
     }
+
+    @Test
+    public void getVariationBucketingId() throws Exception {
+        Bucketer bucketer = mock(Bucketer.class);
+        DecisionService decisionService = spy(new DecisionService(bucketer, mockErrorHandler, validProjectConfig, null));
+        Experiment experiment = validProjectConfig.getExperiments().get(0);
+        Variation expectedVariation = experiment.getVariations().get(0);
+
+        when(bucketer.bucket(experiment, "bucketId")).thenReturn(expectedVariation);
+
+        Map<String, String> attr = new HashMap<String, String>();
+        attr.put(DecisionService.BUCKETING_ATTRIBUTE, "bucketId");
+        // user excluded without audiences and whitelisting
+        assertThat(decisionService.getVariation(experiment, genericUserId, attr), is(expectedVariation));
+
+    }
+
 }

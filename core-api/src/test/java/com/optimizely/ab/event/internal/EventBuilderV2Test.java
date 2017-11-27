@@ -568,6 +568,160 @@ public class EventBuilderV2Test {
         assertNull(conversionEvent);
     }
 
+    /**
+     * Verify {@link Impression} event creation
+     */
+    @Test
+    public void createImpressionEventWithBucketingId() throws Exception {
+        // use the "valid" project config and its associated experiment, variation, and attributes
+        ProjectConfig projectConfig = validProjectConfigV2();
+        Experiment activatedExperiment = projectConfig.getExperiments().get(0);
+        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        Attribute attribute = projectConfig.getAttributes().get(0);
+        String userId = "userId";
+        Map<String, String> attributeMap = new HashMap<String, String>();
+        attributeMap.put(attribute.getKey(), "value");
+
+        attributeMap.put(com.optimizely.ab.bucketing.DecisionService.BUCKETING_ATTRIBUTE, "variation");
+
+        Decision expectedDecision = new Decision(bucketedVariation.getId(), false, activatedExperiment.getId());
+        Feature feature = new Feature(attribute.getId(), attribute.getKey(), Feature.CUSTOM_ATTRIBUTE_FEATURE_TYPE,
+                "value", true);
+        Feature feature1 = new Feature(com.optimizely.ab.bucketing.DecisionService.BUCKETING_ATTRIBUTE,
+                com.optimizely.ab.event.internal.EventBuilderV2.ATTRIBUTE_KEY_FOR_BUCKETING_ATTRIBUTE,
+                Feature.CUSTOM_ATTRIBUTE_FEATURE_TYPE,
+                "variation", true);
+        List<Feature> expectedUserFeatures = new java.util.ArrayList<Feature>();
+        expectedUserFeatures.add(feature);
+        expectedUserFeatures.add(feature1);
+
+        LogEvent impressionEvent = builder.createImpressionEvent(projectConfig, activatedExperiment, bucketedVariation,
+                userId, attributeMap);
+
+        // verify that request endpoint is correct
+        assertThat(impressionEvent.getEndpointUrl(), is(EventBuilderV2.IMPRESSION_ENDPOINT));
+
+        Impression impression = gson.fromJson(impressionEvent.getBody(), Impression.class);
+
+        // verify payload information
+        assertThat(impression.getVisitorId(), is(userId));
+        assertThat((double)impression.getTimestamp(), closeTo((double)System.currentTimeMillis(), 60.0));
+        assertFalse(impression.getIsGlobalHoldback());
+        assertThat(impression.getAnonymizeIP(), is(projectConfig.getAnonymizeIP()));
+        assertThat(impression.getProjectId(), is(projectConfig.getProjectId()));
+        assertThat(impression.getDecision(), is(expectedDecision));
+        assertThat(impression.getLayerId(), is(activatedExperiment.getLayerId()));
+        assertThat(impression.getAccountId(), is(projectConfig.getAccountId()));
+
+        assertThat(impression.getUserFeatures(), is(expectedUserFeatures));
+        assertThat(impression.getClientEngine(), is(ClientEngine.JAVA_SDK.getClientEngineValue()));
+        assertThat(impression.getClientVersion(), is(BuildVersionInfo.VERSION));
+        assertNull(impression.getSessionId());
+    }
+
+    /**
+     * Verify {@link Conversion} event creation
+     */
+    @Test
+    public void createConversionEventWithBucketingId() throws Exception {
+        // use the "valid" project config and its associated experiment, variation, and attributes
+        Attribute attribute = validProjectConfig.getAttributes().get(0);
+        EventType eventType = validProjectConfig.getEventTypes().get(0);
+        String userId = "userId";
+        String bucketingId = "bucketingId";
+
+        Bucketer mockBucketAlgorithm = mock(Bucketer.class);
+
+        List<Experiment> allExperiments = validProjectConfig.getExperiments();
+        List<Experiment> experimentsForEventKey = validProjectConfig.getExperimentsForEventKey(eventType.getKey());
+
+        // Bucket to the first variation for all experiments. However, only a subset of the experiments will actually
+        // call the bucket function.
+        for (Experiment experiment : allExperiments) {
+            when(mockBucketAlgorithm.bucket(experiment, bucketingId))
+                    .thenReturn(experiment.getVariations().get(0));
+        }
+        DecisionService decisionService = new DecisionService(
+                mockBucketAlgorithm,
+                mock(ErrorHandler.class),
+                validProjectConfig,
+                mock(UserProfileService.class)
+        );
+
+        Map<String, String> attributeMap = new java.util.HashMap<String, String>();
+        attributeMap.put(attribute.getKey(), AUDIENCE_GRYFFINDOR_VALUE);
+        attributeMap.put(com.optimizely.ab.bucketing.DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+
+        Map<String, Object> eventTagMap = new HashMap<String, Object>();
+        eventTagMap.put("boolean_param", false);
+        eventTagMap.put("string_param", "123");
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                decisionService,
+                eventType.getKey(),
+                userId,
+                attributeMap);
+        LogEvent conversionEvent = builder.createConversionEvent(
+                validProjectConfig,
+                experimentVariationMap,
+                userId,
+                eventType.getId(),
+                eventType.getKey(),
+                attributeMap,
+                eventTagMap);
+
+        List<LayerState> expectedLayerStates = new ArrayList<LayerState>();
+
+        for (Experiment experiment : experimentsForEventKey) {
+            if (experiment.isRunning()) {
+                LayerState layerState = new LayerState(experiment.getLayerId(), validProjectConfig.getRevision(),
+                        new Decision(experiment.getVariations().get(0).getId(), false, experiment.getId()), true);
+                expectedLayerStates.add(layerState);
+            }
+        }
+
+        // verify that the request endpoint is correct
+        assertThat(conversionEvent.getEndpointUrl(), is(EventBuilderV2.CONVERSION_ENDPOINT));
+
+        Conversion conversion = gson.fromJson(conversionEvent.getBody(), Conversion.class);
+
+        // verify payload information
+        assertThat(conversion.getVisitorId(), is(userId));
+        assertThat((double)conversion.getTimestamp(), closeTo((double)System.currentTimeMillis(), 120.0));
+        assertThat(conversion.getProjectId(), is(validProjectConfig.getProjectId()));
+        assertThat(conversion.getAccountId(), is(validProjectConfig.getAccountId()));
+
+        Feature feature = new Feature(attribute.getId(), attribute.getKey(), Feature.CUSTOM_ATTRIBUTE_FEATURE_TYPE,
+                AUDIENCE_GRYFFINDOR_VALUE, true);
+        Feature feature1 = new Feature(com.optimizely.ab.bucketing.DecisionService.BUCKETING_ATTRIBUTE,
+                com.optimizely.ab.event.internal.EventBuilderV2.ATTRIBUTE_KEY_FOR_BUCKETING_ATTRIBUTE,
+                Feature.CUSTOM_ATTRIBUTE_FEATURE_TYPE,
+                bucketingId, true);
+        List<Feature> expectedUserFeatures = new ArrayList<Feature>();
+        expectedUserFeatures.add(feature);
+        expectedUserFeatures.add(feature1);
+
+        // Event Features
+        List<Feature> expectedEventFeatures = new ArrayList<Feature>();
+        expectedEventFeatures.add(new Feature("", "boolean_param", Feature.EVENT_FEATURE_TYPE,
+                false, false));
+        expectedEventFeatures.add(new Feature("", "string_param", Feature.EVENT_FEATURE_TYPE,
+                "123", false));
+
+        assertEquals(conversion.getUserFeatures(), expectedUserFeatures);
+        assertThat(conversion.getLayerStates(), containsInAnyOrder(expectedLayerStates.toArray()));
+        assertEquals(conversion.getEventEntityId(), eventType.getId());
+        assertEquals(conversion.getEventName(), eventType.getKey());
+        assertEquals(conversion.getEventMetrics(), Collections.<EventMetric>emptyList());
+        assertTrue(conversion.getEventFeatures().containsAll(expectedEventFeatures));
+        assertTrue(expectedEventFeatures.containsAll(conversion.getEventFeatures()));
+        assertFalse(conversion.getIsGlobalHoldback());
+        assertEquals(conversion.getAnonymizeIP(), validProjectConfig.getAnonymizeIP());
+        assertEquals(conversion.getClientEngine(), ClientEngine.JAVA_SDK.getClientEngineValue());
+        assertEquals(conversion.getClientVersion(), BuildVersionInfo.VERSION);
+    }
+
+
     //========== helper methods =========//
     public static Map<Experiment, Variation> createExperimentVariationMap(ProjectConfig projectConfig,
                                                                           DecisionService decisionService,

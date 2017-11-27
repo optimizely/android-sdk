@@ -773,7 +773,8 @@ public class Optimizely {
      * {@link ProjectConfig}.
      *
      * @param projectConfig the current project config
-     * @param attributes the attributes map to validate and potentially filter
+     * @param attributes the attributes map to validate and potentially filter. The reserved key for bucketing id
+     * {@link DecisionService#BUCKETING_ATTRIBUTE} is kept.
      * @return the filtered attributes map (containing only attributes that are present in the project config) or an
      * empty map if a null attributes object is passed in
      */
@@ -788,7 +789,8 @@ public class Optimizely {
 
         Map<String, Attribute> attributeKeyMapping = projectConfig.getAttributeKeyMapping();
         for (Map.Entry<String, String> attribute : attributes.entrySet()) {
-            if (!attributeKeyMapping.containsKey(attribute.getKey())) {
+            if (!attributeKeyMapping.containsKey(attribute.getKey()) &&
+                    attribute.getKey() != com.optimizely.ab.bucketing.DecisionService.BUCKETING_ATTRIBUTE) {
                 if (unknownAttributes == null) {
                     unknownAttributes = new ArrayList<String>();
                 }
