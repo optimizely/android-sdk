@@ -89,7 +89,7 @@ public class OptimizelyManagerTest {
         executor = MoreExecutors.newDirectExecutorService();
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
-        optimizelyManager = new OptimizelyManager(InstrumentationRegistry.getTargetContext(),testProjectId, logger, 3600L, datafileHandler, null, 3600L,
+        optimizelyManager = new OptimizelyManager(testProjectId, logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
     }
 
@@ -165,7 +165,7 @@ public class OptimizelyManagerTest {
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
         */
-        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile, new OptimizelyStartListener() {
+        optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, new OptimizelyStartListener() {
             @Override
             public void onStart(OptimizelyClient optimizely) {
                 assertNotNull(optimizelyManager.getOptimizely());

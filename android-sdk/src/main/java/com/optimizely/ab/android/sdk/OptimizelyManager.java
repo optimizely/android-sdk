@@ -69,8 +69,7 @@ public class OptimizelyManager {
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
-    OptimizelyManager(@NonNull Context context,
-                      @NonNull String projectId,
+    OptimizelyManager(@NonNull String projectId,
                       @NonNull Logger logger,
                       long datafileDownloadInterval,
                       @NonNull DatafileHandler datafileHandler,
@@ -86,42 +85,8 @@ public class OptimizelyManager {
         this.eventHandler = eventHandler;
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
-        downloadAndSaveDataFile(context, projectId);
     }
 
-    /*
-     * This method download and save updated datafile in cache when completed
-     */
-    private void downloadAndSaveDataFile(final Context context, final String projectId){
-
-            new AsyncTask<Void,Void,Void>(){
-
-                String datafile;
-
-                @Override
-                protected void onPreExecute() {
-                    // Do things before downloading on UI Thread
-                }
-
-                @Override
-                protected Void doInBackground(Void... voids) {
-                    datafileHandler.downloadDatafile(context,projectId);
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(final Void result) {
-                    // Do things on UI thread after downloading, then execute your callback
-                    if(datafile != null && datafile.isEmpty()){
-                        datafileHandler.saveDatafile(context,projectId,datafile);
-                    }
-
-                }
-
-
-            }.execute();
-
-    }
     @VisibleForTesting
     public Long getDatafileDownloadInterval() {
         return datafileDownloadInterval;
@@ -134,8 +99,8 @@ public class OptimizelyManager {
      * @return a {@link OptimizelyManager.Builder}
      */
     @NonNull
-    public static Builder builder(@NonNull Context context,@NonNull String projectId) {
-        return new Builder(context,projectId);
+    public static Builder builder(@NonNull String projectId) {
+        return new Builder(projectId);
     }
 
     @Nullable
@@ -203,12 +168,13 @@ public class OptimizelyManager {
     @NonNull
     public OptimizelyClient initialize(@NonNull Context context, @RawRes int datafileRes) {
         try {
+            String datafile = null;
             if (isDatafileCached(context)) {
-                optimizelyClient = initialize(context);
+                datafile = datafileHandler.loadSavedDatafile(context, projectId);
             } else {
-                String datafile = loadRawResource(context, datafileRes);
-                return initialize(context, datafile);
+                datafile = loadRawResource(context, datafileRes);
             }
+            return initialize(context, datafile);
         } catch (IOException e) {
             logger.error("Unable to load compiled data file", e);
         }catch (NullPointerException e){
@@ -229,28 +195,27 @@ public class OptimizelyManager {
      * datafile will be updated from network if it is different from the cache.  If there is no
      * cached datafile the returned instance will always be built from the remote datafile.
      * This method does the same thing except it can be used with a generic {@link Context}.
-     * @param activity                 any type of context instance
+     * @param context                 any type of context instance
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
-     * @see #initialize(Activity, OptimizelyStartListener)
+     * @see #initialize(Context, int ID, OptimizelyStartListener)
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public void initialize(@NonNull final Activity activity, @RawRes final int datafileRes, @NonNull OptimizelyStartListener optimizelyStartListener) {
+    public void initialize(@NonNull final Context context, @RawRes final int datafileRes, @NonNull OptimizelyStartListener optimizelyStartListener) {
         if (!isAndroidVersionSupported()) {
             return;
         }
-        activity.getApplication().registerActivityLifecycleCallbacks(new OptlyActivityLifecycleCallbacks(this));
         setOptimizelyStartListener(optimizelyStartListener);
-        datafileHandler.downloadDatafile(activity, projectId, new DatafileLoadedListener() {
+        datafileHandler.downloadDatafile(context, projectId, new DatafileLoadedListener() {
             @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
             @Override
             public void onDatafileLoaded(@Nullable String datafile) {
                 // App is being used, i.e. in the foreground
                 if (datafile != null && !datafile.isEmpty()) {
-                    injectOptimizely(activity, userProfileService, datafile);
+                    injectOptimizely(context, userProfileService, datafile);
                 } else {
                     //if datafile is null than it should be able to take from cache and if not present
                     //in Cache than should be able to get from raw data file
-                   optimizelyClient= initialize(activity,datafileRes);
+                   optimizelyClient= initialize(context,datafileRes);
                    notifyStartListener();
                 }
             }
@@ -611,10 +576,8 @@ public class OptimizelyManager {
         @Nullable private EventHandler eventHandler = null;
         @Nullable private ErrorHandler errorHandler = null;
         @Nullable private UserProfileService userProfileService = null;
-        @NonNull private Context context;
-        Builder(@NonNull Context context,@NonNull String projectId) {
+        Builder(@NonNull String projectId) {
             this.projectId = projectId;
-            this.context = context;
         }
 
         /**
@@ -732,8 +695,7 @@ public class OptimizelyManager {
                 eventHandler = DefaultEventHandler.getInstance(context);
             }
 
-            return new OptimizelyManager(context,
-                    projectId,
+            return new OptimizelyManager(projectId,
                     logger,
                     datafileDownloadInterval,
                     datafileHandler,

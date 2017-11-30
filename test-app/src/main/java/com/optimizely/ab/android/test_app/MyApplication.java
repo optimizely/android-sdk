@@ -73,7 +73,7 @@ public class MyApplication extends Application {
         // espresso tests are run against this project id.  Changing it will make the Optimizely
         // tests setup not work and the Espresso tests will fail.  Also, the project id passed here
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
-        optimizelyManager = OptimizelyManager.builder(getApplicationContext(),PROJECT_ID)
+        optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
                 .withEventDispatchInterval(60L * 10L)
                 .withDatafileDownloadInterval(60L * 10L)
                 .build(getApplicationContext());
