@@ -81,7 +81,7 @@ public class OptimizelyManagerBuilderTest {
             }
         };
 
-        OptimizelyManager manager = OptimizelyManager.builder(testProjectId).withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getTargetContext()))
+        OptimizelyManager manager = OptimizelyManager.builder(InstrumentationRegistry.getTargetContext(),testProjectId).withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getTargetContext()))
                 .withDatafileDownloadInterval(30L)
                 .withEventDispatchInterval(30L)
                 .withDatafileHandler(new DefaultDatafileHandler())
@@ -98,7 +98,7 @@ public class OptimizelyManagerBuilderTest {
 
     @Test
     public void testBuilderWithOut() {
-        OptimizelyManager manager = OptimizelyManager.builder(testProjectId).build(InstrumentationRegistry.getTargetContext());
+        OptimizelyManager manager = OptimizelyManager.builder(InstrumentationRegistry.getTargetContext(),testProjectId).build(InstrumentationRegistry.getTargetContext());
 
         assertNotNull(manager);
         assertNotNull(manager.getDatafileHandler());
