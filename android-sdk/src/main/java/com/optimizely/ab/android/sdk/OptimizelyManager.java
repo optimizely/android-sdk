@@ -207,28 +207,6 @@ public class OptimizelyManager {
         datafileHandler.downloadDatafile(context, projectId,getDatafileLoadedListener(context,datafileRes));
     }
 
-    /**
-     * Initialize Optimizely Synchronously. This one uses the cached datafile and expects it to exist.
-     * You can use {@link #isDatafileCached(Context)} to see if the datafile exists in cache prior to this call.
-     * <p>
-     * Instantiates and returns an {@link OptimizelyClient} instance using the datafile cached on disk
-     * if not available then it will return a dummy instance.
-     *
-     * @param context any {@link Context} instance
-     * @return an {@link OptimizelyClient} instance
-     */
-    public OptimizelyClient initialize(@NonNull Context context) {
-
-        String datafile = datafileHandler.loadSavedDatafile(context, projectId);
-
-        if (datafile != null) {
-            return initialize(context, datafile);
-        }
-
-        // return dummy client if not able to initialize a valid one
-        return optimizelyClient;
-    }
-
     DatafileLoadedListener getDatafileLoadedListener(final Context context, @RawRes final int datafileRes) {
         return new DatafileLoadedListener() {
             @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
