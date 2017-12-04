@@ -35,9 +35,7 @@ import org.slf4j.LoggerFactory;
  * interaction point to the datafile-handler module.
  */
 public class DefaultDatafileHandler implements DatafileHandler {
-
     private DatafileServiceConnection datafileServiceConnection;
-
     /**
      * Synchronous call to download the datafile.
      * Gets the file on the current thread from the Optimizely CDN.

@@ -154,10 +154,10 @@ public class OptimizelyManager {
     /**
      * Initialize Optimizely Synchronously by loading the resource, use it to initialize Optimizely,
      * and downloading the latest datafile from the CDN in the background to cache.
-     * It should be noted that even though it initiates a download of the datafile to cache, this method does not use that cached datafile.
-     * You can always test if a datafile exists in cache with {@link #isDatafileCached(Context)}.
      * <p>
-     * Instantiates and returns an {@link OptimizelyClient} instance. Will also cache the instance
+     * Instantiates and returns an {@link OptimizelyClient}  instance using the datafile cached on disk
+     * if not available then it will expect that raw data file should exist on given id.
+     * and initialize using raw file. Will also cache the instance
      * for future lookups via getClient. The datafile should be stored in res/raw.
      *
      * @param context     any {@link Context} instance
@@ -167,37 +167,23 @@ public class OptimizelyManager {
     @NonNull
     public OptimizelyClient initialize(@NonNull Context context, @RawRes int datafileRes) {
         try {
-            String datafile = loadRawResource(context, datafileRes);
+            String datafile;
+            if (isDatafileCached(context)) {
+                datafile = datafileHandler.loadSavedDatafile(context, projectId);
+            } else {
+                datafile = loadRawResource(context, datafileRes);
+            }
             return initialize(context, datafile);
         } catch (IOException e) {
             logger.error("Unable to load compiled data file", e);
+        }catch (NullPointerException e){
+            logger.error("Unable to find compiled data file in raw resource",e);
         }
 
         // return dummy client if not able to initialize a valid one
         return optimizelyClient;
     }
 
-    /**
-     * Initialize Optimizely Synchronously. This one uses the cached datafile and expects it to exist.
-     * You can use {@link #isDatafileCached(Context)} to see if the datafile exists in cache prior to this call.
-     * <p>
-     * Instantiates and returns an {@link OptimizelyClient} instance using the datafile cached on disk
-     * if not available then it will return a dummy instance.
-     *
-     * @param context any {@link Context} instance
-     * @return an {@link OptimizelyClient} instance
-     */
-    public OptimizelyClient initialize(@NonNull Context context) {
-
-        String datafile = datafileHandler.loadSavedDatafile(context, projectId);
-
-        if (datafile != null) {
-            return initialize(context, datafile);
-        }
-
-        // return dummy client if not able to initialize a valid one
-        return optimizelyClient;
-    }
 
     /**
      * Starts Optimizely asynchronously
@@ -207,45 +193,32 @@ public class OptimizelyManager {
      * once.  If there is a cached datafile the returned instance will be built from it.  The cached
      * datafile will be updated from network if it is different from the cache.  If there is no
      * cached datafile the returned instance will always be built from the remote datafile.
-     *
-     * @param activity                an Activity, used to automatically unbind {@link DatafileService}
-     * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
-     */
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public void initialize(@NonNull Activity activity, @NonNull OptimizelyStartListener optimizelyStartListener) {
-        if (!isAndroidVersionSupported()) {
-            return;
-        }
-        activity.getApplication().registerActivityLifecycleCallbacks(new OptlyActivityLifecycleCallbacks(this));
-        initialize(activity.getApplicationContext(), optimizelyStartListener);
-    }
-
-    /**
      * This method does the same thing except it can be used with a generic {@link Context}.
      * @param context                 any type of context instance
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
-     * @see #initialize(Activity, OptimizelyStartListener)
+     * @see #initialize(Context, int ID, OptimizelyStartListener)
      */
-    public void initialize(@NonNull Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    public void initialize(@NonNull final Context context, @RawRes final int datafileRes, @NonNull OptimizelyStartListener optimizelyStartListener) {
         if (!isAndroidVersionSupported()) {
             return;
         }
-        this.optimizelyStartListener = optimizelyStartListener;
-        datafileHandler.downloadDatafile(context, projectId, getDatafileLoadedListener(context));
+        setOptimizelyStartListener(optimizelyStartListener);
+        datafileHandler.downloadDatafile(context, projectId,getDatafileLoadedListener(context,datafileRes));
     }
 
-    DatafileLoadedListener getDatafileLoadedListener(final Context context) {
+    DatafileLoadedListener getDatafileLoadedListener(final Context context, @RawRes final int datafileRes) {
         return new DatafileLoadedListener() {
             @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
             @Override
             public void onDatafileLoaded(@Nullable String datafile) {
                 // App is being used, i.e. in the foreground
-                if (datafile != null) {
+                if (datafile != null && !datafile.isEmpty()) {
                     injectOptimizely(context, userProfileService, datafile);
                 } else {
-                    // We should always call the callback even with the dummy
-                    // instances.  Devs might gate the rest of their app
-                    // based on the loading of Optimizely
+                    //if datafile is null than it should be able to take from cache and if not present
+                    //in Cache than should be able to get from raw data file
+                    optimizelyClient= initialize(context,datafileRes);
                     notifyStartListener();
                 }
             }
@@ -527,7 +500,6 @@ public class OptimizelyManager {
         @Nullable private EventHandler eventHandler = null;
         @Nullable private ErrorHandler errorHandler = null;
         @Nullable private UserProfileService userProfileService = null;
-
         Builder(@NonNull String projectId) {
             this.projectId = projectId;
         }

@@ -51,7 +51,7 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
     @Before
     public void setup() {
         Context context = mock(Context.class);
-        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDatafileLoadedListener(context));
+        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDatafileLoadedListener(context,R.raw.datafile));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -63,9 +63,9 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
         when(service.getApplicationContext()).thenReturn(context);
         when(binder.getService()).thenReturn(service);
         when(optimizelyManager.getProjectId()).thenReturn("1");
-        when(optimizelyManager.getDatafileLoadedListener(context)).thenReturn(mock(DatafileLoadedListener.class));
+        when(optimizelyManager.getDatafileLoadedListener(context,R.raw.datafile)).thenReturn(mock(DatafileLoadedListener.class));
         ArgumentCaptor<DatafileLoadedListener> captor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
-        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDatafileLoadedListener(context) );
+        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDatafileLoadedListener(context,R.raw.datafile) );
         datafileServiceConnection.onServiceConnected(null, binder);
         verify(service).getDatafile(same("1"), any(DatafileLoader.class), any(DatafileLoadedListener.class));
     }
