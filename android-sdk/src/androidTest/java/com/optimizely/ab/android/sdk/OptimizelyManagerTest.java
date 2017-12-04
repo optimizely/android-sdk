@@ -93,23 +93,6 @@ public class OptimizelyManagerTest {
                 eventHandler, null);
     }
 
-    @SuppressWarnings("WrongConstant")
-    @Test
-    public void initialize() {
-        OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
-        Context context = mock(Context.class);
-        Context appContext = mock(Context.class);
-        when(context.getApplicationContext()).thenReturn(appContext);
-        when(appContext.getPackageName()).thenReturn("com.optly");
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-
-        optimizelyManager.initialize(appContext, startListener);
-
-        assertNotNull(optimizelyManager.getOptimizelyStartListener());
-        assertNotNull(optimizelyManager.getDatafileHandler());
-
-    }
-
     @Test
     public void initializeIntUseForcedVariation() {
         optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);

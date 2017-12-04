@@ -19,7 +19,6 @@ package com.optimizely.ab.android.datafile_handler;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
@@ -36,7 +35,6 @@ import org.slf4j.LoggerFactory;
  * interaction point to the datafile-handler module.
  */
 public class DefaultDatafileHandler implements DatafileHandler {
-    private String datafile;
     private DatafileServiceConnection datafileServiceConnection;
     /**
      * Synchronous call to download the datafile.

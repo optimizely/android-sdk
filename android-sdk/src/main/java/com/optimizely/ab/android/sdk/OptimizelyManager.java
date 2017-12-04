@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -168,7 +167,7 @@ public class OptimizelyManager {
     @NonNull
     public OptimizelyClient initialize(@NonNull Context context, @RawRes int datafileRes) {
         try {
-            String datafile = null;
+            String datafile;
             if (isDatafileCached(context)) {
                 datafile = datafileHandler.loadSavedDatafile(context, projectId);
             } else {
@@ -205,25 +204,7 @@ public class OptimizelyManager {
             return;
         }
         setOptimizelyStartListener(optimizelyStartListener);
-        datafileHandler.downloadDatafile(context, projectId, new DatafileLoadedListener() {
-            @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-            @Override
-            public void onDatafileLoaded(@Nullable String datafile) {
-                // App is being used, i.e. in the foreground
-                if (datafile != null && !datafile.isEmpty()) {
-                    injectOptimizely(context, userProfileService, datafile);
-                } else {
-                    //if datafile is null than it should be able to take from cache and if not present
-                    //in Cache than should be able to get from raw data file
-                   optimizelyClient= initialize(context,datafileRes);
-                   notifyStartListener();
-                }
-            }
-
-            @Override
-            public void onStop(Context context) {
-            }
-        });
+        datafileHandler.downloadDatafile(context, projectId,getDatafileLoadedListener(context,datafileRes));
     }
 
     /**
@@ -248,53 +229,18 @@ public class OptimizelyManager {
         return optimizelyClient;
     }
 
-    /**
-     * Starts Optimizely asynchronously
-     * <p>
-     * An {@link OptimizelyClient} instance will be delivered to
-     * {@link OptimizelyStartListener#onStart(OptimizelyClient)}. The callback will only be hit
-     * once.  If there is a cached datafile the returned instance will be built from it.  The cached
-     * datafile will be updated from network if it is different from the cache.  If there is no
-     * cached datafile the returned instance will always be built from the remote datafile.
-     *
-     * @param activity                an Activity, used to automatically unbind {@link DatafileService}
-     * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
-     */
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public void initialize(@NonNull Activity activity, @NonNull OptimizelyStartListener optimizelyStartListener) {
-        if (!isAndroidVersionSupported()) {
-            return;
-        }
-        activity.getApplication().registerActivityLifecycleCallbacks(new OptlyActivityLifecycleCallbacks(this));
-        initialize(activity.getApplicationContext(), optimizelyStartListener);
-    }
-
-    /**
-     * This method does the same thing except it can be used with a generic {@link Context}.
-     * @param context                 any type of context instance
-     * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
-     * @see #initialize(Activity, OptimizelyStartListener)
-     */
-    public void initialize(@NonNull Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
-        if (!isAndroidVersionSupported()) {
-            return;
-        }
-        this.optimizelyStartListener = optimizelyStartListener;
-        datafileHandler.downloadDatafile(context, projectId, getDatafileLoadedListener(context));
-    }
-
-    DatafileLoadedListener getDatafileLoadedListener(final Context context) {
+    DatafileLoadedListener getDatafileLoadedListener(final Context context, @RawRes final int datafileRes) {
         return new DatafileLoadedListener() {
             @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
             @Override
             public void onDatafileLoaded(@Nullable String datafile) {
                 // App is being used, i.e. in the foreground
-                if (datafile != null) {
+                if (datafile != null && !datafile.isEmpty()) {
                     injectOptimizely(context, userProfileService, datafile);
                 } else {
-                    // We should always call the callback even with the dummy
-                    // instances.  Devs might gate the rest of their app
-                    // based on the loading of Optimizely
+                    //if datafile is null than it should be able to take from cache and if not present
+                    //in Cache than should be able to get from raw data file
+                    optimizelyClient= initialize(context,datafileRes);
                     notifyStartListener();
                 }
             }
