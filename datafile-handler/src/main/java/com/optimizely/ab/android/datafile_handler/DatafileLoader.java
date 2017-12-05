@@ -74,7 +74,7 @@ public class DatafileLoader {
                         datafileLoadedListener);
 
         // Execute tasks in order
-        loadDatafileFromCacheTask.executeOnExecutor(executor);
+        //loadDatafileFromCacheTask.executeOnExecutor(executor);
         requestDatafileFromClientTask.executeOnExecutor(executor);
         logger.info("Refreshing data file");
     }
@@ -163,10 +163,7 @@ public class DatafileLoader {
             // Only send null or a real datafile
             // If the datafile is empty it means we got a 304
             // We should have already sent the local datafile in this case
-            if (dataFile == null || !dataFile.isEmpty()) {
-                datafileLoader.notify(datafileLoadedListener, dataFile);
-            }
-
+            datafileLoader.notify(datafileLoadedListener, dataFile);
             datafileService.stop();
 
             if (datafileLoader.hasNotifiedListener) {
