@@ -146,7 +146,6 @@ public class OptimizelyManager {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
 
-        datafileHandler.downloadDatafile(context, projectId, null);
 
         return optimizelyClient;
     }
@@ -168,14 +167,9 @@ public class OptimizelyManager {
     public OptimizelyClient initialize(@NonNull Context context, @RawRes int datafileRes) {
         try {
             String datafile;
-            if (isDatafileCached(context)) {
-                datafile = datafileHandler.loadSavedDatafile(context, projectId);
-            } else {
-                datafile = loadRawResource(context, datafileRes);
-            }
-            return initialize(context, datafile);
-        } catch (IOException e) {
-            logger.error("Unable to load compiled data file", e);
+            datafile = getDatafile(context, datafileRes);
+            optimizelyClient = initialize(context, datafile);
+            datafileHandler.downloadDatafile(context, projectId, null);
         }catch (NullPointerException e){
             logger.error("Unable to find compiled data file in raw resource",e);
         }
@@ -184,7 +178,26 @@ public class OptimizelyManager {
         return optimizelyClient;
     }
 
-
+    /** This function will first try to get datafile from Cache, if file is not cached yet
+     * than it will read from Raw file
+     * @param context
+     * @param datafileRes
+     * @return datafile
+     */
+    public String getDatafile(Context context,@RawRes int datafileRes){
+     try {
+        if (isDatafileCached(context)) {
+            return datafileHandler.loadSavedDatafile(context, projectId);
+        } else {
+            return loadRawResource(context, datafileRes);
+        }
+    } catch (IOException e) {
+        logger.error("Unable to load compiled data file", e);
+    }catch (NullPointerException e){
+        logger.error("Unable to find compiled data file in raw resource",e);
+    }
+    return null;
+    }
     /**
      * Starts Optimizely asynchronously
      * <p>
@@ -218,7 +231,7 @@ public class OptimizelyManager {
                 } else {
                     //if datafile is null than it should be able to take from cache and if not present
                     //in Cache than should be able to get from raw data file
-                    optimizelyClient= initialize(context,datafileRes);
+                    optimizelyClient = initialize(context,getDatafile(context,datafileRes));
                     notifyStartListener();
                 }
             }
@@ -254,11 +267,11 @@ public class OptimizelyManager {
     /**
      * Gets a cached Optimizely instance
      * <p>
-     * If {@link #initialize(Activity, OptimizelyStartListener)} or {@link #initialize(Context, OptimizelyStartListener)}
+     * If {@link #initialize(Context,int, OptimizelyStartListener)} or {@link #initialize(Context, int)}
      * has not been called yet the returned {@link OptimizelyClient} instance will be a dummy instance
      * that logs warnings in order to prevent {@link NullPointerException}.
      * <p>
-     * Using {@link #initialize(Activity, OptimizelyStartListener)} or {@link #initialize(Context, OptimizelyStartListener)}
+     * Using {@link #initialize(Context, int, OptimizelyStartListener)} or {@link #initialize(Context, int)}
      * will update the cached instance with a new {@link OptimizelyClient} built from a cached local
      * datafile on disk or a remote datafile on the CDN.
      *
