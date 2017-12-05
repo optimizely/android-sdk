@@ -68,10 +68,10 @@ public class DatafileLoader {
                         this,
                         datafileLoadedListener,
                         logger);
-        LoadDatafileFromCacheTask loadDatafileFromCacheTask =
-                new LoadDatafileFromCacheTask(datafileCache,
-                        this,
-                        datafileLoadedListener);
+//        LoadDatafileFromCacheTask loadDatafileFromCacheTask =
+//                new LoadDatafileFromCacheTask(datafileCache,
+//                        this,
+//                        datafileLoadedListener);
 
         // Execute tasks in order
         //loadDatafileFromCacheTask.executeOnExecutor(executor);
