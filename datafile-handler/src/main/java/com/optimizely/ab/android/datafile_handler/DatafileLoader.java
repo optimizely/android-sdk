@@ -68,13 +68,7 @@ public class DatafileLoader {
                         this,
                         datafileLoadedListener,
                         logger);
-//        LoadDatafileFromCacheTask loadDatafileFromCacheTask =
-//                new LoadDatafileFromCacheTask(datafileCache,
-//                        this,
-//                        datafileLoadedListener);
-
         // Execute tasks in order
-        //loadDatafileFromCacheTask.executeOnExecutor(executor);
         requestDatafileFromClientTask.executeOnExecutor(executor);
         logger.info("Refreshing data file");
     }
@@ -87,34 +81,6 @@ public class DatafileLoader {
             this.hasNotifiedListener = true;
         }
     }
-
-    private static class LoadDatafileFromCacheTask extends AsyncTask<Void, Void, JSONObject> {
-
-        @NonNull private final DatafileCache datafileCache;
-        @NonNull private final DatafileLoader datafileLoader;
-        @Nullable private final DatafileLoadedListener datafileLoadedListener;
-
-        LoadDatafileFromCacheTask(@NonNull DatafileCache datafileCache,
-                                  @NonNull DatafileLoader datafileLoader,
-                                  @Nullable DatafileLoadedListener dataFileLoadedListener) {
-            this.datafileCache = datafileCache;
-            this.datafileLoader = datafileLoader;
-            this.datafileLoadedListener = dataFileLoadedListener;
-        }
-
-        @Override
-        protected JSONObject doInBackground(Void... params) {
-            return datafileCache.load();
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject dataFile) {
-            if (dataFile != null) {
-                datafileLoader.notify(datafileLoadedListener, dataFile.toString());
-            }
-        }
-    }
-
     private static class RequestDatafileFromClientTask extends AsyncTask<Void, Void, String> {
 
         @NonNull private final String datafileUrl;
