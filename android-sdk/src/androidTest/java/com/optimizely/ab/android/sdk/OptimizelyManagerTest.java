@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -141,7 +142,7 @@ public class OptimizelyManagerTest {
         when(appContext.getPackageName()).thenReturn("com.optly");
         optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.emptydatafile);
         verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
-        assertEquals(optimizelyManager.getOptimizely().isValid(),false);
+        assertFalse(optimizelyManager.getOptimizely().isValid());
     }
     @Test
     public void getEmptyDatafile() {
