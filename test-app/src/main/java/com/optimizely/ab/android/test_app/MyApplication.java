@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.multidex.MultiDex;
 
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 
@@ -68,7 +69,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        MultiDex.install(this);
         // This app is built against a real Optimizely project with real experiments set.  Automated
         // espresso tests are run against this project id.  Changing it will make the Optimizely
         // tests setup not work and the Espresso tests will fail.  Also, the project id passed here

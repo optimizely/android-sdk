@@ -32,6 +32,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles '../proguard-rules.txt'
+        multiDexEnabled true
     }
     testOptions {
         unitTests.returnDefaultValues = true
@@ -57,6 +58,8 @@ dependencies {
     compile "com.google.code.gson:gson:$gson_ver"
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '2.0.1'
     provided "com.android.support:support-annotations:$support_annotations_ver"
+
+    compile "com.android.support:multidex:$multidex_ver"
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"

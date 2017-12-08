@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     testOptions {
         unitTests.returnDefaultValues = true
@@ -47,6 +48,8 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-android', version: '1.7.7'
     // EXAMPLE REPLACE gson json parsing with jackson-databind json parsing.
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.1'
+
+    compile "com.android.support:multidex:$multidex_ver"
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
