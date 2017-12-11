@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 /**
  * Wraps {@link Optimizely} instances
  *
@@ -375,6 +377,53 @@ public class OptimizelyClient {
             optimizely.clearNotificationListeners();
         } else {
             logger.warn("Optimizely is not initialized, could not clear notification listeners");
+        }
+    }
+
+    //======== FeatureFlag APIs ========//
+
+    /**
+     * Determine whether a boolean feature is enabled.
+     * Send an impression event if the user is bucketed into an experiment using the feature.
+     *
+     * @param featureKey The unique key of the feature.
+     * @param userId The ID of the user.
+     * @return True if the feature is enabled.
+     *         False if the feature is disabled.
+     *         False if the feature is not found.
+     */
+    public @Nonnull
+    Boolean isFeatureEnabled(@Nonnull String featureKey,
+                             @Nonnull String userId) {
+        if (isValid()) {
+            return optimizely.isFeatureEnabled(featureKey, userId);
+        } else {
+            logger.warn("Optimizely is not initialized, could not enable feature {} for user {}",
+                    featureKey, userId);
+            return false;
+        }
+    }
+
+    /**
+     * Determine whether a boolean feature is enabled.
+     * Send an impression event if the user is bucketed into an experiment using the feature.
+     *
+     * @param featureKey The unique key of the feature.
+     * @param userId The ID of the user.
+     * @param attributes The user's attributes.
+     * @return True if the feature is enabled.
+     *         False if the feature is disabled.
+     *         False if the feature is not found.
+     */
+    public @Nonnull Boolean isFeatureEnabled(@Nonnull String featureKey,
+                                             @Nonnull String userId,
+                                             @Nonnull Map<String, String> attributes) {
+        if (isValid()) {
+            return optimizely.isFeatureEnabled(featureKey, userId, attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not enable feature {} for user {} with attributes",
+                    featureKey, userId);
+            return false;
         }
     }
 }
