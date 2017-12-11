@@ -128,7 +128,8 @@ public class DatafileLoader {
         protected void onPostExecute(@Nullable String dataFile) {
             // Only send null or a real datafile
             // If the datafile is empty it means we got a 304
-            // We should have already sent the local datafile in this case
+            // We are notifying datafileLoader in either case
+            // if empty or null than it should be handled in datafileLoader listener to get from cache or Raw resource
             datafileLoader.notify(datafileLoadedListener, dataFile);
             datafileService.stop();
 

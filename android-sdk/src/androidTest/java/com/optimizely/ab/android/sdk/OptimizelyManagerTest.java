@@ -132,6 +132,8 @@ public class OptimizelyManagerTest {
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
 
+        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(),(Integer) null);
+        verify(logger).error(eq("Invalid datafile resource ID."));
     }
     @Test
     public void initializeSyncWithEmptyDatafile() {
@@ -224,7 +226,7 @@ public class OptimizelyManagerTest {
         String emptyString = null;
 
         optimizelyManager.initialize(context, emptyString);
-        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
+        verify(logger).error(eq("Invalid datafile"));
     }
 
     @Test
@@ -237,7 +239,7 @@ public class OptimizelyManagerTest {
         String emptyString = null;
 
         optimizelyManager.initialize(context, emptyString);
-        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
+        verify(logger).error(eq("Invalid datafile"));
     }
 
     @Test
