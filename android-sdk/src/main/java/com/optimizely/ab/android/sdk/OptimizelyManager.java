@@ -132,12 +132,32 @@ public class OptimizelyManager {
      * @return an {@link OptimizelyClient} instance
      */
     public OptimizelyClient initialize(@NonNull Context context, @NonNull String datafile) {
+        initialize(context, datafile,true);
+        return optimizelyClient;
+    }
+
+    /**
+     * Initialize Optimizely Synchronously using the datafile passed in while downloading the latest datafile in the background from the CDN to cache.
+     * It should be noted that even though it initiates a download of the datafile to cache, this method does not use that cached datafile.
+     * You can always test if a datafile exists in cache with {@link #isDatafileCached(Context)}.
+     * <p>
+     * Instantiates and returns an {@link OptimizelyClient} instance. It will also cache the instance
+     * for future lookups via getClient
+     *
+     * @param context  any {@link Context} instance
+     * @param datafile the datafile used to initialize the OptimizelyClient.
+     * @param downloadToCache to check if datafile should get updated in cache after initialization.
+     * @return an {@link OptimizelyClient} instance
+     */
+    protected OptimizelyClient initialize(@NonNull Context context,@Nullable String datafile,boolean downloadToCache) {
         if (!isAndroidVersionSupported()) {
             return optimizelyClient;
         }
-
         try {
-            optimizelyClient = buildOptimizely(context, datafile);
+            if(datafile!=null)
+                optimizelyClient = buildOptimizely(context, datafile);
+            else
+                logger.error("Invalid datafile");
         } catch (ConfigParseException e) {
             logger.error("Unable to parse compiled data file", e);
         } catch (Exception e) {
@@ -145,7 +165,9 @@ public class OptimizelyManager {
         } catch (Error e) {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
-
+        if(downloadToCache){
+            datafileHandler.downloadDatafile(context, projectId, null);
+        }
 
         return optimizelyClient;
     }
@@ -164,12 +186,12 @@ public class OptimizelyManager {
      * @return an {@link OptimizelyClient} instance
      */
     @NonNull
-    public OptimizelyClient initialize(@NonNull Context context, @RawRes int datafileRes) {
+    public OptimizelyClient initialize(@NonNull Context context, @RawRes Integer datafileRes) {
         try {
+
             String datafile;
             datafile = getDatafile(context, datafileRes);
-            optimizelyClient = initialize(context, datafile);
-            datafileHandler.downloadDatafile(context, projectId, null);
+            optimizelyClient = initialize(context, datafile, true);
         }catch (NullPointerException e){
             logger.error("Unable to find compiled data file in raw resource",e);
         }
@@ -184,12 +206,15 @@ public class OptimizelyManager {
      * @param datafileRes
      * @return datafile
      */
-    public String getDatafile(Context context,@RawRes int datafileRes){
+    public String getDatafile(Context context,@RawRes Integer datafileRes){
      try {
         if (isDatafileCached(context)) {
             return datafileHandler.loadSavedDatafile(context, projectId);
-        } else {
+        } else if (datafileRes!=null) {
             return loadRawResource(context, datafileRes);
+        }else{
+            logger.error("Invalid datafile resource ID.");
+            return null;
         }
     } catch (IOException e) {
         logger.error("Unable to load compiled data file", e);
@@ -231,15 +256,13 @@ public class OptimizelyManager {
                 } else {
                     //if datafile is null than it should be able to take from cache and if not present
                     //in Cache than should be able to get from raw data file
-                    optimizelyClient = initialize(context,getDatafile(context,datafileRes));
+                    optimizelyClient = initialize(context,getDatafile(context,datafileRes),false);
                     notifyStartListener();
                 }
             }
 
             @Override
-            public void onStop(Context context) {
-
-            }
+            public void onStop(Context context) {}
         };
     }
 
@@ -267,11 +290,11 @@ public class OptimizelyManager {
     /**
      * Gets a cached Optimizely instance
      * <p>
-     * If {@link #initialize(Context,int, OptimizelyStartListener)} or {@link #initialize(Context, int)}
+     * If {@link #initialize(Context,int, OptimizelyStartListener)} or {@link #initialize(Context, Integer)}
      * has not been called yet the returned {@link OptimizelyClient} instance will be a dummy instance
      * that logs warnings in order to prevent {@link NullPointerException}.
      * <p>
-     * Using {@link #initialize(Context, int, OptimizelyStartListener)} or {@link #initialize(Context, int)}
+     * Using {@link #initialize(Context, int, OptimizelyStartListener)} or {@link #initialize(Context, Integer)}
      * will update the cached instance with a new {@link OptimizelyClient} built from a cached local
      * datafile on disk or a remote datafile on the CDN.
      *
