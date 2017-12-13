@@ -3,7 +3,7 @@
 ## 1.8.1
 December 12, 2017
 
-This is a patch release for 1.8.0.  It contains to bug fixes mentioned below.
+This is a patch release for 1.8.0.  It contains two bug fixes mentioned below.
 
 ### Bug Fixes
 SDK returns NullPointerException when activating with unknown attribute.
