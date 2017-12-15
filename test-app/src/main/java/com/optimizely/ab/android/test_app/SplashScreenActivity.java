@@ -52,7 +52,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        boolean INITIALIZE_ASYNCHRONOUSLY = true;
+        boolean INITIALIZE_ASYNCHRONOUSLY = false;
 
         // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
         // in the manifest.

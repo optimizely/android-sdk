@@ -245,7 +245,7 @@ public class OptimizelyManager {
         datafileHandler.downloadDatafile(context, projectId,getDatafileLoadedListener(context,datafileRes));
     }
 
-    DatafileLoadedListener getDatafileLoadedListener(final Context context, @RawRes final int datafileRes) {
+    DatafileLoadedListener getDatafileLoadedListener(final Context context, @RawRes final Integer datafileRes) {
         return new DatafileLoadedListener() {
             @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
             @Override
