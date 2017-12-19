@@ -21,7 +21,7 @@ import android.content.Context;
 
 /**
  * Listens for new instances of {@link OptimizelyClient} that are built after calling
- * {@link OptimizelyManager#initialize(Activity, OptimizelyStartListener)} or {@link OptimizelyManager#initialize(Context, OptimizelyStartListener)}
+ *{@link OptimizelyManager#initialize(Context, Integer,OptimizelyStartListener)}
  */
 public interface OptimizelyStartListener {
     /**

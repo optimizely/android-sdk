@@ -233,11 +233,12 @@ public class OptimizelyManager {
      * cached datafile the returned instance will always be built from the remote datafile.
      * This method does the same thing except it can be used with a generic {@link Context}.
      * @param context                 any type of context instance
+     * @param datafileRes             Null is allowed here if user don't want to put datafile in res. Null handling is done in {@link #getDatafile(Context,Integer)}
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
-     * @see #initialize(Context, int ID, OptimizelyStartListener)
+     * @see #initialize(Context, Integer, OptimizelyStartListener)
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public void initialize(@NonNull final Context context, @RawRes final int datafileRes, @NonNull OptimizelyStartListener optimizelyStartListener) {
+    public void initialize(@NonNull final Context context, @RawRes final Integer datafileRes, @NonNull OptimizelyStartListener optimizelyStartListener) {
         if (!isAndroidVersionSupported()) {
             return;
         }
@@ -290,11 +291,11 @@ public class OptimizelyManager {
     /**
      * Gets a cached Optimizely instance
      * <p>
-     * If {@link #initialize(Context,int, OptimizelyStartListener)} or {@link #initialize(Context, Integer)}
+     * If {@link #initialize(Context,Integer, OptimizelyStartListener)} or {@link #initialize(Context, Integer)}
      * has not been called yet the returned {@link OptimizelyClient} instance will be a dummy instance
      * that logs warnings in order to prevent {@link NullPointerException}.
      * <p>
-     * Using {@link #initialize(Context, int, OptimizelyStartListener)} or {@link #initialize(Context, Integer)}
+     * Using {@link #initialize(Context,Integer, OptimizelyStartListener)} or {@link #initialize(Context, Integer)}
      * will update the cached instance with a new {@link OptimizelyClient} built from a cached local
      * datafile on disk or a remote datafile on the CDN.
      *
