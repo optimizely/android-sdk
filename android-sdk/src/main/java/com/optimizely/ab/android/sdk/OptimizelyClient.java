@@ -16,7 +16,7 @@
 
 package com.optimizely.ab.android.sdk;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -29,7 +29,6 @@ import com.optimizely.ab.notification.NotificationListener;
 
 import org.slf4j.Logger;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ import java.util.Map;
  * Wraps {@link Optimizely} instances
  *
  * This proxy ensures that the Android SDK will not crash if the inner Optimizely SDK
- * failed to start.  When Optimizely fails to start via {@link OptimizelyManager#initialize(Activity, OptimizelyStartListener)}
+ * failed to start.  When Optimizely fails to start via {@link OptimizelyManager#initialize(Context,Integer, OptimizelyStartListener)}
  * there will be no cached instance returned from {@link OptimizelyManager#getOptimizely()}.  By accessing
  * Optimizely through this interface checking for null is not required.  If Optimizely is null warnings
  * will be logged.
