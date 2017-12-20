@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 /**
  * Manages Optimizely SDK notification listeners and broadcasts messages.
  */
+@Deprecated
 public class NotificationBroadcaster {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationBroadcaster.class);

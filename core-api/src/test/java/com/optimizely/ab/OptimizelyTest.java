@@ -37,8 +37,11 @@ import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.internal.LogbackVerifier;
+import com.optimizely.ab.notification.ActivateNotification;
+import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationListener;
 
+import com.optimizely.ab.notification.TrackNotification;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -61,6 +64,8 @@ import java.util.Map;
 
 import ch.qos.logback.classic.Level;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import javax.annotation.Nonnull;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV3;
@@ -518,8 +523,7 @@ public class OptimizelyTest {
 
         when(mockBucketer.bucket(activatedExperiment, testBucketingId))
                 .thenReturn(bucketedVariation);
-
-
+        
         // activate the experiment
         Variation actualVariation = optimizely.activate(activatedExperiment.getKey(), testUserId, testUserAttributes);
 
@@ -2187,6 +2191,141 @@ public class OptimizelyTest {
     //======== Notification listeners ========//
 
     /**
+     * Verify that the {@link Optimizely#activate(String, String, Map<String, String>)} call
+     * correctly builds an endpoint url and request params
+     * and passes them through {@link EventHandler#dispatchEvent(LogEvent)}.
+     */
+    @Test
+    public void activateWithListener() throws Exception {
+        final Experiment activatedExperiment = validProjectConfig.getExperiments().get(0);
+        final Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        final Map<String, String> testUserAttributes = new HashMap<String, String>();
+        if (datafileVersion >= 4) {
+            testUserAttributes.put(ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE);
+        }
+        else {
+            testUserAttributes.put("browser_type", "chrome");
+        }
+
+        testUserAttributes.put(testBucketingIdKey, testBucketingId);
+
+        ActivateNotification activateNotification = new ActivateNotification() {
+            @Override
+            public void onActivate(@Nonnull Experiment experiment, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Variation variation, @Nonnull LogEvent event) {
+                assertEquals(experiment.getKey(), activatedExperiment.getKey());
+                assertEquals(bucketedVariation.getKey(), variation.getKey());
+                assertEquals(userId, testUserId);
+                for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                    assertEquals(testUserAttributes.get(entry.getKey()), entry.getValue());
+                }
+
+                assertEquals(event.getRequestMethod(), RequestMethod.GET);
+            }
+
+        };
+
+        int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, activateNotification);
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createImpressionEvent(eq(validProjectConfig), eq(activatedExperiment), eq(bucketedVariation),
+                eq(testUserId), eq(testUserAttributes)))
+                .thenReturn(logEventToDispatch);
+
+        when(mockBucketer.bucket(activatedExperiment, testBucketingId))
+                .thenReturn(bucketedVariation);
+
+
+        // activate the experiment
+        Variation actualVariation = optimizely.activate(activatedExperiment.getKey(), testUserId, testUserAttributes);
+
+        assertTrue(optimizely.notificationCenter.removeNotification(notificationId));
+        // verify that the bucketing algorithm was called correctly
+        verify(mockBucketer).bucket(activatedExperiment, testBucketingId);
+        assertThat(actualVariation, is(bucketedVariation));
+
+        // verify that dispatchEvent was called with the correct LogEvent object
+        verify(mockEventHandler).dispatchEvent(logEventToDispatch);
+    }
+
+    @Test
+    @SuppressFBWarnings(
+            value="NP_NONNULL_PARAM_VIOLATION",
+            justification="testing nullness contract violation")
+    public void activateWithListenerNullAttributes() throws Exception {
+        final Experiment activatedExperiment = noAudienceProjectConfig.getExperiments().get(0);
+        final Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+
+        // setup a mock event builder to return expected impression params
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(noAudienceDatafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(noAudienceProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createImpressionEvent(eq(noAudienceProjectConfig), eq(activatedExperiment), eq(bucketedVariation),
+                eq(testUserId), eq(Collections.<String, String>emptyMap())))
+                .thenReturn(logEventToDispatch);
+
+        when(mockBucketer.bucket(activatedExperiment, testUserId))
+                .thenReturn(bucketedVariation);
+
+        ActivateNotification activateNotification = new ActivateNotification() {
+            @Override
+            public void onActivate(@Nonnull Experiment experiment, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Variation variation, @Nonnull LogEvent event) {
+                assertEquals(experiment.getKey(), activatedExperiment.getKey());
+                assertEquals(bucketedVariation.getKey(), variation.getKey());
+                assertEquals(userId, testUserId);
+                assertTrue(attributes.isEmpty());
+
+                assertEquals(event.getRequestMethod(), RequestMethod.GET);
+            }
+
+        };
+
+        int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, activateNotification);
+
+        // activate the experiment
+        Map<String, String> attributes = null;
+        Variation actualVariation = optimizely.activate(activatedExperiment.getKey(), testUserId, attributes);
+
+        optimizely.notificationCenter.removeNotification(notificationId);
+
+        logbackVerifier.expectMessage(Level.WARN, "Attributes is null when non-null was expected. Defaulting to an empty attributes map.");
+
+        // verify that the bucketing algorithm was called correctly
+        verify(mockBucketer).bucket(activatedExperiment, testUserId);
+        assertThat(actualVariation, is(bucketedVariation));
+
+        // setup the attribute map captor (so we can verify its content)
+        ArgumentCaptor<Map> attributeCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(mockEventBuilder).createImpressionEvent(eq(noAudienceProjectConfig), eq(activatedExperiment),
+                eq(bucketedVariation), eq(testUserId), attributeCaptor.capture());
+
+        Map<String, String> actualValue = attributeCaptor.getValue();
+        assertThat(actualValue, is(Collections.<String, String>emptyMap()));
+
+        // verify that dispatchEvent was called with the correct LogEvent object
+        verify(mockEventHandler).dispatchEvent(logEventToDispatch);
+    }
+
+    /**
      * Verify that {@link Optimizely#addNotificationListener(NotificationListener)} properly calls
      * through to {@link com.optimizely.ab.notification.NotificationBroadcaster} and the listener is
      * added and notified when an experiment is activated.
@@ -2425,6 +2564,438 @@ public class OptimizelyTest {
         optimizely.track(eventKey, genericUserId, attributes);
         verify(listener, never())
                 .onEventTracked(eventKey, genericUserId, attributes, null, logEventToDispatch);
+    }
+
+    /**
+     * Verify that {@link com.optimizely.ab.notification.NotificationCenter#addNotification(
+     * com.optimizely.ab.notification.NotificationCenter.NotificationType,
+     * com.optimizely.ab.notification.NotificationListener)} properly used
+     *  and the listener is
+     * added and notified when an experiment is activated.
+     */
+    @Test
+    public void addNotificationListenerFromNotificationCenter() throws Exception {
+        Experiment activatedExperiment;
+        EventType eventType;
+        if (datafileVersion >= 4) {
+            activatedExperiment = validProjectConfig.getExperimentKeyMapping().get(EXPERIMENT_BASIC_EXPERIMENT_KEY);
+            eventType = validProjectConfig.getEventNameMapping().get(EVENT_BASIC_EVENT_KEY);
+        }
+        else {
+            activatedExperiment = validProjectConfig.getExperiments().get(0);
+            eventType = validProjectConfig.getEventTypes().get(0);
+        }
+        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withDecisionService(mockDecisionService)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> attributes = Collections.emptyMap();
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createImpressionEvent(validProjectConfig, activatedExperiment,
+                bucketedVariation, genericUserId, attributes))
+                .thenReturn(logEventToDispatch);
+
+        when(mockDecisionService.getVariation(
+                eq(activatedExperiment),
+                eq(genericUserId),
+                eq(Collections.<String, String>emptyMap())))
+                .thenReturn(bucketedVariation);
+
+        // Add listener
+        ActivateNotification listener = mock(ActivateNotification.class);
+        optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, listener);
+
+        // Check if listener is notified when experiment is activated
+        Variation actualVariation = optimizely.activate(activatedExperiment, genericUserId, attributes);
+        verify(listener, times(1))
+                .onActivate(activatedExperiment, genericUserId, attributes, bucketedVariation, logEventToDispatch);
+
+        assertEquals(actualVariation.getKey(), bucketedVariation.getKey());
+        // Check if listener is notified after an event is tracked
+        String eventKey = eventType.getKey();
+
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockDecisionService,
+                eventType.getKey(),
+                genericUserId,
+                attributes);
+        when(mockEventBuilder.createConversionEvent(
+                eq(validProjectConfig),
+                eq(experimentVariationMap),
+                eq(genericUserId),
+                eq(eventType.getId()),
+                eq(eventKey),
+                eq(attributes),
+                anyMapOf(String.class, Object.class)))
+                .thenReturn(logEventToDispatch);
+
+        TrackNotification trackNotification = mock(TrackNotification.class);
+
+        optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
+
+        optimizely.track(eventKey, genericUserId, attributes);
+        verify(trackNotification, times(1))
+                .onTrack(eventKey, genericUserId, attributes, Collections.EMPTY_MAP, logEventToDispatch);
+    }
+
+    /**
+     * Verify that {@link com.optimizely.ab.notification.NotificationCenter} properly
+     * calls and the listener is removed and no longer notified when an experiment is activated.
+     */
+    @Test
+    public void removeNotificationListenerNotificationCenter() throws Exception {
+        Experiment activatedExperiment = validProjectConfig.getExperiments().get(0);
+        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> attributes = new HashMap<String, String>();
+        attributes.put(ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE);
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createImpressionEvent(validProjectConfig, activatedExperiment,
+                bucketedVariation, genericUserId, attributes))
+                .thenReturn(logEventToDispatch);
+
+        when(mockBucketer.bucket(activatedExperiment, genericUserId))
+                .thenReturn(bucketedVariation);
+
+        when(mockEventBuilder.createImpressionEvent(validProjectConfig, activatedExperiment, bucketedVariation, genericUserId,
+                attributes))
+                .thenReturn(logEventToDispatch);
+
+        // Add and remove listener
+        ActivateNotification activateNotification = mock(ActivateNotification.class);
+        int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, activateNotification);
+        assertTrue(optimizely.notificationCenter.removeNotification(notificationId));
+
+        TrackNotification trackNotification = mock(TrackNotification.class);
+        notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
+        assertTrue(optimizely.notificationCenter.removeNotification(notificationId));
+
+        // Check if listener is notified after an experiment is activated
+        Variation actualVariation = optimizely.activate(activatedExperiment, genericUserId, attributes);
+        verify(activateNotification, never())
+                .onActivate(activatedExperiment, genericUserId, attributes, actualVariation, logEventToDispatch);
+
+        // Check if listener is notified after a live variable is accessed
+        boolean activateExperiment = true;
+        verify(activateNotification, never())
+                .onActivate(activatedExperiment, genericUserId, attributes, actualVariation, logEventToDispatch);
+
+        // Check if listener is notified after an event is tracked
+        EventType eventType = validProjectConfig.getEventTypes().get(0);
+        String eventKey = eventType.getKey();
+
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockDecisionService,
+                eventType.getKey(),
+                genericUserId,
+                attributes);
+        when(mockEventBuilder.createConversionEvent(
+                eq(validProjectConfig),
+                eq(experimentVariationMap),
+                eq(genericUserId),
+                eq(eventType.getId()),
+                eq(eventKey),
+                eq(attributes),
+                anyMapOf(String.class, Object.class)))
+                .thenReturn(logEventToDispatch);
+
+        optimizely.track(eventKey, genericUserId, attributes);
+        verify(trackNotification, never())
+                .onTrack(eventKey, genericUserId, attributes, Collections.EMPTY_MAP, logEventToDispatch);
+    }
+
+    /**
+     * Verify that {@link com.optimizely.ab.notification.NotificationCenter}
+     * clearAllListerners removes all listeners
+     * and no longer notified when an experiment is activated.
+     */
+    @Test
+    public void clearNotificationListenersNotificationCenter() throws Exception {
+        Experiment activatedExperiment;
+        Map<String, String> attributes = new HashMap<String, String>();
+        if (datafileVersion >= 4) {
+            activatedExperiment = validProjectConfig.getExperimentKeyMapping().get(EXPERIMENT_MULTIVARIATE_EXPERIMENT_KEY);
+            attributes.put(ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE);
+        }
+        else {
+            activatedExperiment = validProjectConfig.getExperiments().get(0);
+            attributes.put("browser_type", "chrome");
+        }
+        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createImpressionEvent(validProjectConfig, activatedExperiment,
+                bucketedVariation, genericUserId, attributes))
+                .thenReturn(logEventToDispatch);
+
+        when(mockBucketer.bucket(activatedExperiment, genericUserId))
+                .thenReturn(bucketedVariation);
+
+        // set up argument captor for the attributes map to compare map equality
+        ArgumentCaptor<Map> attributeCaptor = ArgumentCaptor.forClass(Map.class);
+
+        when(mockEventBuilder.createImpressionEvent(
+                eq(validProjectConfig),
+                eq(activatedExperiment),
+                eq(bucketedVariation),
+                eq(genericUserId),
+                attributeCaptor.capture()
+        )).thenReturn(logEventToDispatch);
+
+        ActivateNotification activateNotification = mock(ActivateNotification.class);
+        TrackNotification trackNotification = mock(TrackNotification.class);
+
+        optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, activateNotification);
+        optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
+
+        optimizely.notificationCenter.clearAllNotifications();
+
+        // Check if listener is notified after an experiment is activated
+        Variation actualVariation = optimizely.activate(activatedExperiment, genericUserId, attributes);
+
+        // check that the argument that was captured by the mockEventBuilder attribute captor,
+        // was equal to the attributes passed in to activate
+        assertEquals(attributes, attributeCaptor.getValue());
+        verify(activateNotification, never())
+                .onActivate(activatedExperiment, genericUserId, attributes, actualVariation, logEventToDispatch);
+
+        // Check if listener is notified after a live variable is accessed
+        boolean activateExperiment = true;
+        verify(activateNotification, never())
+                .onActivate(activatedExperiment, genericUserId, attributes, actualVariation, logEventToDispatch);
+
+        // Check if listener is notified after a event is tracked
+        EventType eventType = validProjectConfig.getEventTypes().get(0);
+        String eventKey = eventType.getKey();
+
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockDecisionService,
+                eventType.getKey(),
+                OptimizelyTest.genericUserId,
+                attributes);
+        when(mockEventBuilder.createConversionEvent(
+                eq(validProjectConfig),
+                eq(experimentVariationMap),
+                eq(OptimizelyTest.genericUserId),
+                eq(eventType.getId()),
+                eq(eventKey),
+                eq(attributes),
+                anyMapOf(String.class, Object.class)))
+                .thenReturn(logEventToDispatch);
+
+        optimizely.track(eventKey, genericUserId, attributes);
+        verify(trackNotification, never())
+                .onTrack(eventKey, genericUserId, attributes, Collections.EMPTY_MAP, logEventToDispatch);
+    }
+
+    /**
+     * Add notificaiton listener for track {@link com.optimizely.ab.notification.NotificationCenter}.  Verify called and
+     * remove.
+     * @throws Exception
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void trackEventWithListenerAttributes() throws Exception {
+        final Attribute attribute = validProjectConfig.getAttributes().get(0);
+        final EventType eventType;
+        if (datafileVersion >= 4) {
+            eventType = validProjectConfig.getEventNameMapping().get(EVENT_BASIC_EVENT_KEY);
+        }
+        else {
+            eventType = validProjectConfig.getEventTypes().get(0);
+        }
+
+        // setup a mock event builder to return expected conversion params
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        final Map<String, String> attributes = ImmutableMap.of(attribute.getKey(), "attributeValue");
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockDecisionService,
+                eventType.getKey(),
+                genericUserId,
+                attributes);
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createConversionEvent(
+                eq(validProjectConfig),
+                eq(experimentVariationMap),
+                eq(genericUserId),
+                eq(eventType.getId()),
+                eq(eventType.getKey()),
+                anyMapOf(String.class, String.class),
+                eq(Collections.<String, Object>emptyMap())))
+                .thenReturn(logEventToDispatch);
+
+        logbackVerifier.expectMessage(Level.INFO, "Tracking event \"" + eventType.getKey() +
+                "\" for user \"" + genericUserId + "\".");
+        logbackVerifier.expectMessage(Level.DEBUG, "Dispatching conversion event to URL test_url with params " +
+                testParams + " and payload \"\"");
+
+        TrackNotification trackNotification = new TrackNotification() {
+            @Override
+            public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> _attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
+                assertEquals(eventType.getKey(), eventKey);
+                assertEquals(genericUserId, userId);
+                assertEquals(attributes, _attributes);
+                assertTrue(eventTags.isEmpty());
+            }
+        };
+
+        int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
+
+        // call track
+        optimizely.track(eventType.getKey(), genericUserId, attributes);
+
+        optimizely.notificationCenter.removeNotification(notificationId);
+
+        // setup the attribute map captor (so we can verify its content)
+        ArgumentCaptor<Map> attributeCaptor = ArgumentCaptor.forClass(Map.class);
+
+        // verify that the event builder was called with the expected attributes
+        verify(mockEventBuilder).createConversionEvent(
+                eq(validProjectConfig),
+                eq(experimentVariationMap),
+                eq(genericUserId),
+                eq(eventType.getId()),
+                eq(eventType.getKey()),
+                attributeCaptor.capture(),
+                eq(Collections.<String, Object>emptyMap()));
+
+        Map<String, String> actualValue = attributeCaptor.getValue();
+        assertThat(actualValue, hasEntry(attribute.getKey(), "attributeValue"));
+
+        verify(mockEventHandler).dispatchEvent(logEventToDispatch);
+    }
+
+    /**
+     * Track with listener and verify that {@link Optimizely#track(String, String)} ignores null attributes.
+     */
+    @Test
+    @SuppressFBWarnings(
+            value="NP_NONNULL_PARAM_VIOLATION",
+            justification="testing nullness contract violation")
+    public void trackEventWithListenerNullAttributes() throws Exception {
+        final EventType eventType;
+        if (datafileVersion >= 4) {
+            eventType = validProjectConfig.getEventNameMapping().get(EVENT_BASIC_EVENT_KEY);
+        }
+        else {
+            eventType = validProjectConfig.getEventTypes().get(0);
+        }
+
+        // setup a mock event builder to return expected conversion params
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockDecisionService,
+                eventType.getKey(),
+                genericUserId,
+                Collections.<String, String>emptyMap());
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createConversionEvent(
+                eq(validProjectConfig),
+                eq(experimentVariationMap),
+                eq(genericUserId),
+                eq(eventType.getId()),
+                eq(eventType.getKey()),
+                eq(Collections.<String, String>emptyMap()),
+                eq(Collections.<String, Object>emptyMap())))
+                .thenReturn(logEventToDispatch);
+
+        logbackVerifier.expectMessage(Level.INFO, "Tracking event \"" + eventType.getKey() +
+                "\" for user \"" + genericUserId + "\".");
+        logbackVerifier.expectMessage(Level.DEBUG, "Dispatching conversion event to URL test_url with params " +
+                testParams + " and payload \"\"");
+
+        TrackNotification trackNotification = new TrackNotification() {
+            @Override
+            public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
+                assertEquals(eventType.getKey(), eventKey);
+                assertEquals(genericUserId, userId);
+                assertTrue(attributes.isEmpty());
+                assertTrue(eventTags.isEmpty());
+            }
+        };
+
+        int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
+
+        // call track
+        Map<String, String> attributes = null;
+        optimizely.track(eventType.getKey(), genericUserId, attributes);
+
+        optimizely.notificationCenter.removeNotification(notificationId);
+
+        logbackVerifier.expectMessage(Level.WARN, "Attributes is null when non-null was expected. Defaulting to an empty attributes map.");
+
+        // setup the attribute map captor (so we can verify its content)
+        ArgumentCaptor<Map> attributeCaptor = ArgumentCaptor.forClass(Map.class);
+
+        // verify that the event builder was called with the expected attributes
+        verify(mockEventBuilder).createConversionEvent(
+                eq(validProjectConfig),
+                eq(experimentVariationMap),
+                eq(genericUserId),
+                eq(eventType.getId()),
+                eq(eventType.getKey()),
+                attributeCaptor.capture(),
+                eq(Collections.<String, Object>emptyMap()));
+
+        Map<String, String> actualValue = attributeCaptor.getValue();
+        assertThat(actualValue, is(Collections.<String, String>emptyMap()));
+
+        verify(mockEventHandler).dispatchEvent(logEventToDispatch);
     }
 
     //======== Feature Accessor Tests ========//

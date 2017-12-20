@@ -45,6 +45,7 @@ public abstract class NotificationListener {
      * @param eventValue an integer to be aggregated for the event
      * @param logEvent the log event sent to the event dispatcher
      */
+    @Deprecated
     public void onEventTracked(@Nonnull String eventKey,
                                @Nonnull String userId,
                                @Nonnull Map<String, String> attributes,
@@ -60,9 +61,18 @@ public abstract class NotificationListener {
      * @param attributes a map of attributes about the user
      * @param variation the key of the variation that was bucketed
      */
+    @Deprecated
     public void onExperimentActivated(@Nonnull Experiment experiment,
                                       @Nonnull String userId,
                                       @Nonnull Map<String, String> attributes,
                                       @Nonnull Variation variation) {
     }
+
+    /**
+     * This is the new method of notification.  Implementation classes such as {@link com.optimizely.ab.notification.ActivateNotification}
+     * will implement this call and provide another method with the correct parameters
+     * Notify called when a notification is triggered via the {@link com.optimizely.ab.notification.NotificationCenter}
+     * @param args - variable argument list based on the type of notification.
+     */
+    public abstract void notify(Object... args);
 }
