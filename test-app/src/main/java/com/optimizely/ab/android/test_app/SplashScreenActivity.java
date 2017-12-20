@@ -52,7 +52,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        boolean INITIALIZE_ASYNCHRONOUSLY = true;
+        boolean INITIALIZE_ASYNCHRONOUSLY = false;
 
         // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
         // in the manifest.
@@ -60,49 +60,53 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         getApplicationContext().registerReceiver(eventRescheduler, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
 
-        // Example of initialize from raw file and use cached file after that.
+        /** Example of using Cache datafile to initialize optimizely client, if file is not present
+         in Cache it will be initialized from Raw.datafile.
+         **/
         if (!INITIALIZE_ASYNCHRONOUSLY) {
-
-            if (optimizelyManager.isDatafileCached(myApplication)) {
-                optimizelyManager.initialize(myApplication);
-            } else {
-                optimizelyManager.initialize(myApplication, R.raw.datafile);
-            }
+               optimizelyManager.initialize(myApplication, R.raw.datafile);
+               startVariation();
         } else {
             // Initialize Optimizely asynchronously
-            optimizelyManager.initialize(this, new OptimizelyStartListener() {
+            optimizelyManager.initialize(this,R.raw.datafile, new OptimizelyStartListener() {
 
                 @Override
                 public void onStart(OptimizelyClient optimizely) {
-                    // this is the control variation, it will show if we are not able to determine which variation to bucket the user into
-                    Intent intent = new Intent(myApplication.getBaseContext(), ActivationErrorActivity.class);
-
-                    // Activate user and start activity based on the variation we get.
-                    // You can pass in any string for the user ID. In this example we just use a convenience method to generate a random one.
-                    String userId = myApplication.getAnonUserId();
-                    Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId);
-
-                    // Utility method for verifying event dispatches in our automated tests
-                    CountingIdlingResourceManager.increment(); // increment for impression event
-
-                    // variation is nullable so we should check for null values
-                    if (backgroundVariation != null) {
-                        // Show activity based on the variation the user got bucketed into
-                        if (backgroundVariation.getKey().equals("variation_a")) {
-                            intent = new Intent(myApplication.getBaseContext(), VariationAActivity.class);
-                        } else if (backgroundVariation.getKey().equals("variation_b")) {
-                            intent = new Intent(myApplication.getBaseContext(), VariationBActivity.class);
-                        }
-                    }
-
-                    startActivity(intent);
-
-                    //call this method if you set an interval but want to now stop doing bakcground updates.
-                    //optimizelyManager.getDatafileHandler().stopBackgroundUpdates(myApplication.getApplicationContext(), optimizelyManager.getProjectId());
+                    startVariation();
                 }
             });
         }
 
+    }
+
+    /**
+     * This method will start the user activity according to provided variation
+     */
+    private void startVariation(){
+        // this is the control variation, it will show if we are not able to determine which variation to bucket the user into
+        Intent intent = new Intent(myApplication.getBaseContext(), ActivationErrorActivity.class);
+
+        // Activate user and start activity based on the variation we get.
+        // You can pass in any string for the user ID. In this example we just use a convenience method to generate a random one.
+        String userId = myApplication.getAnonUserId();
+        Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId);
+
+        // Utility method for verifying event dispatches in our automated tests
+        CountingIdlingResourceManager.increment(); // increment for impression event
+
+        // variation is nullable so we should check for null values
+        if (backgroundVariation != null) {
+            // Show activity based on the variation the user got bucketed into
+            if (backgroundVariation.getKey().equals("variation_a")) {
+                intent = new Intent(myApplication.getBaseContext(), VariationAActivity.class);
+            } else if (backgroundVariation.getKey().equals("variation_b")) {
+                intent = new Intent(myApplication.getBaseContext(), VariationBActivity.class);
+            }
+        }
+        startActivity(intent);
+
+        //call this method if you set an interval but want to now stop doing bakcground updates.
+        //optimizelyManager.getDatafileHandler().stopBackgroundUpdates(myApplication.getApplicationContext(), optimizelyManager.getProjectId());
 
     }
 }
