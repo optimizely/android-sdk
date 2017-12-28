@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingPolicies;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -162,6 +163,9 @@ public class MainActivityEspressoTest {
 
     @Test
     public void experimentActivationForWhitelistUser() throws Exception {
+        IdlingPolicies.setMasterPolicyTimeout(3, TimeUnit.MINUTES);
+        IdlingPolicies.setIdlingResourceTimeout(3, TimeUnit.MINUTES);
+
         // Check that the text was changed.
         // These tests are pointed at a real project.
         // The user 'test_user` is in the whitelist for variation_a for experiment background_experiment
