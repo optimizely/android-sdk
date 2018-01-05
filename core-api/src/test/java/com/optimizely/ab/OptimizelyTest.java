@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2016-2018, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -15,6 +15,7 @@
  ***************************************************************************/
 package com.optimizely.ab;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.collect.ImmutableMap;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.bucketing.DecisionService;
@@ -40,8 +41,8 @@ import com.optimizely.ab.internal.LogbackVerifier;
 import com.optimizely.ab.notification.ActivateNotification;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationListener;
-
 import com.optimizely.ab.notification.TrackNotification;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -53,6 +54,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,11 +63,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import ch.qos.logback.classic.Level;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-import javax.annotation.Nonnull;
 
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV2;
 import static com.optimizely.ab.config.ProjectConfigTestUtils.noAudienceProjectConfigJsonV3;
@@ -121,6 +118,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -3275,7 +3273,77 @@ public class OptimizelyTest {
      * Verify {@link Optimizely#isFeatureEnabled(String, String)} calls into
      * {@link Optimizely#isFeatureEnabled(String, String, Map)} and they both
      * return False
-     * when the APIs are called with an feature key that is not in the datafile.
+     * when the APIs are called with a null value for the feature key parameter.
+     * @throws Exception
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void isFeatureEnabledReturnsFalseWhenFeatureKeyIsNull() throws Exception {
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .withDecisionService(mockDecisionService)
+                .build());
+
+        assertFalse(spyOptimizely.isFeatureEnabled(null, genericUserId));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The featureKey parameter must be nonnull."
+        );
+
+        verify(spyOptimizely, times(1)).isFeatureEnabled(
+                isNull(String.class),
+                eq(genericUserId),
+                eq(Collections.<String, String>emptyMap())
+        );
+        verify(mockDecisionService, never()).getVariationForFeature(
+                any(FeatureFlag.class),
+                any(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify {@link Optimizely#isFeatureEnabled(String, String)} calls into
+     * {@link Optimizely#isFeatureEnabled(String, String, Map)} and they both
+     * return False
+     * when the APIs are called with a null value for the user ID parameter.
+     * @throws Exception
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void isFeatureEnabledReturnsFalseWhenUserIdIsNull() throws Exception {
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .withDecisionService(mockDecisionService)
+                .build());
+
+        String featureKey = FEATURE_MULTI_VARIATE_FEATURE_KEY;
+
+        assertFalse(spyOptimizely.isFeatureEnabled(featureKey, null));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The userId parameter must be nonnull."
+        );
+
+        verify(spyOptimizely, times(1)).isFeatureEnabled(
+                eq(featureKey),
+                isNull(String.class),
+                eq(Collections.<String, String>emptyMap())
+        );
+        verify(mockDecisionService, never()).getVariationForFeature(
+                any(FeatureFlag.class),
+                any(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify {@link Optimizely#isFeatureEnabled(String, String)} calls into
+     * {@link Optimizely#isFeatureEnabled(String, String, Map)} and they both
+     * return False
+     * when the APIs are called with a feature key that is not in the datafile.
      * @throws Exception
      */
     @Test
@@ -3438,6 +3506,108 @@ public class OptimizelyTest {
 
     /**
      * Verify {@link Optimizely#getFeatureVariableString(String, String, String)}
+     * calls through to {@link Optimizely#getFeatureVariableString(String, String, String, Map)}
+     * and returns null
+     * when called with a null value for the feature Key parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableStringReturnsNullWhenFeatureKeyIsNull() throws ConfigParseException {
+        String variableKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableString(
+                null,
+                variableKey,
+                genericUserId
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The featureKey parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableString(
+                isNull(String.class),
+                any(String.class),
+                any(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify {@link Optimizely#getFeatureVariableString(String, String, String, Map)}
+     * calls through to {@link Optimizely#getFeatureVariableString(String, String, String)}
+     * and returns null
+     * when called with a null value for the variableKey parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableStringReturnsNullWhenVariableKeyIsNull() throws ConfigParseException {
+        String featureKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableString(
+                featureKey,
+                null,
+                genericUserId
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The variableKey parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableString(
+                any(String.class),
+                isNull(String.class),
+                any(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify {@link Optimizely#getFeatureVariableString(String, String, String, Map)}
+     * calls through to {@link Optimizely#getFeatureVariableString(String, String, String)}
+     * and returns null
+     * when called with a null value for the userID parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableStringReturnsNullWhenUserIdIsNull() throws ConfigParseException {
+        String featureKey = "";
+        String variableKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableString(
+                featureKey,
+                variableKey,
+                null
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The userId parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableString(
+                any(String.class),
+                any(String.class),
+                isNull(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+    /**
+     * Verify {@link Optimizely#getFeatureVariableString(String, String, String)}
      * calls through to {@link Optimizely#getFeatureVariableString(String, String, String, Map<String, String>)}
      * and returns null
      * when {@link Optimizely#getFeatureVariableValueForType(String, String, String, Map, LiveVariable.VariableType)}
@@ -3531,6 +3701,110 @@ public class OptimizelyTest {
                 attributes
         ));
     }
+
+    /**
+     * Verify {@link Optimizely#getFeatureVariableBoolean(String, String, String)}
+     * calls through to {@link Optimizely#getFeatureVariableBoolean(String, String, String, Map)}
+     * and returns null
+     * when called with a null value for the feature Key parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableBooleanReturnsNullWhenFeatureKeyIsNull() throws ConfigParseException {
+        String variableKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableBoolean(
+                null,
+                variableKey,
+                genericUserId
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The featureKey parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableBoolean(
+                isNull(String.class),
+                any(String.class),
+                any(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify {@link Optimizely#getFeatureVariableBoolean(String, String, String, Map)}
+     * calls through to {@link Optimizely#getFeatureVariableBoolean(String, String, String)}
+     * and returns null
+     * when called with a null value for the variableKey parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableBooleanReturnsNullWhenVariableKeyIsNull() throws ConfigParseException {
+        String featureKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableBoolean(
+                featureKey,
+                null,
+                genericUserId
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The variableKey parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableBoolean(
+                any(String.class),
+                isNull(String.class),
+                any(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify {@link Optimizely#getFeatureVariableBoolean(String, String, String, Map)}
+     * calls through to {@link Optimizely#getFeatureVariableBoolean(String, String, String)}
+     * and returns null
+     * when called with a null value for the userID parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableBooleanReturnsNullWhenUserIdIsNull() throws ConfigParseException {
+        String featureKey = "";
+        String variableKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableBoolean(
+                featureKey,
+                variableKey,
+                null
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The userId parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableBoolean(
+                any(String.class),
+                any(String.class),
+                isNull(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
 
     /**
      * Verify {@link Optimizely#getFeatureVariableBoolean(String, String, String)}
@@ -3764,6 +4038,109 @@ public class OptimizelyTest {
     }
 
     /**
+     * Verify {@link Optimizely#getFeatureVariableDouble(String, String, String)}
+     * calls through to {@link Optimizely#getFeatureVariableDouble(String, String, String, Map)}
+     * and returns null
+     * when called with a null value for the feature Key parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableDoubleReturnsNullWhenFeatureKeyIsNull() throws ConfigParseException {
+        String variableKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableDouble(
+                null,
+                variableKey,
+                genericUserId
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The featureKey parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableDouble(
+                isNull(String.class),
+                any(String.class),
+                any(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify {@link Optimizely#getFeatureVariableDouble(String, String, String, Map)}
+     * calls through to {@link Optimizely#getFeatureVariableDouble(String, String, String)}
+     * and returns null
+     * when called with a null value for the variableKey parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableDoubleReturnsNullWhenVariableKeyIsNull() throws ConfigParseException {
+        String featureKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableDouble(
+                featureKey,
+                null,
+                genericUserId
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The variableKey parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableDouble(
+                any(String.class),
+                isNull(String.class),
+                any(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify {@link Optimizely#getFeatureVariableDouble(String, String, String, Map)}
+     * calls through to {@link Optimizely#getFeatureVariableDouble(String, String, String)}
+     * and returns null
+     * when called with a null value for the userID parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableDoubleReturnsNullWhenUserIdIsNull() throws ConfigParseException {
+        String featureKey = "";
+        String variableKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableDouble(
+                featureKey,
+                variableKey,
+                null
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The userId parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableDouble(
+                any(String.class),
+                any(String.class),
+                isNull(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
      * Verify that {@link Optimizely#getFeatureVariableDouble(String, String, String)}
      * and {@link Optimizely#getFeatureVariableDouble(String, String, String, Map)}
      * do not throw errors when they are unable to parse the value into an Double.
@@ -3797,6 +4174,108 @@ public class OptimizelyTest {
                 Level.ERROR,
                 "NumberFormatException while trying to parse \"" + unParsableValue +
                         "\" as Double. "
+        );
+    }
+    /**
+     * Verify {@link Optimizely#getFeatureVariableInteger(String, String, String)}
+     * calls through to {@link Optimizely#getFeatureVariableInteger(String, String, String, Map)}
+     * and returns null
+     * when called with a null value for the feature Key parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableIntegerReturnsNullWhenFeatureKeyIsNull() throws ConfigParseException {
+        String variableKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableInteger(
+                null,
+                variableKey,
+                genericUserId
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The featureKey parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableInteger(
+                isNull(String.class),
+                any(String.class),
+                any(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify {@link Optimizely#getFeatureVariableInteger(String, String, String, Map)}
+     * calls through to {@link Optimizely#getFeatureVariableInteger(String, String, String)}
+     * and returns null
+     * when called with a null value for the variableKey parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableIntegerReturnsNullWhenVariableKeyIsNull() throws ConfigParseException {
+        String featureKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableInteger(
+                featureKey,
+                null,
+                genericUserId
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The variableKey parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableInteger(
+                any(String.class),
+                isNull(String.class),
+                any(String.class),
+                anyMapOf(String.class, String.class)
+        );
+    }
+
+    /**
+     * Verify {@link Optimizely#getFeatureVariableInteger(String, String, String, Map)}
+     * calls through to {@link Optimizely#getFeatureVariableInteger(String, String, String)}
+     * and returns null
+     * when called with a null value for the userID parameter.
+     * @throws ConfigParseException
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getFeatureVariableIntegerReturnsNullWhenUserIdIsNull() throws ConfigParseException {
+        String featureKey = "";
+        String variableKey = "";
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+
+        assertNull(spyOptimizely.getFeatureVariableInteger(
+                featureKey,
+                variableKey,
+                null
+        ));
+
+        logbackVerifier.expectMessage(
+                Level.WARN,
+                "The userId parameter must be nonnull."
+        );
+        verify(spyOptimizely, times(1)).getFeatureVariableInteger(
+                any(String.class),
+                any(String.class),
+                isNull(String.class),
+                anyMapOf(String.class, String.class)
         );
     }
 

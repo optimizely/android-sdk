@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2016-2018, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -43,20 +43,18 @@ import com.optimizely.ab.internal.EventTagUtils;
 import com.optimizely.ab.notification.NotificationBroadcaster;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Top-level container class for Optimizely functionality.
@@ -333,6 +331,14 @@ public class Optimizely {
     public @Nonnull Boolean isFeatureEnabled(@Nonnull String featureKey,
                                               @Nonnull String userId,
                                               @Nonnull Map<String, String> attributes) {
+        if (featureKey == null) {
+            logger.warn("The featureKey parameter must be nonnull.");
+            return false;
+        }
+        else if (userId == null) {
+            logger.warn("The userId parameter must be nonnull.");
+            return false;
+        }
         FeatureFlag featureFlag = projectConfig.getFeatureKeyMapping().get(featureKey);
         if (featureFlag == null) {
             logger.info("No feature flag was found for key \"{}\".", featureKey);
@@ -533,6 +539,18 @@ public class Optimizely {
                                                   @Nonnull String userId,
                                                   @Nonnull Map<String, String> attributes,
                                                   @Nonnull LiveVariable.VariableType variableType) {
+        if (featureKey == null) {
+            logger.warn("The featureKey parameter must be nonnull.");
+            return null;
+        }
+        else if (variableKey == null) {
+            logger.warn("The variableKey parameter must be nonnull.");
+            return null;
+        }
+        else if (userId == null) {
+            logger.warn("The userId parameter must be nonnull.");
+            return null;
+        }
         FeatureFlag featureFlag = projectConfig.getFeatureKeyMapping().get(featureKey);
         if (featureFlag == null) {
             logger.info("No feature flag was found for key \"{}\".", featureKey);
