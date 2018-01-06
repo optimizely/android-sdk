@@ -1,5 +1,15 @@
 # Optimizely Java X SDK Changelog
 
+## 2.0.0 Beta 3
+January 5, 2018
+
+This is a patch release for 2.0.0 Beta. It contains a minor bug fix.
+
+### Bug Fixes
+SDK checks for null values in the Feature API parameters.
+- If `isFeatureEnabled` is called with a null featureKey or a null userId, it will return false immediately.
+- If any of `getFeatureVariable<Type>` are called with a null featureKey, variableKey, or userId, null will be returned immediately.
+
 ## 1.8.1
 December 12, 2017
 
