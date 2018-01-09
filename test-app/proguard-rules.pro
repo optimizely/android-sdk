@@ -27,6 +27,9 @@
 
 # Safely ignore warnings about other libraries since we are using Gson
 #-dontwarn com.fasterxml.jackson.**
+-keep class com.fasterxml.jackson.** {*;}
+-dontwarn com.google.gson.**
+-dontwarn com.optimizely.ab.config.parser.**
 #-dontwarn org.json.**
 
 # Annotations
@@ -37,6 +40,7 @@
 
 # slf4j
 #-dontwarn org.slf4j.**
+-keep class org.slf4j.** {*;}
 
 # Android Logger
 #-keep class com.noveogroup.android.log.** { *; }
