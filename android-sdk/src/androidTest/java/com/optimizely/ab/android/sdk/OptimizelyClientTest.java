@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2018, Optimizely, Inc. and contributors                        *
+ * Copyright 2017-2018, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -30,8 +30,6 @@ import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.notification.NotificationListener;
-
-import junit.framework.TestCase;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -81,6 +79,7 @@ public class OptimizelyClientTest {
     private Optimizely optimizely;
     private EventHandler eventHandler;
     private Bucketer bucketer = mock(Bucketer.class);
+    private static final String FEATURE_MULTI_VARIATE_EXPERIMENT_KEY = "multivariate_experiment";
     private static final String FEATURE_MULTI_VARIATE_FEATURE_KEY = "multi_variate_feature";
     private static final String genericUserId = "userId";
     private String testProjectId = "7595190003";
@@ -94,7 +93,7 @@ public class OptimizelyClientTest {
             if(datafileVersion<4) {
                 when(bucketer.bucket(optimizely.getProjectConfig().getExperiments().get(0), genericUserId)).thenReturn(optimizely.getProjectConfig().getExperiments().get(0).getVariations().get(0));
             }else {
-                when(bucketer.bucket(optimizely.getProjectConfig().getExperiments().get(2), genericUserId)).thenReturn(optimizely.getProjectConfig().getExperiments().get(2).getVariations().get(1));
+                when(bucketer.bucket(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY), genericUserId)).thenReturn(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY).getVariations().get(1));
             }
             spyOnConfig();
         }catch (ConfigParseException configException){
@@ -130,7 +129,7 @@ public class OptimizelyClientTest {
         boolean done = true;
 
         try {
-              Field decisionField = optimizely.getClass().getDeclaredField("decisionService");
+            Field decisionField = optimizely.getClass().getDeclaredField("decisionService");
             decisionField.setAccessible(true);
             DecisionService decisionService = (DecisionService)decisionField.get(optimizely);
             setProjectConfig(optimizely, config);
@@ -218,12 +217,12 @@ public class OptimizelyClientTest {
     @Test
     public void testGoodActivationAttrib() {
         if (datafileVersion >= 4) {
-            Experiment activatedExperiment = optimizely.getProjectConfig().getExperimentKeyMapping().get("multivariate_experiment");
+            Experiment activatedExperiment = optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY);
             Variation forcedVariation = activatedExperiment.getVariations().get(1);
             optimizely.setForcedVariation(activatedExperiment.getKey(), genericUserId, forcedVariation.getKey() );
             OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
             final HashMap<String, String> attributes = new HashMap<>();
-            Variation v = optimizelyClient.activate("multivariate_experiment", genericUserId, attributes);
+            Variation v = optimizelyClient.activate(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY, genericUserId, attributes);
             assertNotNull(v);
 
         }else {
@@ -913,42 +912,44 @@ public class OptimizelyClientTest {
     //Test when optimizelyClient initialized with valid optimizely and without attributes
     @Test
     public void testGoodIsFeatureEnabledWithoutAttr() {
-        if (datafileVersion >= 4) {
-            Experiment activatedExperiment = optimizely.getProjectConfig().getExperimentKeyMapping().get("multivariate_experiment");
-            Variation forcedVariation = activatedExperiment.getVariations().get(1);
-            optimizely.setForcedVariation(activatedExperiment.getKey(), genericUserId, forcedVariation.getKey() );
+        assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
 
-            OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
 
-            //Scenario#1 without attributes
-            assertTrue(optimizelyClient.isFeatureEnabled(FEATURE_MULTI_VARIATE_FEATURE_KEY, genericUserId));
-            verifyZeroInteractions(logger);
-            TestCase.assertTrue(optimizely.setForcedVariation(activatedExperiment.getKey(), "userId", null ));
-
-            Assert.assertNull(optimizely.getForcedVariation(activatedExperiment.getKey(), "userId"));
-
-            Assert.assertFalse(optimizely.isFeatureEnabled(FEATURE_MULTI_VARIATE_FEATURE_KEY, "userId"));
-        }
+        //Scenario#1 without attributes: Assert false because user is not meeting audience condition
+        assertFalse(optimizelyClient.isFeatureEnabled(FEATURE_MULTI_VARIATE_FEATURE_KEY, genericUserId));
 
     }
 
+    @Test
+    public void testGoodIsFeatureEnabledWithForcedVariations(){
+        assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        Experiment activatedExperiment = optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY);
+        Variation forcedVariation = activatedExperiment.getVariations().get(1);
+        optimizely.setForcedVariation(activatedExperiment.getKey(), genericUserId, forcedVariation.getKey() );
+
+        assertTrue(optimizely.isFeatureEnabled(FEATURE_MULTI_VARIATE_FEATURE_KEY, genericUserId));
+
+        assertTrue(optimizely.setForcedVariation(activatedExperiment.getKey(), genericUserId, null ));
+
+        assertNull(optimizely.getForcedVariation(activatedExperiment.getKey(), genericUserId));
+
+        assertFalse(optimizely.isFeatureEnabled(FEATURE_MULTI_VARIATE_FEATURE_KEY, genericUserId));
+
+    }
     //Test when optimizelyClient initialized with valid optimizely and with attributes
     @Test
     public void testGoodIsFeatureEnabledWithAttr() {
         assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
-        if (datafileVersion >= 4) {
-            Experiment activatedExperiment = optimizely.getProjectConfig().getExperimentKeyMapping().get("multivariate_experiment");
-            Variation forcedVariation = activatedExperiment.getVariations().get(1);
-            optimizely.setForcedVariation(activatedExperiment.getKey(), genericUserId, forcedVariation.getKey() );
-            OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
 
-            //Scenario#2 with valid attributes
-            assertTrue(optimizelyClient.isFeatureEnabled(FEATURE_MULTI_VARIATE_FEATURE_KEY, genericUserId,
-                    Collections.singletonMap("house", "Gryffindor")));
-            verifyZeroInteractions(logger);
-            assertFalse(optimizelyClient.isFeatureEnabled("InvalidFeatureKey", genericUserId,
-                    Collections.singletonMap("house", "Gryffindor")));
-        }
+        //Scenario#2 with valid attributes
+        assertTrue(optimizelyClient.isFeatureEnabled(FEATURE_MULTI_VARIATE_FEATURE_KEY, genericUserId,
+                Collections.singletonMap("house", "Gryffindor")));
+        verifyZeroInteractions(logger);
+        assertFalse(optimizelyClient.isFeatureEnabled("InvalidFeatureKey", genericUserId,
+                Collections.singletonMap("house", "Gryffindor")));
     }
 
     //Test when optimizelyClient initialized with invalid optimizely;
