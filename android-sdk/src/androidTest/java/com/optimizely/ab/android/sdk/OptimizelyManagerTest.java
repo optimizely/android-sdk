@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -93,23 +94,6 @@ public class OptimizelyManagerTest {
                 eventHandler, null);
     }
 
-    @SuppressWarnings("WrongConstant")
-    @Test
-    public void initialize() {
-        OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
-        Context context = mock(Context.class);
-        Context appContext = mock(Context.class);
-        when(context.getApplicationContext()).thenReturn(appContext);
-        when(appContext.getPackageName()).thenReturn("com.optly");
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-
-        optimizelyManager.initialize(appContext, startListener);
-
-        assertNotNull(optimizelyManager.getOptimizelyStartListener());
-        assertNotNull(optimizelyManager.getDatafileHandler());
-
-    }
-
     @Test
     public void initializeIntUseForcedVariation() {
         optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
@@ -131,6 +115,79 @@ public class OptimizelyManagerTest {
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
+
+    }
+    @Test
+    public void initializeSync() {
+        /*
+         * Scenario#1: when datafile is not Empty
+         * Scenario#2: when datafile is Empty
+        */
+        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+
+        assertEquals(OptimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+
+        assertNotNull(optimizelyManager.getOptimizely());
+        assertNotNull(optimizelyManager.getDatafileHandler());
+
+        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(),(Integer) null);
+        verify(logger).error(eq("Invalid datafile resource ID."));
+    }
+    @Test
+    public void initializeSyncWithEmptyDatafile() {
+        //for this case to pass empty the data file or enter any garbage data given on R.raw.emptydatafile this path
+        Context context = mock(Context.class);
+        Context appContext = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getPackageName()).thenReturn("com.optly");
+        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.emptydatafile);
+        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
+        assertFalse(optimizelyManager.getOptimizely().isValid());
+    }
+    @Test
+    public void getEmptyDatafile() {
+        //for this case to pass empty the data file or enter any garbage data given on R.raw.emptydatafile this path
+        Context context = mock(Context.class);
+        Context appContext = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getPackageName()).thenReturn("com.optly");
+
+        String datafile= optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.emptydatafile);
+        assertNotNull(datafile,"");
+    }
+    @Test
+    public void getDatafile() {
+        /*
+         * Scenario#1: when datafile is Cached
+         *  Scenario#2: when datafile is not cached and raw datafile is not empty
+        */
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+        String datafile =  optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+        assertEquals(OptimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+        assertNotNull(datafile);
+        assertNotNull(optimizelyManager.getDatafileHandler());
+    }
+    @Test
+    public void initializeAsync() {
+        /*
+         * Scenario#1: when datafile is not Empty
+         * Scenario#2: when datafile is Empty
+        */
+        optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, new OptimizelyStartListener() {
+            @Override
+            public void onStart(OptimizelyClient optimizely) {
+                assertNotNull(optimizelyManager.getOptimizely());
+                assertNotNull(optimizelyManager.getDatafileHandler());
+                assertNull(optimizelyManager.getOptimizelyStartListener());
+            }
+        });
+
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+
+        assertEquals(OptimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+
 
     }
     @Test
@@ -169,7 +226,7 @@ public class OptimizelyManagerTest {
         String emptyString = null;
 
         optimizelyManager.initialize(context, emptyString);
-        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
+        verify(logger).error(eq("Invalid datafile"));
     }
 
     @Test
@@ -182,7 +239,7 @@ public class OptimizelyManagerTest {
         String emptyString = null;
 
         optimizelyManager.initialize(context, emptyString);
-        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
+        verify(logger).error(eq("Invalid datafile"));
     }
 
     @Test
