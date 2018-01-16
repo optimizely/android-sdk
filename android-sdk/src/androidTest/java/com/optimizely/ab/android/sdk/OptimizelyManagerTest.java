@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2017-2018, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -32,6 +32,7 @@ import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
+import com.optimizely.ab.android.sdk.test.R;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -58,8 +59,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import  com.optimizely.ab.android.sdk.test.R;
 
 /**
  * Tests for {@link OptimizelyManager}
@@ -111,7 +110,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(OptimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -127,7 +126,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(OptimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -165,7 +164,7 @@ public class OptimizelyManagerTest {
         */
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
         String datafile =  optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
-        assertEquals(OptimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
         assertNotNull(datafile);
         assertNotNull(optimizelyManager.getDatafileHandler());
     }
@@ -186,7 +185,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(OptimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
 
 
     }
