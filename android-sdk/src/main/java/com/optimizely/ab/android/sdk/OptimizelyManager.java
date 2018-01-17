@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2018, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -308,7 +308,7 @@ public class OptimizelyManager {
         return optimizelyClient;
     }
 
-    private String loadRawResource(Context context, @RawRes int rawRes) throws IOException {
+    public static String loadRawResource(Context context, @RawRes int rawRes) throws IOException {
         Resources res = context.getResources();
         InputStream in = res.openRawResource(rawRes);
         byte[] b = new byte[in.available()];
@@ -335,7 +335,7 @@ public class OptimizelyManager {
      * @param projectId The id of the project for which we are getting the datafile
      * @return the CDN location of the datafile
      */
-    public static @NonNull String getDatafileUrl(String projectId) {
+    public @NonNull String getDatafileUrl(String projectId) {
         return DatafileService.getDatafileUrl(projectId);
     }
 

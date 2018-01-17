@@ -67,7 +67,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-     
+
         // This app is built against a real Optimizely project with real experiments set.  Automated
         // espresso tests are run against this project id.  Changing it will make the Optimizely
         // tests setup not work and the Espresso tests will fail.  Also, the project id passed here
