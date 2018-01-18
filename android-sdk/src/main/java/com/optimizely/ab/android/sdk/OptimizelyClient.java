@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2018, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -25,12 +25,16 @@ import com.optimizely.ab.UnknownEventTypeException;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.notification.NotificationListener;
 
 import org.slf4j.Logger;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 /**
  * Wraps {@link Optimizely} instances
@@ -219,7 +223,7 @@ public class OptimizelyClient {
                       @NonNull String userId,
                       long eventValue) throws UnknownEventTypeException {
         if (isValid()) {
-            optimizely.track(eventName, userId, getDefaultAttributes(), eventValue);
+            optimizely.track(eventName, userId, getDefaultAttributes(), Collections.singletonMap(ReservedEventKey.REVENUE.toString(), eventValue));
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
                     " with value {}", eventName, userId, eventValue);
@@ -228,7 +232,7 @@ public class OptimizelyClient {
 
     /**
      * Track an event for a user with attributes and a value
-     * @see Optimizely#track(String, String, Map, long)
+     * @see Optimizely#track(String, String, Map, Map)
      * @deprecated see {@link Optimizely#track(String, String, Map, Map)} and pass in revenue values as event tags instead.
      * @param eventName the String name of the event
      * @param userId the String user id
@@ -240,154 +244,10 @@ public class OptimizelyClient {
                       @NonNull Map<String, String> attributes,
                       long eventValue) {
         if (isValid()) {
-            optimizely.track(eventName, userId, getAllAttributes(attributes), eventValue);
+            optimizely.track(eventName, userId, getAllAttributes(attributes), Collections.singletonMap(ReservedEventKey.REVENUE.toString(), eventValue));
         } else {
             logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
                     " with value {} and attributes", eventName, userId, eventValue);
-        }
-    }
-
-    /**
-     * Get the value of a String live variable
-     * @param variableKey the String key for the variable
-     * @param userId the user ID
-     * @param activateExperiment the flag denoting whether to activate an experiment or not
-     * @return String value of the live variable
-     */
-    public @Nullable String getVariableString(@NonNull String variableKey,
-                                              @NonNull String userId,
-                                              boolean activateExperiment) {
-        return getVariableString(variableKey, userId, getDefaultAttributes(),
-                                 activateExperiment);
-    }
-
-    /**
-     * Get the value of a String live variable
-     * @param variableKey the String key for the variable
-     * @param userId the user ID
-     * @param attributes a map of attributes about the user
-     * @param activateExperiment the flag denoting whether to activate an experiment or not
-     * @return String value of the live variable
-     */
-    public @Nullable String getVariableString(@NonNull String variableKey,
-                                              @NonNull String userId,
-                                              @NonNull Map<String, String> attributes,
-                                              boolean activateExperiment) {
-        if (isValid()) {
-            return optimizely.getVariableString(variableKey, userId, getAllAttributes(attributes),
-                                                activateExperiment);
-        } else {
-            logger.warn("Optimizely is not initialized, could not get live variable {} " +
-                    "for user {}", variableKey, userId);
-            return null;
-        }
-    }
-
-    /**
-     * Get the value of a Boolean live variable
-     * @param variableKey the String key for the variable
-     * @param userId the user ID
-     * @param activateExperiment the flag denoting whether to activate an experiment or not
-     * @return Boolean value of the live variable
-     */
-    public @Nullable Boolean getVariableBoolean(@NonNull String variableKey,
-                                                @NonNull String userId,
-                                                boolean activateExperiment) {
-        return getVariableBoolean(variableKey, userId, getDefaultAttributes(),
-                                  activateExperiment);
-    }
-
-    /**
-     * Get the value of a Boolean live variable
-     * @param variableKey the String key for the variable
-     * @param userId the user ID
-     * @param attributes a map of attributes about the user
-     * @param activateExperiment the flag denoting whether to activate an experiment or not
-     * @return Boolean value of the live variable
-     */
-    public @Nullable Boolean getVariableBoolean(@NonNull String variableKey,
-                                                @NonNull String userId,
-                                                @NonNull Map<String, String> attributes,
-                                                boolean activateExperiment) {
-        if (isValid()) {
-            return optimizely.getVariableBoolean(variableKey, userId, getAllAttributes(attributes),
-                                                 activateExperiment);
-        } else {
-            logger.warn("Optimizely is not initialized, could not get live variable {} " +
-                    "for user {}", variableKey, userId);
-            return null;
-        }
-    }
-
-    /**
-     * Get the value of a Integer live variable
-     * @param variableKey the String key for the variable
-     * @param userId the user ID
-     * @param activateExperiment the flag denoting whether to activate an experiment or not
-     * @return Integer value of the live variable
-     */
-    public @Nullable Integer getVariableInteger(@NonNull String variableKey,
-                                                @NonNull String userId,
-                                                boolean activateExperiment) {
-        return getVariableInteger(variableKey, userId, getDefaultAttributes(),
-                                  activateExperiment);
-    }
-
-    /**
-     * Get the value of a Integer live variable
-     * @param variableKey the String key for the variable
-     * @param userId the user ID
-     * @param attributes a map of attributes about the user
-     * @param activateExperiment the flag denoting whether to activate an experiment or not
-     * @return Integer value of the live variable
-     */
-    public @Nullable Integer getVariableInteger(@NonNull String variableKey,
-                                                @NonNull String userId,
-                                                @NonNull Map<String, String> attributes,
-                                                boolean activateExperiment) {
-        if (isValid()) {
-            return optimizely.getVariableInteger(variableKey, userId, getAllAttributes(attributes),
-                                                 activateExperiment);
-        } else {
-            logger.warn("Optimizely is not initialized, could not get live variable {} " +
-                    "for user {}", variableKey, userId);
-            return null;
-        }
-    }
-
-    /**
-     * Get the value of a Double live variable
-     * @param variableKey the String key for the variable
-     * @param userId the user ID
-     * @param activateExperiment the flag denoting whether to activate an experiment or not
-     * @return Double value of the live variable
-     */
-    public @Nullable Double getVariableDouble(@NonNull String variableKey,
-                                              @NonNull String userId,
-                                              boolean activateExperiment) {
-        return getVariableDouble(variableKey, userId, getDefaultAttributes(),
-                                 activateExperiment);
-    }
-
-    /**
-     * Get the value of a Double live variable
-     * @param variableKey the String key for the variable
-     * @param userId the user ID
-     * @param attributes a map of attributes about the user
-     * @param activateExperiment the flag denoting whether to activate an experiment or not
-     * @return Double value of the live variable
-     */
-    public @Nullable Double getVariableDouble(@NonNull String variableKey,
-                                              @NonNull String userId,
-                                              @NonNull Map<String, String> attributes,
-                                              boolean activateExperiment) {
-        if (isValid()) {
-            return optimizely.getVariableDouble(variableKey, userId, getAllAttributes(attributes),
-                                                activateExperiment);
-        } else {
-            logger.warn("Optimizely is not initialized, could not get live variable {} " +
-                    "for user {}", variableKey, userId);
-            return null;
         }
     }
 
@@ -517,6 +377,53 @@ public class OptimizelyClient {
             optimizely.clearNotificationListeners();
         } else {
             logger.warn("Optimizely is not initialized, could not clear notification listeners");
+        }
+    }
+
+    //======== FeatureFlag APIs ========//
+
+    /**
+     * Determine whether a feature is enabled for a user.
+     * Send an impression event if the user is bucketed into an experiment using the feature.
+     *
+     * @param featureKey The unique key of the feature.
+     * @param userId The ID of the user.
+     * @return True if the feature is enabled.
+     *         False if the feature is disabled.
+     *         False if the feature is not found.
+     */
+    public @Nonnull
+    Boolean isFeatureEnabled(@Nonnull String featureKey,
+                             @Nonnull String userId) {
+        if (isValid()) {
+            return optimizely.isFeatureEnabled(featureKey, userId);
+        } else {
+            logger.warn("Optimizely is not initialized, could not enable feature {} for user {}",
+                    featureKey, userId);
+            return false;
+        }
+    }
+
+    /**
+     * Determine whether a feature is enabled for a user.
+     * Send an impression event if the user is bucketed into an experiment using the feature.
+     *
+     * @param featureKey The unique key of the feature.
+     * @param userId The ID of the user.
+     * @param attributes The user's attributes.
+     * @return True if the feature is enabled.
+     *         False if the feature is disabled.
+     *         False if the feature is not found.
+     */
+    public @Nonnull Boolean isFeatureEnabled(@Nonnull String featureKey,
+                                             @Nonnull String userId,
+                                             @Nonnull Map<String, String> attributes) {
+        if (isValid()) {
+            return optimizely.isFeatureEnabled(featureKey, userId, attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not enable feature {} for user {} with attributes",
+                    featureKey, userId);
+            return false;
         }
     }
 }
