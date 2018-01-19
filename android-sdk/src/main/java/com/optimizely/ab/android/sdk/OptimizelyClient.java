@@ -437,7 +437,7 @@ public class OptimizelyClient {
      * @return The Boolean value of the boolean single variable feature.
      *         Null if the feature could not be found.
      */
-    public @javax.annotation.Nullable
+    public @Nullable
     Boolean getFeatureVariableBoolean(@Nonnull String featureKey,
                                       @Nonnull String variableKey,
                                       @Nonnull String userId) {
@@ -459,7 +459,7 @@ public class OptimizelyClient {
      * @return The Boolean value of the boolean single variable feature.
      *         Null if the feature or variable could not be found.
      */
-    public @javax.annotation.Nullable
+    public @Nullable
     Boolean getFeatureVariableBoolean(@Nonnull String featureKey,
                                       @Nonnull String variableKey,
                                       @Nonnull String userId,
@@ -481,7 +481,7 @@ public class OptimizelyClient {
      * @return The Double value of the double single variable feature.
      *         Null if the feature or variable could not be found.
      */
-    public @javax.annotation.Nullable
+    public @Nullable
     Double getFeatureVariableDouble(@Nonnull String featureKey,
                                     @Nonnull String variableKey,
                                     @Nonnull String userId) {
@@ -503,7 +503,7 @@ public class OptimizelyClient {
      * @return The Double value of the double single variable feature.
      *         Null if the feature or variable could not be found.
      */
-    public @javax.annotation.Nullable
+    public @Nullable
     Double getFeatureVariableDouble(@Nonnull String featureKey,
                                     @Nonnull String variableKey,
                                     @Nonnull String userId,
@@ -525,7 +525,7 @@ public class OptimizelyClient {
      * @return The Integer value of the integer single variable feature.
      *         Null if the feature or variable could not be found.
      */
-    public @javax.annotation.Nullable
+    public @Nullable
     Integer getFeatureVariableInteger(@Nonnull String featureKey,
                                       @Nonnull String variableKey,
                                       @Nonnull String userId) {
@@ -547,7 +547,7 @@ public class OptimizelyClient {
      * @return The Integer value of the integer single variable feature.
      *         Null if the feature or variable could not be found.
      */
-    public @javax.annotation.Nullable
+    public @Nullable
     Integer getFeatureVariableInteger(@Nonnull String featureKey,
                                       @Nonnull String variableKey,
                                       @Nonnull String userId,
@@ -569,7 +569,7 @@ public class OptimizelyClient {
      * @return The String value of the string single variable feature.
      *         Null if the feature or variable could not be found.
      */
-    public @javax.annotation.Nullable
+    public @Nullable
     String getFeatureVariableString(@Nonnull String featureKey,
                                     @Nonnull String variableKey,
                                     @Nonnull String userId) {
@@ -591,7 +591,7 @@ public class OptimizelyClient {
      * @return The String value of the string single variable feature.
      *         Null if the feature or variable could not be found.
      */
-    public @javax.annotation.Nullable
+    public @Nullable
     String getFeatureVariableString(@Nonnull String featureKey,
                                     @Nonnull String variableKey,
                                     @Nonnull String userId,
