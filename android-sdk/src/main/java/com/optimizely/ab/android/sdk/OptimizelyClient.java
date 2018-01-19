@@ -426,4 +426,182 @@ public class OptimizelyClient {
             return false;
         }
     }
+
+    //======== Feature Variables APIs ========//
+
+    /**
+     * Get the Boolean value of the specified variable in the feature.
+     * @param featureKey The unique key of the feature.
+     * @param variableKey The unique key of the variable.
+     * @param userId The ID of the user.
+     * @return The Boolean value of the boolean single variable feature.
+     *         Null if the feature could not be found.
+     */
+    public @Nullable
+    Boolean getFeatureVariableBoolean(@Nonnull String featureKey,
+                                      @Nonnull String variableKey,
+                                      @Nonnull String userId) {
+        if (isValid()) {
+            return optimizely.getFeatureVariableBoolean(featureKey, variableKey, userId);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} boolean for user {}",
+                    featureKey,variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the Boolean value of the specified variable in the feature.
+     * @param featureKey The unique key of the feature.
+     * @param variableKey The unique key of the variable.
+     * @param userId The ID of the user.
+     * @param attributes The user's attributes.
+     * @return The Boolean value of the boolean single variable feature.
+     *         Null if the feature or variable could not be found.
+     */
+    public @Nullable
+    Boolean getFeatureVariableBoolean(@Nonnull String featureKey,
+                                      @Nonnull String variableKey,
+                                      @Nonnull String userId,
+                                      @Nonnull Map<String, String> attributes) {
+        if (isValid()) {
+            return optimizely.getFeatureVariableBoolean(featureKey, variableKey, userId, attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} boolean for user {} with attributes",
+                    featureKey,variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the Double value of the specified variable in the feature.
+     * @param featureKey The unique key of the feature.
+     * @param variableKey The unique key of the variable.
+     * @param userId The ID of the user.
+     * @return The Double value of the double single variable feature.
+     *         Null if the feature or variable could not be found.
+     */
+    public @Nullable
+    Double getFeatureVariableDouble(@Nonnull String featureKey,
+                                    @Nonnull String variableKey,
+                                    @Nonnull String userId) {
+        if (isValid()) {
+            return optimizely.getFeatureVariableDouble(featureKey, variableKey, userId);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} double for user {}",
+                    featureKey,variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the Double value of the specified variable in the feature.
+     * @param featureKey The unique key of the feature.
+     * @param variableKey The unique key of the variable.
+     * @param userId The ID of the user.
+     * @param attributes The user's attributes.
+     * @return The Double value of the double single variable feature.
+     *         Null if the feature or variable could not be found.
+     */
+    public @Nullable
+    Double getFeatureVariableDouble(@Nonnull String featureKey,
+                                    @Nonnull String variableKey,
+                                    @Nonnull String userId,
+                                    @Nonnull Map<String, String> attributes) {
+        if (isValid()) {
+            return optimizely.getFeatureVariableDouble(featureKey, variableKey, userId, attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} double for user {} with attributes",
+                    featureKey,variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the Integer value of the specified variable in the feature.
+     * @param featureKey The unique key of the feature.
+     * @param variableKey The unique key of the variable.
+     * @param userId The ID of the user.
+     * @return The Integer value of the integer single variable feature.
+     *         Null if the feature or variable could not be found.
+     */
+    public @Nullable
+    Integer getFeatureVariableInteger(@Nonnull String featureKey,
+                                      @Nonnull String variableKey,
+                                      @Nonnull String userId) {
+        if (isValid()) {
+            return optimizely.getFeatureVariableInteger(featureKey, variableKey, userId);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} integer for user {}",
+                    featureKey,variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the Integer value of the specified variable in the feature.
+     * @param featureKey The unique key of the feature.
+     * @param variableKey The unique key of the variable.
+     * @param userId The ID of the user.
+     * @param attributes The user's attributes.
+     * @return The Integer value of the integer single variable feature.
+     *         Null if the feature or variable could not be found.
+     */
+    public @Nullable
+    Integer getFeatureVariableInteger(@Nonnull String featureKey,
+                                      @Nonnull String variableKey,
+                                      @Nonnull String userId,
+                                      @Nonnull Map<String, String> attributes) {
+        if (isValid()) {
+            return optimizely.getFeatureVariableInteger(featureKey, variableKey, userId, attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} integer for user {} with attributes",
+                    featureKey,variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the String value of the specified variable in the feature.
+     * @param featureKey The unique key of the feature.
+     * @param variableKey The unique key of the variable.
+     * @param userId The ID of the user.
+     * @return The String value of the string single variable feature.
+     *         Null if the feature or variable could not be found.
+     */
+    public @Nullable
+    String getFeatureVariableString(@Nonnull String featureKey,
+                                    @Nonnull String variableKey,
+                                    @Nonnull String userId) {
+        if (isValid()) {
+            return optimizely.getFeatureVariableString(featureKey, variableKey, userId);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} string for user {}",
+                    featureKey,variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the String value of the specified variable in the feature.
+     * @param featureKey The unique key of the feature.
+     * @param variableKey The unique key of the variable.
+     * @param userId The ID of the user.
+     * @param attributes The user's attributes.
+     * @return The String value of the string single variable feature.
+     *         Null if the feature or variable could not be found.
+     */
+    public @Nullable
+    String getFeatureVariableString(@Nonnull String featureKey,
+                                    @Nonnull String variableKey,
+                                    @Nonnull String userId,
+                                    @Nonnull Map<String, String> attributes) {
+        if (isValid()) {
+            return optimizely.getFeatureVariableString(featureKey, variableKey, userId, attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} string for user {} with attributes",
+                    featureKey,variableKey, userId);
+            return null;
+        }
+    }
 }
