@@ -37,8 +37,7 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilder;
-import com.optimizely.ab.event.internal.EventBuilderV2;
-import com.optimizely.ab.event.internal.payload.Event.ClientEngine;
+import com.optimizely.ab.event.internal.payload.EventBatch.ClientEngine;
 import com.optimizely.ab.internal.EventTagUtils;
 import com.optimizely.ab.notification.NotificationBroadcaster;
 import com.optimizely.ab.notification.NotificationCenter;
@@ -948,7 +947,7 @@ public class Optimizely {
 
 
             if (eventBuilder == null) {
-                eventBuilder = new EventBuilderV2(clientEngine, clientVersion);
+                eventBuilder = new EventBuilder(clientEngine, clientVersion);
             }
 
             if (errorHandler == null) {

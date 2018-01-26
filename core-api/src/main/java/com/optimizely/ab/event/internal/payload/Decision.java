@@ -1,6 +1,6 @@
 /**
  *
- *    Copyright 2016-2017, Optimizely and contributors
+ *    Copyright 2018, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,17 +16,42 @@
  */
 package com.optimizely.ab.event.internal.payload;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Decision {
+    @JsonProperty("campaign_id")
+    String campaignId;
+    @JsonProperty("experiment_id")
+    String experimentId;
+    @JsonProperty("variation_id")
+    String variationId;
+    @JsonProperty("is_campaign_holdback")
+    boolean isCampaignHoldback;
 
-    private String variationId;
-    private boolean isLayerHoldback;
-    private String experimentId;
-
-    public Decision() {}
-
-    public Decision(String variationId, boolean isLayerHoldback, String experimentId) {
+    public Decision(String campaignId, String experimentId, String variationId, boolean isCampaignHoldback) {
+        this.campaignId = campaignId;
+        this.experimentId = experimentId;
         this.variationId = variationId;
-        this.isLayerHoldback = isLayerHoldback;
+        this.isCampaignHoldback = isCampaignHoldback;
+    }
+
+    public Decision() {
+
+    }
+
+    public String getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(String campaignId) {
+        this.campaignId = campaignId;
+    }
+
+    public String getExperimentId() {
+        return experimentId;
+    }
+
+    public void setExperimentId(String experimentId) {
         this.experimentId = experimentId;
     }
 
@@ -38,48 +63,33 @@ public class Decision {
         this.variationId = variationId;
     }
 
-    public boolean getIsLayerHoldback() {
-        return isLayerHoldback;
+    public boolean getIsCampaignHoldback() {
+        return isCampaignHoldback;
     }
 
-    public void setIsLayerHoldback(boolean layerHoldback) {
-        this.isLayerHoldback = layerHoldback;
-    }
-
-    public String getExperimentId() {
-        return experimentId;
-    }
-
-    public void setExperimentId(String experimentId) {
-        this.experimentId = experimentId;
+    public void setIsCampaignHoldback(boolean campaignHoldback) {
+        isCampaignHoldback = campaignHoldback;
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof Decision))
-            return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        Decision otherDecision = (Decision)other;
+        Decision that = (Decision) o;
 
-        return variationId.equals(otherDecision.getVariationId()) &&
-               isLayerHoldback == otherDecision.getIsLayerHoldback() &&
-               experimentId.equals(otherDecision.getExperimentId());
+        if (isCampaignHoldback != that.isCampaignHoldback) return false;
+        if (!campaignId.equals(that.campaignId)) return false;
+        if (!experimentId.equals(that.experimentId)) return false;
+        return variationId.equals(that.variationId);
     }
 
     @Override
     public int hashCode() {
-        int result = variationId.hashCode();
-        result = 31 * result + (isLayerHoldback ? 1 : 0);
+        int result = campaignId.hashCode();
         result = 31 * result + experimentId.hashCode();
+        result = 31 * result + variationId.hashCode();
+        result = 31 * result + (isCampaignHoldback ? 1 : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Decision{" +
-                "variationId='" + variationId + '\'' +
-                ", isLayerHoldback=" + isLayerHoldback +
-                ", experimentId='" + experimentId + '\'' +
-                '}';
     }
 }

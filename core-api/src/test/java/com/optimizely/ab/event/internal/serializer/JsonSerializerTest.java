@@ -16,8 +16,7 @@
  */
 package com.optimizely.ab.event.internal.serializer;
 
-import com.optimizely.ab.event.internal.payload.Conversion;
-import com.optimizely.ab.event.internal.payload.Impression;
+import com.optimizely.ab.event.internal.payload.EventBatch;
 
 import org.json.JSONObject;
 
@@ -42,7 +41,7 @@ public class JsonSerializerTest {
 
     @Test
     public void serializeImpression() throws IOException {
-        Impression impression = generateImpression();
+        EventBatch impression = generateImpression();
         // can't compare JSON strings since orders could vary so compare JSONObjects instead
         JSONObject actual = new JSONObject(serializer.serialize(impression));
         JSONObject expected = new JSONObject(generateImpressionJson());
@@ -52,7 +51,7 @@ public class JsonSerializerTest {
 
     @Test
     public void serializeImpressionWithSessionId() throws IOException {
-        Impression impression = generateImpressionWithSessionId();
+        EventBatch impression = generateImpressionWithSessionId();
         // can't compare JSON strings since orders could vary so compare JSONObjects instead
         JSONObject actual = new JSONObject(serializer.serialize(impression));
         JSONObject expected = new JSONObject(generateImpressionWithSessionIdJson());
@@ -62,7 +61,7 @@ public class JsonSerializerTest {
 
     @Test
     public void serializeConversion() throws IOException {
-        Conversion conversion = generateConversion();
+        EventBatch conversion = generateConversion();
         // can't compare JSON strings since orders could vary so compare JSONObjects instead
         JSONObject actual = new JSONObject(serializer.serialize(conversion));
         JSONObject expected = new JSONObject(generateConversionJson());
@@ -72,7 +71,7 @@ public class JsonSerializerTest {
 
     @Test
     public void serializeConversionWithSessionId() throws IOException {
-        Conversion conversion = generateConversionWithSessionId();
+        EventBatch conversion = generateConversionWithSessionId();
         // can't compare JSON strings since orders could vary so compare JSONObjects instead
         JSONObject actual = new JSONObject(serializer.serialize(conversion));
         JSONObject expected = new JSONObject(generateConversionWithSessionIdJson());

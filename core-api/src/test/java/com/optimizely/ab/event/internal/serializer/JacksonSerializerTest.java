@@ -18,8 +18,8 @@ package com.optimizely.ab.event.internal.serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.optimizely.ab.event.internal.payload.Conversion;
-import com.optimizely.ab.event.internal.payload.Impression;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.optimizely.ab.event.internal.payload.EventBatch;
 
 import org.junit.Test;
 
@@ -40,44 +40,47 @@ import static org.junit.Assert.assertThat;
 public class JacksonSerializerTest {
 
     private JacksonSerializer serializer = new JacksonSerializer();
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper =
+            new ObjectMapper().setPropertyNamingStrategy(
+                    PropertyNamingStrategy.SNAKE_CASE);
+
 
     @Test
     public void serializeImpression() throws IOException {
-        Impression impression = generateImpression();
+        EventBatch impression = generateImpression();
         // can't compare JSON strings since orders could vary so compare objects instead
-        Impression actual = mapper.readValue(serializer.serialize(impression), Impression.class);
-        Impression expected = mapper.readValue(generateImpressionJson(), Impression.class);
+        EventBatch actual = mapper.readValue(serializer.serialize(impression), EventBatch.class);
+        EventBatch expected = mapper.readValue(generateImpressionJson(), EventBatch.class);
 
         assertThat(actual, is(expected));
     }
 
     @Test
     public void serializeImpressionWithSessionId() throws IOException {
-        Impression impression = generateImpressionWithSessionId();
+        EventBatch impression = generateImpressionWithSessionId();
         // can't compare JSON strings since orders could vary so compare objects instead
-        Impression actual = mapper.readValue(serializer.serialize(impression), Impression.class);
-        Impression expected = mapper.readValue(generateImpressionWithSessionIdJson(), Impression.class);
+        EventBatch actual = mapper.readValue(serializer.serialize(impression), EventBatch.class);
+        EventBatch expected = mapper.readValue(generateImpressionWithSessionIdJson(), EventBatch.class);
 
         assertThat(actual, is(expected));
     }
 
     @Test
     public void serializeConversion() throws IOException {
-        Conversion conversion = generateConversion();
+        EventBatch conversion = generateConversion();
         // can't compare JSON strings since orders could vary so compare objects instead
-        Conversion actual = mapper.readValue(serializer.serialize(conversion), Conversion.class);
-        Conversion expected = mapper.readValue(generateConversionJson(), Conversion.class);
+        EventBatch actual = mapper.readValue(serializer.serialize(conversion), EventBatch.class);
+        EventBatch expected = mapper.readValue(generateConversionJson(), EventBatch.class);
 
         assertThat(actual, is(expected));
     }
 
     @Test
     public void serializeConversionWithSessionId() throws IOException {
-        Conversion conversion = generateConversionWithSessionId();
+        EventBatch conversion = generateConversionWithSessionId();
         // can't compare JSON strings since orders could vary so compare objects instead
-        Conversion actual = mapper.readValue(serializer.serialize(conversion), Conversion.class);
-        Conversion expected = mapper.readValue(generateConversionWithSessionIdJson(), Conversion.class);
+        EventBatch actual = mapper.readValue(serializer.serialize(conversion), EventBatch.class);
+        EventBatch expected = mapper.readValue(generateConversionWithSessionIdJson(), EventBatch.class);
 
         assertThat(actual, is(expected));
     }

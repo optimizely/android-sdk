@@ -16,9 +16,7 @@
  */
 package com.optimizely.ab.event.internal.serializer;
 
-import com.optimizely.ab.event.internal.payload.Conversion;
-import com.optimizely.ab.event.internal.payload.Impression;
-
+import com.optimizely.ab.event.internal.payload.EventBatch;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -46,7 +44,7 @@ public class JsonSimpleSerializerTest {
 
     @Test
     public void serializeImpression() throws IOException, ParseException {
-        Impression impression = generateImpression();
+        EventBatch impression = generateImpression();
         // can't compare JSON strings since orders could vary so compare JSONObjects instead
         JSONObject actual = (JSONObject)parser.parse(serializer.serialize(impression));
         JSONObject expected = (JSONObject)parser.parse(generateImpressionJson());
@@ -56,7 +54,7 @@ public class JsonSimpleSerializerTest {
 
     @Test
     public void serializeImpressionWithSessionId() throws IOException, ParseException {
-        Impression impression = generateImpressionWithSessionId();
+        EventBatch impression = generateImpressionWithSessionId();
         // can't compare JSON strings since orders could vary so compare JSONObjects instead
         JSONObject actual = (JSONObject)parser.parse(serializer.serialize(impression));
         JSONObject expected = (JSONObject)parser.parse(generateImpressionWithSessionIdJson());
@@ -66,7 +64,7 @@ public class JsonSimpleSerializerTest {
 
     @Test
     public void serializeConversion() throws IOException, ParseException {
-        Conversion conversion = generateConversion();
+        EventBatch conversion = generateConversion();
         // can't compare JSON strings since orders could vary so compare JSONObjects instead
         JSONObject actual = (JSONObject)parser.parse(serializer.serialize(conversion));
         JSONObject expected = (JSONObject)parser.parse(generateConversionJson());
@@ -76,7 +74,7 @@ public class JsonSimpleSerializerTest {
 
     @Test
     public void serializeConversionWithSessionId() throws IOException, ParseException {
-        Conversion conversion = generateConversionWithSessionId();
+        EventBatch conversion = generateConversionWithSessionId();
         // can't compare JSON strings since orders could vary so compare JSONObjects instead
         JSONObject actual = (JSONObject)parser.parse(serializer.serialize(conversion));
         JSONObject expected = (JSONObject)parser.parse(generateConversionWithSessionIdJson());

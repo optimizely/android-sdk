@@ -1,42 +1,44 @@
 {
-  "visitorId": "testvisitor",
-  "timestamp": 12345,
-  "projectId": "1",
-  "accountId": "3",
-  "userFeatures": [
+  "account_id": "3",
+  "visitors": [
     {
-      "id": "6",
-      "name": "testfeature",
-      "type": "custom",
-      "value": "testfeaturevalue",
-      "shouldIndex": true
+      "snapshots": [
+        {
+          "decisions": [
+            {
+              "variation_id": "4",
+              "campaign_id": "2",
+              "experiment_id": "5",
+              "is_campaign_holdback": false
+            }
+          ],
+          "events": [
+            {
+              "revenue": 5000,
+              "entity_id": "7",
+              "type": "testevent",
+              "uuid": "uuid",
+              "key": "testevent",
+              "timestamp": 12345
+            }
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "entity_id": "6",
+          "type": "custom",
+          "value": "testfeaturevalue",
+          "key": "testfeature"
+        }
+      ],
+      "visitor_id": "testvisitor",
+      "session_id": "sessionid"
     }
   ],
-  "layerStates": [
-    {
-      "layerId": "2",
-      "revision": "1",
-      "decision": {
-        "variationId": "4",
-        "isLayerHoldback": false,
-        "experimentId": "5"
-      },
-      "actionTriggered": true
-    }
-  ],
-  "eventEntityId": "7",
-  "eventName": "testevent",
-  "eventMetrics": [
-    {
-      "name": "revenue",
-      "value": 5000
-    }
-  ],
-  "eventFeatures": [],
-  "isGlobalHoldback": false,
-  "anonymizeIP": true,
-  "clientEngine": "java-sdk",
-  "clientVersion": "0.1.1",
-  "sessionId": "sessionid",
+  "client_name": "java-sdk",
+  "client_version": "0.1.1",
+  "anonymize_ip": true,
+  "project_id": "1",
   "revision": "1"
 }

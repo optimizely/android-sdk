@@ -18,14 +18,15 @@ package com.optimizely.ab.event.internal.serializer;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import com.optimizely.ab.event.internal.payload.Conversion;
+import com.optimizely.ab.event.internal.payload.Attribute;
 import com.optimizely.ab.event.internal.payload.Decision;
-import com.optimizely.ab.event.internal.payload.EventMetric;
-import com.optimizely.ab.event.internal.payload.Feature;
-import com.optimizely.ab.event.internal.payload.Impression;
-import com.optimizely.ab.event.internal.payload.LayerState;
+import com.optimizely.ab.event.internal.payload.EventBatch;
+import com.optimizely.ab.event.internal.payload.Event;
+import com.optimizely.ab.event.internal.payload.Snapshot;
+import com.optimizely.ab.event.internal.payload.Visitor;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,75 +43,59 @@ public class SerializerTestUtils {
     private static final String experimentId = "5";
     private static final String sessionId = "sessionid";
     private static final String revision = "1";
-    private static final Decision decision = new Decision(variationId, isLayerHoldback, experimentId);
+    private static final Decision decision = new Decision(layerId, experimentId, variationId, isLayerHoldback);
 
     private static final String featureId = "6";
     private static final String featureName = "testfeature";
     private static final String featureType = "custom";
     private static final String featureValue = "testfeaturevalue";
     private static final boolean shouldIndex = true;
-    private static final List<Feature> userFeatures = Collections.singletonList(
-            new Feature(featureId, featureName, featureType, featureValue, shouldIndex));
+    private static final List<Attribute> userFeatures = Collections.singletonList(
+            new Attribute(featureId, featureName, featureType, featureValue));
 
     private static final boolean actionTriggered = true;
-    private static final List<LayerState> layerStates =
-            Collections.singletonList(new LayerState(layerId, revision, decision, actionTriggered));
 
     private static final String eventEntityId = "7";
     private static final String eventName = "testevent";
-    private static final String eventMetricName = EventMetric.REVENUE_METRIC_TYPE;
+    private static final String eventMetricName = "revenue";
     private static final long eventMetricValue = 5000L;
-    private static final List<EventMetric> eventMetrics = Collections.singletonList(
-            new EventMetric(eventMetricName, eventMetricValue));
-    private static final List<Feature> eventFeatures = Collections.emptyList();
 
-    static Impression generateImpression() {
-        Impression impression = new Impression();
-        impression.setVisitorId(visitorId);
-        impression.setTimestamp(timestamp);
-        impression.setIsGlobalHoldback(isGlobalHoldback);
+    private static final List<Event> events = Collections.singletonList(new Event(timestamp,
+            "uuid", eventEntityId, eventName, null, 5000L, null, eventName, null));
+
+    static EventBatch generateImpression() {
+        Snapshot snapshot = new Snapshot(Arrays.asList(decision), events);
+
+        Visitor vistor = new Visitor(visitorId, null, userFeatures, Arrays.asList(snapshot));
+        EventBatch impression = new EventBatch(accountId, Arrays.asList(vistor), false, projectId,revision );
         impression.setProjectId(projectId);
-        impression.setLayerId(layerId);
         impression.setAccountId(accountId);
-        impression.setDecision(decision);
-        impression.setUserFeatures(userFeatures);
         impression.setClientVersion("0.1.1");
-        impression.setAnonymizeIP(true);
+        impression.setAnonymizeIp(true);
         impression.setRevision(revision);
 
         return impression;
     }
 
-    static Impression generateImpressionWithSessionId() {
-        Impression impression = generateImpression();
-        impression.setSessionId(sessionId);
+    static EventBatch generateImpressionWithSessionId() {
+        EventBatch impression = generateImpression();
+        impression.getVisitors().get(0).setSessionId(sessionId);
 
         return impression;
     }
 
-    static Conversion generateConversion() {
-        Conversion conversion = new Conversion();
-        conversion.setVisitorId(visitorId);
-        conversion.setTimestamp(timestamp);
-        conversion.setProjectId(projectId);
-        conversion.setAccountId(accountId);
-        conversion.setUserFeatures(userFeatures);
-        conversion.setLayerStates(layerStates);
-        conversion.setEventEntityId(eventEntityId);
-        conversion.setEventName(eventName);
-        conversion.setEventMetrics(eventMetrics);
-        conversion.setEventFeatures(eventFeatures);
-        conversion.setIsGlobalHoldback(isGlobalHoldback);
+    static EventBatch generateConversion() {
+        EventBatch conversion = generateImpression();
         conversion.setClientVersion("0.1.1");
-        conversion.setAnonymizeIP(true);
+        conversion.setAnonymizeIp(true);
         conversion.setRevision(revision);
 
         return conversion;
     }
 
-    static Conversion generateConversionWithSessionId() {
-        Conversion conversion = generateConversion();
-        conversion.setSessionId(sessionId);
+    static EventBatch generateConversionWithSessionId() {
+        EventBatch conversion = generateConversion();
+        conversion.getVisitors().get(0).setSessionId(sessionId);
 
         return conversion;
     }

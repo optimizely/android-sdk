@@ -36,7 +36,6 @@ import com.optimizely.ab.error.RaiseExceptionErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.EventBuilder;
-import com.optimizely.ab.event.internal.EventBuilderV2;
 import com.optimizely.ab.internal.LogbackVerifier;
 import com.optimizely.ab.notification.ActivateNotification;
 import com.optimizely.ab.notification.NotificationCenter;
@@ -101,7 +100,7 @@ import static com.optimizely.ab.config.ValidProjectConfigV4.VARIABLE_INTEGER_VAR
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIATION_MULTIVARIATE_EXPERIMENT_GRED;
 import static com.optimizely.ab.config.ValidProjectConfigV4.VARIATION_MULTIVARIATE_EXPERIMENT_GRED_KEY;
 import static com.optimizely.ab.event.LogEvent.RequestMethod;
-import static com.optimizely.ab.event.internal.EventBuilderV2Test.createExperimentVariationMap;
+import static com.optimizely.ab.event.internal.EventBuilderTest.createExperimentVariationMap;
 import static java.util.Arrays.asList;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
@@ -1132,7 +1131,7 @@ public class OptimizelyTest {
         }
         List<Experiment> allExperiments = new ArrayList<Experiment>();
         allExperiments.add(config.getExperiments().get(0));
-        EventBuilder eventBuilderV2 = new EventBuilderV2();
+        EventBuilder eventBuilder = new EventBuilder();
         DecisionService spyDecisionService = spy(new DecisionService(mockBucketer,
                 mockErrorHandler,
                 config,
@@ -1140,7 +1139,7 @@ public class OptimizelyTest {
 
         Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
                 .withDecisionService(spyDecisionService)
-                .withEventBuilder(eventBuilderV2)
+                .withEventBuilder(eventBuilder)
                 .withConfig(noAudienceProjectConfig)
                 .withErrorHandler(mockErrorHandler)
                 .build();
@@ -1206,7 +1205,7 @@ public class OptimizelyTest {
         }
         List<Experiment> allExperiments = config.getExperiments();
 
-        EventBuilder eventBuilderV2 = new EventBuilderV2();
+        EventBuilder eventBuilder = new EventBuilder();
         DecisionService spyDecisionService = spy(new DecisionService(mockBucketer,
                 mockErrorHandler,
                 config,
@@ -1214,7 +1213,7 @@ public class OptimizelyTest {
 
         Optimizely optimizely = Optimizely.builder(datafile, mockEventHandler)
                 .withDecisionService(spyDecisionService)
-                .withEventBuilder(eventBuilderV2)
+                .withEventBuilder(eventBuilder)
                 .withConfig(noAudienceProjectConfig)
                 .withErrorHandler(mockErrorHandler)
                 .build();
