@@ -1,5 +1,18 @@
 # Optimizely Java X SDK Changelog
 
+## 1.9.0
+
+January 30, 2018
+
+This release adds support for bucketing id (By passing in `$opt_bucketing_id` in the attribute map to override the user id as the bucketing variable. This is useful when wanting a set of users to share the same experience such as two players in a game). 
+
+This release also depricates the old notification broadcaster in favor of a notification center that supports a wide range of notifications.  The notification listener is now registered for the specific notification type such as ACTIVATE and TRACK.  This is accomplished by allowing for a variable argument call to notify (a new var arg method added to the NotificationListener).  Specific abstract classes exist for the associated notification type (ActivateNotification and TrackNotification).  These abstract classes enforce the strong typing that exists in Java.  You may also add custom notification types and fire them through the notification center.  The notification center is implemented using this var arg approach in all Optimizely SDKs.
+
+### New Features
+
+- Added `$opt_bucketing_id` in the attribute map for overriding bucketing using the user id.  It is available as a static string in DecisionService.ATTRIBUTE_BUCKETING_ID
+- Optimizely notification center for activate and track notifications.
+
 ## 2.0.0 Beta 3
 January 5, 2018
 
