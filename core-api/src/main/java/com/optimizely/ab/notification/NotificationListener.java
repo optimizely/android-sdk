@@ -69,7 +69,7 @@ public abstract class NotificationListener {
     }
 
     /**
-     * This is the new method of notification.  Implementation classes such as {@link com.optimizely.ab.notification.ActivateNotification}
+     * This is the new method of notification.  Implementation classes such as {@link ActivateNotificationListener}
      * will implement this call and provide another method with the correct parameters
      * Notify called when a notification is triggered via the {@link com.optimizely.ab.notification.NotificationCenter}
      * @param args - variable argument list based on the type of notification.

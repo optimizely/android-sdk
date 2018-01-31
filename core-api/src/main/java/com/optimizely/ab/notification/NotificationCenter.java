@@ -34,8 +34,8 @@ public class NotificationCenter {
      */
     public enum NotificationType {
 
-        Activate(ActivateNotification.class), // Activate was called. Track an impression event
-        Track(TrackNotification.class); // Track was called.  Track a conversion event
+        Activate(ActivateNotificationListener.class), // Activate was called. Track an impression event
+        Track(TrackNotificationListener.class); // Track was called.  Track a conversion event
 
         private Class notificationTypeClass;
 

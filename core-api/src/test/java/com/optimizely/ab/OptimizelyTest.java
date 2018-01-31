@@ -37,10 +37,10 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.internal.LogbackVerifier;
-import com.optimizely.ab.notification.ActivateNotification;
+import com.optimizely.ab.notification.ActivateNotificationListener;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationListener;
-import com.optimizely.ab.notification.TrackNotification;
+import com.optimizely.ab.notification.TrackNotificationListener;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.Rule;
 import org.junit.Test;
@@ -2215,7 +2215,7 @@ public class OptimizelyTest {
 
         testUserAttributes.put(testBucketingIdKey, testBucketingId);
 
-        ActivateNotification activateNotification = new ActivateNotification() {
+        ActivateNotificationListener activateNotification = new ActivateNotificationListener() {
             @Override
             public void onActivate(@Nonnull Experiment experiment, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Variation variation, @Nonnull LogEvent event) {
                 assertEquals(experiment.getKey(), activatedExperiment.getKey());
@@ -2283,7 +2283,7 @@ public class OptimizelyTest {
         when(mockBucketer.bucket(activatedExperiment, testUserId))
                 .thenReturn(bucketedVariation);
 
-        ActivateNotification activateNotification = new ActivateNotification() {
+        ActivateNotificationListener activateNotification = new ActivateNotificationListener() {
             @Override
             public void onActivate(@Nonnull Experiment experiment, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Variation variation, @Nonnull LogEvent event) {
                 assertEquals(experiment.getKey(), activatedExperiment.getKey());
@@ -2608,7 +2608,7 @@ public class OptimizelyTest {
                 .thenReturn(bucketedVariation);
 
         // Add listener
-        ActivateNotification listener = mock(ActivateNotification.class);
+        ActivateNotificationListener listener = mock(ActivateNotificationListener.class);
         optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, listener);
 
         // Check if listener is notified when experiment is activated
@@ -2636,7 +2636,7 @@ public class OptimizelyTest {
                 anyMapOf(String.class, Object.class)))
                 .thenReturn(logEventToDispatch);
 
-        TrackNotification trackNotification = mock(TrackNotification.class);
+        TrackNotificationListener trackNotification = mock(TrackNotificationListener.class);
 
         optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
 
@@ -2680,11 +2680,11 @@ public class OptimizelyTest {
                 .thenReturn(logEventToDispatch);
 
         // Add and remove listener
-        ActivateNotification activateNotification = mock(ActivateNotification.class);
+        ActivateNotificationListener activateNotification = mock(ActivateNotificationListener.class);
         int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, activateNotification);
         assertTrue(optimizely.notificationCenter.removeNotification(notificationId));
 
-        TrackNotification trackNotification = mock(TrackNotification.class);
+        TrackNotificationListener trackNotification = mock(TrackNotificationListener.class);
         notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
         assertTrue(optimizely.notificationCenter.removeNotification(notificationId));
 
@@ -2771,8 +2771,8 @@ public class OptimizelyTest {
                 attributeCaptor.capture()
         )).thenReturn(logEventToDispatch);
 
-        ActivateNotification activateNotification = mock(ActivateNotification.class);
-        TrackNotification trackNotification = mock(TrackNotification.class);
+        ActivateNotificationListener activateNotification = mock(ActivateNotificationListener.class);
+        TrackNotificationListener trackNotification = mock(TrackNotificationListener.class);
 
         optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, activateNotification);
         optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
@@ -2870,7 +2870,7 @@ public class OptimizelyTest {
         logbackVerifier.expectMessage(Level.DEBUG, "Dispatching conversion event to URL test_url with params " +
                 testParams + " and payload \"\"");
 
-        TrackNotification trackNotification = new TrackNotification() {
+        TrackNotificationListener trackNotification = new TrackNotificationListener() {
             @Override
             public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> _attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
                 assertEquals(eventType.getKey(), eventKey);
@@ -2956,7 +2956,7 @@ public class OptimizelyTest {
         logbackVerifier.expectMessage(Level.DEBUG, "Dispatching conversion event to URL test_url with params " +
                 testParams + " and payload \"\"");
 
-        TrackNotification trackNotification = new TrackNotification() {
+        TrackNotificationListener trackNotification = new TrackNotificationListener() {
             @Override
             public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
                 assertEquals(eventType.getKey(), eventKey);

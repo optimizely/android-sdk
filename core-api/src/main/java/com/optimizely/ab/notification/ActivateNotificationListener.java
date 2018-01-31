@@ -21,10 +21,11 @@ import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.LogEvent;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 
-public abstract class ActivateNotification extends NotificationListener {
+public abstract class ActivateNotificationListener extends NotificationListener {
 
     /**
      * Base notify called with var args.  This method parses the parameters and calls the abstract method.
@@ -54,11 +55,11 @@ public abstract class ActivateNotification extends NotificationListener {
      * @param variation - The variation that was returned from activate.
      * @param event - The impression event that was triggered.
      */
-    public abstract void onActivate(@javax.annotation.Nonnull Experiment experiment,
-                             @javax.annotation.Nonnull String userId,
-                             @javax.annotation.Nonnull Map<String, String> attributes,
-                             @javax.annotation.Nonnull Variation variation,
-                             @javax.annotation.Nonnull LogEvent event) ;
+    public abstract void onActivate(@Nonnull Experiment experiment,
+                             @Nonnull String userId,
+                             @Nonnull Map<String, String> attributes,
+                             @Nonnull Variation variation,
+                             @Nonnull LogEvent event) ;
 
 }
 
