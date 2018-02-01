@@ -293,6 +293,8 @@ public class OptimizelyClientTest {
                                               Map<String, String> map,
                                               Variation variation) {
             }
+            @Override
+            public void notify(Object... args) {}
         };
         optimizelyClient.addNotificationListener(listener);
         verify(optimizely).addNotificationListener(listener);
@@ -308,6 +310,8 @@ public class OptimizelyClientTest {
                                               Map<String, String> map,
                                               Variation variation) {
             }
+            @Override
+            public void notify(Object... args) {}
         };
         optimizelyClient.addNotificationListener(listener);
         verify(logger).warn("Optimizely is not initialized, could not add notification listener");
@@ -323,6 +327,8 @@ public class OptimizelyClientTest {
                                               Map<String, String> map,
                                               Variation variation) {
             }
+            @Override
+            public void notify(Object... args) {}
         };
         optimizelyClient.removeNotificationListener(listener);
         verify(optimizely).removeNotificationListener(listener);
@@ -338,6 +344,8 @@ public class OptimizelyClientTest {
                                               Map<String, String> map,
                                               Variation variation) {
             }
+            @Override
+            public void notify(Object... args) {}
         };
         optimizelyClient.removeNotificationListener(listener);
         verify(logger).warn("Optimizely is not initialized, could not remove notification listener");

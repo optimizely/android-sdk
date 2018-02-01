@@ -53,9 +53,13 @@ android {
 
 dependencies {
     compile "com.noveogroup.android:android-logger:$android_logger_ver"
-    compile "com.optimizely.ab:core-api:$java_core_ver"
     compile "com.google.code.gson:gson:$gson_ver"
-    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '2.0.1'
+    compile ("com.optimizely.ab:core-api:$java_core_ver") {
+        exclude(group: 'net.jcip', module: 'jcip-annotations')
+        exclude(group: 'com.google.code.findbugs', module: 'jsr305')
+        exclude(group: 'com.google.code.findbugs', module: 'annotations')
+    }
+
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"
@@ -68,7 +72,6 @@ dependencies {
     // Set this dependency to build and run Espresso tests
     androidTestCompile "com.android.support.test.espresso:espresso-core:$espresso_ver"
     androidTestCompile "org.mockito:mockito-core:$mockito_ver"
-    androidTestCompile 'com.noveogroup.android:android-logger:1.3.1'
     androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestCompile "com.noveogroup.android:android-logger:$android_logger_ver"
