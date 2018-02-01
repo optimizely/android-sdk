@@ -297,7 +297,8 @@ public class OptimizelyClientTest {
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\""));
+        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
         verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
@@ -374,7 +375,8 @@ public class OptimizelyClientTest {
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\""));
+        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
         verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
@@ -474,7 +476,8 @@ public class OptimizelyClientTest {
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\""));
+        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
         verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
@@ -560,7 +563,8 @@ public class OptimizelyClientTest {
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\""));
+        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
         verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
@@ -647,7 +651,8 @@ public class OptimizelyClientTest {
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\""));
+        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
         verifyZeroInteractions(logger);
 
@@ -884,6 +889,9 @@ public class OptimizelyClientTest {
                                               Map<String, String> map,
                                               Variation variation) {
             }
+
+            @Override
+            public void notify(Object... args) {}
         };
         optimizelyClient.addNotificationListener(listener);
         optimizelyClient.removeNotificationListener(listener);
@@ -900,6 +908,9 @@ public class OptimizelyClientTest {
                                               Map<String, String> map,
                                               Variation variation) {
             }
+
+            @Override
+            public void notify(Object... args) {}
         };
         optimizelyClient.addNotificationListener(listener);
         verify(logger).warn("Optimizely is not initialized, could not add notification listener");
@@ -915,6 +926,8 @@ public class OptimizelyClientTest {
                                               Map<String, String> map,
                                               Variation variation) {
             }
+            @Override
+            public void notify(Object... args) {}
         };
         optimizelyClient.removeNotificationListener(listener);
         verify(logger).warn("Optimizely is not initialized, could not remove notification listener");

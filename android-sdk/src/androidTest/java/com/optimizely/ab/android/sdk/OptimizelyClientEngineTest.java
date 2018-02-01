@@ -24,6 +24,7 @@ import android.support.annotation.RequiresApi;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.event.internal.payload.Event;
+import com.optimizely.ab.event.internal.payload.EventBatch;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +42,7 @@ public class OptimizelyClientEngineTest {
         UiModeManager uiModeManager = mock(UiModeManager.class);
         when(context.getSystemService(Context.UI_MODE_SERVICE)).thenReturn(uiModeManager);
         when(uiModeManager.getCurrentModeType()).thenReturn(Configuration.UI_MODE_TYPE_TELEVISION);
-        assertEquals(Event.ClientEngine.ANDROID_TV_SDK, OptimizelyClientEngine.getClientEngineFromContext(context));
+        assertEquals(EventBatch.ClientEngine.ANDROID_TV_SDK, OptimizelyClientEngine.getClientEngineFromContext(context));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -51,6 +52,6 @@ public class OptimizelyClientEngineTest {
         UiModeManager uiModeManager = mock(UiModeManager.class);
         when(context.getSystemService(Context.UI_MODE_SERVICE)).thenReturn(uiModeManager);
         when(uiModeManager.getCurrentModeType()).thenReturn(Configuration.UI_MODE_TYPE_NORMAL);
-        assertEquals(Event.ClientEngine.ANDROID_SDK, OptimizelyClientEngine.getClientEngineFromContext(context));
+        assertEquals(EventBatch.ClientEngine.ANDROID_SDK, OptimizelyClientEngine.getClientEngineFromContext(context));
     }
 }

@@ -22,6 +22,7 @@ import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 
 import com.optimizely.ab.event.internal.payload.Event;
+import com.optimizely.ab.event.internal.payload.EventBatch;
 
 /**
  * This class manages client engine value of the Event depending on current mode of UI.
@@ -34,14 +35,14 @@ public class OptimizelyClientEngine {
      * @param context any valid Android {@link Context}
      * @return String value of client engine
      */
-    public static Event.ClientEngine getClientEngineFromContext(@NonNull Context context) {
+    public static EventBatch.ClientEngine getClientEngineFromContext(@NonNull Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
 
         if (uiModeManager != null && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
-            return Event.ClientEngine.ANDROID_TV_SDK;
+            return EventBatch.ClientEngine.ANDROID_TV_SDK;
         }
 
-        return Event.ClientEngine.ANDROID_SDK;
+        return EventBatch.ClientEngine.ANDROID_SDK;
     }
 
 }

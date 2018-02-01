@@ -34,8 +34,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 /**
  * Wraps {@link Optimizely} instances
  *
@@ -392,9 +390,9 @@ public class OptimizelyClient {
      *         False if the feature is disabled.
      *         False if the feature is not found.
      */
-    public @Nonnull
-    Boolean isFeatureEnabled(@Nonnull String featureKey,
-                             @Nonnull String userId) {
+    public @NonNull
+    Boolean isFeatureEnabled(@NonNull String featureKey,
+                             @NonNull String userId) {
         if (isValid()) {
             return optimizely.isFeatureEnabled(featureKey, userId);
         } else {
@@ -415,9 +413,9 @@ public class OptimizelyClient {
      *         False if the feature is disabled.
      *         False if the feature is not found.
      */
-    public @Nonnull Boolean isFeatureEnabled(@Nonnull String featureKey,
-                                             @Nonnull String userId,
-                                             @Nonnull Map<String, String> attributes) {
+    public @NonNull Boolean isFeatureEnabled(@NonNull String featureKey,
+                                             @NonNull String userId,
+                                             @NonNull Map<String, String> attributes) {
         if (isValid()) {
             return optimizely.isFeatureEnabled(featureKey, userId, attributes);
         } else {
@@ -438,9 +436,9 @@ public class OptimizelyClient {
      *         Null if the feature could not be found.
      */
     public @Nullable
-    Boolean getFeatureVariableBoolean(@Nonnull String featureKey,
-                                      @Nonnull String variableKey,
-                                      @Nonnull String userId) {
+    Boolean getFeatureVariableBoolean(@NonNull String featureKey,
+                                      @NonNull String variableKey,
+                                      @NonNull String userId) {
         if (isValid()) {
             return optimizely.getFeatureVariableBoolean(featureKey, variableKey, userId);
         } else {
@@ -460,10 +458,10 @@ public class OptimizelyClient {
      *         Null if the feature or variable could not be found.
      */
     public @Nullable
-    Boolean getFeatureVariableBoolean(@Nonnull String featureKey,
-                                      @Nonnull String variableKey,
-                                      @Nonnull String userId,
-                                      @Nonnull Map<String, String> attributes) {
+    Boolean getFeatureVariableBoolean(@NonNull String featureKey,
+                                      @NonNull String variableKey,
+                                      @NonNull String userId,
+                                      @NonNull Map<String, String> attributes) {
         if (isValid()) {
             return optimizely.getFeatureVariableBoolean(featureKey, variableKey, userId, attributes);
         } else {
@@ -482,9 +480,9 @@ public class OptimizelyClient {
      *         Null if the feature or variable could not be found.
      */
     public @Nullable
-    Double getFeatureVariableDouble(@Nonnull String featureKey,
-                                    @Nonnull String variableKey,
-                                    @Nonnull String userId) {
+    Double getFeatureVariableDouble(@NonNull String featureKey,
+                                    @NonNull String variableKey,
+                                    @NonNull String userId) {
         if (isValid()) {
             return optimizely.getFeatureVariableDouble(featureKey, variableKey, userId);
         } else {
@@ -504,10 +502,10 @@ public class OptimizelyClient {
      *         Null if the feature or variable could not be found.
      */
     public @Nullable
-    Double getFeatureVariableDouble(@Nonnull String featureKey,
-                                    @Nonnull String variableKey,
-                                    @Nonnull String userId,
-                                    @Nonnull Map<String, String> attributes) {
+    Double getFeatureVariableDouble(@NonNull String featureKey,
+                                    @NonNull String variableKey,
+                                    @NonNull String userId,
+                                    @NonNull Map<String, String> attributes) {
         if (isValid()) {
             return optimizely.getFeatureVariableDouble(featureKey, variableKey, userId, attributes);
         } else {
@@ -526,9 +524,9 @@ public class OptimizelyClient {
      *         Null if the feature or variable could not be found.
      */
     public @Nullable
-    Integer getFeatureVariableInteger(@Nonnull String featureKey,
-                                      @Nonnull String variableKey,
-                                      @Nonnull String userId) {
+    Integer getFeatureVariableInteger(@NonNull String featureKey,
+                                      @NonNull String variableKey,
+                                      @NonNull String userId) {
         if (isValid()) {
             return optimizely.getFeatureVariableInteger(featureKey, variableKey, userId);
         } else {
@@ -548,10 +546,10 @@ public class OptimizelyClient {
      *         Null if the feature or variable could not be found.
      */
     public @Nullable
-    Integer getFeatureVariableInteger(@Nonnull String featureKey,
-                                      @Nonnull String variableKey,
-                                      @Nonnull String userId,
-                                      @Nonnull Map<String, String> attributes) {
+    Integer getFeatureVariableInteger(@NonNull String featureKey,
+                                      @NonNull String variableKey,
+                                      @NonNull String userId,
+                                      @NonNull Map<String, String> attributes) {
         if (isValid()) {
             return optimizely.getFeatureVariableInteger(featureKey, variableKey, userId, attributes);
         } else {
@@ -570,9 +568,9 @@ public class OptimizelyClient {
      *         Null if the feature or variable could not be found.
      */
     public @Nullable
-    String getFeatureVariableString(@Nonnull String featureKey,
-                                    @Nonnull String variableKey,
-                                    @Nonnull String userId) {
+    String getFeatureVariableString(@NonNull String featureKey,
+                                    @NonNull String variableKey,
+                                    @NonNull String userId) {
         if (isValid()) {
             return optimizely.getFeatureVariableString(featureKey, variableKey, userId);
         } else {
@@ -592,10 +590,10 @@ public class OptimizelyClient {
      *         Null if the feature or variable could not be found.
      */
     public @Nullable
-    String getFeatureVariableString(@Nonnull String featureKey,
-                                    @Nonnull String variableKey,
-                                    @Nonnull String userId,
-                                    @Nonnull Map<String, String> attributes) {
+    String getFeatureVariableString(@NonNull String featureKey,
+                                    @NonNull String variableKey,
+                                    @NonNull String userId,
+                                    @NonNull Map<String, String> attributes) {
         if (isValid()) {
             return optimizely.getFeatureVariableString(featureKey, variableKey, userId, attributes);
         } else {
