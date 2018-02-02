@@ -24,14 +24,16 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.bucketing.DecisionService;
-import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.EventBuilder;
+import com.optimizely.ab.notification.ActivateNotificationListener;
+import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationListener;
+import com.optimizely.ab.notification.TrackNotificationListener;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -133,6 +135,52 @@ public class OptimizelyClientTest {
     }
 
     @Test
+    public void testGoodActivationWithListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
+                logger);
+        final boolean[] callbackCalled = new boolean[1];
+        final Variation[] callbackVariation = new Variation[1];
+
+        callbackCalled[0] = false;
+        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate, new ActivateNotificationListener() {
+            @Override
+            public void onActivate( Experiment experiment, String userId, Map<String, String> attributes, Variation variation, LogEvent event) {
+              callbackCalled[0] = true;
+              callbackVariation[0] = variation;
+            }
+        });
+
+        Variation v = optimizelyClient.activate("android_experiment_key", "1");
+
+        assertEquals(v, callbackVariation[0]);
+        assertEquals(true, callbackCalled[0]);
+        assertEquals(1, notificationId);
+        assertTrue(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+    }
+
+    @Test
+    public void testBadActivationWithListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
+                logger);
+        final boolean[] callbackCalled = new boolean[1];
+
+        callbackCalled[0] = false;
+        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate, new TrackNotificationListener() {
+                    @Override
+                    public void onTrack(String eventKey, String userId, Map<String, String> attributes, Map<String, ?> eventTags, LogEvent event) {
+                        callbackCalled[0] = true;
+                    }
+                });
+
+        Variation v = optimizelyClient.activate("android_experiment_key", "userId");
+
+        assertEquals(false, callbackCalled[0]);
+        assertTrue(notificationId <= 0);
+        assertFalse(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+
+    }
+
+    @Test
     public void testGoodForcedActivation() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         // bucket will always return var_1
@@ -195,7 +243,6 @@ public class OptimizelyClientTest {
         attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.activate("android_experiment_key", "userId", attributes);
         verify(bucketer).bucket( experiment, bucketingId);
-        assertNotNull(v);
     }
 
     @Test
@@ -271,6 +318,51 @@ public class OptimizelyClientTest {
     public void testGoodTrack() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         optimizelyClient.track("test_event", "1");
+        verifyZeroInteractions(logger);
+    }
+
+    @Test
+    public void testBadTrackWithListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
+                logger);
+
+        final boolean[] numberOfCalls = new boolean[1];
+        numberOfCalls[0]= false;
+
+        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate,
+                new TrackNotificationListener() {
+                    @Override
+                    public void onTrack(String eventKey, String userId, Map<String, String> attributes, Map<String, ?> eventTags, LogEvent event) {
+                        numberOfCalls[0] = true;
+                    }
+                });
+        optimizelyClient.track("test_event", "userId");
+        assertTrue(notificationId <= 0);
+        assertFalse(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+        assertEquals(false, numberOfCalls[0]);
+        verifyZeroInteractions(logger);
+
+    }
+
+    @Test
+    public void testGoodTrackWithListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
+                logger);
+
+        final boolean[] numberOfCalls = new boolean[1];
+        numberOfCalls[0]= false;
+
+        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Track,
+                new TrackNotificationListener() {
+                    @Override
+                    public void onTrack(String eventKey, String userId, Map<String, String> attributes, Map<String, ?> eventTags, LogEvent event) {
+                        numberOfCalls[0] = true;
+                    }
+                });
+        optimizelyClient.track("test_event", "1");
+        assertTrue(notificationId > 0);
+        assertTrue(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+        assertEquals(true, numberOfCalls[0]);
         verifyZeroInteractions(logger);
     }
 
@@ -635,7 +727,6 @@ public class OptimizelyClientTest {
         attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.getVariation("android_experiment_key", "userId", attributes);
         verify(bucketer).bucket(experiment, bucketingId);
-        assertNotNull(v);
     }
 
     @Test
