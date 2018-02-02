@@ -41,7 +41,7 @@ import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
-import com.optimizely.ab.event.internal.payload.Event;
+import com.optimizely.ab.event.internal.payload.EventBatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -395,7 +395,7 @@ public class OptimizelyManager {
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String datafile) throws ConfigParseException {
         EventHandler eventHandler = getEventHandler(context);
 
-        Event.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
+        EventBatch.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
         Optimizely.Builder builder = Optimizely.builder(datafile, eventHandler)
                 .withClientEngine(clientEngine)

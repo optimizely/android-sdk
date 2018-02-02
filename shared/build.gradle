@@ -57,7 +57,7 @@ dependencies {
         exclude group: 'com.google.code.findbugs'
     }
     compile "com.google.code.gson:gson:$gson_ver"
-    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '2.0.1'
+
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"
@@ -70,7 +70,6 @@ dependencies {
     // Set this dependency to build and run Espresso tests
     androidTestCompile "com.android.support.test.espresso:espresso-core:$espresso_ver"
     androidTestCompile "org.mockito:mockito-core:$mockito_ver"
-    androidTestCompile 'com.noveogroup.android:android-logger:1.3.1'
     androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestCompile "com.noveogroup.android:android-logger:$android_logger_ver"

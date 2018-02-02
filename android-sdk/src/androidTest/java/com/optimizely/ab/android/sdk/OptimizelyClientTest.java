@@ -29,7 +29,10 @@ import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.notification.ActivateNotificationListener;
+import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationListener;
+import com.optimizely.ab.notification.TrackNotificationListener;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,6 +48,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import static com.optimizely.ab.android.sdk.OptimizelyManager.loadRawResource;
 import static junit.framework.Assert.assertEquals;
@@ -174,6 +179,61 @@ public class OptimizelyClientTest {
     }
 
     @Test
+    public void testGoodActivationWithListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
+                logger);
+        final boolean[] callbackCalled = new boolean[1];
+        final Variation[] callbackVariation = new Variation[1];
+
+        callbackCalled[0] = false;
+        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate, new ActivateNotificationListener() {
+            @Override
+            public void onActivate(@Nonnull Experiment experiment, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Variation variation, @Nonnull LogEvent event) {
+              callbackCalled[0] = true;
+              callbackVariation[0] = variation;
+            }
+        });
+
+        Variation v = optimizelyClient.activate(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
+
+        if (datafileVersion == 3) {
+            assertEquals(v, callbackVariation[0]);
+            assertEquals(true, callbackCalled[0]);
+            assertEquals(1, notificationId);
+            assertTrue(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+        }
+        else {
+            assertNull(v);
+            assertEquals(false, callbackCalled[0]);
+            assertEquals(1, notificationId);
+            assertTrue(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+        }
+
+    }
+
+    @Test
+    public void testBadActivationWithListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
+                logger);
+        final boolean[] callbackCalled = new boolean[1];
+
+        callbackCalled[0] = false;
+        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate, new TrackNotificationListener() {
+                    @Override
+                    public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
+                        callbackCalled[0] = true;
+                    }
+                });
+
+        Variation v = optimizelyClient.activate(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
+
+        assertEquals(false, callbackCalled[0]);
+        assertTrue(notificationId <= 0);
+        assertFalse(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+
+    }
+
+    @Test
     public void testGoodForcedActivation() {
 
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
@@ -244,7 +304,18 @@ public class OptimizelyClientTest {
     }
 
     @Test
-    public void testBadForcedActivationAttribute() {
+    public void testGoodActivationBucketingId() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        final HashMap<String, String> attributes = new HashMap<>();
+        String bucketingId = "1";
+        Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get(FEATURE_ANDROID_EXPERIMENT_KEY);
+        attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+        Variation v = optimizelyClient.activate(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
+        verify(bucketer).bucket( experiment, bucketingId);
+    }
+
+    @Test
+        public void testBadForcedActivationAttribute() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
         boolean didSetForced = optimizelyClient.setForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, "var_2");
 
@@ -297,7 +368,10 @@ public class OptimizelyClientTest {
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\""));
+        // the new event backend accepts both camel case and snake case
+        // https://logx.optimizely.com/v1/events
+        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
         verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
@@ -317,6 +391,69 @@ public class OptimizelyClientTest {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
                 logger);
         optimizelyClient.track("test_event", GENERIC_USER_ID);
+        verifyZeroInteractions(logger);
+    }
+
+    @Test
+    public void testBadTrackWithListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
+                logger);
+
+        final boolean[] numberOfCalls = new boolean[1];
+        numberOfCalls[0]= false;
+
+        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate,
+                new TrackNotificationListener() {
+                    @Override
+                    public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
+                        numberOfCalls[0] = true;
+                    }
+                });
+        optimizelyClient.track("test_event", GENERIC_USER_ID);
+        assertTrue(notificationId <= 0);
+        assertFalse(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+        assertEquals(false, numberOfCalls[0]);
+        verifyZeroInteractions(logger);
+
+    }
+
+    @Test
+    public void testGoodTrackWithListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
+                logger);
+
+        final boolean[] numberOfCalls = new boolean[1];
+        numberOfCalls[0]= false;
+
+        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Track,
+                new TrackNotificationListener() {
+                    @Override
+                    public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
+                        numberOfCalls[0] = true;
+                    }
+                });
+        optimizelyClient.track("test_event", GENERIC_USER_ID);
+        assertTrue(notificationId > 0);
+        assertTrue(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+        if (datafileVersion == 3) {
+            assertEquals(true, numberOfCalls[0]);
+        }
+        else {
+            assertEquals(false, numberOfCalls[0]);
+        }
+        verifyZeroInteractions(logger);
+
+    }
+
+    @Test
+    public void testGoodTrackBucketing() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        Map<String,String> attributes = new HashMap<>();
+        String bucketingId = "1";
+        Experiment experiment = optimizelyClient.getProjectConfig().getExperimentsForEventKey("test_event").get(0);
+        attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+        optimizelyClient.track("test_event", "userId", attributes);
+        verify(bucketer).bucket(experiment, bucketingId);
         verifyZeroInteractions(logger);
     }
 
@@ -373,8 +510,11 @@ public class OptimizelyClientTest {
         }
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
+        // the new event backend accepts both camel case and snake case
+        // https://logx.optimizely.com/v1/events
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\""));
+        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
         verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
@@ -473,8 +613,11 @@ public class OptimizelyClientTest {
         }
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
+        // the new event backend accepts both camel case and snake case
+        // https://logx.optimizely.com/v1/events
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\""));
+        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
         verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
@@ -559,8 +702,11 @@ public class OptimizelyClientTest {
         }
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
+        // the new event backend accepts both camel case and snake case
+        // https://logx.optimizely.com/v1/events
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\""));
+        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
         verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
@@ -646,8 +792,11 @@ public class OptimizelyClientTest {
         }
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
+        // the new event backend accepts both camel case and snake case
+        // https://logx.optimizely.com/v1/events
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\""));
+        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
         verifyZeroInteractions(logger);
 
@@ -676,6 +825,17 @@ public class OptimizelyClientTest {
             Variation v = optimizelyClient.getVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
             assertNotNull(v);
         }
+    }
+
+    @Test
+    public void testGoodGetVariationBucketingId() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get("android_experiment_key");
+        String bucketingId = "1";
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+        Variation v = optimizelyClient.getVariation("android_experiment_key", "userId", attributes);
+        verify(bucketer).bucket(experiment, bucketingId);
     }
 
     @Test
@@ -884,6 +1044,9 @@ public class OptimizelyClientTest {
                                               Map<String, String> map,
                                               Variation variation) {
             }
+
+            @Override
+            public void notify(Object... args) {}
         };
         optimizelyClient.addNotificationListener(listener);
         optimizelyClient.removeNotificationListener(listener);
@@ -900,6 +1063,9 @@ public class OptimizelyClientTest {
                                               Map<String, String> map,
                                               Variation variation) {
             }
+
+            @Override
+            public void notify(Object... args) {}
         };
         optimizelyClient.addNotificationListener(listener);
         verify(logger).warn("Optimizely is not initialized, could not add notification listener");
@@ -915,6 +1081,8 @@ public class OptimizelyClientTest {
                                               Map<String, String> map,
                                               Variation variation) {
             }
+            @Override
+            public void notify(Object... args) {}
         };
         optimizelyClient.removeNotificationListener(listener);
         verify(logger).warn("Optimizely is not initialized, could not remove notification listener");
