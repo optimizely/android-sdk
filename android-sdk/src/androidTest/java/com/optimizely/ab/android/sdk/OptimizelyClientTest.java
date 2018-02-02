@@ -310,6 +310,8 @@ public class OptimizelyClientTest {
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
         // id of var_2
+        // the new event backend accepts both camel case and snake case
+        // https://logx.optimizely.com/v1/events
         assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
                 logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
 
@@ -399,6 +401,8 @@ public class OptimizelyClientTest {
         }
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
+        // the new event backend accepts both camel case and snake case
+        // https://logx.optimizely.com/v1/events
         // id of var_2
         assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
                 logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
@@ -500,6 +504,8 @@ public class OptimizelyClientTest {
         }
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
+        // the new event backend accepts both camel case and snake case
+        // https://logx.optimizely.com/v1/events
         // id of var_2
         assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
                 logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
@@ -587,6 +593,8 @@ public class OptimizelyClientTest {
         }
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
+        // the new event backend accepts both camel case and snake case
+        // https://logx.optimizely.com/v1/events
         // id of var_2
         assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
                 logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
@@ -675,6 +683,8 @@ public class OptimizelyClientTest {
         }
         LogEvent logEvent = logEventArgumentCaptor.getValue();
 
+        // the new event backend accepts both camel case and snake case
+        // https://logx.optimizely.com/v1/events
         // id of var_2
         assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
                 logEvent.getBody().contains("\"variation_id\":\"8505434669\""));

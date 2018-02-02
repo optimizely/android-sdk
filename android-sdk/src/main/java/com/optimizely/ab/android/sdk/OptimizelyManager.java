@@ -41,7 +41,6 @@ import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
-import com.optimizely.ab.event.internal.payload.Event;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 
 import org.slf4j.Logger;

@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 
-import com.optimizely.ab.event.internal.payload.Event;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 
 /**
