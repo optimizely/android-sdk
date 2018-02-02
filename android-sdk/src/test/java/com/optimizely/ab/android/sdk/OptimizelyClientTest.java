@@ -19,8 +19,13 @@ package com.optimizely.ab.android.sdk;
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.notification.ActivateNotificationListener;
+import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationListener;
+import com.optimizely.ab.notification.TrackNotificationListener;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,6 +33,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.exceptions.verification.junit.ArgumentsAreDifferent;
 import org.slf4j.Logger;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +42,7 @@ import java.util.Map;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link OptimizelyClient}
@@ -44,6 +52,29 @@ public class OptimizelyClientTest {
 
     @Mock Logger logger;
     @Mock Optimizely optimizely;
+    @Mock NotificationCenter notificationCenter;
+
+    @Before
+    public void setup() {
+        Field field = null;
+        try {
+            field = Optimizely.class.getDeclaredField("notificationCenter");
+            // Mark the field as public so we can toy with it
+            field.setAccessible(true);
+// Get the Modifiers for the Fields
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+// Allow us to change the modifiers
+            modifiersField.setAccessible(true);
+            // Remove final modifier from field by blanking out the bit that says "FINAL" in the Modifiers
+            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+// Set new value
+            field.set(optimizely, notificationCenter);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test(expected=ArgumentsAreDifferent.class)
     public void testGoodActivation1() {
@@ -75,7 +106,6 @@ public class OptimizelyClientTest {
         verify(logger).warn("Optimizely is not initialized, could not activate experiment {} " +
                 "for user {} with attributes", "1", "1");
     }
-
 
     @Test(expected=ArgumentsAreDifferent.class)
     public void testGoodTrack1() {
@@ -284,6 +314,74 @@ public class OptimizelyClientTest {
     //======== Notification listeners ========//
 
     @Test
+    public void testNewGoodAddNotificationCenterListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+
+        ActivateNotificationListener listener = new ActivateNotificationListener() {
+            @Override
+            public void onActivate(Experiment experiment,String userId, Map<String, String> attributes, Variation variation, LogEvent event) {
+
+            }
+        };
+
+        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate, listener);
+        verify(optimizely.notificationCenter).addNotification(NotificationCenter.NotificationType.Activate, listener);
+    }
+
+    @Test
+    public void testBadAddNotificationCenterListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        ActivateNotificationListener listener = new ActivateNotificationListener() {
+            @Override
+            public void onActivate(Experiment experiment, String userId, Map<String, String> attributes, Variation variation, LogEvent event) {
+
+            }
+        };
+        optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate, listener);
+        verify(optimizely.notificationCenter).addNotification(NotificationCenter.NotificationType.Activate, listener);
+    }
+
+    @Test
+    public void testGoodRemoveNotificationCenterListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        TrackNotificationListener listener = new TrackNotificationListener() {
+            @Override
+            public void onTrack( String eventKey, String userId, Map<String, String> attributes, Map<String, ?> eventTags, LogEvent event) {
+
+            }
+        };
+        int note = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Track, listener);
+        optimizelyClient.getNotificationCenter().removeNotification(note);
+        verify(optimizely.notificationCenter).removeNotification(note);
+    }
+
+    @Test
+    public void testBadRemoveNotificationCenterListener() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+
+        NotificationCenter notificationCenter = optimizelyClient.getNotificationCenter() != null ?
+                optimizelyClient.getNotificationCenter() : new NotificationCenter();
+        notificationCenter.removeNotification(1);
+        verify(logger).warn("Optimizely is not initialized, could not get the notification listener");
+    }
+
+    @Test
+    public void testGoodClearNotificationCenterListeners() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        optimizelyClient.getNotificationCenter().clearAllNotifications();
+        verify(optimizely.notificationCenter).clearAllNotifications();
+    }
+
+    @Test
+    public void testBadClearNotificationCenterListeners() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        NotificationCenter notificationCenter = optimizelyClient.getNotificationCenter() != null ?
+                optimizelyClient.getNotificationCenter() : new NotificationCenter();
+        notificationCenter.clearAllNotifications();
+        verify(logger).warn("Optimizely is not initialized, could not get the notification listener");
+    }
+
+    @Test
     public void testGoodAddNotificationListener() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         NotificationListener listener = new NotificationListener() {
@@ -364,4 +462,5 @@ public class OptimizelyClientTest {
         optimizelyClient.clearNotificationListeners();
         verify(logger).warn("Optimizely is not initialized, could not clear notification listeners");
     }
+
 }

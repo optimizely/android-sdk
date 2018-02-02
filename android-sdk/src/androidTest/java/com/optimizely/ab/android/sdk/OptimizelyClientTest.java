@@ -24,6 +24,7 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.bucketing.DecisionService;
+import com.optimizely.ab.config.Attribute;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
@@ -186,7 +187,19 @@ public class OptimizelyClientTest {
     }
 
     @Test
-    public void testBadForcedActivationAttrib() {
+    public void testGoodActivationBucketingId() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        final HashMap<String, String> attributes = new HashMap<>();
+        String bucketingId = "1";
+        Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get("android_experiment_key");
+        attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+        Variation v = optimizelyClient.activate("android_experiment_key", "userId", attributes);
+        verify(bucketer).bucket( experiment, bucketingId);
+        assertNotNull(v);
+    }
+
+    @Test
+    public void testBadForcedActivationAttribute() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
         boolean didSetForced = optimizelyClient.setForcedVariation("android_experiment_key", "1", "var_2");
 
@@ -258,6 +271,18 @@ public class OptimizelyClientTest {
     public void testGoodTrack() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         optimizelyClient.track("test_event", "1");
+        verifyZeroInteractions(logger);
+    }
+
+    @Test
+    public void testGoodTrackBucketing() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        Map<String,String> attributes = new HashMap<>();
+        String bucketingId = "1";
+        Experiment experiment = optimizelyClient.getProjectConfig().getExperimentsForEventKey("test_event").get(0);
+        attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+        optimizelyClient.track("test_event", "userId", attributes);
+        verify(bucketer).bucket(experiment, bucketingId);
         verifyZeroInteractions(logger);
     }
 
@@ -598,6 +623,18 @@ public class OptimizelyClientTest {
     public void testGoodGetVariation1() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         Variation v = optimizelyClient.getVariation("android_experiment_key", "1");
+        assertNotNull(v);
+    }
+
+    @Test
+    public void testGoodGetVariationBucketingId() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get("android_experiment_key");
+        String bucketingId = "1";
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+        Variation v = optimizelyClient.getVariation("android_experiment_key", "userId", attributes);
+        verify(bucketer).bucket(experiment, bucketingId);
         assertNotNull(v);
     }
 
