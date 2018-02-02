@@ -26,6 +26,7 @@ import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.internal.ReservedEventKey;
+import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationListener;
 
 import org.slf4j.Logger;
@@ -346,6 +347,7 @@ public class OptimizelyClient {
      *
      * @param listener listener to add
      */
+    @Deprecated
     public void addNotificationListener(@NonNull NotificationListener listener) {
         if (isValid()) {
             optimizely.addNotificationListener(listener);
@@ -359,6 +361,7 @@ public class OptimizelyClient {
      *
      * @param listener listener to remove
      */
+    @Deprecated
     public void removeNotificationListener(@NonNull NotificationListener listener) {
         if (isValid()) {
             optimizely.removeNotificationListener(listener);
@@ -370,6 +373,7 @@ public class OptimizelyClient {
     /**
      * Remove all {@link NotificationListener} instances.
      */
+    @Deprecated
     public void clearNotificationListeners() {
         if (isValid()) {
             optimizely.clearNotificationListeners();
@@ -598,8 +602,23 @@ public class OptimizelyClient {
             return optimizely.getFeatureVariableString(featureKey, variableKey, userId, attributes);
         } else {
             logger.warn("Optimizely is not initialized, could not get feature {} variable {} string for user {} with attributes",
-                    featureKey,variableKey, userId);
+                    featureKey, variableKey, userId);
             return null;
         }
+    }
+
+    /**
+     * Return the notification center {@link NotificationCenter} used to add notifications for events
+     * such as Activate and track.
+     * @return
+     */
+    public NotificationCenter getNotificationCenter() {
+        if (isValid()) {
+            return optimizely.notificationCenter;
+        } else {
+            logger.warn("Optimizely is not initialized, could not get the notification listener");
+        }
+
+        return null;
     }
 }
