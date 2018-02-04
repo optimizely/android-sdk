@@ -25,7 +25,7 @@ jobs:
     docker:
       - image: circleci/android:api-26-alpha
     environment:
-      JVM_OPTS: -Xmx4200m
+      JVM_OPTS: -Xmx3200m
       JAVA_OPTIONS: -Djava.io.tmpdir=/var/tmp
     steps:
       - checkout
@@ -37,8 +37,8 @@ jobs:
     #      command: sdkmanager --list
       - run:
           name: Setup emulator
-    #          command: sdkmanager "system-images;android-24;google_apis;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-24;google_apis;armeabi-v7a"
-          command: sdkmanager "system-images;android-25;google_apis;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-25;google_apis;armeabi-v7a"
+          command: sdkmanager "system-images;android-24;google_apis;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-24;google_apis;armeabi-v7a"
+    #          command: sdkmanager "system-images;android-25;google_apis;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-25;google_apis;armeabi-v7a"
       - run:
           name: Launch emulator
           command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel on
