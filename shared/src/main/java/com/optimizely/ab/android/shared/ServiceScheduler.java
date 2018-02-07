@@ -30,7 +30,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static android.app.job.JobScheduler.RESULT_SUCCESS;
 
 /**
  * Schedules {@link android.app.Service}es to run.
@@ -129,7 +130,7 @@ public class ServiceScheduler {
 
             builder.setExtras(persistableBundle);
 
-            if (jobScheduler.schedule(builder.build()) <= 0) {
+            if (jobScheduler.schedule(builder.build()) != RESULT_SUCCESS) {
                 logger.error("ServiceScheduler", "Some error while scheduling the job");
             }
 
