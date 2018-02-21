@@ -53,10 +53,13 @@ public class JobWorkService extends JobService {
     /**
      * This is a task to dequeue and process work in the background.
      */
-    final class CommandProcessor extends AsyncTask<Void, Void, Void> {
+    static final class CommandProcessor extends AsyncTask<Void, Void, Void> {
         private final JobParameters mParams;
-        CommandProcessor(JobParameters params) {
-            mParams = params;
+        private final Logger logger;
+        private final Context context;
+
+        CommandProcessor(JobParameters params, Context context, Logger logger) {
+            mParams = params; this.logger = logger; this.context = context;
         }
         @Override
         protected Void doInBackground(Void... params) {
@@ -89,7 +92,7 @@ public class JobWorkService extends JobService {
                         callOnHandleIntent(intentService, work.getIntent());
                         completeWork(mParams, work);
                     } else {
-                        Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
+                        Handler mainHandler = new Handler(context.getApplicationContext().getMainLooper());
                         final Service mainService = (Service)service;
                         final JobWorkItem workItem = work;
                         final Intent manServiceIntent = work.getIntent();
@@ -121,6 +124,49 @@ public class JobWorkService extends JobService {
             }
             return null;
         }
+        private void setContext(Service service) {
+            callMethod(ContextWrapper.class, service, "attachBaseContext", new Class[] { Context.class }, context.getApplicationContext());
+        }
+
+        private void callOnStartCommand(Service service, Intent intent) {
+            callMethod(Service.class, service, "onStartCommand", new Class[] { Intent.class, int.class, int.class}, intent, 0, 1);
+        }
+
+        private void callOnHandleIntent(IntentService intentService, Intent intent) {
+            callMethod(IntentService.class, intentService, "onHandleIntent", new Class[] { Intent.class }, intent);
+        }
+
+        private void callMethod(Class clazz, Object object, String methodName, Class[] parameterTypes, Object... parameters ) {
+            try {
+                Method method = clazz.getDeclaredMethod(methodName, parameterTypes);
+                method.setAccessible(true);
+                method.invoke(object, parameters);
+
+            } catch (NoSuchMethodException e) {
+                logger.error("Error calling method " + methodName, e);
+            } catch (InvocationTargetException e) {
+                logger.error("Error calling method " + methodName, e);
+            } catch (IllegalAccessException e) {
+                logger.error("Error calling method " + methodName, e);
+            }
+
+        }
+
+        private void completeWork(JobParameters jobParameters, JobWorkItem jobWorkItem) {
+            Intent intent = jobWorkItem.getIntent();
+            if (intent != null && intent.hasExtra(INTENT_EXTRA_JWS_PERIODIC)) {
+                logger.info("Periodic work item completed ");
+                jobParameters.completeWork(jobWorkItem);
+                //reschedule(jobWorkItem);
+            }
+            else {
+                logger.info("work item completed");
+                jobParameters.completeWork(jobWorkItem);
+
+            }
+
+        }
+
     }
     @Override
     public void onCreate() {
@@ -134,7 +180,7 @@ public class JobWorkService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         // Start task to pull work out of the queue and process it.
-        mCurProcessor = new CommandProcessor(params);
+        mCurProcessor = new CommandProcessor(params, getApplicationContext(), this.logger);
         mCurProcessor.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         // Allow the job to continue running while we process work.
         return true;
@@ -148,49 +194,6 @@ public class JobWorkService extends JobService {
         // because the job needs to stop for some reason before it has completed all of
         // its work, so we would like it to remain to finish that work in the future.
         return true;
-    }
-
-    private void setContext(Service service) {
-        callMethod(ContextWrapper.class, service, "attachBaseContext", new Class[] { Context.class }, getApplicationContext());
-    }
-
-    private void callOnStartCommand(Service service, Intent intent) {
-        callMethod(Service.class, service, "onStartCommand", new Class[] { Intent.class, int.class, int.class}, intent, 0, 1);
-    }
-
-    private void callOnHandleIntent(IntentService intentService, Intent intent) {
-        callMethod(IntentService.class, intentService, "onHandleIntent", new Class[] { Intent.class }, intent);
-    }
-
-    private void callMethod(Class clazz, Object object, String methodName, Class[] parameterTypes, Object... parameters ) {
-        try {
-            Method method = clazz.getDeclaredMethod(methodName, parameterTypes);
-            method.setAccessible(true);
-            method.invoke(object, parameters);
-
-        } catch (NoSuchMethodException e) {
-           logger.error("Error calling method " + methodName, e);
-        } catch (InvocationTargetException e) {
-            logger.error("Error calling method " + methodName, e);
-        } catch (IllegalAccessException e) {
-            logger.error("Error calling method " + methodName, e);
-        }
-
-    }
-
-    private void completeWork(JobParameters jobParameters, JobWorkItem jobWorkItem) {
-        Intent intent = jobWorkItem.getIntent();
-        if (intent != null && intent.hasExtra(INTENT_EXTRA_JWS_PERIODIC)) {
-            logger.info("Periodic work item completed ");
-            jobParameters.completeWork(jobWorkItem);
-            //reschedule(jobWorkItem);
-        }
-        else {
-            logger.info("work item completed");
-            jobParameters.completeWork(jobWorkItem);
-
-        }
-
     }
 
     private void reschedule(JobWorkItem item) {
