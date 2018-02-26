@@ -12,13 +12,24 @@ buildscript {
 }
 
 plugins {
-    id 'nebula.optional-base' version '3.2.0'
+    id 'com.github.kt3k.coveralls' version '2.8.2'
+    id 'jacoco'
     id 'me.champeau.gradle.jmh' version '0.3.1'
+    id 'nebula.optional-base' version '3.2.0'
 }
 
 allprojects {
     group = 'com.optimizely.ab'
     apply plugin: 'idea'
+    apply plugin: 'jacoco'
+
+    repositories {
+        jcenter()
+    }
+
+    jacoco {
+        toolVersion = '0.8.0'
+    }
 }
 
 apply from: 'gradle/publish.gradle'
@@ -33,8 +44,8 @@ allprojects {
 subprojects {
     apply plugin: 'com.jfrog.bintray'
     apply plugin: 'findbugs'
-    apply plugin: 'java'
     apply plugin: 'jacoco'
+    apply plugin: 'java'
     apply plugin: 'maven-publish'
     apply plugin: 'me.champeau.gradle.jmh'
     apply plugin: 'nebula.optional-base'
@@ -170,9 +181,49 @@ subprojects {
     task ship() {
         dependsOn('bintrayUpload')
     }
+
 }
 
 task ship() {
     dependsOn(':core-api:ship', ':core-httpclient-impl:ship')
 }
 
+// Only report code coverage for projects that are distributed
+def publishedProjects = subprojects.findAll { it.path != ':simulator' }
+
+task jacocoMerge(type: JacocoMerge) {
+    publishedProjects.each { subproject ->
+        executionData subproject.tasks.withType(Test)
+    }
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
+
+task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+    description = 'Generates an aggregate report from all subprojects'
+    dependsOn publishedProjects.test, jacocoMerge
+
+    additionalSourceDirs = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(publishedProjects.sourceSets.main.output)
+    executionData jacocoMerge.destinationFile
+
+    reports {
+        html.enabled = true // human readable
+        xml.enabled = true // required by coveralls
+    }
+}
+
+coveralls {
+    sourceDirs = publishedProjects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
+
+    dependsOn jacocoRootReport
+    onlyIf { System.env.'CI' && !JavaVersion.current().isJava9Compatible() }
+}
