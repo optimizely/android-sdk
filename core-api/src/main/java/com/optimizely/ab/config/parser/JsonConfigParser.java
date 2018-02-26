@@ -186,6 +186,10 @@ final class JsonConfigParser implements ConfigParser {
             JSONObject variationObject = (JSONObject)obj;
             String id = variationObject.getString("id");
             String key = variationObject.getString("key");
+            Boolean featureEnabled = false;
+
+            if(variationObject.has("featureEnabled"))
+                featureEnabled = variationObject.getBoolean("featureEnabled");
 
             List<LiveVariableUsageInstance> liveVariableUsageInstances = null;
             if (variationObject.has("variables")) {
@@ -193,7 +197,7 @@ final class JsonConfigParser implements ConfigParser {
                         parseLiveVariableInstances(variationObject.getJSONArray("variables"));
             }
 
-            variations.add(new Variation(id, key, liveVariableUsageInstances));
+            variations.add(new Variation(id, key, featureEnabled, liveVariableUsageInstances));
         }
 
         return variations;

@@ -191,13 +191,17 @@ final class JsonSimpleConfigParser implements ConfigParser {
             JSONObject variationObject = (JSONObject)obj;
             String id = (String)variationObject.get("id");
             String key = (String)variationObject.get("key");
+            Boolean featureEnabled = false;
+
+            if(variationObject.containsKey("featureEnabled"))
+                featureEnabled = (Boolean)variationObject.get("featureEnabled");
 
             List<LiveVariableUsageInstance> liveVariableUsageInstances = null;
             if (variationObject.containsKey("variables")) {
                 liveVariableUsageInstances = parseLiveVariableInstances((JSONArray)variationObject.get("variables"));
             }
 
-            variations.add(new Variation(id, key, liveVariableUsageInstances));
+            variations.add(new Variation(id, key, featureEnabled, liveVariableUsageInstances));
         }
 
         return variations;

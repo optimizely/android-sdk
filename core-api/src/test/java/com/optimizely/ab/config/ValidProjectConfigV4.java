@@ -180,9 +180,11 @@ public class ValidProjectConfigV4 {
     private static final String     ROLLOUT_1_EVERYONE_ELSE_EXPERIMENT_ID = "1785077004";
     private static final String     ROLLOUT_1_EVERYONE_ELSE_RULE_ENABLED_VARIATION_ID = "1566407342";
     private static final String     ROLLOUT_1_EVERYONE_ELSE_RULE_ENABLED_VARIATION_STRING_VALUE = "lumos";
+    private  static final Boolean    ROLLOUT_1_FEATURE_ENABLED_VALUE = true;
     private static final Variation  ROLLOUT_1_EVERYONE_ELSE_RULE_ENABLED_VARIATION = new Variation(
             ROLLOUT_1_EVERYONE_ELSE_RULE_ENABLED_VARIATION_ID,
             ROLLOUT_1_EVERYONE_ELSE_RULE_ENABLED_VARIATION_ID,
+            ROLLOUT_1_FEATURE_ENABLED_VALUE,
             Collections.singletonList(
                     new LiveVariableUsageInstance(
                             VARIABLE_STRING_VARIABLE_ID,
@@ -225,9 +227,11 @@ public class ValidProjectConfigV4 {
     private static final String     ROLLOUT_3_ID = "2048875663";
     private static final String     ROLLOUT_3_EVERYONE_ELSE_EXPERIMENT_ID = "3794675122";
     private static final String     ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION_ID = "589640735";
+    private  static final Boolean   ROLLOUT_3_FEATURE_ENABLED_VALUE = true;
     private static final Variation  ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION = new Variation(
             ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION_ID,
             ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION_ID,
+            ROLLOUT_3_FEATURE_ENABLED_VALUE,
             Collections.<LiveVariableUsageInstance>emptyList()
     );
     private static final Experiment ROLLOUT_3_EVERYONE_ELSE_RULE = new Experiment(
@@ -451,9 +455,11 @@ public class ValidProjectConfigV4 {
     public  static final String     EXPERIMENT_MULTIVARIATE_EXPERIMENT_KEY = "multivariate_experiment";
     private static final String     VARIATION_MULTIVARIATE_EXPERIMENT_FRED_ID = "1880281238";
     private static final String     VARIATION_MULTIVARIATE_EXPERIMENT_FRED_KEY = "Fred";
+    private  static final Boolean   VARIATION_MULTIVARIATE_FEATURE_ENABLED_VALUE = true;
     private static final Variation  VARIATION_MULTIVARIATE_EXPERIMENT_FRED = new Variation(
             VARIATION_MULTIVARIATE_EXPERIMENT_FRED_ID,
             VARIATION_MULTIVARIATE_EXPERIMENT_FRED_KEY,
+            VARIATION_MULTIVARIATE_FEATURE_ENABLED_VALUE,
             ProjectConfigTestUtils.createListOfObjects(
                     new LiveVariableUsageInstance(
                             VARIABLE_FIRST_LETTER_ID,
@@ -470,6 +476,7 @@ public class ValidProjectConfigV4 {
     private static final Variation  VARIATION_MULTIVARIATE_EXPERIMENT_FEORGE = new Variation(
             VARIATION_MULTIVARIATE_EXPERIMENT_FEORGE_ID,
             VARIATION_MULTIVARIATE_EXPERIMENT_FEORGE_KEY,
+            VARIATION_MULTIVARIATE_FEATURE_ENABLED_VALUE,
             ProjectConfigTestUtils.createListOfObjects(
                     new LiveVariableUsageInstance(
                             VARIABLE_FIRST_LETTER_ID,
@@ -483,9 +490,11 @@ public class ValidProjectConfigV4 {
     );
     private static final String     VARIATION_MULTIVARIATE_EXPERIMENT_GRED_ID = "4204375027";
     public  static final String     VARIATION_MULTIVARIATE_EXPERIMENT_GRED_KEY = "Gred";
+    public  static final Boolean    VARIATION_MULTIVARIATE_VARIATION_FEATURE_ENABLED_GRED_KEY = false;
     public  static final Variation  VARIATION_MULTIVARIATE_EXPERIMENT_GRED = new Variation(
             VARIATION_MULTIVARIATE_EXPERIMENT_GRED_ID,
             VARIATION_MULTIVARIATE_EXPERIMENT_GRED_KEY,
+            VARIATION_MULTIVARIATE_VARIATION_FEATURE_ENABLED_GRED_KEY,
             ProjectConfigTestUtils.createListOfObjects(
                     new LiveVariableUsageInstance(
                             VARIABLE_FIRST_LETTER_ID,
@@ -502,6 +511,7 @@ public class ValidProjectConfigV4 {
     private static final Variation  VARIATION_MULTIVARIATE_EXPERIMENT_GEORGE = new Variation(
             VARIATION_MULTIVARIATE_EXPERIMENT_GEORGE_ID,
             VARIATION_MULTIVARIATE_EXPERIMENT_GEORGE_KEY,
+            VARIATION_MULTIVARIATE_FEATURE_ENABLED_VALUE,
             ProjectConfigTestUtils.createListOfObjects(
                     new LiveVariableUsageInstance(
                             VARIABLE_FIRST_LETTER_ID,
@@ -568,9 +578,11 @@ public class ValidProjectConfigV4 {
     public  static final String     EXPERIMENT_DOUBLE_FEATURE_EXPERIMENT_KEY = "double_single_variable_feature_experiment";
     private static final String     VARIATION_DOUBLE_FEATURE_PI_VARIATION_ID = "1505457580";
     private static final String     VARIATION_DOUBLE_FEATURE_PI_VARIATION_KEY = "pi_variation";
+    private  static final Boolean   VARIATION_DOUBLE_FEATURE_ENABLED_VALUE = true;
     private static final Variation  VARIATION_DOUBLE_FEATURE_PI_VARIATION = new Variation(
             VARIATION_DOUBLE_FEATURE_PI_VARIATION_ID,
             VARIATION_DOUBLE_FEATURE_PI_VARIATION_KEY,
+            VARIATION_DOUBLE_FEATURE_ENABLED_VALUE,
             Collections.singletonList(
                     new LiveVariableUsageInstance(
                             VARIABLE_DOUBLE_VARIABLE_ID,
@@ -670,9 +682,11 @@ public class ValidProjectConfigV4 {
     private static final String     EXPERIMENT_MUTEX_GROUP_EXPERIMENT_1_EXPERIMENT_KEY = "mutex_group_2_experiment_1";
     private static final String     VARIATION_MUTEX_GROUP_EXP_1_VAR_1_ID = "1394671166";
     private static final String     VARIATION_MUTEX_GROUP_EXP_1_VAR_1_KEY = "mutex_group_2_experiment_1_variation_1";
+    private  static final Boolean   VARIATION_MUTEX_GROUP_EXP_FEATURE_ENABLED_VALUE = true;
     private static final Variation  VARIATION_MUTEX_GROUP_EXP_1_VAR_1 = new Variation(
             VARIATION_MUTEX_GROUP_EXP_1_VAR_1_ID,
             VARIATION_MUTEX_GROUP_EXP_1_VAR_1_KEY,
+            VARIATION_MUTEX_GROUP_EXP_FEATURE_ENABLED_VALUE,
             Collections.singletonList(
                     new LiveVariableUsageInstance(
                             VARIABLE_CORRELATING_VARIATION_NAME_ID,
@@ -701,9 +715,11 @@ public class ValidProjectConfigV4 {
     private static final String     EXPERIMENT_MUTEX_GROUP_EXPERIMENT_2_EXPERIMENT_KEY = "mutex_group_2_experiment_2";
     private static final String     VARIATION_MUTEX_GROUP_EXP_2_VAR_1_ID = "1619235542";
     private static final String     VARIATION_MUTEX_GROUP_EXP_2_VAR_1_KEY = "mutex_group_2_experiment_2_variation_2";
+    private  static final Boolean   VARIATION_MUTEX_GROUP_EXP_2_FEATURE_ENABLED_VALUE = true;
     public  static final Variation  VARIATION_MUTEX_GROUP_EXP_2_VAR_1 = new Variation(
             VARIATION_MUTEX_GROUP_EXP_2_VAR_1_ID,
             VARIATION_MUTEX_GROUP_EXP_2_VAR_1_KEY,
+            VARIATION_MUTEX_GROUP_EXP_2_FEATURE_ENABLED_VALUE,
             Collections.singletonList(
                     new LiveVariableUsageInstance(
                             VARIABLE_CORRELATING_VARIATION_NAME_ID,
@@ -837,6 +853,7 @@ public class ValidProjectConfigV4 {
                     new Variation(
                             "521740985",
                             "521740985",
+                            true,
                             ProjectConfigTestUtils.createListOfObjects(
                                     new LiveVariableUsageInstance(
                                             "675244127",
@@ -867,6 +884,7 @@ public class ValidProjectConfigV4 {
                     new Variation(
                             "180042646",
                             "180042646",
+                            true,
                             ProjectConfigTestUtils.createListOfObjects(
                                     new LiveVariableUsageInstance(
                                             "675244127",
@@ -897,6 +915,7 @@ public class ValidProjectConfigV4 {
                     new Variation(
                             "2346257680",
                             "2346257680",
+                            true,
                             ProjectConfigTestUtils.createListOfObjects(
                                     new LiveVariableUsageInstance(
                                             "675244127",
@@ -927,6 +946,7 @@ public class ValidProjectConfigV4 {
                     new Variation(
                             "3137445031",
                             "3137445031",
+                            true,
                             ProjectConfigTestUtils.createListOfObjects(
                                     new LiveVariableUsageInstance(
                                             "675244127",

@@ -37,6 +37,7 @@ public class Variation implements IdKeyMapped {
 
     private final String id;
     private final String key;
+    private final Boolean featureEnabled;
     private final List<LiveVariableUsageInstance> liveVariableUsageInstances;
     private final Map<String, LiveVariableUsageInstance> variableIdToLiveVariableUsageInstanceMap;
 
@@ -44,12 +45,23 @@ public class Variation implements IdKeyMapped {
         this(id, key, null);
     }
 
+    public Variation(String id,
+                     String key,
+                     List<LiveVariableUsageInstance> liveVariableUsageInstances) {
+        this(id, key,false, liveVariableUsageInstances);
+    }
+
     @JsonCreator
     public Variation(@JsonProperty("id") String id,
                      @JsonProperty("key") String key,
+                     @JsonProperty("featureEnabled") Boolean featureEnabled,
                      @JsonProperty("variables") List<LiveVariableUsageInstance> liveVariableUsageInstances) {
         this.id = id;
         this.key = key;
+        if(featureEnabled != null)
+            this.featureEnabled = featureEnabled;
+        else
+            this.featureEnabled = false;
         if (liveVariableUsageInstances == null) {
             this.liveVariableUsageInstances = Collections.emptyList();
         }
@@ -65,6 +77,10 @@ public class Variation implements IdKeyMapped {
 
     public @Nonnull String getKey() {
         return key;
+    }
+
+    public @Nonnull Boolean getFeatureEnabled() {
+        return featureEnabled;
     }
 
     public @Nullable List<LiveVariableUsageInstance> getLiveVariableUsageInstances() {

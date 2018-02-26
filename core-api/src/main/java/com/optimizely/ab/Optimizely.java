@@ -347,7 +347,10 @@ public class Optimizely {
         Map<String, String> filteredAttributes = filterAttributes(projectConfig, attributes);
 
         FeatureDecision featureDecision = decisionService.getVariationForFeature(featureFlag, userId, filteredAttributes);
-        if (featureDecision.variation != null) {
+        if (featureDecision.variation == null || !featureDecision.variation.getFeatureEnabled()) {
+            logger.info("Feature \"{}\" is not enabled for user \"{}\".", featureKey, userId);
+            return false;
+        } else {
             if (featureDecision.decisionSource.equals(FeatureDecision.DecisionSource.EXPERIMENT)) {
                 sendImpression(
                         projectConfig,
@@ -361,9 +364,6 @@ public class Optimizely {
             }
             logger.info("Feature \"{}\" is enabled for user \"{}\".", featureKey, userId);
             return true;
-        } else {
-            logger.info("Feature \"{}\" is not enabled for user \"{}\".", featureKey, userId);
-            return false;
         }
     }
 
