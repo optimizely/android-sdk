@@ -75,19 +75,25 @@ task ship() {
             'datafile-handler:uploadArchives')
 }
 
-task cleanAllModules << {
-    logger.info("Running clean for all modules")
+task cleanAllModules {
+    doLast {
+        logger.info("Running clean for all modules")
+    }
 }
 
 cleanAllModules.dependsOn(':android-sdk:clean', ':event-handler:clean',
         ':user-profile:clean', ':shared:clean', ':datafile-handler:clean')
 
-task testAllModules << {
-    logger.info("Running android tests for all modules")
+task testAllModules {
+    doLast {
+        logger.info("Running android tests for all modules")
+    }
 }
 
-task testAllModulesTravis << {
-    logger.info("Running android tests for Travis")
+task testAllModulesTravis {
+    doLast {
+        logger.info("Running android tests for Travis")
+    }
 }
 
 testAllModulesTravis.dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
