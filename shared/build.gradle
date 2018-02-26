@@ -90,7 +90,7 @@ uploadArchives {
 
 android.libraryVariants.all { variant ->
     task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
-        source = variant.javaCompile.source
+        source = variant.javaCompiler.source
 
         title = "Optimizely X Android Shared"
 
@@ -98,7 +98,7 @@ android.libraryVariants.all { variant ->
         options.linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference");
 
         // First add all of your dependencies to the classpath, then add the android jars
-        classpath += files(variant.javaCompile.classpath.files)
+        classpath += files(variant.javaCompiler.classpath.files)
         classpath += files(android.getBootClasspath())
 
         // We're excluding these generated files
@@ -123,7 +123,7 @@ android.libraryVariants.all { variant ->
 android.libraryVariants.all { variant ->
     task("${variant.name}SourcesJar", type: Jar) {
         classifier = 'sources'
-        from variant.javaCompile.source
+        from variant.javaCompiler.source
     }
     project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
 }
