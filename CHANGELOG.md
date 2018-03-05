@@ -1,4 +1,50 @@
 # Optimizely Android X SDK Changelog
+### 1.6.0
+Febuary 3, 2018
+
+- Release 1.6.0
+
+This release adds support for bucketing id (By passing in `$opt_bucketing_id` in the attribute map, you can  override the user id as the bucketing variable. This is useful when wanting a set of users to share the same experience such as two players in a game).
+
+This release also deprecates the old notification broadcaster in favor of a notification center that supports a wide range of notifications.  The notification listener is now registered for the specific notification type such as ACTIVATE and TRACK.  This is accomplished by allowing for a variable argument call to notify (a new var arg method added to the NotificationListener).  Specific abstract classes exist for the associated notification type (ActivateNotificationListener and TrackNotificationListener).  These abstract classes enforce the strong typing that exists in Java.  You may also add custom notification types and fire them through the notification center.  The notification center is implemented using this var arg approach in all Optimizely SDKs.
+
+### New Features
+
+- Added `$opt_bucketing_id` in the attribute map for overriding bucketing using the user id.  It is available as a static string in DecisionService.ATTRIBUTE_BUCKETING_ID
+- Optimizely notification center for activate and track notifications.
+
+### Breaking change
+There is a new abstract method on NotificationListener notify(args...);
+
+### 1.5.1
+November 1, 2017
+
+- Release 1.5.1
+
+*New Features*
+
+- Numeric metrics
+- Client-side programmatic forced variations.
+- Example of synchronous and asynchronous initialize in test-app
+
+*Bug Fixes*
+
+- Remove Espresso dependency
+- Narrow proguard rules
+- Last modified fixed so that multiple project files can be used.
+- Call start listener if there is an exception.
+- Example of overriding Gson and android-logger in test-app gradle file.
+- Fix crash on API 17 (missing annotation).
+- Support for Android O (please see developer docs for details). Basically, Android O and above will use JobScheduler and pre Android O will continue to use AlarmService.  This is done through a class called the JobWorkService which allows you to keep your Service and IntentService intact.  Developers can piggyback on this method and keep thier IntentServices and use the JobWorkService.
+- Proguard rules were broken and were causing event payload to be stripped to single character keys.
+
+*Breaking Changes*
+
+- Same as 1.4.0 see below.
+- Need to add permissions to both receivers in your manifest if you plan on using the EventRescheduler or the DatafileRescheduler (see test_app manifest for example) https://github.com/optimizely/android-sdk/blob/master/test-app/src/main/AndroidManifest.xml
+- Updated build tools and target to API 26 which will cause proguard warnings if you are not using the latest build tools.
+- Also for Android O, you must register for the SUPPLICANT_CONNECTION_CHANGE_ACTION intent filter in code (see the test-app for an example).
+
 ### 1.5.0
 October 30, 2017
 
