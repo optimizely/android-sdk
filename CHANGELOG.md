@@ -8,12 +8,12 @@ This release adds support for bucketing id (By passing in `$opt_bucketing_id` in
 
 This release also deprecates the old notification broadcaster in favor of a notification center that supports a wide range of notifications.  The notification listener is now registered for the specific notification type such as ACTIVATE and TRACK.  This is accomplished by allowing for a variable argument call to notify (a new var arg method added to the NotificationListener).  Specific abstract classes exist for the associated notification type (ActivateNotificationListener and TrackNotificationListener).  These abstract classes enforce the strong typing that exists in Java.  You may also add custom notification types and fire them through the notification center.  The notification center is implemented using this var arg approach in all Optimizely SDKs.
 
-### New Features
+*New Features*
 
 - Added `$opt_bucketing_id` in the attribute map for overriding bucketing using the user id.  It is available as a static string in DecisionService.ATTRIBUTE_BUCKETING_ID
 - Optimizely notification center for activate and track notifications.
 
-### Breaking change
+*Breaking change*
 There is a new abstract method on NotificationListener notify(args...);
 
 ### 1.5.1
