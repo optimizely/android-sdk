@@ -15,6 +15,7 @@
  ***************************************************************************/
 
 apply plugin: 'com.android.library'
+apply plugin: 'jacoco'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
@@ -70,6 +71,14 @@ dependencies {
     androidTestCompile "com.noveogroup.android:android-logger:$android_logger_ver"
 }
 
+jacoco {
+    toolVersion = '0.8.0'
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
 uploadArchives {
     dependsOn = [':datafile-handler:clean', ':datafile-handler:releaseJavadocJar', ':datafile-handler:releaseSourcesJar']
     shouldRunAfter = [':shared:uploadArchives']
@@ -85,7 +94,7 @@ uploadArchives {
 
 android.libraryVariants.all { variant ->
     task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
-        source = variant.javaCompile.source
+        source = variant.javaCompiler.source
 
         title = "Optimizely X Android Datafile Handler"
 
@@ -93,7 +102,7 @@ android.libraryVariants.all { variant ->
         options.linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference");
 
         // First add all of your dependencies to the classpath, then add the android jars
-        classpath += files(variant.javaCompile.classpath.files)
+        classpath += files(variant.javaCompiler.classpath.files)
         classpath += files(android.getBootClasspath())
 
         // We're excluding these generated files
@@ -117,8 +126,25 @@ android.libraryVariants.all { variant ->
 android.libraryVariants.all { variant ->
     task("${variant.name}SourcesJar", type: Jar) {
         classifier = 'sources'
-        from variant.javaCompile.source
+        from variant.javaCompiler.source
     }
     project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
 }
 
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = fileTree(dir: project.buildDir, includes: [
+            'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
+    ])
+}
