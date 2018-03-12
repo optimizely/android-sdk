@@ -102,6 +102,7 @@
 		"variations": [{
 			"id": "1880281238",
 			"key": "Fred",
+			"featureEnabled": true,
 			"variables": [{
 				"id": "675244127",
 				"value": "F"
@@ -112,6 +113,7 @@
 		}, {
 			"id": "3631049532",
 			"key": "Feorge",
+			"featureEnabled": true,
 			"variables": [{
 				"id": "675244127",
 				"value": "F"
@@ -138,6 +140,7 @@
 		}, {
 			"id": "2099211198",
 			"key": "George",
+			"featureEnabled": false,
 			"variables": [{
 				"id": "675244127",
 				"value": "G"
@@ -174,6 +177,7 @@
 		"variations": [{
 			"id": "1505457580",
 			"key": "pi_variation",
+			"featureEnabled": true,
 			"variables": [{
 				"id": "4111654444",
 				"value": "3.14"
@@ -181,6 +185,7 @@
 		}, {
 			"id": "119616179",
 			"key": "euler_variation",
+			"featureEnabled": true,
 			"variables": [{
 				"id": "4111654444",
 				"value": "2.718"
@@ -320,6 +325,7 @@
 			"variations": [{
 				"id": "1394671166",
 				"key": "mutex_group_2_experiment_1_variation_1",
+				"featureEnabled": true,
 				"variables": [{
 					"id": "2059187672",
 					"value": "mutex_group_2_experiment_1_variation_1"
@@ -339,6 +345,7 @@
 			"variations": [{
 				"id": "1619235542",
 				"key": "mutex_group_2_experiment_2_variation_2",
+				"featureEnabled": true,
 				"variables": [{
 					"id": "2059187672",
 					"value": "mutex_group_2_experiment_2_variation_2"
@@ -449,6 +456,7 @@
 			"variations": [{
 				"id": "1566407342",
 				"key": "1566407342",
+				"featureEnabled": true,
 				"variables": [{
 					"id": "2077511132",
 					"value": "lumos"
@@ -471,6 +479,7 @@
 			"variations": [{
 				"id": "521740985",
 				"key": "521740985",
+				"featureEnabled": false,
 				"variables": [{
 					"id": "675244127",
 					"value": "G"
@@ -493,6 +502,7 @@
 			"variations": [{
 				"id": "180042646",
 				"key": "180042646",
+				"featureEnabled": true,
 				"variables": [{
 					"id": "675244127",
 					"value": "S"
@@ -515,6 +525,7 @@
 			"variations": [{
 				"id": "2346257680",
 				"key": "2346257680",
+				"featureEnabled": true,
 				"variables": [{
 					"id": "675244127",
 					"value": "D"
@@ -537,6 +548,7 @@
 			"variations": [{
 				"id": "3137445031",
 				"key": "3137445031",
+				"featureEnabled": true,
 				"variables": [{
 					"id": "675244127",
 					"value": "M"
@@ -562,6 +574,7 @@
 			"variations": [{
 				"id": "589640735",
 				"key": "589640735",
+				"featureEnabled": true,
 				"variables": []
 			}],
 			"trafficAllocation": [{
