@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -382,6 +383,22 @@ public class OptimizelyClient {
         }
     }
 
+    /**
+     * Get the list of features that are enabled for the user.
+     * @param userId The ID of the user.
+     * @param attributes The user's attributes.
+     * @return List of the feature keys that are enabled for the user if the userId is empty it will
+     * return Empty List.
+     */
+    public List<String> getEnabledFeatures(@NonNull String userId, @NonNull Map<String, String> attributes) {
+        if (isValid()) {
+            return optimizely.getEnabledFeatures(userId, attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get enabled feature for user {}",
+                    userId);
+            return null;
+        }
+    }
     //======== FeatureFlag APIs ========//
 
     /**
