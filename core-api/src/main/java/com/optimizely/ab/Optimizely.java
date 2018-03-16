@@ -609,7 +609,7 @@ public class Optimizely {
             if(isFeatureEnabled(featureKey, userId, attributes))
                 enabledFeaturesList.add(featureKey);
         }
-
+        Collections.sort(enabledFeaturesList);
         return enabledFeaturesList;
     }
 

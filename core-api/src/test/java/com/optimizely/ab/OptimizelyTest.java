@@ -17,6 +17,7 @@ package com.optimizely.ab;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Ordering;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.bucketing.DecisionService;
 import com.optimizely.ab.bucketing.FeatureDecision;
@@ -3633,6 +3634,36 @@ public class OptimizelyTest {
 
     }
 
+    /**
+     * Verify {@link Optimizely#getEnabledFeatures(String, Map)} calls into
+     * {@link Optimizely#isFeatureEnabled(String, String, Map)} for each featureFlag
+     * return sorted List of FeatureFlags
+     * Also checks that the orignal list directly from projectConfig is unsorted
+     */
+    @Test
+    public void getEnabledFeatureCheckingListIsSorted() throws ConfigParseException{
+        assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+        ArrayList<String> featureFlagsSortedList = (ArrayList<String>) spyOptimizely.getEnabledFeatures(genericUserId,
+                new HashMap<String, String>());
+        assertFalse(featureFlagsSortedList.isEmpty());
+
+        //To get Unsorted list directly from project config
+        List<String> unSortedFeaturesListFromProjectConfig = new ArrayList<String>();
+        for (FeatureFlag featureFlag : spyOptimizely.projectConfig.getFeatureFlags()){
+            String featureKey = featureFlag.getKey();
+            unSortedFeaturesListFromProjectConfig.add(featureKey);
+        }
+
+        //unSortedFeaturesListFromProjectConfig will retain only the elements which are also contained in featureFlagsSortedList.
+        unSortedFeaturesListFromProjectConfig.retainAll(featureFlagsSortedList);
+        assertFalse(Ordering.natural().isOrdered(unSortedFeaturesListFromProjectConfig));
+
+        assertTrue(Ordering.natural().isOrdered(featureFlagsSortedList));
+    }
 
     /**
      * Verify {@link Optimizely#getEnabledFeatures(String, Map)} calls into
