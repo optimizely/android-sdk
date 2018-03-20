@@ -227,14 +227,14 @@ public class ValidProjectConfigV4 {
     private static final String     ROLLOUT_3_ID = "2048875663";
     private static final String     ROLLOUT_3_EVERYONE_ELSE_EXPERIMENT_ID = "3794675122";
     private static final String     ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION_ID = "589640735";
-    private  static final Boolean   ROLLOUT_3_FEATURE_ENABLED_VALUE = true;
-    private static final Variation  ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION = new Variation(
+    private static final Boolean   ROLLOUT_3_FEATURE_ENABLED_VALUE = true;
+    public  static final Variation  ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION = new Variation(
             ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION_ID,
             ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION_ID,
             ROLLOUT_3_FEATURE_ENABLED_VALUE,
             Collections.<LiveVariableUsageInstance>emptyList()
     );
-    private static final Experiment ROLLOUT_3_EVERYONE_ELSE_RULE = new Experiment(
+    public  static final Experiment ROLLOUT_3_EVERYONE_ELSE_RULE = new Experiment(
             ROLLOUT_3_EVERYONE_ELSE_EXPERIMENT_ID,
             ROLLOUT_3_EVERYONE_ELSE_EXPERIMENT_ID,
             Experiment.ExperimentStatus.RUNNING.toString(),

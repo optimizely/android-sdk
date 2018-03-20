@@ -18,6 +18,8 @@ package com.optimizely.ab.event.internal.payload;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Objects;
+
 public class Decision {
     @JsonProperty("campaign_id")
     String campaignId;
@@ -43,32 +45,16 @@ public class Decision {
         return campaignId;
     }
 
-    public void setCampaignId(String campaignId) {
-        this.campaignId = campaignId;
-    }
-
     public String getExperimentId() {
         return experimentId;
-    }
-
-    public void setExperimentId(String experimentId) {
-        this.experimentId = experimentId;
     }
 
     public String getVariationId() {
         return variationId;
     }
 
-    public void setVariationId(String variationId) {
-        this.variationId = variationId;
-    }
-
     public boolean getIsCampaignHoldback() {
         return isCampaignHoldback;
-    }
-
-    public void setIsCampaignHoldback(boolean campaignHoldback) {
-        isCampaignHoldback = campaignHoldback;
     }
 
     @Override
@@ -83,7 +69,6 @@ public class Decision {
         if (!experimentId.equals(that.experimentId)) return false;
         return variationId.equals(that.variationId);
     }
-
     @Override
     public int hashCode() {
         int result = campaignId.hashCode();

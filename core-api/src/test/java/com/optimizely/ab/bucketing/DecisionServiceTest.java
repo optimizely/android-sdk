@@ -50,8 +50,11 @@ import static com.optimizely.ab.config.ValidProjectConfigV4.ATTRIBUTE_NATIONALIT
 import static com.optimizely.ab.config.ValidProjectConfigV4.AUDIENCE_ENGLISH_CITIZENS_VALUE;
 import static com.optimizely.ab.config.ValidProjectConfigV4.AUDIENCE_GRYFFINDOR_VALUE;
 import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_FLAG_MULTI_VARIATE_FEATURE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_FLAG_SINGLE_VARIABLE_INTEGER;
 import static com.optimizely.ab.config.ValidProjectConfigV4.FEATURE_MULTI_VARIATE_FEATURE_KEY;
 import static com.optimizely.ab.config.ValidProjectConfigV4.ROLLOUT_2;
+import static com.optimizely.ab.config.ValidProjectConfigV4.ROLLOUT_3_EVERYONE_ELSE_RULE;
+import static com.optimizely.ab.config.ValidProjectConfigV4.ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -1051,6 +1054,41 @@ public class DecisionServiceTest {
         // user excluded without audiences and whitelisting
         assertThat(decisionService.getVariation(experiment, genericUserId, attr), is(expectedVariation));
 
+    }
+
+    /**
+    Verify that {@link DecisionService#getVariationForFeatureInRollout(FeatureFlag, String, Map)}
+     uses bucketing ID to bucket the user into rollouts.
+     */
+    @Test
+    public void getVariationForRolloutWithBucketingId() {
+        Experiment rolloutRuleExperiment = ROLLOUT_3_EVERYONE_ELSE_RULE;
+        Variation rolloutVariation = ROLLOUT_3_EVERYONE_ELSE_RULE_ENABLED_VARIATION;
+        FeatureFlag featureFlag = FEATURE_FLAG_SINGLE_VARIABLE_INTEGER;
+        String bucketingId = "user_bucketing_id";
+        String userId = "user_id";
+        Map<String, String> attributes = new HashMap<String, String>();
+        attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+
+        Bucketer bucketer = mock(Bucketer.class);
+        when(bucketer.bucket(rolloutRuleExperiment, userId)).thenReturn(null);
+        when(bucketer.bucket(rolloutRuleExperiment, bucketingId)).thenReturn(rolloutVariation);
+
+        DecisionService decisionService = spy(new DecisionService(
+                bucketer,
+                mockErrorHandler,
+                v4ProjectConfig,
+                null
+        ));
+
+        FeatureDecision expectedFeatureDecision = new FeatureDecision(
+                rolloutRuleExperiment,
+                rolloutVariation,
+                FeatureDecision.DecisionSource.ROLLOUT);
+
+        FeatureDecision featureDecision = decisionService.getVariationForFeature(featureFlag, userId, attributes);
+
+        assertEquals(expectedFeatureDecision, featureDecision);
     }
 
 }

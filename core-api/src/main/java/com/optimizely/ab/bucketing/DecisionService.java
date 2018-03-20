@@ -219,32 +219,29 @@ public class DecisionService {
             Experiment rolloutRule = rollout.getExperiments().get(i);
             Audience audience = projectConfig.getAudienceIdMapping().get(rolloutRule.getAudienceIds().get(0));
             if (ExperimentUtils.isUserInExperiment(projectConfig, rolloutRule, filteredAttributes)) {
-                logger.debug("Attempting to bucket user \"" + userId +
-                        "\" into rollout rule for audience \"" + audience.getName() +
-                        "\".");
                 variation = bucketer.bucket(rolloutRule, bucketingId);
                 if (variation == null) {
-                    logger.debug("User \"{}\" was excluded due to traffic allocation.", userId);
                     break;
                 }
                 return new FeatureDecision(rolloutRule, variation,
                         FeatureDecision.DecisionSource.ROLLOUT);
-            } else {
+            }
+            else {
                 logger.debug("User \"{}\" did not meet the conditions to be in rollout rule for audience \"{}\".",
                         userId, audience.getName());
             }
         }
 
-        // get last rule which is the everyone else rule
-        Experiment everyoneElseRule = rollout.getExperiments().get(rolloutRulesLength - 1);
-        variation = bucketer.bucket(everyoneElseRule, bucketingId); // ignore audience
-        if (variation == null) {
-            logger.debug("User \"{}\" was excluded from the \"Everyone Else\" rule for feature flag \"{}\".",
-                    userId, featureFlag.getKey());
-            return new FeatureDecision(null, null, null);
+        // get last rule which is the fall back rule
+        Experiment finalRule = rollout.getExperiments().get(rolloutRulesLength - 1);
+        if (ExperimentUtils.isUserInExperiment(projectConfig, finalRule, filteredAttributes)) {
+            variation = bucketer.bucket(finalRule, bucketingId);
+            if (variation != null) {
+                return new FeatureDecision(finalRule, variation,
+                        FeatureDecision.DecisionSource.ROLLOUT);
+            }
         }
-        return new FeatureDecision(everyoneElseRule, variation,
-                FeatureDecision.DecisionSource.ROLLOUT);
+        return new FeatureDecision(null, null, null);
     }
 
     /**
