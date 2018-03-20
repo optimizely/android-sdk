@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -1221,6 +1222,60 @@ public class OptimizelyClientTest {
     }
 
     /**
+     * Verify {@link Optimizely#getEnabledFeatures(String, Map)} calls into
+     * {@link Optimizely#isFeatureEnabled(String, String, Map)} for each featureFlag
+     * return List of FeatureFlags that are enabled
+     */
+    @Test
+    public void testGetEnabledFeaturesWithValidUserID(){
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+        List<String> enabledFeatures = optimizelyClient.getEnabledFeatures(GENERIC_USER_ID,
+                Collections.singletonMap("house", "Gryffindor"));
+        assertFalse(enabledFeatures.isEmpty());
+    }
+
+    /**
+     * Verify {@link Optimizely#getEnabledFeatures(String, Map)} calls into
+     * {@link Optimizely#isFeatureEnabled(String, String, Map)} for each featureFlag
+     * here user id is not valid because its not bucketed into any variation so it will
+     * return empty List of enabledFeatures
+     */
+    @Test
+    public void testGetEnabledFeaturesWithInValidUserIDandValidAttributes(){
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+        List<String> enabledFeatures = optimizelyClient.getEnabledFeatures("InvalidUserID",
+                Collections.singletonMap("house", "Gryffindor"));
+        assertTrue(enabledFeatures.isEmpty());
+    }
+
+
+    /**
+     * Verify {@link Optimizely#getEnabledFeatures(String, Map)} calls into
+     * {@link Optimizely#isFeatureEnabled(String, String, Map)} for each featureFlag
+     * here Attributes are not valid because its not meeting any audience condition so
+     * return empty List of enabledFeatures
+     */
+    @Test
+    public void testGetEnabledFeaturesWithValidUserIDAndInvalidAttributes() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+        List<String> enabledFeatures = optimizelyClient.getEnabledFeatures(GENERIC_USER_ID,
+                Collections.singletonMap("invalidKey", "invalidVal"));
+        assertTrue(enabledFeatures.isEmpty());
+    }
+
+    /**
      * Verify {@link Optimizely#isFeatureEnabled(String, String, Map)}
      * returns True
      * when the user is bucketed into a variation for the feature.
@@ -1279,7 +1334,7 @@ public class OptimizelyClientTest {
      * false so {@link Optimizely#isFeatureEnabled(String, String, Map)}  will return false
      */
     @Test
-    public void testIsFeatureEnabledWithfeatureEnabledNotSet(){
+    public void testIsFeatureEnabledWithfeatureEnabledNotSet() {
         assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
         OptimizelyClient optimizelyClient = new OptimizelyClient(
                 optimizely,
