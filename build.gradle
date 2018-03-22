@@ -103,3 +103,11 @@ testAllModulesTravis.dependsOn(':android-sdk:connectedAndroidTest', ':android-sd
         ':user-profile:connectedAndroidTest', ':shared:connectedAndroidTest')
 
 testAllModules.dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')
+
+task coveralls {
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
+
+    dependsOn jacocoTestReport
+    onlyIf { System.env.'CI' && !JavaVersion.current().isJava9Compatible() }
+}
