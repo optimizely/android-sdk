@@ -1283,7 +1283,7 @@ public class OptimizelyClientTest {
      * return empty List of enabledFeatures
      */
     @Test
-    public void testGetEnabledFeaturesWithValidUserIDAndInvalidAttributes(){
+    public void testGetEnabledFeaturesWithValidUserIDAndInvalidAttributes() {
         assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
         OptimizelyClient optimizelyClient = new OptimizelyClient(
                 optimizely,
@@ -1293,6 +1293,87 @@ public class OptimizelyClientTest {
                 Collections.singletonMap("invalidKey", "invalidVal"));
         assertTrue(enabledFeatures.isEmpty());
     }
+
+    /**
+     * Verify {@link Optimizely#isFeatureEnabled(String, String, Map)}
+     * returns True
+     * when the user is bucketed into a variation for the feature.
+     * The user is also bucketed into an experiment
+     * and featureEnabled is also set to true
+     */
+    @Test
+    public void testIsFeatureEnabledWithFeatureEnabledTrue(){
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+
+        //with valid attributes
+        assertTrue(optimizelyClient.isFeatureEnabled(
+                FEATURE_MULTI_VARIATE_FEATURE_KEY,
+                GENERIC_USER_ID,
+                Collections.singletonMap("house", "Gryffindor")
+        ));
+
+        verifyZeroInteractions(logger);
+
+    }
+
+    /**
+     * Verify using forced variation to force the user into the fourth variation of experiment
+     * FEATURE_MULTI_VARIATE_EXPERIMENT_KEY in which FeatureEnabled is set to
+     * false so {@link Optimizely#isFeatureEnabled(String, String, Map)}  will return false
+     */
+    @Test
+    public void testIsFeatureEnabledWithfeatureEnabledFalse(){
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+        Experiment activatedExperiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get(
+                FEATURE_MULTI_VARIATE_EXPERIMENT_KEY);
+        Variation forcedVariation = activatedExperiment.getVariations().get(3);
+        optimizelyClient.setForcedVariation(
+                activatedExperiment.getKey(),
+                GENERIC_USER_ID,
+                forcedVariation.getKey()
+        );
+        assertFalse(optimizelyClient.isFeatureEnabled(
+                FEATURE_MULTI_VARIATE_FEATURE_KEY,
+                GENERIC_USER_ID,
+                Collections.singletonMap("house", "Gryffindor")
+        ));
+    }
+
+    /**
+     * Verify using forced variation to force the user into the third variation of experiment
+     * FEATURE_MULTI_VARIATE_EXPERIMENT_KEY in which FeatureEnabled is not set so by default it should return
+     * false so {@link Optimizely#isFeatureEnabled(String, String, Map)}  will return false
+     */
+    @Test
+    public void testIsFeatureEnabledWithfeatureEnabledNotSet() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+        Experiment activatedExperiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get(
+                FEATURE_MULTI_VARIATE_EXPERIMENT_KEY);
+        Variation forcedVariation = activatedExperiment.getVariations().get(2);
+        optimizelyClient.setForcedVariation(
+                activatedExperiment.getKey(),
+                GENERIC_USER_ID,
+                forcedVariation.getKey()
+        );
+        assertFalse(optimizelyClient.isFeatureEnabled(
+                FEATURE_MULTI_VARIATE_FEATURE_KEY,
+                GENERIC_USER_ID,
+                Collections.singletonMap("house", "Gryffindor")
+        ));
+    }
+
     //=======Feature Variables Testing===========
 
     /* FeatureVariableBoolean
@@ -1725,5 +1806,4 @@ public class OptimizelyClientTest {
                 GENERIC_USER_ID
         );
     }
-
 }
