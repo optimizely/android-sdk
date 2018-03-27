@@ -29,6 +29,7 @@ import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.notification.ActivateNotificationListener;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationListener;
@@ -601,7 +602,10 @@ public class OptimizelyClientTest {
 
         ProjectConfig config = optimizely.getProjectConfig();
 
-        optimizelyClient.track("test_event", GENERIC_USER_ID, 1L);
+        optimizelyClient.track("test_event",
+                GENERIC_USER_ID,
+                Collections.<String, String>emptyMap(),
+                Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
 
         verifyZeroInteractions(logger);
 
@@ -636,28 +640,37 @@ public class OptimizelyClientTest {
     public void testGoodTrackEventVal() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
                 logger);
-        optimizelyClient.track("test_event", GENERIC_USER_ID, 1L);
+        optimizelyClient.track("test_event",
+                GENERIC_USER_ID,
+                Collections.<String, String>emptyMap(),
+                Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
         verifyZeroInteractions(logger);
     }
 
     @Test
     public void testBadTrackEventVal() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.track("event1", GENERIC_USER_ID, 1L);
-        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
-                "with value {}", "event1", GENERIC_USER_ID, 1L);
+        optimizelyClient.track("event1",
+                GENERIC_USER_ID,
+                Collections.<String, String>emptyMap(),
+                Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
+        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {}" +
+                " with attributes and event tags", "event1", GENERIC_USER_ID);
     }
 
     @Test
     public void testBadForcedTrackEventVal() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-
+        final HashMap<String, String> attributes = new HashMap<>();
         boolean didSetForced = optimizelyClient.setForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, "var_2");
 
         assertFalse(didSetForced);
-        optimizelyClient.track("event1", GENERIC_USER_ID, 1L);
-        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
-                "with value {}", "event1", GENERIC_USER_ID, 1L);
+        optimizelyClient.track("event1",
+                GENERIC_USER_ID,
+                attributes,
+                Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
+        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {}" +
+                " with attributes and event tags", "event1", GENERIC_USER_ID);
 
         Variation v = optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
         assertNull(v);
@@ -674,7 +687,8 @@ public class OptimizelyClientTest {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
                 logger);
         final HashMap<String, String> attributes = new HashMap<>();
-        optimizelyClient.track("test_event", GENERIC_USER_ID, attributes, 1L);
+        optimizelyClient.track("test_event", GENERIC_USER_ID, attributes,
+                Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
         verifyZeroInteractions(logger);
     }
 
@@ -690,7 +704,10 @@ public class OptimizelyClientTest {
 
         ProjectConfig config = optimizelyClient.getProjectConfig();
 
-        optimizelyClient.track("test_event", GENERIC_USER_ID, attributes, 1L);
+        optimizelyClient.track("test_event",
+                GENERIC_USER_ID,
+                attributes,
+                Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
 
         verifyZeroInteractions(logger);
 
@@ -725,9 +742,10 @@ public class OptimizelyClientTest {
     public void testBadTrackAttributeEventVal() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
         final HashMap<String, String> attributes = new HashMap<>();
-        optimizelyClient.track("event1", GENERIC_USER_ID, attributes, 1L);
-        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
-                "with value {} and attributes", "event1", GENERIC_USER_ID, 1L);
+        optimizelyClient.track("event1", GENERIC_USER_ID, attributes,
+                Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
+        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {}" +
+                " with attributes and event tags", "event1", GENERIC_USER_ID);
     }
 
     @Test
@@ -739,9 +757,10 @@ public class OptimizelyClientTest {
 
         assertFalse(didSetForced);
 
-        optimizelyClient.track("event1", GENERIC_USER_ID, attributes, 1L);
-        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
-                "with value {} and attributes", "event1", GENERIC_USER_ID, 1L);
+        optimizelyClient.track("event1", GENERIC_USER_ID, attributes,
+                Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
+        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {}" +
+                " with attributes and event tags", "event1", GENERIC_USER_ID);
 
         Variation v = optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
         assertNull(v);

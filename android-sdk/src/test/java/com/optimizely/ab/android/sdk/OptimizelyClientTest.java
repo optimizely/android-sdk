@@ -141,18 +141,10 @@ public class OptimizelyClientTest {
     }
 
     @Test
-    public void testBadTrack3() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.track("event1", "1", 1L);
-        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
-                "with value {}", "event1", "1", 1L);
-    }
-
-    @Test
-    public void testGoodTrack4() {
+    public void testGoodTrack3() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         final HashMap<String, String> attributes = new HashMap<>();
-        optimizelyClient.track("event1", "1", attributes, 1L);
+        optimizelyClient.track("event1", "1", attributes, Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
         Map<String, String> defaultAttributes = new HashMap<>();
         verify(optimizely).track("event1", "1", defaultAttributes, Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));    }
 
@@ -160,9 +152,9 @@ public class OptimizelyClientTest {
     public void testBadTrack4() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
         final HashMap<String, String> attributes = new HashMap<>();
-        optimizelyClient.track("event1", "1", attributes, 1L);
-        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {} " +
-                "with value {} and attributes", "event1", "1", 1L);
+        optimizelyClient.track("event1", "1", attributes, Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
+        verify(logger).warn("Optimizely is not initialized, could not track event {} for user {}" +
+                " with attributes and event tags", "event1", "1");
     }
 
     @Test
