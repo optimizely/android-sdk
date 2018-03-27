@@ -213,45 +213,6 @@ public class OptimizelyClient {
     }
 
     /**
-     * Track an event for a user
-     * @deprecated see {@link Optimizely#track(String, String, Map, Map)} and pass in revenue values as event tags instead.
-     * @param eventName the name of the event
-     * @param userId the user id
-     * @param eventValue a value to tie to the event
-     */
-    public void track(@NonNull String eventName,
-                      @NonNull String userId,
-                      long eventValue) throws UnknownEventTypeException {
-        if (isValid()) {
-            optimizely.track(eventName, userId, getDefaultAttributes(), Collections.singletonMap(ReservedEventKey.REVENUE.toString(), eventValue));
-        } else {
-            logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
-                    " with value {}", eventName, userId, eventValue);
-        }
-    }
-
-    /**
-     * Track an event for a user with attributes and a value
-     * @see Optimizely#track(String, String, Map, Map)
-     * @deprecated see {@link Optimizely#track(String, String, Map, Map)} and pass in revenue values as event tags instead.
-     * @param eventName the String name of the event
-     * @param userId the String user id
-     * @param attributes the attributes of the event
-     * @param eventValue the value of the event
-     */
-    public void track(@NonNull String eventName,
-                      @NonNull String userId,
-                      @NonNull Map<String, String> attributes,
-                      long eventValue) {
-        if (isValid()) {
-            optimizely.track(eventName, userId, getAllAttributes(attributes), Collections.singletonMap(ReservedEventKey.REVENUE.toString(), eventValue));
-        } else {
-            logger.warn("Optimizely is not initialized, could not track event {} for user {}" +
-                    " with value {} and attributes", eventName, userId, eventValue);
-        }
-    }
-
-    /**
      * Get the variation the user is bucketed into
      * @see Optimizely#getVariation(Experiment, String)
      * @param experimentKey a String experiment key
