@@ -1,10 +1,46 @@
 # Optimizely Java X SDK Changelog
 
+## 2.0.0-beta6
+
+March 29th, 2018
+
+This major release of the Optimizely SDK introduces APIs for Feature Management. It also introduces some breaking changes listed below.
+
+### New Features
+* Introduces the `isFeatureEnabled` API to determine whether to show a feature to a user or not.
+```
+Boolean enabled = optimizelyClient.isFeatureEnabled("my_feature_key", "user_1", userAttributes);
+```
+
+* You can also get all the enabled features for the user by calling the following method which returns a list of strings representing the feature keys:
+```
+ArrayList<String> enabledFeatures = optimizelyClient.getEnabledFeatures("user_1", userAttributes);
+```
+
+* Introduces Feature Variables to configure or parameterize your feature. There are four variable types: `Integer`, `String`, `Double`, `Boolean`.
+```
+String stringVariable = optimizelyClient.getFeatureVariableString("my_feature_key", "string_variable_key", "user_1");
+Integer integerVariable = optimizelyClient.getFeatureVariableInteger("my_feature_key", "integer_variable_key", "user_1");
+Double doubleVariable = optimizelyClient.getFeatureVariableDouble("my_feature_key", "double_variable_key", "user_1");
+Boolean booleanVariable = optimizelyClient.getFeatureVariableBoolean("my_feature_key", "boolean_variable_key", "user_1");
+```
+
+### Breaking changes
+* The `track` API with revenue value as a stand-alone parameter has been removed. The revenue value should be passed in as an entry of the event tags map. The key for the revenue tag is `revenue` and will be treated by Optimizely as the key for analyzing revenue data in results.
+```
+Map<String, Object> eventTags = new HashMap<String, Object>();
+
+// reserved "revenue" tag
+eventTags.put("revenue", 6432);
+
+optimizelyClient.track("event_key", "user_id", userAttributes, eventTags);
+```
+
 ## 1.9.0
 
 January 30, 2018
 
-This release adds support for bucketing id (By passing in `$opt_bucketing_id` in the attribute map to override the user id as the bucketing variable. This is useful when wanting a set of users to share the same experience such as two players in a game). 
+This release adds support for bucketing id (By passing in `$opt_bucketing_id` in the attribute map to override the user id as the bucketing variable. This is useful when wanting a set of users to share the same experience such as two players in a game).
 
 This release also depricates the old notification broadcaster in favor of a notification center that supports a wide range of notifications.  The notification listener is now registered for the specific notification type such as ACTIVATE and TRACK.  This is accomplished by allowing for a variable argument call to notify (a new var arg method added to the NotificationListener).  Specific abstract classes exist for the associated notification type (ActivateNotification and TrackNotification).  These abstract classes enforce the strong typing that exists in Java.  You may also add custom notification types and fire them through the notification center.  The notification center is implemented using this var arg approach in all Optimizely SDKs.
 
@@ -31,7 +67,7 @@ This is a patch release for 1.8.0.  It contains two bug fixes mentioned below.
 ### Bug Fixes
 SDK returns NullPointerException when activating with unknown attribute.
 
-Pooled connection times out if it is idle for a long time (AsyncEventHandler's HttpClient uses PoolingHttpClientConnectionManager setting a validate interval). 
+Pooled connection times out if it is idle for a long time (AsyncEventHandler's HttpClient uses PoolingHttpClientConnectionManager setting a validate interval).
 
 ## 2.0.0 Beta 2
 October 5, 2017
@@ -66,7 +102,7 @@ You can now use feature flags in the Java SDK. You can experiment on features an
 - Remove track with revenue as a parameter. Pass the revenue value as an event tag instead
   - `track(String, String, long)`
   - `track(String, String, Map<String, String>, long)`
-- We will no longer run all unit tests in travis-ci against Java 7. 
+- We will no longer run all unit tests in travis-ci against Java 7.
   We will still continue to set `sourceCompatibility` and `targetCompatibility` to 1.6 so that we build for Java 6.
 
 ## 1.8.0
