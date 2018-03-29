@@ -1,5 +1,49 @@
 # Optimizely Android X SDK Changelog
-### 1.6.0
+
+## 2.0.0-beta1
+
+March 29th, 2018
+
+This major release of the Optimizely SDK introduces APIs for Feature Management. It also introduces some breaking changes listed below.
+
+### New Features
+* Introduces the `isFeatureEnabled` API to determine whether to show a feature to a user or not.
+```
+Boolean enabled = optimizelyClient.isFeatureEnabled("my_feature_key", "user_1", userAttributes);
+```
+
+* You can also get all the enabled features for the user by calling the following method which returns a list of strings representing the feature keys:
+```
+ArrayList<String> enabledFeatures = optimizelyClient.getEnabledFeatures("user_1", userAttributes);
+```
+
+* Introduces Feature Variables to configure or parameterize your feature. There are four variable types: `Integer`, `String`, `Double`, `Boolean`.
+```
+String stringVariable = optimizelyClient.getFeatureVariableString("my_feature_key", "string_variable_key", "user_1");
+Integer integerVariable = optimizelyClient.getFeatureVariableInteger("my_feature_key", "integer_variable_key", "user_1");
+Double doubleVariable = optimizelyClient.getFeatureVariableDouble("my_feature_key", "double_variable_key", "user_1");
+Boolean booleanVariable = optimizelyClient.getFeatureVariableBoolean("my_feature_key", "boolean_variable_key", "user_1");
+```
+
+### Breaking changes
+* The `track` API with revenue value as a stand-alone parameter has been removed. The revenue value should be passed in as an entry of the event tags map. The key for the revenue tag is `revenue` and will be treated by Optimizely as the key for analyzing revenue data in results.
+```
+Map<String, Object> eventTags = new HashMap<String, Object>();
+
+// reserved "revenue" tag
+eventTags.put("revenue", 6432);
+
+optimizelyClient.track("event_key", "user_id", userAttributes, eventTags);
+```
+
+* Live variable accessor methods have been removed and have been replaced with the feature variable methods mentioned above. Feature variables are scoped to a feature so you must supply the feature key in addition to the variable key to access them.
+
+  - `getVariableBoolean` now becomes `getFeatureVariableBoolean`
+  - `getVariableString` now becomes `getFeatureVariableString`
+  - `getVariableInteger` now becomes `getFeatureVariableInteger`
+  - `getVariableFloat` now becomes `getFeatureVariableDouble`
+
+## 1.6.0
 Febuary 3, 2018
 
 - Release 1.6.0
@@ -16,7 +60,7 @@ This release also deprecates the old notification broadcaster in favor of a noti
 *Breaking change*
 There is a new abstract method on NotificationListener notify(args...);
 
-### 1.5.1
+## 1.5.1
 November 1, 2017
 
 - Release 1.5.1
@@ -45,7 +89,7 @@ November 1, 2017
 - Updated build tools and target to API 26 which will cause proguard warnings if you are not using the latest build tools.
 - Also for Android O, you must register for the SUPPLICANT_CONNECTION_CHANGE_ACTION intent filter in code (see the test-app for an example).
 
-### 1.5.0
+## 1.5.0
 October 30, 2017
 
 - Release 1.5.0
@@ -73,7 +117,7 @@ October 30, 2017
 - Updated build tools and target to API 26
 - Also for Android O, you must register for the SUPPLICANT_CONNECTION_CHANGE_ACTION intent filter in code (see the test-app for an example).
 
-### 1.4.0
+## 1.4.0
 August 9, 2017
 
 - Release 1.4.0
@@ -97,7 +141,7 @@ August 9, 2017
 - Background processes are not running by default.
 - Various handlers (EventHandler, DatafileHandler, ErrorHandler) can be overridden.
 
-### 1.4.0-beta-RC2
+## 1.4.0-beta-RC2
 August 9, 2017
 
 - Release candidate for 1.4.0
@@ -121,7 +165,7 @@ August 9, 2017
 - Background processes are not running by default.
 - Various handlers (EventHandler, DatafileHandler, ErrorHandler) can be overridden.
 
-### 1.4.0-beta-RC1
+## 1.4.0-beta-RC1
 August 2, 2017
 
 - Release candidate for 1.4.0
@@ -144,7 +188,7 @@ August 2, 2017
 - Background processes are not running by default.
 - Various handlers (EventHandler, DatafileHandler, ErrorHandler) can be overridden.
 
-### 1.4.0-alpha-RC1
+## 1.4.0-alpha-RC1
 July 26, 2017
 
 - Release candidate for 1.4.0
@@ -167,7 +211,7 @@ July 26, 2017
 - Various handlers (EventHandler, DatafileHandler, ErrorHandler) can be overridden.
 
 
-### 1.4.0-alpha
+## 1.4.0-alpha
 July 11, 2017
 
 - Allow configure background tasks to run or not.
@@ -184,36 +228,36 @@ July 11, 2017
 - Background processes are not running by default.
 - Various handlers (EventHandler, DatafileHandler, ErrorHandler) can be overridden.
 
-### 1.3.1
+## 1.3.1
 April 25, 2017
 
 - Handle exceptions in top-level APIs
 
-### 1.3.0
+## 1.3.0
 April 12, 2017
 
 - Add getter for `ProjectConfig`
 
-### 1.2.0
+## 1.2.0
 March 20, 2017
 
 - Add event tags to the `track` API
 - Deprecated `eventValue` parameter from the `track` API. Use event tags to pass in event value instead
 - Update to java-core 1.6.0 (https://github.com/optimizely/java-sdk/blob/master/CHANGELOG.md#160)
 
-### 1.1.0
+## 1.1.0
 February 17, 2017
 
 - Support Android TV SDK client engine
 - Update to java-core 1.5.0 (https://github.com/optimizely/java-sdk/blob/master/CHANGELOG.md#150)
 
 
-### 1.0.0
+## 1.0.0
 January 23, 2017
 
 - GA release
 
-### 0.5.0
+## 0.5.0
 January 20, 2017
 
 *Bug Fixes*
@@ -224,7 +268,7 @@ January 20, 2017
 
 - Change live variable getter signature from `getVariableFloat` to `getVariableDouble`
 
-### 0.4.1
+## 0.4.1
 December 28, 2016
 
 *Bug Fixes*
@@ -232,7 +276,7 @@ December 28, 2016
 - Add try catches around Cache.java and Client.java to handle exceptions gracefully
 - Fixes crash with not being able to bind to DatafileService
 
-### 0.4.0
+## 0.4.0
 December 15, 2016
 
 *New Features*
@@ -244,14 +288,14 @@ December 15, 2016
 - Rename `AndroidUserExperimentRecord` to `AndroidUserProfile`
 - Change position of `activateExperiment` parameter in live variable getters
 
-### 0.3.0
+## 0.3.0
 December 8, 2016
 
 *New Features*
 
 - Add support for live variables
 
-### 0.2.2
+## 0.2.2
 November 30, 2016
 
 *Bug Fixes*
@@ -262,19 +306,19 @@ November 30, 2016
 - Changed the initialization call from `start` to `initialize`
 - `getOptimizely` now only returns the cached version of the client
 
-### 0.2.1
+## 0.2.1
 November 4, 2016
 
 *Bug Fixes*
 - Ensures that the `OptimizelyStartedListener` is always called *once* and *only once* even if Optimizely fails to load a datafile from everywhere. It should be safe to launch parts of your app after the callback hits now.
 
-### 0.2.0
+## 0.2.0
 October 28, 2016
 
 *Breaking Changes*
 - Renames `AndroidOptimizely` to `OptimizelyClient`
 
-### 0.1.3
+## 0.1.3
 October 27, 2016
 
 *Bug Fixes*
