@@ -36,6 +36,13 @@ eventTags.put("revenue", 6432);
 optimizelyClient.track("event_key", "user_id", userAttributes, eventTags);
 ```
 
+* Live variable accessor methods have been removed and have been replaced with the feature variable methods mentioned above. Feature variables are scoped to a feature so you must supply the feature key in addition to the variable key to access them.
+
+  - `getVariableBoolean` now becomes `getFeatureVariableBoolean`
+  - `getVariableString` now becomes `getFeatureVariableString`
+  - `getVariableInteger` now becomes `getFeatureVariableInteger`
+  - `getVariableFloat` now becomes `getFeatureVariableDouble`
+
 ## 1.6.0
 Febuary 3, 2018
 
