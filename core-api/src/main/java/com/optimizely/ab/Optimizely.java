@@ -39,7 +39,6 @@ import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.payload.EventBatch.ClientEngine;
 import com.optimizely.ab.internal.EventTagUtils;
-import com.optimizely.ab.notification.NotificationBroadcaster;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationListener;
 import org.slf4j.Logger;
@@ -90,7 +89,6 @@ public class Optimizely {
     @VisibleForTesting final ProjectConfig projectConfig;
     @VisibleForTesting final EventHandler eventHandler;
     @VisibleForTesting final ErrorHandler errorHandler;
-    @VisibleForTesting final NotificationBroadcaster notificationBroadcaster = new NotificationBroadcaster();
     public final NotificationCenter notificationCenter = new NotificationCenter();
 
     @Nullable private final UserProfileService userProfileService;
@@ -205,8 +203,6 @@ public class Optimizely {
                 logger.error("Unexpected exception in event dispatcher", e);
             }
 
-            notificationBroadcaster.broadcastExperimentActivated(experiment, userId, filteredAttributes, variation);
-
             notificationCenter.sendNotifications(NotificationCenter.NotificationType.Activate, experiment, userId,
                     filteredAttributes, variation, impressionEvent);
         } else {
@@ -245,12 +241,9 @@ public class Optimizely {
         // attributes.
         Map<String, String> filteredAttributes = filterAttributes(currentConfig, attributes);
 
-        Long eventValue = null;
         if (eventTags == null) {
             logger.warn("Event tags is null when non-null was expected. Defaulting to an empty event tags map.");
             eventTags = Collections.<String, String>emptyMap();
-        } else {
-            eventValue = EventTagUtils.getRevenueValue(eventTags);
         }
 
         List<Experiment> experimentsForEvent = projectConfig.getExperimentsForEventKey(eventName);
@@ -293,8 +286,6 @@ public class Optimizely {
             logger.error("Unexpected exception in event dispatcher", e);
         }
 
-        notificationBroadcaster.broadcastEventTracked(eventName, userId, filteredAttributes, eventValue,
-                conversionEvent);
         notificationCenter.sendNotifications(NotificationCenter.NotificationType.Track, eventName, userId,
                 filteredAttributes, eventTags, conversionEvent);
     }
@@ -727,36 +718,6 @@ public class Optimizely {
     @Nullable
     public UserProfileService getUserProfileService() {
         return userProfileService;
-    }
-
-    //======== Notification listeners ========//
-
-    /**
-     * Add a {@link NotificationListener} if it does not exist already.
-     *
-     * @param listener listener to add
-     */
-    @Deprecated
-    public void addNotificationListener(@Nonnull NotificationListener listener) {
-        notificationBroadcaster.addListener(listener);
-    }
-
-    /**
-     * Remove a {@link NotificationListener} if it exists.
-     *
-     * @param listener listener to remove
-     */
-    @Deprecated
-    public void removeNotificationListener(@Nonnull NotificationListener listener) {
-        notificationBroadcaster.removeListener(listener);
-    }
-
-    /**
-     * Remove all {@link NotificationListener}.
-     */
-    @Deprecated
-    public void clearNotificationListeners() {
-        notificationBroadcaster.clearListeners();
     }
 
     //======== Helper methods ========//

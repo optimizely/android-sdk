@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 
 
-public abstract class ActivateNotificationListener extends NotificationListener {
+public abstract class ActivateNotificationListener implements NotificationListener, ActivateNotificationListenerInterface {
 
     /**
      * Base notify called with var args.  This method parses the parameters and calls the abstract method.

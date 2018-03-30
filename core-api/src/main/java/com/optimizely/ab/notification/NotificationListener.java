@@ -26,53 +26,17 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
- * Abstract class for Optimizely notification listeners.
+ * An interface class for Optimizely notification listeners.
  * <p>
- * We use an abstract class here instead of an interface for convenience of use and backwards
- * compatibility in the future. An interface would force consumers to implement every method defined
- * on it as well as update their application code with new method implementations every time new
- * methods are added to the interface in the SDK. An abstract classes allows consumers to override
- * just the methods they need.
+ * We changed this from a abstract class to a interface to support lambdas moving forward in Java 8 and beyond.
  */
-public abstract class NotificationListener {
+public interface NotificationListener {
 
     /**
-     * Listener that is called after an event is tracked.
-     *
-     * @param eventKey the key of the tracked event
-     * @param userId the ID of the user
-     * @param attributes a map of attributes about the event
-     * @param eventValue an integer to be aggregated for the event
-     * @param logEvent the log event sent to the event dispatcher
-     */
-    @Deprecated
-    public void onEventTracked(@Nonnull String eventKey,
-                               @Nonnull String userId,
-                               @Nonnull Map<String, String> attributes,
-                               @CheckForNull Long eventValue,
-                               @Nonnull LogEvent logEvent) {
-    }
-
-    /**
-     * Listener that is called after an experiment has been activated.
-     *
-     * @param experiment the activated experiment
-     * @param userId the id of the user
-     * @param attributes a map of attributes about the user
-     * @param variation the key of the variation that was bucketed
-     */
-    @Deprecated
-    public void onExperimentActivated(@Nonnull Experiment experiment,
-                                      @Nonnull String userId,
-                                      @Nonnull Map<String, String> attributes,
-                                      @Nonnull Variation variation) {
-    }
-
-    /**
-     * This is the new method of notification.  Implementation classes such as {@link ActivateNotificationListener}
+     * This is the base method of notification.  Implementation classes such as {@link ActivateNotificationListener}
      * will implement this call and provide another method with the correct parameters
      * Notify called when a notification is triggered via the {@link com.optimizely.ab.notification.NotificationCenter}
      * @param args - variable argument list based on the type of notification.
      */
-    public abstract void notify(Object... args);
+    public void notify(Object... args);
 }

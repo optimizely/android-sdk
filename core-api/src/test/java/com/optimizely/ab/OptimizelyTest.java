@@ -2232,7 +2232,7 @@ public class OptimizelyTest {
 
         };
 
-        int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, activateNotification);
+        int notificationId = optimizely.notificationCenter.addNotificationListener(NotificationCenter.NotificationType.Activate, activateNotification);
 
         Map<String, String> testParams = new HashMap<String, String>();
         testParams.put("test", "params");
@@ -2248,7 +2248,7 @@ public class OptimizelyTest {
         // activate the experiment
         Variation actualVariation = optimizely.activate(activatedExperiment.getKey(), testUserId, testUserAttributes);
 
-        assertTrue(optimizely.notificationCenter.removeNotification(notificationId));
+        assertTrue(optimizely.notificationCenter.removeNotificationListener(notificationId));
         // verify that the bucketing algorithm was called correctly
         verify(mockBucketer).bucket(activatedExperiment, testBucketingId);
         assertThat(actualVariation, is(bucketedVariation));
@@ -2298,13 +2298,13 @@ public class OptimizelyTest {
 
         };
 
-        int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, activateNotification);
+        int notificationId = optimizely.notificationCenter.addNotificationListener(NotificationCenter.NotificationType.Activate, activateNotification);
 
         // activate the experiment
         Map<String, String> attributes = null;
         Variation actualVariation = optimizely.activate(activatedExperiment.getKey(), testUserId, attributes);
 
-        optimizely.notificationCenter.removeNotification(notificationId);
+        optimizely.notificationCenter.removeNotificationListener(notificationId);
 
         logbackVerifier.expectMessage(Level.WARN, "Attributes is null when non-null was expected. Defaulting to an empty attributes map.");
 
@@ -2325,248 +2325,7 @@ public class OptimizelyTest {
     }
 
     /**
-     * Verify that {@link Optimizely#addNotificationListener(NotificationListener)} properly calls
-     * through to {@link com.optimizely.ab.notification.NotificationBroadcaster} and the listener is
-     * added and notified when an experiment is activated.
-     */
-    @Test
-    public void addNotificationListener() throws Exception {
-        Experiment activatedExperiment;
-        EventType eventType;
-        if (datafileVersion >= 4) {
-            activatedExperiment = validProjectConfig.getExperimentKeyMapping().get(EXPERIMENT_BASIC_EXPERIMENT_KEY);
-            eventType = validProjectConfig.getEventNameMapping().get(EVENT_BASIC_EVENT_KEY);
-        }
-        else {
-            activatedExperiment = validProjectConfig.getExperiments().get(0);
-            eventType = validProjectConfig.getEventTypes().get(0);
-        }
-        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
-        EventBuilder mockEventBuilder = mock(EventBuilder.class);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withDecisionService(mockDecisionService)
-                .withEventBuilder(mockEventBuilder)
-                .withConfig(validProjectConfig)
-                .withErrorHandler(mockErrorHandler)
-                .build();
-
-        Map<String, String> attributes = Collections.emptyMap();
-
-        Map<String, String> testParams = new HashMap<String, String>();
-        testParams.put("test", "params");
-        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
-        when(mockEventBuilder.createImpressionEvent(validProjectConfig, activatedExperiment,
-                bucketedVariation, genericUserId, attributes))
-                .thenReturn(logEventToDispatch);
-
-        when(mockDecisionService.getVariation(
-                eq(activatedExperiment),
-                eq(genericUserId),
-                eq(Collections.<String, String>emptyMap())))
-                .thenReturn(bucketedVariation);
-
-        // Add listener
-        NotificationListener listener = mock(NotificationListener.class);
-        optimizely.addNotificationListener(listener);
-
-        // Check if listener is notified when experiment is activated
-        Variation actualVariation = optimizely.activate(activatedExperiment, genericUserId, attributes);
-        verify(listener, times(1))
-                .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
-
-        // Check if listener is notified after an event is tracked
-        String eventKey = eventType.getKey();
-
-        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
-                validProjectConfig,
-                mockDecisionService,
-                eventType.getKey(),
-                genericUserId,
-                attributes);
-        when(mockEventBuilder.createConversionEvent(
-                eq(validProjectConfig),
-                eq(experimentVariationMap),
-                eq(genericUserId),
-                eq(eventType.getId()),
-                eq(eventKey),
-                eq(attributes),
-                anyMapOf(String.class, Object.class)))
-                .thenReturn(logEventToDispatch);
-
-        optimizely.track(eventKey, genericUserId, attributes);
-        verify(listener, times(1))
-                .onEventTracked(eventKey, genericUserId, attributes, null, logEventToDispatch);
-    }
-
-    /**
-     * Verify that {@link Optimizely#removeNotificationListener(NotificationListener)} properly
-     * calls through to {@link com.optimizely.ab.notification.NotificationBroadcaster} and the
-     * listener is removed and no longer notified when an experiment is activated.
-     */
-    @Test
-    public void removeNotificationListener() throws Exception {
-        Experiment activatedExperiment = validProjectConfig.getExperiments().get(0);
-        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
-        EventBuilder mockEventBuilder = mock(EventBuilder.class);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withBucketing(mockBucketer)
-                .withEventBuilder(mockEventBuilder)
-                .withConfig(validProjectConfig)
-                .withErrorHandler(mockErrorHandler)
-                .build();
-
-        Map<String, String> attributes = new HashMap<String, String>();
-        attributes.put(ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE);
-
-        Map<String, String> testParams = new HashMap<String, String>();
-        testParams.put("test", "params");
-        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
-        when(mockEventBuilder.createImpressionEvent(validProjectConfig, activatedExperiment,
-                bucketedVariation, genericUserId, attributes))
-                .thenReturn(logEventToDispatch);
-
-        when(mockBucketer.bucket(activatedExperiment, genericUserId))
-                .thenReturn(bucketedVariation);
-
-        when(mockEventBuilder.createImpressionEvent(validProjectConfig, activatedExperiment, bucketedVariation, genericUserId,
-                attributes))
-                .thenReturn(logEventToDispatch);
-
-        // Add and remove listener
-        NotificationListener listener = mock(NotificationListener.class);
-        optimizely.addNotificationListener(listener);
-        optimizely.removeNotificationListener(listener);
-
-        // Check if listener is notified after an experiment is activated
-        Variation actualVariation = optimizely.activate(activatedExperiment, genericUserId, attributes);
-        verify(listener, never())
-                .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
-
-        // Check if listener is notified after a live variable is accessed
-        boolean activateExperiment = true;
-        verify(listener, never())
-                .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
-
-        // Check if listener is notified after an event is tracked
-        EventType eventType = validProjectConfig.getEventTypes().get(0);
-        String eventKey = eventType.getKey();
-
-        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
-                validProjectConfig,
-                mockDecisionService,
-                eventType.getKey(),
-                genericUserId,
-                attributes);
-        when(mockEventBuilder.createConversionEvent(
-                eq(validProjectConfig),
-                eq(experimentVariationMap),
-                eq(genericUserId),
-                eq(eventType.getId()),
-                eq(eventKey),
-                eq(attributes),
-                anyMapOf(String.class, Object.class)))
-                .thenReturn(logEventToDispatch);
-
-        optimizely.track(eventKey, genericUserId, attributes);
-        verify(listener, never())
-                .onEventTracked(eventKey, genericUserId, attributes, null, logEventToDispatch);
-    }
-
-    /**
-     * Verify that {@link Optimizely#clearNotificationListeners()} properly calls through to
-     * {@link com.optimizely.ab.notification.NotificationBroadcaster} and all listeners are removed
-     * and no longer notified when an experiment is activated.
-     */
-    @Test
-    public void clearNotificationListeners() throws Exception {
-        Experiment activatedExperiment;
-        Map<String, String> attributes = new HashMap<String, String>();
-        if (datafileVersion >= 4) {
-            activatedExperiment = validProjectConfig.getExperimentKeyMapping().get(EXPERIMENT_MULTIVARIATE_EXPERIMENT_KEY);
-            attributes.put(ATTRIBUTE_HOUSE_KEY, AUDIENCE_GRYFFINDOR_VALUE);
-        }
-        else {
-            activatedExperiment = validProjectConfig.getExperiments().get(0);
-            attributes.put("browser_type", "chrome");
-        }
-        Variation bucketedVariation = activatedExperiment.getVariations().get(0);
-        EventBuilder mockEventBuilder = mock(EventBuilder.class);
-
-        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
-                .withBucketing(mockBucketer)
-                .withEventBuilder(mockEventBuilder)
-                .withConfig(validProjectConfig)
-                .withErrorHandler(mockErrorHandler)
-                .build();
-
-        Map<String, String> testParams = new HashMap<String, String>();
-        testParams.put("test", "params");
-        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
-        when(mockEventBuilder.createImpressionEvent(validProjectConfig, activatedExperiment,
-                bucketedVariation, genericUserId, attributes))
-                .thenReturn(logEventToDispatch);
-
-        when(mockBucketer.bucket(activatedExperiment, genericUserId))
-                .thenReturn(bucketedVariation);
-
-        // set up argument captor for the attributes map to compare map equality
-        ArgumentCaptor<Map> attributeCaptor = ArgumentCaptor.forClass(Map.class);
-
-        when(mockEventBuilder.createImpressionEvent(
-                eq(validProjectConfig),
-                eq(activatedExperiment),
-                eq(bucketedVariation),
-                eq(genericUserId),
-                attributeCaptor.capture()
-        )).thenReturn(logEventToDispatch);
-
-        NotificationListener listener = mock(NotificationListener.class);
-        optimizely.addNotificationListener(listener);
-        optimizely.clearNotificationListeners();
-
-        // Check if listener is notified after an experiment is activated
-        Variation actualVariation = optimizely.activate(activatedExperiment, genericUserId, attributes);
-
-        // check that the argument that was captured by the mockEventBuilder attribute captor,
-        // was equal to the attributes passed in to activate
-        assertEquals(attributes, attributeCaptor.getValue());
-        verify(listener, never())
-                .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
-
-        // Check if listener is notified after a live variable is accessed
-        boolean activateExperiment = true;
-        verify(listener, never())
-                .onExperimentActivated(activatedExperiment, genericUserId, attributes, actualVariation);
-
-        // Check if listener is notified after a event is tracked
-        EventType eventType = validProjectConfig.getEventTypes().get(0);
-        String eventKey = eventType.getKey();
-
-        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
-                validProjectConfig,
-                mockDecisionService,
-                eventType.getKey(),
-                OptimizelyTest.genericUserId,
-                attributes);
-        when(mockEventBuilder.createConversionEvent(
-                eq(validProjectConfig),
-                eq(experimentVariationMap),
-                eq(OptimizelyTest.genericUserId),
-                eq(eventType.getId()),
-                eq(eventKey),
-                eq(attributes),
-                anyMapOf(String.class, Object.class)))
-                .thenReturn(logEventToDispatch);
-
-        optimizely.track(eventKey, genericUserId, attributes);
-        verify(listener, never())
-                .onEventTracked(eventKey, genericUserId, attributes, null, logEventToDispatch);
-    }
-
-    /**
-     * Verify that {@link com.optimizely.ab.notification.NotificationCenter#addNotification(
+     * Verify that {@link com.optimizely.ab.notification.NotificationCenter#addNotificationListener(
      * com.optimizely.ab.notification.NotificationCenter.NotificationType,
      * com.optimizely.ab.notification.NotificationListener)} properly used
      *  and the listener is
@@ -2611,7 +2370,7 @@ public class OptimizelyTest {
 
         // Add listener
         ActivateNotificationListener listener = mock(ActivateNotificationListener.class);
-        optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, listener);
+        optimizely.notificationCenter.addNotificationListener(NotificationCenter.NotificationType.Activate, listener);
 
         // Check if listener is notified when experiment is activated
         Variation actualVariation = optimizely.activate(activatedExperiment, genericUserId, attributes);
@@ -2640,7 +2399,7 @@ public class OptimizelyTest {
 
         TrackNotificationListener trackNotification = mock(TrackNotificationListener.class);
 
-        optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
+        optimizely.notificationCenter.addNotificationListener(NotificationCenter.NotificationType.Track, trackNotification);
 
         optimizely.track(eventKey, genericUserId, attributes);
         verify(trackNotification, times(1))
@@ -2683,12 +2442,12 @@ public class OptimizelyTest {
 
         // Add and remove listener
         ActivateNotificationListener activateNotification = mock(ActivateNotificationListener.class);
-        int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, activateNotification);
-        assertTrue(optimizely.notificationCenter.removeNotification(notificationId));
+        int notificationId = optimizely.notificationCenter.addNotificationListener(NotificationCenter.NotificationType.Activate, activateNotification);
+        assertTrue(optimizely.notificationCenter.removeNotificationListener(notificationId));
 
         TrackNotificationListener trackNotification = mock(TrackNotificationListener.class);
-        notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
-        assertTrue(optimizely.notificationCenter.removeNotification(notificationId));
+        notificationId = optimizely.notificationCenter.addNotificationListener(NotificationCenter.NotificationType.Track, trackNotification);
+        assertTrue(optimizely.notificationCenter.removeNotificationListener(notificationId));
 
         // Check if listener is notified after an experiment is activated
         Variation actualVariation = optimizely.activate(activatedExperiment, genericUserId, attributes);
@@ -2776,10 +2535,10 @@ public class OptimizelyTest {
         ActivateNotificationListener activateNotification = mock(ActivateNotificationListener.class);
         TrackNotificationListener trackNotification = mock(TrackNotificationListener.class);
 
-        optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Activate, activateNotification);
-        optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
+        optimizely.notificationCenter.addNotificationListener(NotificationCenter.NotificationType.Activate, activateNotification);
+        optimizely.notificationCenter.addNotificationListener(NotificationCenter.NotificationType.Track, trackNotification);
 
-        optimizely.notificationCenter.clearAllNotifications();
+        optimizely.notificationCenter.clearAllNotificationListeners();
 
         // Check if listener is notified after an experiment is activated
         Variation actualVariation = optimizely.activate(activatedExperiment, genericUserId, attributes);
@@ -2882,12 +2641,12 @@ public class OptimizelyTest {
             }
         };
 
-        int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
+        int notificationId = optimizely.notificationCenter.addNotificationListener(NotificationCenter.NotificationType.Track, trackNotification);
 
         // call track
         optimizely.track(eventType.getKey(), genericUserId, attributes);
 
-        optimizely.notificationCenter.removeNotification(notificationId);
+        optimizely.notificationCenter.removeNotificationListener(notificationId);
 
         // setup the attribute map captor (so we can verify its content)
         ArgumentCaptor<Map> attributeCaptor = ArgumentCaptor.forClass(Map.class);
@@ -2968,13 +2727,13 @@ public class OptimizelyTest {
             }
         };
 
-        int notificationId = optimizely.notificationCenter.addNotification(NotificationCenter.NotificationType.Track, trackNotification);
+        int notificationId = optimizely.notificationCenter.addNotificationListener(NotificationCenter.NotificationType.Track, trackNotification);
 
         // call track
         Map<String, String> attributes = null;
         optimizely.track(eventType.getKey(), genericUserId, attributes);
 
-        optimizely.notificationCenter.removeNotification(notificationId);
+        optimizely.notificationCenter.removeNotificationListener(notificationId);
 
         logbackVerifier.expectMessage(Level.WARN, "Attributes is null when non-null was expected. Defaulting to an empty attributes map.");
 

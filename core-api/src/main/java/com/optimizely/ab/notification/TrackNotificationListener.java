@@ -24,8 +24,7 @@ import com.optimizely.ab.event.LogEvent;
 /**
  * This class handles the track event notification.
  */
-public abstract class TrackNotificationListener extends NotificationListener {
-
+public abstract class TrackNotificationListener implements NotificationListener, TrackNotificationListenerInterface {
     /**
      * Base notify called with var args.  This method parses the parameters and calls the abstract method.
      * @param args - variable argument list based on the type of notification.

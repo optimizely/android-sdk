@@ -1,6 +1,6 @@
 /**
  *
- *    Copyright 2017, Optimizely and contributors
+ *    Copyright 2017-2018, Optimizely and contributors
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
  */
 package com.optimizely.ab.notification;
 
+import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.event.LogEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,6 +82,43 @@ public class NotificationCenter {
     // we used a list so that notification order can mean something.
     private Map<NotificationType, ArrayList<NotificationHolder>> notificationsListeners =new HashMap<NotificationType, ArrayList<NotificationHolder>>();
 
+    /**
+     * Convenience method to support lambdas as callbacks in later version of Java (8+).
+     * @param activateNotificationListenerInterface
+     * @return greater than zero if added.
+     */
+    public int addActivateNotificationListener(final ActivateNotificationListenerInterface activateNotificationListenerInterface) {
+        if (activateNotificationListenerInterface instanceof ActivateNotificationListener) {
+            return addNotificationListener(NotificationType.Activate, (NotificationListener)activateNotificationListenerInterface);
+        }
+        else {
+            return addNotificationListener(NotificationType.Activate, new ActivateNotificationListener() {
+                @Override
+                public void onActivate(@Nonnull Experiment experiment, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Variation variation, @Nonnull LogEvent event) {
+                    activateNotificationListenerInterface.onActivate(experiment, userId, attributes, variation, event);
+                }
+            });
+        }
+    }
+
+    /**
+     * Convenience method to support lambdas as callbacks in later versions of Java (8+)
+     * @param trackNotificationListenerInterface
+     * @return greater than zero if added.
+     */
+    public int addTrackNotificationListener(final TrackNotificationListenerInterface trackNotificationListenerInterface) {
+        if (trackNotificationListenerInterface instanceof TrackNotificationListener) {
+            return addNotificationListener(NotificationType.Activate, (NotificationListener)trackNotificationListenerInterface);
+        }
+        else {
+            return addNotificationListener(NotificationType.Track, new TrackNotificationListener() {
+                @Override
+                public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
+                    trackNotificationListenerInterface.onTrack(eventKey, userId, attributes, eventTags, event);
+                }
+            });
+        }
+    }
 
     /**
      * Add a notification listener to the notification center.
@@ -86,7 +127,7 @@ public class NotificationCenter {
      * @param notificationListener - Notification to add.
      * @return the notification id used to remove the notification.  It is greater than 0 on success.
      */
-    public int addNotification(NotificationType notificationType, NotificationListener notificationListener) {
+    public int addNotificationListener(NotificationType notificationType, NotificationListener notificationListener) {
 
         Class clazz = notificationType.notificationTypeClass;
         if (clazz == null || !clazz.isInstance(notificationListener)) {
@@ -107,11 +148,11 @@ public class NotificationCenter {
     }
 
     /**
-     * Remove the notification listener based on the notificationId passed back from addNotification.
+     * Remove the notification listener based on the notificationId passed back from addNotificationListener.
      * @param notificationID the id passed back from add notification.
      * @return true if removed otherwise false (if the notification is already registered, it returns false).
      */
-   public boolean removeNotification(int notificationID) {
+   public boolean removeNotificationListener(int notificationID) {
        for (NotificationType type : NotificationType.values()) {
             for (NotificationHolder holder : notificationsListeners.get(type)) {
                 if (holder.notificationId == notificationID) {
@@ -130,9 +171,9 @@ public class NotificationCenter {
     /**
      * Clear out all the notification listeners.
      */
-    public void clearAllNotifications() {
+    public void clearAllNotificationListeners() {
         for (NotificationType type : NotificationType.values()) {
-            clearNotifications(type);
+            clearNotificationListeners(type);
         }
     }
 
@@ -140,7 +181,7 @@ public class NotificationCenter {
      * Clear notification listeners by notification type.
      * @param notificationType type of notificationsListeners to remove.
      */
-    public void clearNotifications(NotificationType notificationType) {
+    public void clearNotificationListeners(NotificationType notificationType) {
         notificationsListeners.get(notificationType).clear();
     }
 
