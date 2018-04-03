@@ -298,51 +298,7 @@ public class OptimizelyClient {
         return null;
     }
 
-    //======== Notification listeners ========//
-
-    /**
-     * Add a {@link NotificationListener} if it does not exist already.
-     * <p>
-     * Listeners are held by weak reference and may automatically be garbage collected. You may
-     * need to re-register them, for example if your Activity subclass implements the listener
-     * interface, you will need to re-register the listener on each onCreate.
-     *
-     * @param listener listener to add
-     */
-    @Deprecated
-    public void addNotificationListener(@NonNull NotificationListener listener) {
-        if (isValid()) {
-            optimizely.addNotificationListener(listener);
-        } else {
-            logger.warn("Optimizely is not initialized, could not add notification listener");
-        }
-    }
-
-    /**
-     * Remove a {@link NotificationListener} if it exists.
-     *
-     * @param listener listener to remove
-     */
-    @Deprecated
-    public void removeNotificationListener(@NonNull NotificationListener listener) {
-        if (isValid()) {
-            optimizely.removeNotificationListener(listener);
-        } else {
-            logger.warn("Optimizely is not initialized, could not remove notification listener");
-        }
-    }
-
-    /**
-     * Remove all {@link NotificationListener} instances.
-     */
-    @Deprecated
-    public void clearNotificationListeners() {
-        if (isValid()) {
-            optimizely.clearNotificationListeners();
-        } else {
-            logger.warn("Optimizely is not initialized, could not clear notification listeners");
-        }
-    }
+    //======== FeatureFlag APIs ========//
 
     /**
      * Get the list of features that are enabled for the user.
@@ -360,7 +316,6 @@ public class OptimizelyClient {
             return null;
         }
     }
-    //======== FeatureFlag APIs ========//
 
     /**
      * Determine whether a feature is enabled for a user.

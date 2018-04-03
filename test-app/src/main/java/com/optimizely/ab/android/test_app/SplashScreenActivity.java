@@ -27,7 +27,13 @@ import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
+import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.notification.ActivateNotificationListener;
+import com.optimizely.ab.notification.TrackNotificationListenerInterface;
+
+import java.util.Map;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -65,6 +71,13 @@ public class SplashScreenActivity extends AppCompatActivity {
          **/
         if (!INITIALIZE_ASYNCHRONOUSLY) {
                optimizelyManager.initialize(myApplication, R.raw.datafile);
+               optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, String> map,  Variation variation,  LogEvent logEvent) -> {
+                   System.out.println("got activation");
+               });
+               optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, String> map, Map<String, ?> map1, LogEvent logEvent) -> {
+
+                   System.out.println("got track");
+               });
                startVariation();
         } else {
             // Initialize Optimizely asynchronously
