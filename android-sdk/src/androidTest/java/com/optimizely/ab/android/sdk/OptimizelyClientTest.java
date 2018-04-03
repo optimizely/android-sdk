@@ -188,7 +188,7 @@ public class OptimizelyClientTest {
         final Variation[] callbackVariation = new Variation[1];
 
         callbackCalled[0] = false;
-        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate, new ActivateNotificationListener() {
+        int notificationId = optimizelyClient.getNotificationCenter().addNotificationListener(NotificationCenter.NotificationType.Activate, new ActivateNotificationListener() {
             @Override
             public void onActivate(@Nonnull Experiment experiment, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Variation variation, @Nonnull LogEvent event) {
               callbackCalled[0] = true;
@@ -202,13 +202,13 @@ public class OptimizelyClientTest {
             assertEquals(v, callbackVariation[0]);
             assertEquals(true, callbackCalled[0]);
             assertEquals(1, notificationId);
-            assertTrue(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+            assertTrue(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId));
         }
         else {
             assertNull(v);
             assertEquals(false, callbackCalled[0]);
             assertEquals(1, notificationId);
-            assertTrue(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+            assertTrue(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId));
         }
 
     }
@@ -220,7 +220,7 @@ public class OptimizelyClientTest {
         final boolean[] callbackCalled = new boolean[1];
 
         callbackCalled[0] = false;
-        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate, new TrackNotificationListener() {
+        int notificationId = optimizelyClient.getNotificationCenter().addNotificationListener(NotificationCenter.NotificationType.Activate, new TrackNotificationListener() {
                     @Override
                     public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
                         callbackCalled[0] = true;
@@ -231,7 +231,7 @@ public class OptimizelyClientTest {
 
         assertEquals(false, callbackCalled[0]);
         assertTrue(notificationId <= 0);
-        assertFalse(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+        assertFalse(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId));
 
     }
 
@@ -404,7 +404,7 @@ public class OptimizelyClientTest {
         final boolean[] numberOfCalls = new boolean[1];
         numberOfCalls[0]= false;
 
-        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Activate,
+        int notificationId = optimizelyClient.getNotificationCenter().addNotificationListener(NotificationCenter.NotificationType.Activate,
                 new TrackNotificationListener() {
                     @Override
                     public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
@@ -413,7 +413,7 @@ public class OptimizelyClientTest {
                 });
         optimizelyClient.track("test_event", GENERIC_USER_ID);
         assertTrue(notificationId <= 0);
-        assertFalse(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+        assertFalse(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId));
         assertEquals(false, numberOfCalls[0]);
         verifyZeroInteractions(logger);
 
@@ -427,7 +427,7 @@ public class OptimizelyClientTest {
         final boolean[] numberOfCalls = new boolean[1];
         numberOfCalls[0]= false;
 
-        int notificationId = optimizelyClient.getNotificationCenter().addNotification(NotificationCenter.NotificationType.Track,
+        int notificationId = optimizelyClient.getNotificationCenter().addNotificationListener(NotificationCenter.NotificationType.Track,
                 new TrackNotificationListener() {
                     @Override
                     public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
@@ -436,7 +436,7 @@ public class OptimizelyClientTest {
                 });
         optimizelyClient.track("test_event", GENERIC_USER_ID);
         assertTrue(notificationId > 0);
-        assertTrue(optimizelyClient.getNotificationCenter().removeNotification(notificationId));
+        assertTrue(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId));
         if (datafileVersion == 3) {
             assertEquals(true, numberOfCalls[0]);
         }
@@ -1051,77 +1051,6 @@ public class OptimizelyClientTest {
         Assert.assertEquals(map.size(), 4);
     }
 
-    //======== Notification listeners ========//
-
-    @Test
-    public void testGoodAddNotificationListener() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
-                logger);
-        NotificationListener listener = new NotificationListener() {
-            @Override
-            public void onExperimentActivated(Experiment experiment,
-                                              String s,
-                                              Map<String, String> map,
-                                              Variation variation) {
-            }
-
-            @Override
-            public void notify(Object... args) {}
-        };
-        optimizelyClient.addNotificationListener(listener);
-        optimizelyClient.removeNotificationListener(listener);
-        verifyZeroInteractions(logger);
-    }
-
-    @Test
-    public void testBadAddNotificationListener() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        NotificationListener listener = new NotificationListener() {
-            @Override
-            public void onExperimentActivated(Experiment experiment,
-                                              String s,
-                                              Map<String, String> map,
-                                              Variation variation) {
-            }
-
-            @Override
-            public void notify(Object... args) {}
-        };
-        optimizelyClient.addNotificationListener(listener);
-        verify(logger).warn("Optimizely is not initialized, could not add notification listener");
-    }
-
-    @Test
-    public void testBadRemoveNotificationListener() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        NotificationListener listener = new NotificationListener() {
-            @Override
-            public void onExperimentActivated(Experiment experiment,
-                                              String s,
-                                              Map<String, String> map,
-                                              Variation variation) {
-            }
-            @Override
-            public void notify(Object... args) {}
-        };
-        optimizelyClient.removeNotificationListener(listener);
-        verify(logger).warn("Optimizely is not initialized, could not remove notification listener");
-    }
-
-    @Test
-    public void testGoodClearNotificationListeners() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
-        optimizelyClient.clearNotificationListeners();
-        verifyZeroInteractions(logger);
-    }
-
-    @Test
-    public void testBadClearNotificationListeners() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.clearNotificationListeners();
-        verify(logger).warn("Optimizely is not initialized, could not clear notification listeners");
-    }
-
     //Feature variation Testing
 
     //Test when optimizelyClient initialized with valid optimizely and without attributes
@@ -1252,6 +1181,7 @@ public class OptimizelyClientTest {
                 optimizely,
                 logger
         );
+
         List<String> enabledFeatures = optimizelyClient.getEnabledFeatures(GENERIC_USER_ID,
                 Collections.singletonMap("house", "Gryffindor"));
         assertFalse(enabledFeatures.isEmpty());
