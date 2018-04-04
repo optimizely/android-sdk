@@ -38,9 +38,7 @@ import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.BuildVersionInfo;
 import com.optimizely.ab.event.internal.EventBuilder;
 import com.optimizely.ab.event.internal.payload.EventBatch.ClientEngine;
-import com.optimizely.ab.internal.EventTagUtils;
 import com.optimizely.ab.notification.NotificationCenter;
-import com.optimizely.ab.notification.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -600,7 +598,7 @@ public class Optimizely {
             if(isFeatureEnabled(featureKey, userId, attributes))
                 enabledFeaturesList.add(featureKey);
         }
-        Collections.sort(enabledFeaturesList);
+
         return enabledFeaturesList;
     }
 
