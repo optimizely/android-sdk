@@ -45,8 +45,7 @@ public class DatafileService extends Service {
      * Extra containing the project id this instance of Optimizely was built with
      */
     public static final String EXTRA_PROJECT_ID = "com.optimizely.ab.android.EXTRA_PROJECT_ID";
-    public static final String FORMAT_VERSIONED_CDN_URL = "https://cdn.optimizely.com/public/%s/datafile_v%s.json";
-    static final String DATAFILE_VERSION = "3";
+    public static final String FORMAT_VERSIONED_CDN_URL = "https://cdn.optimizely.com/json/%s.json";
     public static final Integer JOB_ID = 2113;
 
     @NonNull private final IBinder binder = new LocalBinder();
@@ -110,7 +109,7 @@ public class DatafileService extends Service {
     }
 
     public static @NonNull String getDatafileUrl(@NonNull String projectId) {
-        return String.format(FORMAT_VERSIONED_CDN_URL, projectId, DATAFILE_VERSION);
+        return String.format(FORMAT_VERSIONED_CDN_URL, projectId);
     }
 
     public void stop() {

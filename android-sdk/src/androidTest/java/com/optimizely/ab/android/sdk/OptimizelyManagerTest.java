@@ -110,7 +110,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -126,7 +126,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -164,7 +164,7 @@ public class OptimizelyManagerTest {
         */
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
         String datafile =  optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
         assertNotNull(datafile);
         assertNotNull(optimizelyManager.getDatafileHandler());
     }
@@ -185,7 +185,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/public/1/datafile_v3.json" );
+        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
 
 
     }
