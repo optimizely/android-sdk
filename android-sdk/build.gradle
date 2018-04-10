@@ -63,8 +63,15 @@ dependencies {
     compile project(':event-handler')
     compile project(':user-profile')
     compile ("com.optimizely.ab:core-api:$java_core_ver") {
+        // this is excluded but it implements the @javax.NonNull attribute.
+        // so, you will get a warning of unrecognized annotation
         exclude group: 'com.google.code.findbugs'
     }
+    // include gson as default json parser.  you can exclude via gradle.
+    compile "com.google.code.gson:gson:$gson_ver"
+    // include android-logger default implementation of slf4j.logging.
+    compile "com.noveogroup.android:android-logger:$android_logger_ver"
+
     compile "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"
