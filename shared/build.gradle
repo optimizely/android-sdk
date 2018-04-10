@@ -53,17 +53,14 @@ android {
 }
 
 dependencies {
-    compile "com.noveogroup.android:android-logger:$android_logger_ver"
     compile ("com.optimizely.ab:core-api:$java_core_ver") {
         exclude group: 'com.google.code.findbugs'
     }
-    compile "com.google.code.gson:gson:$gson_ver"
 
     provided "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
-    testCompile "com.noveogroup.android:android-logger:$android_logger_ver"
 
     androidTestCompile "com.android.support.test:runner:$support_test_runner_ver"
     // Set this dependency to use JUnit 4 rules
@@ -73,7 +70,6 @@ dependencies {
     androidTestCompile "org.mockito:mockito-core:$mockito_ver"
     androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
-    androidTestCompile "com.noveogroup.android:android-logger:$android_logger_ver"
 }
 
 uploadArchives {
