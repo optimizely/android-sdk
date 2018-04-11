@@ -207,9 +207,9 @@ public class DatafileServiceTest {
     @Test
     public void testGetDatafileUrl(){
         // HARD-CODING link here to make sure we don't unintentionally mess up the datafile version
-        // and url by accidentally changing those constants. Bumping datafile versions will force
+        // and url by accidentally changing those constants.
         // us to update this test.
         String datafileUrl = DatafileService.getDatafileUrl("1");
-        assertEquals("https://cdn.optimizely.com/public/1/datafile_v3.json", datafileUrl);
+        assertEquals("https://cdn.optimizely.com/json/1.json", datafileUrl);
     }
 }
