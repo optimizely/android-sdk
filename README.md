@@ -40,6 +40,9 @@ If none of those packages are already provided in your project's classpath, one 
 dependency that implements the event dispatcher and requires [org.apache.httpcomponents:httpclient:4.5.2](https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient/4.5.2).
 The supplied `pom` files on Bintray define module dependencies.
 
+### Feature Management Access
+To access the Feature Management configuration in the Optimizely dashboard, please contact your Optimizely account executive.
+
 ### Using the SDK
 
 See the Optimizely Full Stack [developer documentation](http://developers.optimizely.com/server/reference/index.html) to learn how to set
