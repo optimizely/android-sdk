@@ -32,7 +32,6 @@ import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.config.parser.DefaultConfigParser;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.error.NoOpErrorHandler;
-import com.optimizely.ab.error.RaiseExceptionErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.BuildVersionInfo;
@@ -42,7 +41,6 @@ import com.optimizely.ab.notification.NotificationCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -131,7 +129,7 @@ public class Optimizely {
 
         ProjectConfig currentConfig = getProjectConfig();
 
-        Experiment experiment = getExperimentOrThrow(currentConfig, experimentKey);
+        Experiment experiment = currentConfig.getExperimentForKey(experimentKey, errorHandler);
         if (experiment == null) {
             // if we're unable to retrieve the associated experiment, return null
             logger.info("Not activating user \"{}\" for experiment \"{}\".", userId, experimentKey);
@@ -228,7 +226,7 @@ public class Optimizely {
 
         ProjectConfig currentConfig = getProjectConfig();
 
-        EventType eventType = getEventTypeOrThrow(currentConfig, eventName);
+        EventType eventType = currentConfig.getEventTypeForName(eventName, errorHandler);
         if (eventType == null) {
             // if no matching event type could be found, do not dispatch an event
             logger.info("Not tracking event \"{}\" for user \"{}\".", eventName, userId);
@@ -638,7 +636,7 @@ public class Optimizely {
 
         ProjectConfig currentConfig = getProjectConfig();
 
-        Experiment experiment = getExperimentOrThrow(currentConfig, experimentKey);
+        Experiment experiment = currentConfig.getExperimentForKey(experimentKey, errorHandler);
         if (experiment == null) {
             // if we're unable to retrieve the associated experiment, return null
             return null;
@@ -719,64 +717,6 @@ public class Optimizely {
     }
 
     //======== Helper methods ========//
-
-    /**
-     * Helper method to retrieve the {@link Experiment} for the given experiment key.
-     * If {@link RaiseExceptionErrorHandler} is provided, either an experiment is returned, or an exception is thrown.
-     * If {@link NoOpErrorHandler} is used, either an experiment or {@code null} is returned.
-     *
-     * @param projectConfig the current project config
-     * @param experimentKey the experiment to retrieve from the current project config
-     * @return the experiment for given experiment key
-     *
-     * @throws UnknownExperimentException if there are no experiments in the current project config with the given
-     * experiment key
-     */
-    private @CheckForNull Experiment getExperimentOrThrow(@Nonnull ProjectConfig projectConfig,
-                                                          @Nonnull String experimentKey)
-        throws UnknownExperimentException {
-
-        Experiment experiment = projectConfig
-            .getExperimentKeyMapping()
-            .get(experimentKey);
-
-        // if the given experiment key isn't present in the config, log and potentially throw an exception
-        if (experiment == null) {
-            String unknownExperimentError = String.format("Experiment \"%s\" is not in the datafile.", experimentKey);
-            logger.error(unknownExperimentError);
-            errorHandler.handleError(new UnknownExperimentException(unknownExperimentError));
-        }
-
-        return experiment;
-    }
-
-    /**
-     * Helper method to retrieve the {@link EventType} for the given event name.
-     * If {@link RaiseExceptionErrorHandler} is provided, either an event type is returned, or an exception is thrown.
-     * If {@link NoOpErrorHandler} is used, either an event type or {@code null} is returned.
-     *
-     * @param projectConfig the current project config
-     * @param eventName the event type to retrieve from the current project config
-     * @return the event type for the given event name
-     *
-     * @throws UnknownEventTypeException if there are no event types in the current project config with the given name
-     */
-    private EventType getEventTypeOrThrow(ProjectConfig projectConfig, String eventName)
-        throws UnknownEventTypeException {
-
-        EventType eventType = projectConfig
-            .getEventNameMapping()
-            .get(eventName);
-
-        // if the given event name isn't present in the config, log and potentially throw an exception
-        if (eventType == null) {
-            String unknownEventTypeError = String.format("Event \"%s\" is not in the datafile.", eventName);
-            logger.error(unknownEventTypeError);
-            errorHandler.handleError(new UnknownEventTypeException(unknownEventTypeError));
-        }
-
-        return eventType;
-    }
 
     /**
      * Helper method to verify that the given attributes map contains only keys that are present in the

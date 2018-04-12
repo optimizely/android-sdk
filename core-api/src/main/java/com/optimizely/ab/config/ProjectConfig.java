@@ -17,11 +17,17 @@
 package com.optimizely.ab.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.optimizely.ab.UnknownEventTypeException;
+import com.optimizely.ab.UnknownExperimentException;
 import com.optimizely.ab.config.audience.Audience;
 import com.optimizely.ab.config.audience.Condition;
+import com.optimizely.ab.error.ErrorHandler;
+import com.optimizely.ab.error.NoOpErrorHandler;
+import com.optimizely.ab.error.RaiseExceptionErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -209,6 +215,62 @@ public class ProjectConfig {
                     ProjectConfigUtils.generateVariationToLiveVariableUsageInstancesMap(this.experiments);
         }
     }
+
+    /**
+     * Helper method to retrieve the {@link Experiment} for the given experiment key.
+     * If {@link RaiseExceptionErrorHandler} is provided, either an experiment is returned,
+     *  or an exception is sent to the error handler
+     *  if there are no experiments in the project config with the given experiment key.
+     * If {@link NoOpErrorHandler} is used, either an experiment or {@code null} is returned.
+     *
+     * @param experimentKey the experiment to retrieve from the current project config
+     * @param errorHandler the error handler to send exceptions to
+     * @return the experiment for given experiment key
+     */
+    @CheckForNull
+    public Experiment getExperimentForKey(@Nonnull String experimentKey,
+                                          @Nonnull ErrorHandler errorHandler) {
+
+        Experiment experiment =
+                getExperimentKeyMapping()
+                        .get(experimentKey);
+
+        // if the given experiment key isn't present in the config, log an exception to the error handler
+        if (experiment == null) {
+            String unknownExperimentError = String.format("Experiment \"%s\" is not in the datafile.", experimentKey);
+            logger.error(unknownExperimentError);
+            errorHandler.handleError(new UnknownExperimentException(unknownExperimentError));
+        }
+
+        return experiment;
+    }
+
+    /**
+     * Helper method to retrieve the {@link EventType} for the given event name.
+     * If {@link RaiseExceptionErrorHandler} is provided, either an event type is returned,
+     *  or an exception is sent to the error handler if there are no event types in the project config with the given name.
+     * If {@link NoOpErrorHandler} is used, either an event type or {@code null} is returned.
+     *
+     * @param eventName the event type to retrieve from the current project config
+     * @param errorHandler the error handler to send exceptions to
+     * @return the event type for the given event name
+     */
+    public @CheckForNull EventType getEventTypeForName(String eventName, ErrorHandler errorHandler) {
+
+        EventType eventType =
+                getEventNameMapping()
+                        .get(eventName);
+
+        // if the given event name isn't present in the config, log an exception to the error handler
+        if (eventType == null) {
+            String unknownEventTypeError = String.format("Event \"%s\" is not in the datafile.", eventName);
+            logger.error(unknownEventTypeError);
+            errorHandler.handleError(new UnknownEventTypeException(unknownEventTypeError));
+        }
+
+        return eventType;
+    }
+
 
     public @Nullable Experiment getExperimentForVariationId(String variationId) {
         return this.variationIdToExperimentMapping.get(variationId);
