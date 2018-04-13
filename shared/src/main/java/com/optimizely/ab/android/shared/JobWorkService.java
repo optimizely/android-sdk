@@ -75,6 +75,11 @@ public class JobWorkService extends JobService {
              */
             while (!(cancelled = isCancelled())) {
                 try {
+                    // This is pertaining to this issue:
+                    // https://issuetracker.google.com/issues/63622293
+                    // The service was probabably destroyed but we didn't cancel the
+                    // processor.  It causes an exception in dequeueWork.
+                    // We are also now calling cancel in onDestroy
                     if ((work = mParams.dequeueWork()) == null) {
                         return null;
                     }
@@ -185,6 +190,11 @@ public class JobWorkService extends JobService {
 
     @Override
     public void onDestroy() {
+        // This is pertaining to this issue:
+        // https://issuetracker.google.com/issues/63622293
+        // The service was probabably destroyed but we didn't cancel the
+        // processor.
+        mCurProcessor.cancel(true);
     }
 
     @Override
