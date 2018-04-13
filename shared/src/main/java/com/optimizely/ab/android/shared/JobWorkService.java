@@ -73,7 +73,17 @@ public class JobWorkService extends JobService {
              * Even if we are cancelled for any reason, it should still service all items in the queue if it can.
              *
              */
-            while (!(cancelled = isCancelled()) && (work=mParams.dequeueWork()) != null) {
+            while (!(cancelled = isCancelled())) {
+                try {
+                    if ((work = mParams.dequeueWork()) == null) {
+                        return null;
+                    }
+                }
+                catch (Exception e) {
+                    logger.error("Exception in JobWorkService:doInBackground mParams.dequeueWork() ", e);
+                    return null;
+                }
+
                 final String componentClass = work.getIntent().getComponent().getClassName();
                 Class<?> clazz = null;
                 logger.info("Processing work: " + work + ", component: " + componentClass);
