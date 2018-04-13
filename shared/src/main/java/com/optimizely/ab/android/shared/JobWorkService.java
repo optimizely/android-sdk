@@ -194,7 +194,9 @@ public class JobWorkService extends JobService {
         // https://issuetracker.google.com/issues/63622293
         // The service was probabably destroyed but we didn't cancel the
         // processor.
-        mCurProcessor.cancel(true);
+        if (mCurProcessor != null) {
+            mCurProcessor.cancel(true);
+        }
     }
 
     @Override
