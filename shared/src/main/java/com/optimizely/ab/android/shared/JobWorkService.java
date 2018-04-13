@@ -73,7 +73,22 @@ public class JobWorkService extends JobService {
              * Even if we are cancelled for any reason, it should still service all items in the queue if it can.
              *
              */
-            while (!(cancelled = isCancelled()) && (work=mParams.dequeueWork()) != null) {
+            while (!(cancelled = isCancelled())) {
+                try {
+                    // This is pertaining to this issue:
+                    // https://issuetracker.google.com/issues/63622293
+                    // The service was probabably destroyed but we didn't cancel the
+                    // processor.  It causes an exception in dequeueWork.
+                    // We are also now calling cancel in onDestroy
+                    if ((work = mParams.dequeueWork()) == null) {
+                        return null;
+                    }
+                }
+                catch (Exception e) {
+                    logger.error("Exception in JobWorkService:doInBackground mParams.dequeueWork() ", e);
+                    return null;
+                }
+
                 final String componentClass = work.getIntent().getComponent().getClassName();
                 Class<?> clazz = null;
                 logger.info("Processing work: " + work + ", component: " + componentClass);
@@ -175,6 +190,13 @@ public class JobWorkService extends JobService {
 
     @Override
     public void onDestroy() {
+        // This is pertaining to this issue:
+        // https://issuetracker.google.com/issues/63622293
+        // The service was probabably destroyed but we didn't cancel the
+        // processor.
+        if (mCurProcessor != null) {
+            mCurProcessor.cancel(true);
+        }
     }
 
     @Override
