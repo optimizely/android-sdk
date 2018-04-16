@@ -38,6 +38,13 @@ optimizelyClient.track("event_key", "user_id", userAttributes, eventTags);
 
 * We have removed deprecated classes with the `NotificationBroadcaster` in favor of the new API with the `NotificationCenter`. We have streamlined the API so that it is easily usable with Java Lambdas in *Java 1.8+*. We have also added some convenience methods to add these listeners. Finally, some of the API names have changed slightly (e.g. `clearAllNotifications()` is now `clearAllNotificationListeners()`)
 
+### Bug Fixes
+* Fix for the following issue:
+https://issuetracker.google.com/issues/63622293
+The JobWorkService was probably destroyed but we didn't cancel the
+processor. It causes an exception in dequeueWork in our JobWorkService.
+We wrapped the dequeueWork with a try/catch and are also now cancelling the background task in onDestroy.
+
 ## 2.0.0-beta1
 
 March 29th, 2018
