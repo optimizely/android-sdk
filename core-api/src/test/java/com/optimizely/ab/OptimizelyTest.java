@@ -852,6 +852,80 @@ public class OptimizelyTest {
     }
 
     /**
+     * Verify that if user ID sent is null will return null variation.
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void activateUserIDIsNull() throws Exception {
+        Experiment experimentToCheck = validProjectConfig.getExperiments().get(0);
+        String nullUserID = null;
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> testUserAttributes = new HashMap<String, String>();
+        testUserAttributes.put("browser_type", "chrome");
+
+        Variation nullVariation = optimizely.activate(experimentToCheck.getKey(), nullUserID, testUserAttributes);
+        assertNull(nullVariation);
+
+        logbackVerifier.expectMessage(
+                Level.ERROR,
+                "The user ID parameter must be nonnull."
+        );
+    }
+
+    /**
+     * Verify that if user ID sent is null will return null variation.
+     * In activate override function where experiment object is passed
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void activateWithExperimentUserIDIsNull() throws Exception {
+        Experiment experimentToCheck = validProjectConfig.getExperiments().get(0);
+        String nullUserID = null;
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> testUserAttributes = new HashMap<String, String>();
+        testUserAttributes.put("browser_type", "chrome");
+
+        Variation nullVariation = optimizely.activate(experimentToCheck, nullUserID, testUserAttributes);
+        assertNull(nullVariation);
+
+        logbackVerifier.expectMessage(
+                Level.ERROR,
+                "The user ID parameter must be nonnull."
+        );
+    }
+
+    /**
+     * Verify that if Experiment key sent is null will return null variation.
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void activateExperimentKeyIsNull() throws Exception {
+        String nullExperimentKey = null;
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> testUserAttributes = new HashMap<String, String>();
+        testUserAttributes.put("browser_type", "chrome");
+
+        Variation nullVariation = optimizely.activate(nullExperimentKey, testUserId, testUserAttributes);
+        assertNull(nullVariation);
+
+        logbackVerifier.expectMessage(
+                Level.ERROR,
+                "The experimentKey parameter must be nonnull."
+        );
+    }
+    /**
      * Verify that a user not in any of an experiment's audiences isn't assigned to a variation.
      */
     @Test
@@ -1722,10 +1796,111 @@ public class OptimizelyTest {
         verify(mockEventHandler).dispatchEvent(logEventToDispatch);
     }
 
+
     /**
-     * Verify that {@link Optimizely#track(String, String, Map)} doesn't dispatch an event when no valid experiments
-     * correspond to an event.
+     * Verify that {@link Optimizely#track(String, String, Map, Map)} called with null User ID will return and will not track
      */
+    @Test
+    @SuppressFBWarnings(
+            value="NP_NONNULL_PARAM_VIOLATION",
+            justification="testing nullness contract violation")
+    public void trackEventWithNullOrEmptyUserID() throws Exception {
+        EventType eventType;
+        if (datafileVersion >= 4) {
+            eventType = validProjectConfig.getEventNameMapping().get(EVENT_BASIC_EVENT_KEY);
+        } else {
+            eventType = validProjectConfig.getEventTypes().get(0);
+        }
+        // setup a mock event builder to return expected conversion params
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockDecisionService,
+                eventType.getKey(),
+                genericUserId,
+                Collections.<String, String>emptyMap());
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createConversionEvent(
+                eq(validProjectConfig),
+                eq(experimentVariationMap),
+                eq(genericUserId),
+                eq(eventType.getId()),
+                eq(eventType.getKey()),
+                eq(Collections.<String, String>emptyMap()),
+                eq(Collections.<String, String>emptyMap())))
+                .thenReturn(logEventToDispatch);
+
+        String userID = null;
+        // call track with null event key
+        optimizely.track(eventType.getKey(), userID, Collections.<String, String>emptyMap(), Collections.<String, Object>emptyMap());
+        logbackVerifier.expectMessage(Level.ERROR, "The user ID parameter must be nonnull.");
+        logbackVerifier.expectMessage(Level.INFO, "Not tracking event \""+eventType.getKey()+"\".");
+    }
+
+    /**
+     * Verify that {@link Optimizely#track(String, String, Map, Map)} called with null event name will return and will not track
+     */
+    @Test
+    @SuppressFBWarnings(
+            value="NP_NONNULL_PARAM_VIOLATION",
+            justification="testing nullness contract violation")
+    public void trackEventWithNullOrEmptyEventKey() throws Exception {
+        EventType eventType;
+        if (datafileVersion >= 4) {
+            eventType = validProjectConfig.getEventNameMapping().get(EVENT_BASIC_EVENT_KEY);
+        } else {
+            eventType = validProjectConfig.getEventTypes().get(0);
+        }
+        String nullEventKey = null;
+        // setup a mock event builder to return expected conversion params
+        EventBuilder mockEventBuilder = mock(EventBuilder.class);
+
+        Optimizely optimizely = Optimizely.builder(validDatafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withEventBuilder(mockEventBuilder)
+                .withConfig(validProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        Map<String, String> testParams = new HashMap<String, String>();
+        testParams.put("test", "params");
+        Map<Experiment, Variation> experimentVariationMap = createExperimentVariationMap(
+                validProjectConfig,
+                mockDecisionService,
+                eventType.getKey(),
+                genericUserId,
+                Collections.<String, String>emptyMap());
+        LogEvent logEventToDispatch = new LogEvent(RequestMethod.GET, "test_url", testParams, "");
+        when(mockEventBuilder.createConversionEvent(
+                eq(validProjectConfig),
+                eq(experimentVariationMap),
+                eq(genericUserId),
+                eq(eventType.getId()),
+                eq(eventType.getKey()),
+                eq(Collections.<String, String>emptyMap()),
+                eq(Collections.<String, String>emptyMap())))
+                .thenReturn(logEventToDispatch);
+
+        // call track with null event key
+        optimizely.track(nullEventKey, genericUserId, Collections.<String, String>emptyMap(), Collections.<String, Object>emptyMap());
+        logbackVerifier.expectMessage(Level.ERROR, "Event Key is null or empty when non-null and non-empty String was expected.");
+        logbackVerifier.expectMessage(Level.INFO, "Not tracking event for user \""+genericUserId+"\".");
+
+    }
+        /**
+         * Verify that {@link Optimizely#track(String, String, Map)} doesn't dispatch an event when no valid experiments
+         * correspond to an event.
+         */
     @Test
     public void trackEventWithNoValidExperiments() throws Exception {
         EventType eventType;
@@ -1980,6 +2155,28 @@ public class OptimizelyTest {
 
         // verify that we didn't attempt to dispatch an event
         verify(mockEventHandler, never()).dispatchEvent(any(LogEvent.class));
+    }
+
+    /**
+     * Verify that {@link Optimizely#getVariation(String, String)} returns null variation when null or empty
+     * experimentKey is sent
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void getVariationWithNullExperimentKey() throws Exception {
+        Optimizely optimizely = Optimizely.builder(noAudienceDatafile, mockEventHandler)
+                .withBucketing(mockBucketer)
+                .withConfig(noAudienceProjectConfig)
+                .withErrorHandler(mockErrorHandler)
+                .build();
+
+        String nullExperimentKey = null;
+        // activate the experiment
+        Variation nullVariation = optimizely.getVariation(nullExperimentKey, testUserId);
+
+        assertNull(nullVariation);
+        logbackVerifier.expectMessage(Level.ERROR, "The experimentKey parameter must be nonnull.");
+
     }
 
     /**
@@ -3410,6 +3607,31 @@ public class OptimizelyTest {
         logbackVerifier.expectMessage(Level.ERROR, "Non-empty user ID required");
         assertTrue(featureFlags.isEmpty());
 
+    }
+
+    /**
+     * Verify {@link Optimizely#getEnabledFeatures(String, Map)} calls into
+     * {@link Optimizely#isFeatureEnabled(String, String, Map)} for each featureFlag sending
+     * userId as null
+     * Exception of IllegalArgumentException will be thrown
+     * return
+     */
+    @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
+    @Test
+    public void  getEnabledFeatureWithNullUserID() throws ConfigParseException{
+        assumeTrue(datafileVersion >= Integer.parseInt(ProjectConfig.Version.V4.toString()));
+        String userID = null;
+        Optimizely spyOptimizely = spy(Optimizely.builder(validDatafile, mockEventHandler)
+                .withConfig(validProjectConfig)
+                .build());
+        ArrayList<String> featureFlags = (ArrayList<String>) spyOptimizely.getEnabledFeatures(userID,
+                new HashMap<String, String>());
+        assertTrue(featureFlags.isEmpty());
+
+        logbackVerifier.expectMessage(
+                Level.ERROR,
+                "The user ID parameter must be nonnull."
+        );
     }
 
     /**

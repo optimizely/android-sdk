@@ -122,6 +122,11 @@ public class Optimizely {
                        @Nonnull String userId,
                        @Nonnull Map<String, String> attributes) throws UnknownExperimentException {
 
+        if (experimentKey == null) {
+            logger.error("The experimentKey parameter must be nonnull.");
+            return null;
+        }
+
         if (!validateUserId(userId)) {
             logger.info("Not activating user for experiment \"{}\".", experimentKey);
             return null;
@@ -161,6 +166,10 @@ public class Optimizely {
                        @Nonnull String userId,
                        @Nonnull Map<String, String> attributes) {
 
+        if (!validateUserId(userId)){
+            logger.info("Not activating user \"{}\" for experiment \"{}\".", userId, experiment.getKey());
+            return null;
+        }
         // determine whether all the given attributes are present in the project config. If not, filter out the unknown
         // attributes.
         Map<String, String> filteredAttributes = filterAttributes(projectConfig, attributes);
@@ -223,6 +232,17 @@ public class Optimizely {
                       @Nonnull String userId,
                       @Nonnull Map<String, String> attributes,
                       @Nonnull Map<String, ?> eventTags) throws UnknownEventTypeException {
+
+        if (!validateUserId(userId)) {
+            logger.info("Not tracking event \"{}\".", eventName);
+            return;
+        }
+
+        if (eventName == null || eventName.trim().isEmpty()){
+            logger.error("Event Key is null or empty when non-null and non-empty String was expected.");
+            logger.info("Not tracking event for user \"{}\".", userId);
+            return;
+        }
 
         ProjectConfig currentConfig = getProjectConfig();
 
@@ -584,7 +604,7 @@ public class Optimizely {
      * @return List of the feature keys that are enabled for the user if the userId is empty it will
      * return Empty List.
      */
-    public List<String> getEnabledFeatures(@Nonnull String userId,@Nonnull Map<String, String> attributes) {
+    public List<String> getEnabledFeatures(@Nonnull String userId, @Nonnull Map<String, String> attributes) {
         List<String> enabledFeaturesList = new ArrayList<String>();
 
         if (!validateUserId(userId)){
@@ -631,6 +651,11 @@ public class Optimizely {
                            @Nonnull String userId,
                            @Nonnull Map<String, String> attributes) {
         if (!validateUserId(userId)) {
+            return null;
+        }
+
+        if (experimentKey == null || experimentKey.trim().isEmpty()){
+            logger.error("The experimentKey parameter must be nonnull.");
             return null;
         }
 
@@ -767,6 +792,10 @@ public class Optimizely {
      * @return whether the user ID is valid
      */
     private boolean validateUserId(String userId) {
+        if (userId == null) {
+            logger.error("The user ID parameter must be nonnull.");
+            return false;
+        }
         if (userId.trim().isEmpty()) {
             logger.error("Non-empty user ID required");
             return false;
