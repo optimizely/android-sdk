@@ -28,6 +28,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
@@ -45,6 +46,7 @@ import com.optimizely.ab.event.internal.payload.Event;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -619,11 +621,21 @@ public class OptimizelyManager {
                 try {
                     logger = LoggerFactory.getLogger(OptimizelyManager.class);
                 } catch (Exception e) {
-                    logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    try {
+                        logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    }
+                    catch (Exception e1) {
+                        logger = new OptimizelyLiteLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    }
                     logger.error("Unable to generate logger from class.", e);
                 } catch (Error e) {
-                    logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
-                    logger.error("Unable to generate logger from class.", e);
+                    try {
+                        logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                        logger.error("Unable to generate logger from class.", e);
+                    }
+                    catch (Exception e1) {
+                        logger = new OptimizelyLiteLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    }
                 }
             }
 
