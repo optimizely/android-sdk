@@ -638,8 +638,13 @@ public class OptimizelyManager {
                     }
                     logger.error("Unable to generate logger from class.", e);
                 } catch (Error e) {
-                    logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
-                    logger.error("Unable to generate logger from class.", e);
+                    try {
+                        logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                        logger.error("Unable to generate logger from class.", e);
+                    }
+                    catch (Exception e1) {
+                        logger = new OptimizelyLiteLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    }
                 }
             }
 
