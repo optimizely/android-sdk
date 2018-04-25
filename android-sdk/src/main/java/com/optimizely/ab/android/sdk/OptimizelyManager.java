@@ -28,6 +28,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
@@ -38,6 +39,7 @@ import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.event_handler.EventIntentService;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
@@ -45,9 +47,12 @@ import com.optimizely.ab.event.internal.payload.EventBatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Handles loading the Optimizely data file
@@ -154,10 +159,16 @@ public class OptimizelyManager {
             return optimizelyClient;
         }
         try {
-            if(datafile!=null)
+            if(datafile!=null) {
+                if (getUserProfileService() instanceof DefaultUserProfileService) {
+                    DefaultUserProfileService defaultUserProfileService = (DefaultUserProfileService) getUserProfileService();
+                    defaultUserProfileService.start();
+                }
                 optimizelyClient = buildOptimizely(context, datafile);
-            else
+            }
+            else {
                 logger.error("Invalid datafile");
+            }
         } catch (ConfigParseException e) {
             logger.error("Unable to parse compiled data file", e);
         } catch (Exception e) {
@@ -190,14 +201,49 @@ public class OptimizelyManager {
         try {
 
             String datafile;
+            Boolean datafileInCache = isDatafileCached(context);
             datafile = getDatafile(context, datafileRes);
+
             optimizelyClient = initialize(context, datafile, true);
+            if (datafileInCache) {
+                cleanupUserProfileCache(getUserProfileService());
+            }
         }catch (NullPointerException e){
             logger.error("Unable to find compiled data file in raw resource",e);
         }
 
         // return dummy client if not able to initialize a valid one
         return optimizelyClient;
+    }
+
+    private void cleanupUserProfileCache(UserProfileService userProfileService) {
+        final DefaultUserProfileService defaultUserProfileService;
+        if (userProfileService instanceof DefaultUserProfileService) {
+            defaultUserProfileService = (DefaultUserProfileService)userProfileService;
+        }
+        else {
+            return;
+        }
+
+        final ProjectConfig config = optimizelyClient.getProjectConfig();
+        if (config == null) {
+            return;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Set<String> experimentIds = config.getExperimentIdMapping().keySet();
+
+                    defaultUserProfileService.removeInvalidExperiments(experimentIds);
+                }
+                catch (Exception e) {
+                    logger.error("Error removing invalid experiments from default user profile service.", e);
+                }
+            }
+        }).start();
+
     }
 
     /** This function will first try to get datafile from Cache, if file is not cached yet
@@ -364,6 +410,7 @@ public class OptimizelyManager {
                 ((DefaultUserProfileService) userProfileService).startInBackground(new DefaultUserProfileService.StartCallback() {
                     @Override
                     public void onStartComplete(UserProfileService userProfileService) {
+                        cleanupUserProfileCache(userProfileService);
                         if (optimizelyStartListener != null) {
                             logger.info("Sending Optimizely instance to listener");
                             notifyStartListener();
@@ -628,11 +675,21 @@ public class OptimizelyManager {
                 try {
                     logger = LoggerFactory.getLogger(OptimizelyManager.class);
                 } catch (Exception e) {
-                    logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    try {
+                        logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    }
+                    catch (Exception e1) {
+                        logger = new OptimizelyLiteLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    }
                     logger.error("Unable to generate logger from class.", e);
                 } catch (Error e) {
-                    logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
-                    logger.error("Unable to generate logger from class.", e);
+                    try {
+                        logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                        logger.error("Unable to generate logger from class.", e);
+                    }
+                    catch (Exception e1) {
+                        logger = new OptimizelyLiteLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    }
                 }
             }
 
