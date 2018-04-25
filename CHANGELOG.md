@@ -3,12 +3,22 @@
 ## 1.6.1
 April 25, 2018
 
-- Release 1.6.0
+- Release 1.6.1
 
 This is a patch release for 1.6.0 and 1.5.1 Optimizely SDKs.  
 
-### Breaking changes
-* 
+### Bug Fixes
+* Fix for the following issue:
+https://issuetracker.google.com/issues/63622293
+Our github issue is [here](https://github.com/optimizely/android-sdk/issues/194).
+The JobWorkService was probably destroyed but we didn't cancel the
+processor. It causes an exception in dequeueWork in our JobWorkService.
+We wrapped the dequeueWork with a try/catch and are also now cancelling the background task in onDestroy.
+
+* Fix for possible error when loading logger via dagger (fall back logger provided).
+
+* Load UserProfileService on synchronous start.  Also, cleanup UserProfileService cache in the background thread by removing experiments that are no longer in the datafile.
+
 ## 2.0.0-beta1
 
 March 29th, 2018
