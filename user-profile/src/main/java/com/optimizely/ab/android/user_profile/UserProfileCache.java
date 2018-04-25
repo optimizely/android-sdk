@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
@@ -175,6 +176,23 @@ class UserProfileCache {
         }
     }
 
+    /**
+     * Remove experiments that are no longer valid
+     * @param validExperimentIds list of valid experiment ids.
+     */
+    public void removeInvalidExperiments(Set<String> validExperimentIds) {
+        for (String userId : memoryCache.keySet()) {
+            Map<String, Object> maps = memoryCache.get(userId);
+            Map<String, Map<String, String>> experimentBucketMap =
+                    (ConcurrentHashMap<String, Map<String, String>>) maps.get(experimentBucketMapKey);
+            for (String experimentId : experimentBucketMap.keySet()){
+                if (!validExperimentIds.contains(experimentId)) {
+                    experimentBucketMap.remove(experimentId);
+                }
+            }
+        }
+        diskCache.save(memoryCache);
+    }
     /**
      * Add a decision to a user profile.
      *

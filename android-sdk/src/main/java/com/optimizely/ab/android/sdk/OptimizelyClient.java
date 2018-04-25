@@ -25,13 +25,10 @@ import com.optimizely.ab.UnknownEventTypeException;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
-import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.notification.NotificationCenter;
-import com.optimizely.ab.notification.NotificationListener;
 
 import org.slf4j.Logger;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
