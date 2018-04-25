@@ -45,6 +45,10 @@ The JobWorkService was probably destroyed but we didn't cancel the
 processor. It causes an exception in dequeueWork in our JobWorkService.
 We wrapped the dequeueWork with a try/catch and are also now cancelling the background task in onDestroy.
 
+* Fix for possible error when loading logger via dagger (fall back logger provided).
+
+* Load UserProfileService on synchronous start.  Also, cleanup UserProfileService cache in the background thread by removing experiments that are no longer in the datafile.
+
 ## 2.0.0-beta1
 
 March 29th, 2018
