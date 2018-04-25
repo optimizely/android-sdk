@@ -1,5 +1,111 @@
 # Optimizely Android X SDK Changelog
-### 1.5.0
+## 1.6.1
+April 25, 2018
+
+- Release 1.6.1
+
+This is a patch release for 1.6.0 and 1.5.1 Optimizely SDKs.  
+
+### Bug Fixes
+* Fix for the following issue:
+https://issuetracker.google.com/issues/63622293
+Our github issue is [here](https://github.com/optimizely/android-sdk/issues/194).
+The JobWorkService was probably destroyed but we didn't cancel the
+processor. It causes an exception in dequeueWork in our JobWorkService.
+We wrapped the dequeueWork with a try/catch and are also now cancelling the background task in onDestroy.
+
+* Fix for possible error when loading logger via dagger (fall back logger provided).
+
+## 2.0.0-beta1
+
+March 29th, 2018
+
+This major release of the Optimizely SDK introduces APIs for Feature Management. It also introduces some breaking changes listed below.
+
+### New Features
+* Introduces the `isFeatureEnabled` API to determine whether to show a feature to a user or not.
+```
+Boolean enabled = optimizelyClient.isFeatureEnabled("my_feature_key", "user_1", userAttributes);
+```
+
+* You can also get all the enabled features for the user by calling the following method which returns a list of strings representing the feature keys:
+```
+ArrayList<String> enabledFeatures = optimizelyClient.getEnabledFeatures("user_1", userAttributes);
+```
+
+* Introduces Feature Variables to configure or parameterize your feature. There are four variable types: `Integer`, `String`, `Double`, `Boolean`.
+```
+String stringVariable = optimizelyClient.getFeatureVariableString("my_feature_key", "string_variable_key", "user_1");
+Integer integerVariable = optimizelyClient.getFeatureVariableInteger("my_feature_key", "integer_variable_key", "user_1");
+Double doubleVariable = optimizelyClient.getFeatureVariableDouble("my_feature_key", "double_variable_key", "user_1");
+Boolean booleanVariable = optimizelyClient.getFeatureVariableBoolean("my_feature_key", "boolean_variable_key", "user_1");
+```
+
+### Breaking changes
+* The `track` API with revenue value as a stand-alone parameter has been removed. The revenue value should be passed in as an entry of the event tags map. The key for the revenue tag is `revenue` and will be treated by Optimizely as the key for analyzing revenue data in results.
+```
+Map<String, Object> eventTags = new HashMap<String, Object>();
+
+// reserved "revenue" tag
+eventTags.put("revenue", 6432);
+
+optimizelyClient.track("event_key", "user_id", userAttributes, eventTags);
+```
+
+* Live variable accessor methods have been removed and have been replaced with the feature variable methods mentioned above. Feature variables are scoped to a feature so you must supply the feature key in addition to the variable key to access them.
+
+  - `getVariableBoolean` now becomes `getFeatureVariableBoolean`
+  - `getVariableString` now becomes `getFeatureVariableString`
+  - `getVariableInteger` now becomes `getFeatureVariableInteger`
+  - `getVariableFloat` now becomes `getFeatureVariableDouble`
+
+## 1.6.0
+Febuary 3, 2018
+
+- Release 1.6.0
+
+This release adds support for bucketing id (By passing in `$opt_bucketing_id` in the attribute map, you can  override the user id as the bucketing variable. This is useful when wanting a set of users to share the same experience such as two players in a game).
+
+This release also deprecates the old notification broadcaster in favor of a notification center that supports a wide range of notifications.  The notification listener is now registered for the specific notification type such as ACTIVATE and TRACK.  This is accomplished by allowing for a variable argument call to notify (a new var arg method added to the NotificationListener).  Specific abstract classes exist for the associated notification type (ActivateNotificationListener and TrackNotificationListener).  These abstract classes enforce the strong typing that exists in Java.  You may also add custom notification types and fire them through the notification center.  The notification center is implemented using this var arg approach in all Optimizely SDKs.
+
+*New Features*
+
+- Added `$opt_bucketing_id` in the attribute map for overriding bucketing using the user id.  It is available as a static string in DecisionService.ATTRIBUTE_BUCKETING_ID
+- Optimizely notification center for activate and track notifications.
+
+*Breaking change*
+There is a new abstract method on NotificationListener notify(args...);
+
+## 1.5.1
+November 1, 2017
+
+- Release 1.5.1
+
+*New Features*
+
+- Numeric metrics
+- Client-side programmatic forced variations.
+- Example of synchronous and asynchronous initialize in test-app
+
+*Bug Fixes*
+
+- Remove Espresso dependency
+- Narrow proguard rules
+- Last modified fixed so that multiple project files can be used.
+- Call start listener if there is an exception.
+- Example of overriding Gson and android-logger in test-app gradle file.
+- Fix crash on API 17 (missing annotation).
+- Support for Android O (please see developer docs for details). Basically, Android O and above will use JobScheduler and pre Android O will continue to use AlarmService.  This is done through a class called the JobWorkService which allows you to keep your Service and IntentService intact.  Developers can piggyback on this method and keep thier IntentServices and use the JobWorkService.
+- Proguard rules were broken and were causing event payload to be stripped to single character keys.
+
+*Breaking Changes*
+
+- Same as 1.4.0 see below.
+- Need to add permissions to both receivers in your manifest if you plan on using the EventRescheduler or the DatafileRescheduler (see test_app manifest for example) https://github.com/optimizely/android-sdk/blob/master/test-app/src/main/AndroidManifest.xml
+- Updated build tools and target to API 26 which will cause proguard warnings if you are not using the latest build tools.
+- Also for Android O, you must register for the SUPPLICANT_CONNECTION_CHANGE_ACTION intent filter in code (see the test-app for an example).
+
+## 1.5.0
 October 30, 2017
 
 - Release 1.5.0
