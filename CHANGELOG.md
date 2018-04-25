@@ -1,5 +1,55 @@
 # Optimizely Android X SDK Changelog
 
+## 2.0.0
+
+April 25th, 2018
+
+This major release of the Optimizely SDK introduces APIs for Feature Management. It also introduces some breaking changes listed below.
+
+### New Features
+* Introduces the `isFeatureEnabled` API to determine whether to show a feature to a user or not.
+```
+Boolean enabled = optimizelyClient.isFeatureEnabled("my_feature_key", "user_1", userAttributes);
+```
+
+* You can also get all the enabled features for the user by calling the following method which returns a list of strings representing the feature keys:
+```
+ArrayList<String> enabledFeatures = optimizelyClient.getEnabledFeatures("user_1", userAttributes);
+```
+
+* Introduces Feature Variables to configure or parameterize your feature. There are four variable types: `Integer`, `String`, `Double`, `Boolean`.
+```
+String stringVariable = optimizelyClient.getFeatureVariableString("my_feature_key", "string_variable_key", "user_1");
+Integer integerVariable = optimizelyClient.getFeatureVariableInteger("my_feature_key", "integer_variable_key", "user_1");
+Double doubleVariable = optimizelyClient.getFeatureVariableDouble("my_feature_key", "double_variable_key", "user_1");
+Boolean booleanVariable = optimizelyClient.getFeatureVariableBoolean("my_feature_key", "boolean_variable_key", "user_1");
+```
+
+### Breaking changes
+* The `track` API with revenue value as a stand-alone parameter has been removed. The revenue value should be passed in as an entry of the event tags map. The key for the revenue tag is `revenue` and will be treated by Optimizely as the key for analyzing revenue data in results.
+```
+Map<String, Object> eventTags = new HashMap<String, Object>();
+
+// reserved "revenue" tag
+eventTags.put("revenue", 6432);
+
+optimizelyClient.track("event_key", "user_id", userAttributes, eventTags);
+```
+
+* We have removed deprecated classes with the `NotificationBroadcaster` in favor of the new API with the `NotificationCenter`. We have streamlined the API so that it is easily usable with Java Lambdas in *Java 1.8+*. We have also added some convenience methods to add these listeners. Finally, some of the API names have changed slightly (e.g. `clearAllNotifications()` is now `clearAllNotificationListeners()`)
+
+### Bug Fixes
+* Fix for the following issue:
+https://issuetracker.google.com/issues/63622293
+Our github issue is [here](https://github.com/optimizely/android-sdk/issues/194).
+The JobWorkService was probably destroyed but we didn't cancel the
+processor. It causes an exception in dequeueWork in our JobWorkService.
+We wrapped the dequeueWork with a try/catch and are also now cancelling the background task in onDestroy.
+
+* Fix for possible error when loading logger via dagger (fall back logger provided).
+
+* Load UserProfileService on synchronous start.  Also, cleanup UserProfileService cache in the background thread by removing experiments that are no longer in the datafile.
+
 ## 1.6.1
 April 25, 2018
 
