@@ -2,7 +2,7 @@
 
 ## 2.0.0
 
-April 13th, 2018
+April 25th, 2018
 
 This major release of the Optimizely SDK introduces APIs for Feature Management. It also introduces some breaking changes listed below.
 
@@ -41,6 +41,7 @@ optimizelyClient.track("event_key", "user_id", userAttributes, eventTags);
 ### Bug Fixes
 * Fix for the following issue:
 https://issuetracker.google.com/issues/63622293
+Our github issue is [here](https://github.com/optimizely/android-sdk/issues/194).
 The JobWorkService was probably destroyed but we didn't cancel the
 processor. It causes an exception in dequeueWork in our JobWorkService.
 We wrapped the dequeueWork with a try/catch and are also now cancelling the background task in onDestroy.
