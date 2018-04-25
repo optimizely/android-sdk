@@ -215,7 +215,7 @@ public class OptimizelyManager {
     }
 
     private void cleanupUserProfileCache(UserProfileService userProfileService) {
-        DefaultUserProfileService defaultUserProfileService = null;
+        final DefaultUserProfileService defaultUserProfileService;
         if (userProfileService instanceof DefaultUserProfileService) {
             defaultUserProfileService = (DefaultUserProfileService)userProfileService;
         }
@@ -228,9 +228,15 @@ public class OptimizelyManager {
             return;
         }
 
-        Set<String> experimentIds = config.getExperimentIdMapping().keySet();
+        final Set<String> experimentIds = config.getExperimentIdMapping().keySet();
 
-        defaultUserProfileService.removeInvalidExperiments(experimentIds);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                defaultUserProfileService.removeInvalidExperiments(experimentIds);
+            }
+        }).start();
+
     }
 
     /** This function will first try to get datafile from Cache, if file is not cached yet
