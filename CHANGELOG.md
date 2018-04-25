@@ -1,5 +1,14 @@
 # Optimizely Android X SDK Changelog
 
+## 1.6.1
+April 25, 2018
+
+- Release 1.6.0
+
+This is a patch release for 1.6.0 and 1.5.1 Optimizely SDKs.  
+
+### Breaking changes
+* 
 ## 2.0.0-beta1
 
 March 29th, 2018
