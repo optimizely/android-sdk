@@ -223,17 +223,22 @@ public class OptimizelyManager {
             return;
         }
 
-        ProjectConfig config = optimizelyClient.getProjectConfig();
+        final ProjectConfig config = optimizelyClient.getProjectConfig();
         if (config == null) {
             return;
         }
 
-        final Set<String> experimentIds = config.getExperimentIdMapping().keySet();
-
         new Thread(new Runnable() {
             @Override
             public void run() {
-                defaultUserProfileService.removeInvalidExperiments(experimentIds);
+                try {
+                    Set<String> experimentIds = config.getExperimentIdMapping().keySet();
+
+                    defaultUserProfileService.removeInvalidExperiments(experimentIds);
+                }
+                catch (Exception e) {
+                    logger.error("Error removing invalid experiments from default user profile service.", e);
+                }
             }
         }).start();
 

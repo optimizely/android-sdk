@@ -142,7 +142,12 @@ public class DefaultUserProfileService implements UserProfileService {
     }
 
     public void removeInvalidExperiments(Set<String> validExperiments) {
-        userProfileCache.removeInvalidExperiments(validExperiments);
+        try {
+            userProfileCache.removeInvalidExperiments(validExperiments);
+        }
+        catch (Exception e) {
+            logger.error("Error calling userProfileCache to remove invalid experiments", e);
+        }
     }
     /**
      * Remove a decision from a user profile.
