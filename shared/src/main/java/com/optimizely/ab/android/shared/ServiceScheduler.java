@@ -124,10 +124,6 @@ public class ServiceScheduler {
                         break;
                     default:
                         logger.info("No conversion for {}", object.getClass().getSimpleName());
-                        if (object instanceof Parcelable) {
-
-                        }
-
                 }
             }
 
