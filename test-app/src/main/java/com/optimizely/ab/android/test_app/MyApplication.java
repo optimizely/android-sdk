@@ -73,7 +73,7 @@ public class MyApplication extends Application {
         // tests setup not work and the Espresso tests will fail.  Also, the project id passed here
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
         optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
-                .withEnvironmentKey("https://cdn.optimizely.com/public/8362480420/s/10657931863_staging.json")
+                .withEnvironmentUrl("https://cdn.optimizely.com/public/8362480420/s/10657931863_staging.json")
                 .withEventDispatchInterval(60L * 10L)
                 .withDatafileDownloadInterval(60L * 10L)
                 .build(getApplicationContext());

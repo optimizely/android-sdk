@@ -67,7 +67,7 @@ public class OptimizelyManager {
     @Nullable private ErrorHandler errorHandler;
     @NonNull private Logger logger;
     @NonNull private final String projectId;
-    @Nullable private final String environmentKey;
+    @Nullable private final String environmentUrl;
     @NonNull private final DatafileConfig datafileConfig;
 
     @NonNull private UserProfileService userProfileService;
@@ -75,7 +75,7 @@ public class OptimizelyManager {
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
     OptimizelyManager(@NonNull String projectId,
-                      @Nullable String environmentKey,
+                      @Nullable String environmentUrl,
                       @NonNull Logger logger,
                       long datafileDownloadInterval,
                       @NonNull DatafileHandler datafileHandler,
@@ -84,8 +84,8 @@ public class OptimizelyManager {
                       @NonNull EventHandler eventHandler,
                       @NonNull UserProfileService userProfileService) {
         this.projectId = projectId;
-        this.environmentKey = environmentKey;
-        this.datafileConfig = new DatafileConfig(this.projectId, this.environmentKey);
+        this.environmentUrl = environmentUrl;
+        this.datafileConfig = new DatafileConfig(this.projectId, this.environmentUrl);
         this.logger = logger;
         this.datafileDownloadInterval = datafileDownloadInterval;
         this.datafileHandler = datafileHandler;
@@ -596,7 +596,7 @@ public class OptimizelyManager {
         @Nullable private EventHandler eventHandler = null;
         @Nullable private ErrorHandler errorHandler = null;
         @Nullable private UserProfileService userProfileService = null;
-        @Nullable private String environmentKey = null;
+        @Nullable private String environmentUrl = null;
 
         Builder(@NonNull String projectId) {
             this.projectId = projectId;
@@ -625,8 +625,8 @@ public class OptimizelyManager {
             return this;
         }
 
-        public Builder withEnvironmentKey(String environmentKey) {
-            this.environmentKey = environmentKey;
+        public Builder withEnvironmentUrl(String environmentUrl) {
+            this.environmentUrl = environmentUrl;
             return this;
         }
 
@@ -732,7 +732,7 @@ public class OptimizelyManager {
                 eventHandler = DefaultEventHandler.getInstance(context);
             }
 
-            return new OptimizelyManager(projectId, environmentKey,
+            return new OptimizelyManager(projectId, environmentUrl,
                     logger,
                     datafileDownloadInterval,
                     datafileHandler,
