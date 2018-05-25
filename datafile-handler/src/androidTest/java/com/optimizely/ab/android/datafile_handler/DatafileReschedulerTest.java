@@ -34,6 +34,7 @@ import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -103,7 +104,26 @@ public class DatafileReschedulerTest {
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(mockContext).startService(captor.capture());
         assertEquals("1", captor.getValue().getStringExtra(DatafileService.EXTRA_PROJECT_ID));
+        assertNull(captor.getValue().getStringExtra(DatafileService.EXTRA_ENV_ID));
         verify(logger).info("Rescheduled data file watching for project {}", "1");
+        cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
+    }
+
+    @Test
+    public void dispatchingOneWithEnvironment() {
+        Context mockContext = mock(Context.class);
+        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
+        backgroundWatchersCache.setIsWatching(new ProjectId("1", "2"), true);
+        Logger logger = mock(Logger.class);
+        DatafileRescheduler.Dispatcher dispatcher = new DatafileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
+        Intent intent = new Intent(mockContext, DatafileService.class);
+        dispatcher.dispatch(intent);
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(mockContext).startService(captor.capture());
+        assertEquals("1", captor.getValue().getStringExtra(DatafileService.EXTRA_PROJECT_ID));
+        assertEquals("2", captor.getValue().getStringExtra(DatafileService.EXTRA_ENV_ID));
+        verify(logger).info("Rescheduled data file watching for project {}", "2");
         cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }
 
@@ -115,6 +135,22 @@ public class DatafileReschedulerTest {
         backgroundWatchersCache.setIsWatching(new ProjectId("1"), true);
         backgroundWatchersCache.setIsWatching(new ProjectId("2"), true);
         backgroundWatchersCache.setIsWatching(new ProjectId("3"), true);
+        Logger logger = mock(Logger.class);
+        DatafileRescheduler.Dispatcher dispatcher = new DatafileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
+        Intent intent = new Intent(mockContext, DatafileService.class);
+        dispatcher.dispatch(intent);
+        verify(mockContext, times(3)).startService(any(Intent.class));
+        cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
+    }
+
+    @Test
+    public void dispatchingManyWithEnvironment() {
+        Context mockContext = mock(Context.class);
+        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
+        backgroundWatchersCache.setIsWatching(new ProjectId("1", "1"), true);
+        backgroundWatchersCache.setIsWatching(new ProjectId("2", "1"), true);
+        backgroundWatchersCache.setIsWatching(new ProjectId("3", "1"), true);
         Logger logger = mock(Logger.class);
         DatafileRescheduler.Dispatcher dispatcher = new DatafileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
         Intent intent = new Intent(mockContext, DatafileService.class);

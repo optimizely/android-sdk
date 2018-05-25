@@ -91,6 +91,21 @@ public class BackgroundWatchersCacheTest {
     }
 
     @Test
+    public void setIsWatchingPersistsWithEnvironment() {
+        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("1", "1"), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("2", "1"), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("3", "1"), false));
+        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("1", "1"), false));
+
+        assertFalse(backgroundWatchersCache.isWatching(new ProjectId("1", "1")));
+        assertTrue(backgroundWatchersCache.isWatching(new ProjectId("2", "1")));
+        assertFalse(backgroundWatchersCache.isWatching(new ProjectId("3", "1")));
+
+        List<ProjectId> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
+        assertTrue(watchingProjectIds.contains(new ProjectId("2", "1")));
+    }
+
+    @Test
     public void testExceptionHandling() throws IOException {
         Cache cache = mock(Cache.class);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);

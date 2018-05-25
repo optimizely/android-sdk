@@ -190,6 +190,7 @@ public class DatafileServiceTest {
 
         Intent intent = new Intent(context, DatafileService.class);
         intent.putExtra(DatafileService.EXTRA_PROJECT_ID, "1");
+        intent.putExtra(DatafileService.EXTRA_ENV_ID, "2");
         serviceScheduler.schedule(intent, TimeUnit.HOURS.toMillis(1L));
 
         try {
@@ -212,5 +213,15 @@ public class DatafileServiceTest {
         // us to update this test.
         String datafileUrl = new ProjectId("1").getUrl();
         assertEquals("https://cdn.optimizely.com/json/1.json", datafileUrl);
+    }
+    @
+            RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    @Test
+    public void testGetDatafileEnvironmentUrl(){
+        // HARD-CODING link here to make sure we don't unintentionally mess up the datafile version
+        // and url by accidentally changing those constants.
+        // us to update this test.
+        String datafileUrl = new ProjectId("1", "2").getUrl();
+        assertEquals("2", datafileUrl);
     }
 }
