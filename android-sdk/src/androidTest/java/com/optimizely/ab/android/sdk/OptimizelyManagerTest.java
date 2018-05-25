@@ -33,7 +33,6 @@ import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.sdk.test.R;
-import com.optimizely.ab.android.shared.ProjectId;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -248,7 +247,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
 
-        optimizelyManager.getDatafileHandler().downloadDatafile(context, optimizelyManager.getProjectId(), null);
+        optimizelyManager.getDatafileHandler().downloadDatafile(context, optimizelyManager.getDatafileConfig(), null);
 
         optimizelyManager.stop(context);
 
@@ -302,7 +301,7 @@ public class OptimizelyManagerTest {
                 .PendingIntentFactory(context);
 
         Intent intent = new Intent(context, DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, optimizelyManager.getProjectId().toJSONString());
+        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, optimizelyManager.getDatafileConfig().toJSONString());
         serviceScheduler.schedule(intent, optimizelyManager.getDatafileDownloadInterval() * 1000);
 
         try {
@@ -316,7 +315,7 @@ public class OptimizelyManagerTest {
 
         Intent intent2 = captor.getValue();
         assertTrue(intent2.getComponent().getShortClassName().contains("DatafileService"));
-        assertEquals(optimizelyManager.getProjectId().toJSONString(), intent2.getStringExtra(DatafileService.EXTRA_PROJECT_ID));
+        assertEquals(optimizelyManager.getDatafileConfig().toJSONString(), intent2.getStringExtra(DatafileService.EXTRA_PROJECT_ID));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

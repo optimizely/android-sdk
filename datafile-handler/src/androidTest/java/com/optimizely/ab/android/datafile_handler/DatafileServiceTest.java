@@ -29,7 +29,7 @@ import android.support.test.rule.ServiceTestRule;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
-import com.optimizely.ab.android.shared.ProjectId;
+import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.junit.Before;
@@ -38,7 +38,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -109,7 +108,7 @@ public class DatafileServiceTest {
             it++;
         }
 
-        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, new ProjectId("1").toJSONString());
+        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, new DatafileConfig("1").toJSONString());
         DatafileService datafileService = ((DatafileService.LocalBinder) binder).getService();
         Logger logger = mock(Logger.class);
         datafileService.logger = logger;
@@ -189,7 +188,7 @@ public class DatafileServiceTest {
                 .PendingIntentFactory(context);
 
         Intent intent = new Intent(context, DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, new ProjectId("1").toJSONString());
+        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, new DatafileConfig("1").toJSONString());
         serviceScheduler.schedule(intent, TimeUnit.HOURS.toMillis(1L));
 
         try {
@@ -210,7 +209,7 @@ public class DatafileServiceTest {
         // HARD-CODING link here to make sure we don't unintentionally mess up the datafile version
         // and url by accidentally changing those constants.
         // us to update this test.
-        String datafileUrl = new ProjectId("1").getUrl();
+        String datafileUrl = new DatafileConfig("1").getUrl();
         assertEquals("https://cdn.optimizely.com/json/1.json", datafileUrl);
     }
     @
@@ -220,7 +219,7 @@ public class DatafileServiceTest {
         // HARD-CODING link here to make sure we don't unintentionally mess up the datafile version
         // and url by accidentally changing those constants.
         // us to update this test.
-        String datafileUrl = new ProjectId("1", "2").getUrl();
+        String datafileUrl = new DatafileConfig("1", "2").getUrl();
         assertEquals("2", datafileUrl);
     }
 }

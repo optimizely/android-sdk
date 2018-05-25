@@ -18,9 +18,8 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.support.test.InstrumentationRegistry;
 
-import com.optimizely.ab.android.datafile_handler.BackgroundWatchersCache;
 import com.optimizely.ab.android.shared.Cache;
-import com.optimizely.ab.android.shared.ProjectId;
+import com.optimizely.ab.android.shared.DatafileConfig;
 
 import org.json.JSONException;
 import org.junit.After;
@@ -65,44 +64,44 @@ public class BackgroundWatchersCacheTest {
 
     @Test
     public void setIsWatchingEmptyString() {
-        assertFalse(backgroundWatchersCache.setIsWatching(new ProjectId(""), false));
+        assertFalse(backgroundWatchersCache.setIsWatching(new DatafileConfig(""), false));
         verify(logger).error("Passed in an empty string for projectId");
     }
 
     @Test
     public void isWatchingEmptyString() {
-        assertFalse(backgroundWatchersCache.isWatching(new ProjectId("")));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("")));
         verify(logger).error("Passed in an empty string for projectId");
     }
 
     @Test
     public void setIsWatchingPersistsWithoutEnvironment() {
-        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("1"), true));
-        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("2"), true));
-        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("3"), false));
-        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("1"), false));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("1"), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("2"), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("3"), false));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("1"), false));
 
-        assertFalse(backgroundWatchersCache.isWatching(new ProjectId("1")));
-        assertTrue(backgroundWatchersCache.isWatching(new ProjectId("2")));
-        assertFalse(backgroundWatchersCache.isWatching(new ProjectId("3")));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("1")));
+        assertTrue(backgroundWatchersCache.isWatching(new DatafileConfig("2")));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("3")));
 
-        List<ProjectId> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
-        assertTrue(watchingProjectIds.contains(new ProjectId("2")));
+        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
+        assertTrue(watchingProjectIds.contains(new DatafileConfig("2")));
     }
 
     @Test
     public void setIsWatchingPersistsWithEnvironment() {
-        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("1", "1"), true));
-        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("2", "1"), true));
-        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("3", "1"), false));
-        assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("1", "1"), false));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("1", "1"), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("2", "1"), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("3", "1"), false));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("1", "1"), false));
 
-        assertFalse(backgroundWatchersCache.isWatching(new ProjectId("1", "1")));
-        assertTrue(backgroundWatchersCache.isWatching(new ProjectId("2", "1")));
-        assertFalse(backgroundWatchersCache.isWatching(new ProjectId("3", "1")));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("1", "1")));
+        assertTrue(backgroundWatchersCache.isWatching(new DatafileConfig("2", "1")));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("3", "1")));
 
-        List<ProjectId> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
-        assertTrue(watchingProjectIds.contains(new ProjectId("2", "1")));
+        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
+        assertTrue(watchingProjectIds.contains(new DatafileConfig("2", "1")));
     }
 
     @Test
@@ -112,13 +111,13 @@ public class BackgroundWatchersCacheTest {
         // Cause a JSONException to be thrown
         when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenReturn("{");
 
-        assertFalse(backgroundWatchersCache.setIsWatching(new ProjectId("1"), true));
+        assertFalse(backgroundWatchersCache.setIsWatching(new DatafileConfig("1"), true));
         verify(logger).error(contains("Unable to update watching state for project id"), any(JSONException.class));
 
-        assertFalse(backgroundWatchersCache.isWatching(new ProjectId("1")));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("1")));
         verify(logger).error(contains("Unable check if project id is being watched"), any(JSONException.class));
 
-        List<ProjectId> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
+        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
         assertTrue(watchingProjectIds.isEmpty());
         verify(logger).error(contains("Unable to get watching project ids"), any(JSONException.class));
     }
@@ -129,7 +128,7 @@ public class BackgroundWatchersCacheTest {
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
         // Cause a JSONException to be thrown
         when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenReturn(null);
-        assertFalse(backgroundWatchersCache.setIsWatching(new ProjectId("1"), true));
+        assertFalse(backgroundWatchersCache.setIsWatching(new DatafileConfig("1"), true));
         verify(logger).info("Creating background watchers file {}.", BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }
 }

@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.optimizely.ab.android.shared.ProjectId;
+import com.optimizely.ab.android.shared.DatafileConfig;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        ProjectId projectId = new ProjectId("1");
+        DatafileConfig projectId = new DatafileConfig("1");
         datafileHandler.saveDatafile(appContext, projectId, "{}");
         assertTrue(datafileHandler.isDatafileSaved(appContext, projectId));
         assertNotNull(datafileHandler.loadSavedDatafile(appContext, projectId));
@@ -58,7 +58,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        ProjectId projectId = new ProjectId("1", "2");
+        DatafileConfig projectId = new DatafileConfig("1", "2");
         datafileHandler.saveDatafile(appContext, projectId, "{}");
         assertTrue(datafileHandler.isDatafileSaved(appContext, projectId));
         assertNotNull(datafileHandler.loadSavedDatafile(appContext, projectId));
@@ -72,7 +72,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        String datafile = datafileHandler.downloadDatafile(appContext, new ProjectId("1"));
+        String datafile = datafileHandler.downloadDatafile(appContext, new DatafileConfig("1"));
 
         assertNull(datafile);
     }
@@ -82,7 +82,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        String datafile = datafileHandler.downloadDatafile(appContext, new ProjectId("1", "2"));
+        String datafile = datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", "2"));
 
         assertNull(datafile);
     }
@@ -92,7 +92,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.downloadDatafile(appContext, new ProjectId("1"), new DatafileLoadedListener() {
+        datafileHandler.downloadDatafile(appContext, new DatafileConfig("1"), new DatafileLoadedListener() {
             @Override
             public void onDatafileLoaded(@Nullable String dataFile) {
                 assertNull(dataFile);
@@ -111,7 +111,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.downloadDatafile(appContext, new ProjectId("1", "2"), new DatafileLoadedListener() {
+        datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", "2"), new DatafileLoadedListener() {
             @Override
             public void onDatafileLoaded(@Nullable String dataFile) {
                 assertNull(dataFile);
@@ -130,11 +130,11 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.startBackgroundUpdates(appContext, new ProjectId("1"), 24 * 60 * 60L);
+        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1"), 24 * 60 * 60L);
 
         assertTrue(true);
 
-        datafileHandler.stopBackgroundUpdates(appContext,  new ProjectId("1"));
+        datafileHandler.stopBackgroundUpdates(appContext,  new DatafileConfig("1"));
 
         assertTrue(true);
     }
@@ -144,11 +144,11 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.startBackgroundUpdates(appContext, new ProjectId("1", "2"), 24 * 60 * 60L);
+        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", "2"), 24 * 60 * 60L);
 
         assertTrue(true);
 
-        datafileHandler.stopBackgroundUpdates(appContext,  new ProjectId("1", "2"));
+        datafileHandler.stopBackgroundUpdates(appContext,  new DatafileConfig("1", "2"));
 
         assertTrue(true);
     }

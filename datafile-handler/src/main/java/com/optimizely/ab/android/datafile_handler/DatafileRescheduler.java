@@ -16,19 +16,13 @@
 
 package com.optimizely.ab.android.datafile_handler;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.app.job.JobWorkItem;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.annotation.NonNull;
 
 import com.optimizely.ab.android.shared.Cache;
-import com.optimizely.ab.android.shared.JobWorkService;
-import com.optimizely.ab.android.shared.ProjectId;
+import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.slf4j.Logger;
@@ -96,9 +90,9 @@ public class DatafileRescheduler extends BroadcastReceiver {
         }
 
         void dispatch(Intent intent) {
-            List<ProjectId> projectIds = backgroundWatchersCache.getWatchingProjectIds();
+            List<DatafileConfig> projectIds = backgroundWatchersCache.getWatchingProjectIds();
 
-            for (ProjectId projectId : projectIds) {
+            for (DatafileConfig projectId : projectIds) {
                 // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
                 // so, we don't need to do anything.
                // if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {

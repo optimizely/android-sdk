@@ -17,20 +17,17 @@
 package com.optimizely.ab.android.datafile_handler;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
-import com.optimizely.ab.android.shared.ProjectId;
+import com.optimizely.ab.android.shared.DatafileConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +60,7 @@ public class DatafileService extends Service {
         if (intent != null) {
             if (intent.hasExtra(EXTRA_PROJECT_ID)) {
                 String extraProjectId = intent.getStringExtra(EXTRA_PROJECT_ID);
-                ProjectId projectId = ProjectId.fromJSONString(extraProjectId);
+                DatafileConfig projectId = DatafileConfig.fromJSONString(extraProjectId);
                 DatafileClient datafileClient = new DatafileClient(
                         new Client(new OptlyStorage(this.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
                         LoggerFactory.getLogger(DatafileClient.class));
