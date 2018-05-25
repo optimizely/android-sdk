@@ -23,6 +23,7 @@ import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
+import com.optimizely.ab.android.shared.ProjectId;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -94,7 +95,7 @@ public class DatafileReschedulerTest {
         Context mockContext = mock(Context.class);
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
-        backgroundWatchersCache.setIsWatching("1", true);
+        backgroundWatchersCache.setIsWatching(new ProjectId("1"), true);
         Logger logger = mock(Logger.class);
         DatafileRescheduler.Dispatcher dispatcher = new DatafileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
         Intent intent = new Intent(mockContext, DatafileService.class);
@@ -111,9 +112,9 @@ public class DatafileReschedulerTest {
         Context mockContext = mock(Context.class);
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
-        backgroundWatchersCache.setIsWatching("1", true);
-        backgroundWatchersCache.setIsWatching("2", true);
-        backgroundWatchersCache.setIsWatching("3", true);
+        backgroundWatchersCache.setIsWatching(new ProjectId("1"), true);
+        backgroundWatchersCache.setIsWatching(new ProjectId("2"), true);
+        backgroundWatchersCache.setIsWatching(new ProjectId("3"), true);
         Logger logger = mock(Logger.class);
         DatafileRescheduler.Dispatcher dispatcher = new DatafileRescheduler.Dispatcher(mockContext, backgroundWatchersCache, logger);
         Intent intent = new Intent(mockContext, DatafileService.class);

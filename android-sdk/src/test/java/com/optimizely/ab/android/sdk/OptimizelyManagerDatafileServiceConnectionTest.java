@@ -31,6 +31,8 @@ import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileLoader;
 import com.optimizely.ab.android.datafile_handler.DatafileServiceConnection;
+import com.optimizely.ab.android.shared.ProjectId;
+
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -62,12 +64,13 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
         Context context = mock(Context.class);
         when(service.getApplicationContext()).thenReturn(context);
         when(binder.getService()).thenReturn(service);
-        when(optimizelyManager.getProjectId()).thenReturn("1");
+        when(optimizelyManager.getProjectId()).thenReturn(new ProjectId("1", (String)null));
         when(optimizelyManager.getDatafileLoadedListener(context,null)).thenReturn(mock(DatafileLoadedListener.class));
         ArgumentCaptor<DatafileLoadedListener> captor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
         datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDatafileLoadedListener(context,null) );
         datafileServiceConnection.onServiceConnected(null, binder);
-        verify(service).getDatafile(same("1"), any(DatafileLoader.class), any(DatafileLoadedListener.class));
+        String sameString = optimizelyManager.getProjectId().getUrl();
+        verify(service).getDatafile(eq(sameString), any(DatafileLoader.class), any(DatafileLoadedListener.class));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

@@ -27,6 +27,7 @@ import android.support.annotation.RequiresApi;
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
+import com.optimizely.ab.android.shared.ProjectId;
 
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ import java.util.concurrent.Executors;
 public class DatafileServiceConnection implements ServiceConnection {
 
     @NonNull private final Context context;
-    @NonNull private final String projectId;
+    @NonNull private final ProjectId projectId;
     @NonNull private final DatafileLoadedListener listener;
 
     private boolean bound = false;
@@ -50,7 +51,7 @@ public class DatafileServiceConnection implements ServiceConnection {
      * @param context current application context.
      * @param listener listener to call after service download has completed.
      */
-    public DatafileServiceConnection(@NonNull String projectId, @NonNull Context context, @NonNull DatafileLoadedListener listener) {
+    public DatafileServiceConnection(@NonNull ProjectId projectId, @NonNull Context context, @NonNull DatafileLoadedListener listener) {
         this.projectId = projectId;
         this.context = context;
         this.listener = listener;
@@ -79,7 +80,7 @@ public class DatafileServiceConnection implements ServiceConnection {
                     LoggerFactory.getLogger(DatafileClient.class));
 
             DatafileCache datafileCache = new DatafileCache(
-                    projectId,
+                    projectId.getCacheKey(),
                     new Cache(context.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
                     LoggerFactory.getLogger(DatafileCache.class));
 
@@ -89,7 +90,7 @@ public class DatafileServiceConnection implements ServiceConnection {
                     Executors.newSingleThreadExecutor(),
                     LoggerFactory.getLogger(DatafileLoader.class));
 
-            datafileService.getDatafile(projectId, datafileLoader, listener);
+            datafileService.getDatafile(projectId.getUrl(), datafileLoader, listener);
         }
         bound = true;
     }

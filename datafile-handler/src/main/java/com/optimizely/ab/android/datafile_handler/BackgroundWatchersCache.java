@@ -19,9 +19,12 @@ package com.optimizely.ab.android.datafile_handler;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.BoringLayout;
 
 import com.optimizely.ab.android.shared.Cache;
+import com.optimizely.ab.android.shared.ProjectId;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -35,12 +38,16 @@ import java.util.List;
  * This is used by the rescheduler to determine if backgrounding was on for a project id.  If backgrounding is on,
  * then when the device is restarted or the app is reinstalled, the rescheduler will kick in and reschedule the datafile background
  * download.  In order to use this the rescheduler needs to be included in the application manifest.
- * Calling {@link DatafileHandler#stopBackgroundUpdates(Context, String)} sets this background cache to false.
+ * Calling {@link DatafileHandler#stopBackgroundUpdates(Context, ProjectId)} sets this background cache to false.
  */
 class BackgroundWatchersCache {
     static final String BACKGROUND_WATCHERS_FILE_NAME = "optly-background-watchers.json";
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
+
+    static final String PROJECTID = "projectId";
+    static final String ENVIRONMENT_KEY= "environmentKey";
+    static final String WATCHING = "watching";
 
     /**
      * Create BackgroundWatchersCache Object.
@@ -59,16 +66,46 @@ class BackgroundWatchersCache {
      * @param watching flag to signify if the project is running in the background.
      * @return boolean indicating whether the set succeed or not
      */
-    boolean setIsWatching(@NonNull String projectId, boolean watching) {
-        if (projectId.isEmpty()) {
+    boolean setIsWatching(@NonNull ProjectId projectId, boolean watching) {
+        if (projectId.getId().isEmpty()) {
             logger.error("Passed in an empty string for projectId");
             return false;
         }
 
         try {
             JSONObject backgroundWatchers = load();
+            JSONArray environments = new JSONArray();
             if (backgroundWatchers != null) {
-                backgroundWatchers.put(projectId, watching);
+                if (backgroundWatchers.has(projectId.getId())) {
+                    Object alreadySet = backgroundWatchers.get(projectId.getId());
+                    if (alreadySet instanceof JSONArray) {
+                        environments = (JSONArray) alreadySet;
+                        for (int i = 0; i < environments.length(); i++) {
+                            JSONObject env = environments.getJSONObject(i);
+                            String key = env.has(ENVIRONMENT_KEY) ? env.getString(ENVIRONMENT_KEY): null;
+                            if ((key == null && projectId.getEnvironmentKey() == null) ||
+                                    (projectId.getEnvironmentKey() != null && projectId.getEnvironmentKey().toString().equals(key))) {
+                                env.put(WATCHING, watching);
+                            }
+                        }
+                    }
+                    else if (alreadySet instanceof Boolean) {
+                        JSONObject project = new JSONObject();
+                        project.put(PROJECTID, projectId.getId());
+                        project.put(ENVIRONMENT_KEY, null);
+                        project.put(WATCHING, alreadySet);
+                        environments.put(project);
+                    }
+                }
+                else {
+                    JSONObject project = new JSONObject();
+                    project.put(PROJECTID, projectId.getId());
+                    project.put(ENVIRONMENT_KEY, projectId.getEnvironmentKey() != null? projectId.getEnvironmentKey().toString() : null);
+                    project.put(WATCHING, watching);
+                    environments.put(project);
+                }
+                backgroundWatchers.put(projectId.getId(), environments);
+
                 return save(backgroundWatchers.toString());
             }
         } catch (JSONException e) {
@@ -83,8 +120,8 @@ class BackgroundWatchersCache {
      * @param projectId project id to test
      * @return true if it has backgrounding, false if not.
      */
-    boolean isWatching(@NonNull String projectId) {
-        if (projectId.isEmpty()) {
+    boolean isWatching(@NonNull ProjectId projectId) {
+        if (projectId.getId().isEmpty()) {
             logger.error("Passed in an empty string for projectId");
             return false;
         }
@@ -93,7 +130,33 @@ class BackgroundWatchersCache {
             JSONObject backgroundWatchers = load();
 
             if (backgroundWatchers != null) {
-                return backgroundWatchers.getBoolean(projectId);
+                if (backgroundWatchers.has(projectId.getId())) {
+                    Object watchers = backgroundWatchers.get(projectId.getId());
+                    if (watchers instanceof Boolean) {
+                        // looking for an environment and it does not have the array of environment pairs.
+                        if (projectId.getEnvironmentKey() != null) {
+                            return false;
+                        }
+                        return (Boolean)watchers;
+                    }
+                    else if (watchers instanceof JSONArray){
+                        JSONArray envs = (JSONArray) watchers;
+                        for (int i = 0; i < envs.length(); i++) {
+                            JSONObject env = envs.getJSONObject(i);
+                            String envKey = env.has(ENVIRONMENT_KEY) ? env.getString(ENVIRONMENT_KEY) : null;
+                            if ((projectId.getEnvironmentKey() == null && envKey == null ||
+                                    (projectId.getEnvironmentKey() != null &&
+                                            projectId.getEnvironmentKey().toString().equals(envKey)))) {
+                                return env.getBoolean(WATCHING);
+                            }
+                        }
+                    }
+                }
+                else {
+                    return false;
+                }
+
+                return false;
 
             }
         } catch (JSONException e) {
@@ -107,16 +170,28 @@ class BackgroundWatchersCache {
      * Get a list of all project ids that are being watched for backgrounding.
      * @return a list of project ids
      */
-    List<String> getWatchingProjectIds() {
-        List<String> projectIds = new ArrayList<>();
+    List<ProjectId> getWatchingProjectIds() {
+        List<ProjectId> projectIds = new ArrayList<>();
         try {
             JSONObject backgroundWatchers = load();
             if (backgroundWatchers != null) {
                 Iterator<String> iterator = backgroundWatchers.keys();
                 while (iterator.hasNext()) {
                     final String projectId = iterator.next();
-                    if (backgroundWatchers.getBoolean(projectId)) {
-                        projectIds.add(projectId);
+                    Object watch = backgroundWatchers.get(projectId);
+                    if (watch instanceof Boolean) {
+                        if ((Boolean)watch) {
+                            projectIds.add(new ProjectId(projectId, (String) null));
+                        }
+                    }
+                    else if (watch instanceof JSONArray){
+                        JSONArray env = (JSONArray)watch;
+                        for (int i = 0; i< env.length(); i++) {
+                            if (env.getJSONObject(i).getBoolean(WATCHING)) {
+                                projectIds.add(new ProjectId(env.getJSONObject(i).getString(PROJECTID),
+                                        env.getJSONObject(i).has(ENVIRONMENT_KEY)?env.getJSONObject(i).getString(ENVIRONMENT_KEY):null));
+                            }
+                        }
                     }
                 }
             }

@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.support.annotation.RequiresApi;
 
@@ -75,6 +76,9 @@ public class ScheduledJobService extends JobService {
                     Intent intent = new Intent(getApplicationContext(), clazz );
 
                     for (String key : persistableBundle.keySet()) {
+                        if (key == ScheduledJobService.INTENT_EXTRA_COMPONENT_NAME) {
+                            continue;
+                        }
                         Object object = persistableBundle.get(key);
                         switch (object.getClass().getSimpleName()) {
                             case "String":
@@ -86,6 +90,9 @@ public class ScheduledJobService extends JobService {
                                 break;
                             default:
                                 logger.info("Extra key of type {}", object.getClass().getSimpleName());
+                                if (object instanceof Parcelable) {
+                                    intent.putExtra(key, (Parcelable) object);
+                                }
                                 break;
                         }
                     }

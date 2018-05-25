@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.optimizely.ab.android.shared.ProjectId;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,11 +44,12 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.saveDatafile(appContext, "1", "{}");
-        assertTrue(datafileHandler.isDatafileSaved(appContext, "1"));
-        assertNotNull(datafileHandler.loadSavedDatafile(appContext, "1"));
-        datafileHandler.removeSavedDatafile(appContext, "1");
-        assertFalse(datafileHandler.isDatafileSaved(appContext, "1"));
+        ProjectId projectId = new ProjectId("1");
+        datafileHandler.saveDatafile(appContext, projectId, "{}");
+        assertTrue(datafileHandler.isDatafileSaved(appContext, projectId));
+        assertNotNull(datafileHandler.loadSavedDatafile(appContext, projectId));
+        datafileHandler.removeSavedDatafile(appContext, projectId);
+        assertFalse(datafileHandler.isDatafileSaved(appContext, projectId));
         assertEquals("com.optimizely.ab.android.datafile_handler.test", appContext.getPackageName());
     }
 
@@ -55,7 +58,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        String datafile = datafileHandler.downloadDatafile(appContext, "1");
+        String datafile = datafileHandler.downloadDatafile(appContext, new ProjectId("1"));
 
         assertNull(datafile);
     }
@@ -65,7 +68,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.downloadDatafile(appContext, "1", new DatafileLoadedListener() {
+        datafileHandler.downloadDatafile(appContext, new ProjectId("1"), new DatafileLoadedListener() {
             @Override
             public void onDatafileLoaded(@Nullable String dataFile) {
                 assertNull(dataFile);
@@ -84,11 +87,11 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.startBackgroundUpdates(appContext, "1", 24 * 60 * 60L);
+        datafileHandler.startBackgroundUpdates(appContext, new ProjectId("1"), 24 * 60 * 60L);
 
         assertTrue(true);
 
-        datafileHandler.stopBackgroundUpdates(appContext, "1");
+        datafileHandler.stopBackgroundUpdates(appContext,  new ProjectId("1"));
 
         assertTrue(true);
     }

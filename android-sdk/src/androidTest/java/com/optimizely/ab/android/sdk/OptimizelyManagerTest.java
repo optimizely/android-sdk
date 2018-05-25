@@ -33,6 +33,7 @@ import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.sdk.test.R;
+import com.optimizely.ab.android.shared.ProjectId;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -89,7 +90,7 @@ public class OptimizelyManagerTest {
         executor = MoreExecutors.newDirectExecutorService();
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
-        optimizelyManager = new OptimizelyManager(testProjectId, logger, 3600L, datafileHandler, null, 3600L,
+        optimizelyManager = new OptimizelyManager(testProjectId, null,logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
     }
 
@@ -110,7 +111,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -126,7 +127,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -164,7 +165,7 @@ public class OptimizelyManagerTest {
         */
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
         String datafile =  optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), String.format("https://cdn.optimizely.com/json/%s.json", testProjectId) );
         assertNotNull(datafile);
         assertNotNull(optimizelyManager.getDatafileHandler());
     }
@@ -185,7 +186,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
 
 
     }
@@ -301,7 +302,7 @@ public class OptimizelyManagerTest {
                 .PendingIntentFactory(context);
 
         Intent intent = new Intent(context, DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, optimizelyManager.getProjectId());
+        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, optimizelyManager.getProjectId().getId());
         serviceScheduler.schedule(intent, optimizelyManager.getDatafileDownloadInterval() * 1000);
 
         try {
@@ -315,7 +316,7 @@ public class OptimizelyManagerTest {
 
         Intent intent2 = captor.getValue();
         assertTrue(intent2.getComponent().getShortClassName().contains("DatafileService"));
-        assertEquals(optimizelyManager.getProjectId(), intent2.getStringExtra(DatafileService.EXTRA_PROJECT_ID));
+        assertEquals(optimizelyManager.getProjectId().getId(), intent2.getStringExtra(DatafileService.EXTRA_PROJECT_ID));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

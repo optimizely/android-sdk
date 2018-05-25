@@ -29,6 +29,7 @@ import android.support.test.rule.ServiceTestRule;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
+import com.optimizely.ab.android.shared.ProjectId;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.junit.Before;
@@ -209,7 +210,7 @@ public class DatafileServiceTest {
         // HARD-CODING link here to make sure we don't unintentionally mess up the datafile version
         // and url by accidentally changing those constants.
         // us to update this test.
-        String datafileUrl = DatafileService.getDatafileUrl("1");
+        String datafileUrl = new ProjectId("1").getUrl();
         assertEquals("https://cdn.optimizely.com/json/1.json", datafileUrl);
     }
 }

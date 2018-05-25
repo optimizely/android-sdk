@@ -25,6 +25,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -123,6 +124,10 @@ public class ServiceScheduler {
                         break;
                     default:
                         logger.info("No conversion for {}", object.getClass().getSimpleName());
+                        if (object instanceof Parcelable) {
+
+                        }
+
                 }
             }
 
