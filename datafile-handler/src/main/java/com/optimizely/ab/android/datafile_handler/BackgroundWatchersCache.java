@@ -44,8 +44,6 @@ class BackgroundWatchersCache {
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
 
-    static final String PROJECTID = "projectId";
-    static final String ENVIRONMENT_KEY= "environmentKey";
     static final String WATCHING = "watching";
 
     /**
