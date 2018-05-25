@@ -302,7 +302,7 @@ public class OptimizelyManagerTest {
                 .PendingIntentFactory(context);
 
         Intent intent = new Intent(context, DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, optimizelyManager.getProjectId().getId());
+        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, optimizelyManager.getProjectId().toJSONString());
         serviceScheduler.schedule(intent, optimizelyManager.getDatafileDownloadInterval() * 1000);
 
         try {
@@ -316,7 +316,7 @@ public class OptimizelyManagerTest {
 
         Intent intent2 = captor.getValue();
         assertTrue(intent2.getComponent().getShortClassName().contains("DatafileService"));
-        assertEquals(optimizelyManager.getProjectId().getId(), intent2.getStringExtra(DatafileService.EXTRA_PROJECT_ID));
+        assertEquals(optimizelyManager.getProjectId().toJSONString(), intent2.getStringExtra(DatafileService.EXTRA_PROJECT_ID));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

@@ -47,7 +47,6 @@ public class DatafileService extends Service {
      * Extra containing the project id this instance of Optimizely was built with
      */
     public static final String EXTRA_PROJECT_ID = "com.optimizely.ab.android.EXTRA_PROJECT_ID";
-    public static final String EXTRA_ENV_ID = "com.optimizely.ab.android.EXTRA_ENV_ID";
     public static final Integer JOB_ID = 2113;
 
     @NonNull private final IBinder binder = new LocalBinder();
@@ -64,8 +63,7 @@ public class DatafileService extends Service {
         if (intent != null) {
             if (intent.hasExtra(EXTRA_PROJECT_ID)) {
                 String extraProjectId = intent.getStringExtra(EXTRA_PROJECT_ID);
-                String env = intent.getStringExtra(EXTRA_ENV_ID);
-                ProjectId projectId =  new ProjectId(extraProjectId, env);
+                ProjectId projectId = ProjectId.fromJSONString(extraProjectId);
                 DatafileClient datafileClient = new DatafileClient(
                         new Client(new OptlyStorage(this.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
                         LoggerFactory.getLogger(DatafileClient.class));

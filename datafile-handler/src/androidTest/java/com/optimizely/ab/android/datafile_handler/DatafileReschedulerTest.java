@@ -92,7 +92,7 @@ public class DatafileReschedulerTest {
     }
 
     @Test
-    public void dispatchingOne() {
+    public void dispatchingOneWithoutEnvironment() {
         Context mockContext = mock(Context.class);
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
@@ -103,8 +103,7 @@ public class DatafileReschedulerTest {
         dispatcher.dispatch(intent);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(mockContext).startService(captor.capture());
-        assertEquals("1", captor.getValue().getStringExtra(DatafileService.EXTRA_PROJECT_ID));
-        assertNull(captor.getValue().getStringExtra(DatafileService.EXTRA_ENV_ID));
+        assertEquals(new ProjectId("1").toJSONString(), captor.getValue().getStringExtra(DatafileService.EXTRA_PROJECT_ID));
         verify(logger).info("Rescheduled data file watching for project {}", "1");
         cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }
@@ -121,14 +120,13 @@ public class DatafileReschedulerTest {
         dispatcher.dispatch(intent);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(mockContext).startService(captor.capture());
-        assertEquals("1", captor.getValue().getStringExtra(DatafileService.EXTRA_PROJECT_ID));
-        assertEquals("2", captor.getValue().getStringExtra(DatafileService.EXTRA_ENV_ID));
+        assertEquals(new ProjectId("1", "2").toJSONString(), captor.getValue().getStringExtra(DatafileService.EXTRA_PROJECT_ID));
         verify(logger).info("Rescheduled data file watching for project {}", "2");
         cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }
 
     @Test
-    public void dispatchingMany() {
+    public void dispatchingManyWithoutEnvironment() {
         Context mockContext = mock(Context.class);
         Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);

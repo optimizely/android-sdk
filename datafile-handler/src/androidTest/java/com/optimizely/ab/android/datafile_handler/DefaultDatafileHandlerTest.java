@@ -40,7 +40,7 @@ public class DefaultDatafileHandlerTest {
     }
 
     @Test
-    public void testSaveExistsRemove() throws Exception {
+    public void testSaveExistsRemoveWithoutEnvironment() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
@@ -88,7 +88,7 @@ public class DefaultDatafileHandlerTest {
     }
 
     @Test
-    public void testAsyncDownload() throws Exception {
+    public void testAsyncDownloadWithoutEnvironment() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
@@ -126,7 +126,7 @@ public class DefaultDatafileHandlerTest {
     }
 
     @Test
-    public void testBackground() throws Exception {
+    public void testBackgroundWithoutEnvironment() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 

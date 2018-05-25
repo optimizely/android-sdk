@@ -18,6 +18,9 @@ package com.optimizely.ab.android.shared;
 
 import android.support.annotation.NonNull;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * A class to encapsulate the project id and any environment that might be used.
  * It can create the cache key used if you want to clear the cache for that project or environment.
@@ -37,7 +40,7 @@ public class ProjectId implements ProjectKey {
      * Constructor used to construct a ProjectId to get cache key, url,
      * and environment.
      * @param projectId project id string.
-     * @param environmentKey the envioronment url.
+     * @param environmentKey the environment url.
      */
     public ProjectId(@NonNull String projectId, String environmentKey) {
         this.projectId = projectId;
@@ -72,7 +75,7 @@ public class ProjectId implements ProjectKey {
     }
 
     /**
-     * Return the cacheky for this project id. Or, return
+     * Return the cache key for this project id. Or, return
      * the environment cache key if there is an environment.
      *
      * @return cache key used to cache datafile.
@@ -101,9 +104,39 @@ public class ProjectId implements ProjectKey {
         }
     }
 
+    public String toJSONString() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("projectId", projectId);
+            jsonObject.put("environmentKey", environmentKey);
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static ProjectId fromJSONString(String jsonString) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            if (jsonObject.has("projectId")) {
+                String projectId = jsonObject.getString("projectId");
+                String environmentKey = null;
+                if (jsonObject.has("environmentKey")) {
+                    environmentKey = jsonObject.getString("environmentKey");
+                }
+                return new ProjectId(projectId, environmentKey);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
     /**
-     * To string either returns the proejct id as string or a concatenated string of projectid
-     * delimitor and environment key.
+     * To string either returns the proejct id as string or a concatenated string of project id
+     * delimiter and environment key.
      * @return
      */
     @Override

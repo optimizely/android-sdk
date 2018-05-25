@@ -17,12 +17,12 @@
 package com.optimizely.ab.android.shared;
 
 /**
- * The proejct key represents the elements of the project used to
+ * The project key represents the elements of the project used to
  * cache and fetch the datafile.
  */
 interface ProjectKey {
     /**
-     * Get the cache key for this project cofiguration.
+     * Get the cache key for this project configuration.
      * @return cache key string.
      */
     String getCacheKey();

@@ -117,10 +117,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
                 LoggerFactory.getLogger(ServiceScheduler.class));
 
         Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, projectId.getId());
-        if (projectId.getEnvironmentKey() != null) {
-            intent.putExtra(DatafileService.EXTRA_ENV_ID, projectId.getEnvironmentKey().getUrl());
-        }
+        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, projectId.toJSONString());
         serviceScheduler.schedule(intent, updateInterval * 1000);
 
         storeInterval(context, updateInterval * 1000);

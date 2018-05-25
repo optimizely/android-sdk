@@ -102,8 +102,7 @@ public class DatafileRescheduler extends BroadcastReceiver {
                 // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
                 // so, we don't need to do anything.
                // if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                    intent.putExtra(DatafileService.EXTRA_PROJECT_ID, projectId.getId());
-                    intent.putExtra(DatafileService.EXTRA_ENV_ID, projectId.getEnvironmentKey() != null? projectId.getEnvironmentKey().toString():null);
+                    intent.putExtra(DatafileService.EXTRA_PROJECT_ID, projectId.toJSONString());
                     ServiceScheduler.startService(context, DatafileService.JOB_ID, intent);
                     logger.info("Rescheduled data file watching for project {}", projectId);
                 //}

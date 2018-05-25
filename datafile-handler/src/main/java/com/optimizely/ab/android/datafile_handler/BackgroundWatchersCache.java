@@ -82,25 +82,20 @@ class BackgroundWatchersCache {
                         environments = (JSONArray) alreadySet;
                         for (int i = 0; i < environments.length(); i++) {
                             JSONObject env = environments.getJSONObject(i);
-                            String key = env.has(ENVIRONMENT_KEY) ? env.getString(ENVIRONMENT_KEY): null;
-                            if ((key == null && projectId.getEnvironmentKey() == null) ||
-                                    (projectId.getEnvironmentKey() != null && projectId.getEnvironmentKey().toString().equals(key))) {
+                            ProjectId savedProject = ProjectId.fromJSONString(env.toString());
+                            if (savedProject.equals(projectId)) {
                                 env.put(WATCHING, watching);
                             }
                         }
                     }
                     else if (alreadySet instanceof Boolean) {
-                        JSONObject project = new JSONObject();
-                        project.put(PROJECTID, projectId.getId());
-                        project.put(ENVIRONMENT_KEY, null);
+                        JSONObject project = new JSONObject(projectId.toJSONString());
                         project.put(WATCHING, alreadySet);
                         environments.put(project);
                     }
                 }
                 else {
-                    JSONObject project = new JSONObject();
-                    project.put(PROJECTID, projectId.getId());
-                    project.put(ENVIRONMENT_KEY, projectId.getEnvironmentKey() != null? projectId.getEnvironmentKey().toString() : null);
+                    JSONObject project = new JSONObject(projectId.toJSONString());
                     project.put(WATCHING, watching);
                     environments.put(project);
                 }
@@ -143,10 +138,8 @@ class BackgroundWatchersCache {
                         JSONArray envs = (JSONArray) watchers;
                         for (int i = 0; i < envs.length(); i++) {
                             JSONObject env = envs.getJSONObject(i);
-                            String envKey = env.has(ENVIRONMENT_KEY) ? env.getString(ENVIRONMENT_KEY) : null;
-                            if ((projectId.getEnvironmentKey() == null && envKey == null ||
-                                    (projectId.getEnvironmentKey() != null &&
-                                            projectId.getEnvironmentKey().toString().equals(envKey)))) {
+                            ProjectId savedId = ProjectId.fromJSONString(env.toString());
+                            if (savedId.equals(projectId)) {
                                 return env.getBoolean(WATCHING);
                             }
                         }
@@ -188,8 +181,7 @@ class BackgroundWatchersCache {
                         JSONArray env = (JSONArray)watch;
                         for (int i = 0; i< env.length(); i++) {
                             if (env.getJSONObject(i).getBoolean(WATCHING)) {
-                                projectIds.add(new ProjectId(env.getJSONObject(i).getString(PROJECTID),
-                                        env.getJSONObject(i).has(ENVIRONMENT_KEY)?env.getJSONObject(i).getString(ENVIRONMENT_KEY):null));
+                                projectIds.add(ProjectId.fromJSONString(env.getJSONObject(i).toString()));
                             }
                         }
                     }

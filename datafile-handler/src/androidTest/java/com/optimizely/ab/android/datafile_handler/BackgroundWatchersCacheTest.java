@@ -76,7 +76,7 @@ public class BackgroundWatchersCacheTest {
     }
 
     @Test
-    public void setIsWatchingPersists() {
+    public void setIsWatchingPersistsWithoutEnvironment() {
         assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("1"), true));
         assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("2"), true));
         assertTrue(backgroundWatchersCache.setIsWatching(new ProjectId("3"), false));
