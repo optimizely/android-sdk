@@ -29,6 +29,7 @@ import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecuto
 import android.support.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
+import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
@@ -44,6 +45,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
@@ -56,6 +59,7 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -112,6 +116,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
 
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(InstrumentationRegistry.getTargetContext()), eq(testProjectId), eq(3600L));
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
 
@@ -174,14 +179,28 @@ public class OptimizelyManagerTest {
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
         */
-        optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, new OptimizelyStartListener() {
+
+        doAnswer(
+                new Answer<Object>() {
+                    public Object answer(InvocationOnMock invocation) {
+                        ((DatafileLoadedListener) invocation.getArguments()[2]).onDatafileLoaded(null);
+                        return null;
+                    }
+                }).when(optimizelyManager.getDatafileHandler()).downloadDatafile(any(Context.class), any(String.class),
+                any(DatafileLoadedListener.class));
+
+        OptimizelyStartListener listener = new OptimizelyStartListener() {
             @Override
             public void onStart(OptimizelyClient optimizely) {
                 assertNotNull(optimizelyManager.getOptimizely());
                 assertNotNull(optimizelyManager.getDatafileHandler());
                 assertNull(optimizelyManager.getOptimizelyStartListener());
             }
-        });
+        };
+        optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, listener);
+
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(any(Context.class), eq(testProjectId), eq(3600L));
+
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
@@ -269,6 +288,28 @@ public class OptimizelyManagerTest {
             fail("Timed out");
         }
 
+        verify(logger).info("Sending Optimizely instance to listener");
+        verify(startListener).onStart(any(OptimizelyClient.class));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(testProjectId), eq(3600L));
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+    @Test
+    public void injectOptimizelyWithDatafileLisener() {
+        Context context = mock(Context.class);
+        UserProfileService userProfileService = mock(UserProfileService.class);
+        OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
+
+        optimizelyManager.setOptimizelyStartListener(startListener);
+        optimizelyManager.injectOptimizely(context, userProfileService, minDatafile);
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail("Timed out");
+        }
+
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(testProjectId), eq(3600L));
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
     }
