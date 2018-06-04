@@ -108,7 +108,7 @@ public class DatafileServiceTest {
             it++;
         }
 
-        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, new DatafileConfig("1").toJSONString());
+        intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, new DatafileConfig("1").toJSONString());
         DatafileService datafileService = ((DatafileService.LocalBinder) binder).getService();
         Logger logger = mock(Logger.class);
         datafileService.logger = logger;
@@ -188,7 +188,7 @@ public class DatafileServiceTest {
                 .PendingIntentFactory(context);
 
         Intent intent = new Intent(context, DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, new DatafileConfig("1").toJSONString());
+        intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, new DatafileConfig("1").toJSONString());
         serviceScheduler.schedule(intent, TimeUnit.HOURS.toMillis(1L));
 
         try {

@@ -70,11 +70,12 @@ public class MyApplication extends Application {
 
         // This app is built against a real Optimizely project with real experiments set.  Automated
         // espresso tests are run against this project id.  Changing it will make the Optimizely
-        // tests setup not work and the Espresso tests will fail.  Also, the project id passed here
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
-        optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
-                .withEnvironmentUrl("https://cdn.optimizely.com/public/8362480420/s/10657931863_staging.json")
-                .withEventDispatchInterval(60L * 10L)
+         OptimizelyManager.Builder builder = OptimizelyManager.builder(PROJECT_ID);
+         if (BuildConfig.DEBUG) {
+                    builder = builder.withEnvironmentUrl(System.getProperty("https://cdn.optimizely.com/public/8362480420/s/10657931863_staging.json"));
+         }
+         optimizelyManager =  builder.withEventDispatchInterval(60L * 10L)
                 .withDatafileDownloadInterval(60L * 10L)
                 .build(getApplicationContext());
     }

@@ -121,10 +121,10 @@ public class MainActivityEspressoTest {
                     super.before();
 
                     dataFileServiceIntent = new Intent(context, DatafileService.class);
-                    dataFileServiceIntent.putExtra(DatafileService.EXTRA_PROJECT_ID, new DatafileConfig(MyApplication.PROJECT_ID).toJSONString());
+                    dataFileServiceIntent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, new DatafileConfig(MyApplication.PROJECT_ID).toJSONString());
 
                     eventIntentService = new Intent(context, EventIntentService.class);
-                    eventIntentService.putExtra(DatafileService.EXTRA_PROJECT_ID, new DatafileConfig(MyApplication.PROJECT_ID).toJSONString());
+                    eventIntentService.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, new DatafileConfig(MyApplication.PROJECT_ID).toJSONString());
 
                     Context applicationContext = context.getApplicationContext();
                     ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(applicationContext);
