@@ -103,6 +103,10 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * @param updateInterval frequency of updates in seconds
      */
     public void startBackgroundUpdates(Context context, String projectId, Long updateInterval) {
+
+        // if already running, stop it
+        stopBackgroundUpdates(context, projectId);
+
         enableBackgroundCache(context, projectId);
 
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler

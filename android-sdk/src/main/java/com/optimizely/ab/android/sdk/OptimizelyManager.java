@@ -69,6 +69,7 @@ public class OptimizelyManager {
     @Nullable private ErrorHandler errorHandler;
     @NonNull private Logger logger;
     @NonNull private final String projectId;
+
     @NonNull private UserProfileService userProfileService;
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
@@ -165,6 +166,11 @@ public class OptimizelyManager {
                     defaultUserProfileService.start();
                 }
                 optimizelyClient = buildOptimizely(context, datafile);
+
+                if (datafileDownloadInterval > 0 && datafileHandler != null) {
+                    datafileHandler.startBackgroundUpdates(context, projectId, datafileDownloadInterval);
+                }
+
             }
             else {
                 logger.error("Invalid datafile");
@@ -303,8 +309,7 @@ public class OptimizelyManager {
                 } else {
                     //if datafile is null than it should be able to take from cache and if not present
                     //in Cache than should be able to get from raw data file
-                    optimizelyClient = initialize(context,getDatafile(context,datafileRes),false);
-                    notifyStartListener();
+                    injectOptimizely(context, userProfileService, getDatafile(context,datafileRes));
                 }
             }
 
@@ -384,7 +389,6 @@ public class OptimizelyManager {
     public @NonNull String getDatafileUrl(String projectId) {
         return DatafileService.getDatafileUrl(projectId);
     }
-
     @NonNull
     public String getProjectId() {
         return projectId;
@@ -584,6 +588,7 @@ public class OptimizelyManager {
         @Nullable private EventHandler eventHandler = null;
         @Nullable private ErrorHandler errorHandler = null;
         @Nullable private UserProfileService userProfileService = null;
+
         Builder(@NonNull String projectId) {
             this.projectId = projectId;
         }
