@@ -569,11 +569,8 @@ public class OptimizelyClient {
      * @param variableKey the key for the live variable being retrieved from the current project config
      * @return the live variable to retrieve for the given variable key
      *
-     * @throws UnknownLiveVariableException if there are no event types in the current project config with the given
-     * name
      */
-    private LiveVariable getLiveVariableOrThrow(ProjectConfig projectConfig, String variableKey)
-            throws UnknownLiveVariableException {
+    private LiveVariable getLiveVariable(ProjectConfig projectConfig, String variableKey) {
 
         LiveVariable liveVariable = projectConfig
                 .getLiveVariableKeyMapping()
@@ -618,8 +615,7 @@ public class OptimizelyClient {
     String getVariableString(@NonNull String variableKey,
                              @NonNull String userId,
                              @NonNull Map<String, String> attributes,
-                             boolean activateExperiment)
-            throws UnknownLiveVariableException {
+                             boolean activateExperiment) {
 
         if (!isValid()) {
             logger.warn("Optimizely is not initialized, could not get live variable {} " +
@@ -628,7 +624,7 @@ public class OptimizelyClient {
         }
 
 
-        LiveVariable variable = getLiveVariableOrThrow(optimizely.getProjectConfig(), variableKey);
+        LiveVariable variable = getLiveVariable(optimizely.getProjectConfig(), variableKey);
         if (variable == null) {
             return null;
         }
@@ -672,7 +668,7 @@ public class OptimizelyClient {
     public @Nullable
     Boolean getVariableBoolean(@NonNull String variableKey,
                                @NonNull String userId,
-                               boolean activateExperiment) throws UnknownLiveVariableException {
+                               boolean activateExperiment)  {
         return getVariableBoolean(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
@@ -689,8 +685,7 @@ public class OptimizelyClient {
     Boolean getVariableBoolean(@NonNull String variableKey,
                                @NonNull String userId,
                                @NonNull Map<String, String> attributes,
-                               boolean activateExperiment)
-            throws UnknownLiveVariableException {
+                               boolean activateExperiment) {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
         if (variableValueString != null) {
@@ -711,7 +706,7 @@ public class OptimizelyClient {
     public @Nullable
     Integer getVariableInteger(@NonNull String variableKey,
                                @NonNull String userId,
-                               boolean activateExperiment) throws UnknownLiveVariableException {
+                               boolean activateExperiment) {
         return getVariableInteger(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
@@ -727,8 +722,7 @@ public class OptimizelyClient {
     Integer getVariableInteger(@NonNull String variableKey,
                                @NonNull String userId,
                                @NonNull Map<String, String> attributes,
-                               boolean activateExperiment)
-            throws UnknownLiveVariableException {
+                               boolean activateExperiment) {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
         if (variableValueString != null) {
@@ -754,7 +748,7 @@ public class OptimizelyClient {
     public @Nullable
     Double getVariableDouble(@NonNull String variableKey,
                              @NonNull String userId,
-                             boolean activateExperiment) throws UnknownLiveVariableException {
+                             boolean activateExperiment) {
         return getVariableDouble(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
     }
 
@@ -771,8 +765,7 @@ public class OptimizelyClient {
     Double getVariableDouble(@NonNull String variableKey,
                              @NonNull String userId,
                              @NonNull Map<String, String> attributes,
-                             boolean activateExperiment)
-            throws UnknownLiveVariableException {
+                             boolean activateExperiment) {
 
         String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
         if (variableValueString != null) {
