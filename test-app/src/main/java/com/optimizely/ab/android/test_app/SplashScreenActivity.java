@@ -30,6 +30,8 @@ import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.notification.ActivateNotificationListener;
+import com.optimizely.ab.notification.TrackNotificationListenerInterface;
 
 import java.util.Map;
 
@@ -56,7 +58,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        boolean INITIALIZE_ASYNCHRONOUSLY = true;
+        boolean INITIALIZE_ASYNCHRONOUSLY = false;
 
         // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
         // in the manifest.
@@ -69,11 +71,17 @@ public class SplashScreenActivity extends AppCompatActivity {
          **/
         if (!INITIALIZE_ASYNCHRONOUSLY) {
                optimizelyManager.initialize(myApplication, R.raw.datafile);
+               optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, String> map,  Variation variation,  LogEvent logEvent) -> {
+                   System.out.println("got activation");
+               });
+               optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, String> map, Map<String, ?> map1, LogEvent logEvent) -> {
+
+                   System.out.println("got track");
+               });
                startVariation();
         } else {
             // Initialize Optimizely asynchronously
-
-            optimizelyManager.initialize(myApplication, R.raw.datafile, new OptimizelyStartListener() {
+            optimizelyManager.initialize(this,R.raw.datafile, new OptimizelyStartListener() {
 
                 @Override
                 public void onStart(OptimizelyClient optimizely) {
@@ -98,8 +106,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         // Utility method for verifying event dispatches in our automated tests
         CountingIdlingResourceManager.increment(); // increment for impression event
-
-       Boolean variableb = optimizelyManager.getOptimizely().getVariableBoolean("variableb", userId, false);
 
         // variation is nullable so we should check for null values
         if (backgroundVariation != null) {
