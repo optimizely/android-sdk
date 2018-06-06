@@ -22,13 +22,19 @@ import android.support.annotation.Nullable;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.UnknownEventTypeException;
+import com.optimizely.ab.UnknownLiveVariableException;
 import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.LiveVariable;
+import com.optimizely.ab.config.LiveVariableUsageInstance;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.error.NoOpErrorHandler;
+import com.optimizely.ab.error.RaiseExceptionErrorHandler;
 import com.optimizely.ab.notification.NotificationCenter;
 
 import org.slf4j.Logger;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -547,6 +553,235 @@ public class OptimizelyClient {
             return optimizely.notificationCenter;
         } else {
             logger.warn("Optimizely is not initialized, could not get the notification listener");
+        }
+
+        return null;
+    }
+
+    //======== live variable getters ========//
+    /**
+     * Helper method to retrieve the {@link LiveVariable} for the given variable key.
+     * If {@link RaiseExceptionErrorHandler} is provided, either a live variable is returned, or an exception is
+     * thrown.
+     * If {@link NoOpErrorHandler} is used, either a live variable or {@code null} is returned.
+     *
+     * @param projectConfig the current project config
+     * @param variableKey the key for the live variable being retrieved from the current project config
+     * @return the live variable to retrieve for the given variable key
+     *
+     * @throws UnknownLiveVariableException if there are no event types in the current project config with the given
+     * name
+     */
+    private LiveVariable getLiveVariableOrThrow(ProjectConfig projectConfig, String variableKey)
+            throws UnknownLiveVariableException {
+
+        LiveVariable liveVariable = projectConfig
+                .getLiveVariableKeyMapping()
+                .get(variableKey);
+
+        if (liveVariable == null) {
+            String unknownLiveVariableKeyError =
+                    String.format("Live variable \"%s\" is not in the datafile.", variableKey);
+            logger.error(unknownLiveVariableKeyError);
+            return null;
+
+        }
+
+        return liveVariable;
+    }
+
+    /**
+     * Get the value of a String live variable
+     * @param variableKey the String key for the variable
+     * @param userId the user ID
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @return String value of the live variable
+     */
+    @Deprecated
+    public @Nullable
+    String getVariableString(@NonNull String variableKey,
+                             @NonNull String userId,
+                             boolean activateExperiment) {
+        return getVariableString(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
+    }
+
+    /**
+     * Get the value of a String live variable
+     * @param variableKey the String key for the variable
+     * @param userId the user ID
+     * @param attributes a map of attributes about the user
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @return String value of the live variable
+     */
+    @Deprecated
+    public @Nullable
+    String getVariableString(@NonNull String variableKey,
+                             @NonNull String userId,
+                             @NonNull Map<String, String> attributes,
+                             boolean activateExperiment)
+            throws UnknownLiveVariableException {
+
+        if (!isValid()) {
+            logger.warn("Optimizely is not initialized, could not get live variable {} " +
+                    "for user {}", variableKey, userId);
+            return null;
+        }
+
+
+        LiveVariable variable = getLiveVariableOrThrow(optimizely.getProjectConfig(), variableKey);
+        if (variable == null) {
+            return null;
+        }
+
+        List<Experiment> experimentsUsingLiveVariable =
+                optimizely.getProjectConfig().getLiveVariableIdToExperimentsMapping().get(variable.getId());
+        Map<String, Map<String, LiveVariableUsageInstance>> variationToLiveVariableUsageInstanceMapping =
+                optimizely.getProjectConfig().getVariationToLiveVariableUsageInstanceMapping();
+
+        if (experimentsUsingLiveVariable == null) {
+            logger.warn("No experiment is using variable \"{}\".", variable.getKey());
+            return variable.getDefaultValue();
+        }
+
+        for (Experiment experiment : experimentsUsingLiveVariable) {
+            Variation variation;
+            if (activateExperiment) {
+                variation = activate(experiment.getKey(), userId, attributes);
+            } else {
+                variation = getVariation(experiment.getKey(), userId, attributes);
+            }
+
+            if (variation != null) {
+                LiveVariableUsageInstance usageInstance =
+                        variationToLiveVariableUsageInstanceMapping.get(variation.getId()).get(variable.getId());
+                return usageInstance.getValue();
+            }
+        }
+
+        return variable.getDefaultValue();
+    }
+
+    /**
+     * Get the value of a Boolean live variable
+     * @param variableKey the String key for the variable
+     * @param userId the user ID
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @return Boolean value of the live variable
+     */
+    @Deprecated
+    public @Nullable
+    Boolean getVariableBoolean(@NonNull String variableKey,
+                               @NonNull String userId,
+                               boolean activateExperiment) throws UnknownLiveVariableException {
+        return getVariableBoolean(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
+    }
+
+    /**
+     * Get the value of a Boolean live variable
+     * @param variableKey the String key for the variable
+     * @param userId the user ID
+     * @param attributes a map of attributes about the user
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @return Boolean value of the live variable
+     */
+    @Deprecated
+    public @Nullable
+    Boolean getVariableBoolean(@NonNull String variableKey,
+                               @NonNull String userId,
+                               @NonNull Map<String, String> attributes,
+                               boolean activateExperiment)
+            throws UnknownLiveVariableException {
+
+        String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
+        if (variableValueString != null) {
+            return Boolean.parseBoolean(variableValueString);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the value of a Integer live variable
+     * @param variableKey the String key for the variable
+     * @param userId the user ID
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @return Integer value of the live variable
+     */
+    @Deprecated
+    public @Nullable
+    Integer getVariableInteger(@NonNull String variableKey,
+                               @NonNull String userId,
+                               boolean activateExperiment) throws UnknownLiveVariableException {
+        return getVariableInteger(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
+    }
+
+    /**
+     * Get the value of a Integer live variable
+     * @param variableKey the String key for the variable
+     * @param userId the user ID
+     * @param attributes a map of attributes about the user
+     * @param activateExperiment the flag denoting whether to activate an experiment or not* @return Integer value of the live variable
+     */
+    @Deprecated
+    public @Nullable
+    Integer getVariableInteger(@NonNull String variableKey,
+                               @NonNull String userId,
+                               @NonNull Map<String, String> attributes,
+                               boolean activateExperiment)
+            throws UnknownLiveVariableException {
+
+        String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
+        if (variableValueString != null) {
+            try {
+                return Integer.parseInt(variableValueString);
+            } catch (NumberFormatException e) {
+                logger.error("Variable value \"{}\" for live variable \"{}\" is not an integer.", variableValueString,
+                        variableKey);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the value of a Double live variable
+     * @param variableKey the String key for the variable
+     * @param userId the user ID
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @return Double value of the live variable
+     */
+    @Deprecated
+    public @Nullable
+    Double getVariableDouble(@NonNull String variableKey,
+                             @NonNull String userId,
+                             boolean activateExperiment) throws UnknownLiveVariableException {
+        return getVariableDouble(variableKey, userId, Collections.<String, String>emptyMap(), activateExperiment);
+    }
+
+    /**
+     * Get the value of a Double live variable
+     * @param variableKey the String key for the variable
+     * @param userId the user ID
+     * @param attributes a map of attributes about the user
+     * @param activateExperiment the flag denoting whether to activate an experiment or not
+     * @return Double value of the live variable
+     */
+    @Deprecated
+    public @Nullable
+    Double getVariableDouble(@NonNull String variableKey,
+                             @NonNull String userId,
+                             @NonNull Map<String, String> attributes,
+                             boolean activateExperiment)
+            throws UnknownLiveVariableException {
+
+        String variableValueString = getVariableString(variableKey, userId, attributes, activateExperiment);
+        if (variableValueString != null) {
+            try {
+                return Double.parseDouble(variableValueString);
+            } catch (NumberFormatException e) {
+                logger.error("Variable value \"{}\" for live variable \"{}\" is not a double.", variableValueString,
+                        variableKey);
+            }
         }
 
         return null;
