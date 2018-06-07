@@ -624,13 +624,13 @@ public class OptimizelyClient {
         }
 
         if (variableKey == null || variableKey.isEmpty()) {
-            logger.warn("Invalid live variable key (null or empty) " +
+            logger.error("Invalid live variable key (null or empty) " +
                     "for user {}", userId);
             return null;
         }
 
         if (userId == null || userId.isEmpty()) {
-            logger.warn("Invalid userId (null or empty) " +
+            logger.error("Invalid userId (null or empty) " +
                     "for live variable {}", variableKey);
             return null;
         }
