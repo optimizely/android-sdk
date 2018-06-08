@@ -108,7 +108,7 @@ public class DatafileServiceTest {
             it++;
         }
 
-        intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, new DatafileConfig("1").toJSONString());
+        intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, new DatafileConfig("1", null).toJSONString());
         DatafileService datafileService = ((DatafileService.LocalBinder) binder).getService();
         Logger logger = mock(Logger.class);
         datafileService.logger = logger;
@@ -188,7 +188,7 @@ public class DatafileServiceTest {
                 .PendingIntentFactory(context);
 
         Intent intent = new Intent(context, DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, new DatafileConfig("1").toJSONString());
+        intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, new DatafileConfig("1", null).toJSONString());
         serviceScheduler.schedule(intent, TimeUnit.HOURS.toMillis(1L));
 
         try {
@@ -209,7 +209,7 @@ public class DatafileServiceTest {
         // HARD-CODING link here to make sure we don't unintentionally mess up the datafile version
         // and url by accidentally changing those constants.
         // us to update this test.
-        String datafileUrl = new DatafileConfig("1").getUrl();
+        String datafileUrl = new DatafileConfig("1", null).getUrl();
         assertEquals("https://cdn.optimizely.com/json/1.json", datafileUrl);
     }
     @
@@ -220,6 +220,6 @@ public class DatafileServiceTest {
         // and url by accidentally changing those constants.
         // us to update this test.
         String datafileUrl = new DatafileConfig("1", "2").getUrl();
-        assertEquals("2", datafileUrl);
+        assertEquals("https://cdn.optimizely.com/json/2.json", datafileUrl);
     }
 }

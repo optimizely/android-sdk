@@ -24,6 +24,6 @@ public class DefaultDatafileHandlerUnitTest {
         handler = new DefaultDatafileHandler();
         Context context = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(context);
-        assertFalse(handler.isDatafileSaved(context, new DatafileConfig("1")));
+        assertFalse(handler.isDatafileSaved(context, new DatafileConfig("1", null)));
     }
 }

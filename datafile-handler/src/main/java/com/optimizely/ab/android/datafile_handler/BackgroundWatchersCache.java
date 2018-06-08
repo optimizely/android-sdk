@@ -64,39 +64,16 @@ class BackgroundWatchersCache {
      * @return boolean indicating whether the set succeed or not
      */
     boolean setIsWatching(@NonNull DatafileConfig datafileConfig, boolean watching) {
-        if (datafileConfig.getProjectId().isEmpty()) {
+        if (datafileConfig.getKey().isEmpty()) {
             logger.error("Passed in an empty string for projectId");
             return false;
         }
 
         try {
             JSONObject backgroundWatchers = load();
-            JSONArray environments = new JSONArray();
             if (backgroundWatchers != null) {
-                if (backgroundWatchers.has(datafileConfig.getProjectId())) {
-                    Object alreadySet = backgroundWatchers.get(datafileConfig.getProjectId());
-                    if (alreadySet instanceof JSONArray) {
-                        environments = (JSONArray) alreadySet;
-                        for (int i = 0; i < environments.length(); i++) {
-                            JSONObject env = environments.getJSONObject(i);
-                            DatafileConfig savedProject = DatafileConfig.fromJSONString(env.toString());
-                            if (savedProject.equals(datafileConfig)) {
-                                env.put(WATCHING, watching);
-                            }
-                        }
-                    }
-                    else if (alreadySet instanceof Boolean) {
-                        JSONObject project = new JSONObject(datafileConfig.toJSONString());
-                        project.put(WATCHING, alreadySet);
-                        environments.put(project);
-                    }
-                }
-                else {
-                    JSONObject project = new JSONObject(datafileConfig.toJSONString());
-                    project.put(WATCHING, watching);
-                    environments.put(project);
-                }
-                backgroundWatchers.put(datafileConfig.getProjectId(), environments);
+
+                backgroundWatchers.put(datafileConfig.getKey(), watching);
 
                 return save(backgroundWatchers.toString());
             }
@@ -113,7 +90,7 @@ class BackgroundWatchersCache {
      * @return true if it has backgrounding, false if not.
      */
     boolean isWatching(@NonNull DatafileConfig datafileConfig) {
-        if (datafileConfig.getProjectId().isEmpty()) {
+        if (datafileConfig.getKey().isEmpty()) {
             logger.error("Passed in an empty string for projectId");
             return false;
         }
@@ -122,32 +99,12 @@ class BackgroundWatchersCache {
             JSONObject backgroundWatchers = load();
 
             if (backgroundWatchers != null) {
-                if (backgroundWatchers.has(datafileConfig.getProjectId())) {
-                    Object watchers = backgroundWatchers.get(datafileConfig.getProjectId());
-                    if (watchers instanceof Boolean) {
-                        // looking for an environment and it does not have the array of environment pairs.
-                        if (datafileConfig.getEnvironmentKey() != null) {
-                            return false;
-                        }
-                        return (Boolean)watchers;
-                    }
-                    else if (watchers instanceof JSONArray){
-                        JSONArray envs = (JSONArray) watchers;
-                        for (int i = 0; i < envs.length(); i++) {
-                            JSONObject env = envs.getJSONObject(i);
-                            DatafileConfig savedId = DatafileConfig.fromJSONString(env.toString());
-                            if (savedId.equals(datafileConfig)) {
-                                return env.getBoolean(WATCHING);
-                            }
-                        }
-                    }
+                if (backgroundWatchers.has(datafileConfig.getKey())) {
+                    return backgroundWatchers.getBoolean(datafileConfig.getKey());
                 }
                 else {
                     return false;
                 }
-
-                return false;
-
             }
         } catch (JSONException e) {
             logger.error("Unable check if project id is being watched", e);
@@ -167,20 +124,16 @@ class BackgroundWatchersCache {
             if (backgroundWatchers != null) {
                 Iterator<String> iterator = backgroundWatchers.keys();
                 while (iterator.hasNext()) {
-                    final String projectId = iterator.next();
-                    Object watch = backgroundWatchers.get(projectId);
-                    if (watch instanceof Boolean) {
-                        if ((Boolean)watch) {
-                            projectIds.add(new DatafileConfig(projectId, (String) null));
+                    final String projectKey = iterator.next();
+                    if (backgroundWatchers.getBoolean(projectKey)) {
+                        DatafileConfig datafileConfig = null;
+                        if (projectKey.contains("-")) {
+                            datafileConfig = new DatafileConfig(null, projectKey);
                         }
-                    }
-                    else if (watch instanceof JSONArray){
-                        JSONArray env = (JSONArray)watch;
-                        for (int i = 0; i< env.length(); i++) {
-                            if (env.getJSONObject(i).getBoolean(WATCHING)) {
-                                projectIds.add(DatafileConfig.fromJSONString(env.getJSONObject(i).toString()));
-                            }
+                        else {
+                            datafileConfig = new DatafileConfig(projectKey, null);
                         }
+                        projectIds.add(datafileConfig);
                     }
                 }
             }

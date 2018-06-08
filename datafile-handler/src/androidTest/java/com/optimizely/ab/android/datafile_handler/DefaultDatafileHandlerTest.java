@@ -44,7 +44,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        DatafileConfig projectId = new DatafileConfig("1");
+        DatafileConfig projectId = new DatafileConfig("1", null);
         datafileHandler.saveDatafile(appContext, projectId, "{}");
         assertTrue(datafileHandler.isDatafileSaved(appContext, projectId));
         assertNotNull(datafileHandler.loadSavedDatafile(appContext, projectId));
@@ -72,7 +72,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        String datafile = datafileHandler.downloadDatafile(appContext, new DatafileConfig("1"));
+        String datafile = datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", null));
 
         assertNull(datafile);
     }
@@ -92,7 +92,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.downloadDatafile(appContext, new DatafileConfig("1"), new DatafileLoadedListener() {
+        datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", null), new DatafileLoadedListener() {
             @Override
             public void onDatafileLoaded(@Nullable String dataFile) {
                 assertNull(dataFile);
@@ -130,11 +130,11 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1"), 24 * 60 * 60L);
+        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", null), 24 * 60 * 60L);
 
         assertTrue(true);
 
-        datafileHandler.stopBackgroundUpdates(appContext,  new DatafileConfig("1"));
+        datafileHandler.stopBackgroundUpdates(appContext,  new DatafileConfig("1", null));
 
         assertTrue(true);
     }

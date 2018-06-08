@@ -16,12 +16,8 @@
 
 package com.optimizely.ab.android.shared;
 
-import android.support.annotation.NonNull;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Objects;
 
 /**
  * A class to encapsulate the project id and any environment that might be used.
@@ -35,34 +31,27 @@ public class DatafileConfig {
     public static String projectUrl = "https://cdn.optimizely.com/json/%s.json";
     public static String delimitor = "::::";
 
-    @NonNull private final String projectId;
-    private final String environmentKey;
+    private final String projectId;
+    private final String sdkKey;
 
     /**
      * Constructor used to construct a ProjectId to get cache key, url,
      * and environment.
      * @param projectId project id string.
-     * @param environmentKey the environment url.
+     * @param sdkKey the environment url.
      */
-    public DatafileConfig(@NonNull String projectId, String environmentKey) {
+    public DatafileConfig(String projectId, String sdkKey) {
+        assert(projectId != null || sdkKey != null);
         this.projectId = projectId;
-        this.environmentKey = environmentKey;
-    }
-
-    /**
-     * Constructor with no environment
-     * @param projectId the current project id string.
-     */
-    public DatafileConfig(@NonNull String projectId) {
-        this(projectId, null);
+        this.sdkKey = sdkKey;
     }
 
     /**
      * This returns the current project id string.
      * @return project id string.
      */
-    public String getProjectId() {
-        return projectId;
+    public String getKey() {
+        return sdkKey != null ? sdkKey : projectId;
     }
 
     /**
@@ -70,8 +59,8 @@ public class DatafileConfig {
      * This can be null.
      * @return environment object for current project config if any.
      */
-    public String getEnvironmentKey() {
-        return environmentKey;
+    private String getSdkKey() {
+        return sdkKey;
     }
 
     /**
@@ -81,8 +70,8 @@ public class DatafileConfig {
      * @return cache key used to cache datafile.
      */
     public String getCacheKey() {
-        if (environmentKey != null) {
-            return String.valueOf(environmentKey.hashCode());
+        if (sdkKey != null) {
+            return sdkKey;
         }
 
         return projectId;
@@ -94,8 +83,8 @@ public class DatafileConfig {
      * @return url of current project configuration.
      */
     public String getUrl() {
-        if (environmentKey != null) {
-            return environmentKey;
+        if (sdkKey != null) {
+            return String.format(projectUrl, sdkKey);
         }
         else {
             return String.format(projectUrl, projectId);
@@ -106,7 +95,7 @@ public class DatafileConfig {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("projectId", projectId);
-            jsonObject.put("environmentKey", environmentKey);
+            jsonObject.put("sdkKey", sdkKey);
             return jsonObject.toString();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -121,8 +110,8 @@ public class DatafileConfig {
             if (jsonObject.has("projectId")) {
                 String projectId = jsonObject.getString("projectId");
                 String environmentKey = null;
-                if (jsonObject.has("environmentKey")) {
-                    environmentKey = jsonObject.getString("environmentKey");
+                if (jsonObject.has("sdkKey")) {
+                    environmentKey = jsonObject.getString("sdkKey");
                 }
                 return new DatafileConfig(projectId, environmentKey);
             }
@@ -139,7 +128,7 @@ public class DatafileConfig {
      */
     @Override
     public String toString() {
-        return projectId + (environmentKey != null? delimitor + environmentKey.toString() : "");
+        return projectId + (sdkKey != null? delimitor + sdkKey.toString() : "");
     }
 
     public boolean equals(Object o) {
@@ -151,15 +140,15 @@ public class DatafileConfig {
         }
         DatafileConfig p = (DatafileConfig) o;
         return p.projectId.equals(((DatafileConfig) o).projectId) &&
-                (p.getEnvironmentKey() == null && ((DatafileConfig) o).getEnvironmentKey() == null) ||
-                (p.getEnvironmentKey() != null && p.getEnvironmentKey().equals(((DatafileConfig) o).getEnvironmentKey()) ||
-                        ((DatafileConfig) o).getEnvironmentKey() != null &&
-                                ((DatafileConfig) o).getEnvironmentKey().equals(p.getEnvironmentKey()));
+                (p.getSdkKey() == null && ((DatafileConfig) o).getSdkKey() == null) ||
+                (p.getSdkKey() != null && p.getSdkKey().equals(((DatafileConfig) o).getSdkKey()) ||
+                        ((DatafileConfig) o).getSdkKey() != null &&
+                                ((DatafileConfig) o).getSdkKey().equals(p.getSdkKey()));
     }
 
     public int hashCode() {
         int result = 17;
-        result = 31 * result + projectId.hashCode() + (getEnvironmentKey() == null ? 0 : getEnvironmentKey().hashCode());
+        result = 31 * result + projectId.hashCode() + (getSdkKey() == null ? 0 : getSdkKey().hashCode());
         return result;
     }
 

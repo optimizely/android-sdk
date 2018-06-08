@@ -66,16 +66,16 @@ public class OptimizelyManager {
     @Nullable private EventHandler eventHandler = null;
     @Nullable private ErrorHandler errorHandler;
     @NonNull private Logger logger;
-    @NonNull private final String projectId;
-    @Nullable private final String environmentUrl;
+    @Nullable private final String projectId;
+    @Nullable private final String sdkKey;
     @NonNull private final DatafileConfig datafileConfig;
 
     @NonNull private UserProfileService userProfileService;
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
-    OptimizelyManager(@NonNull String projectId,
-                      @Nullable String environmentUrl,
+    OptimizelyManager(@Nullable String projectId,
+                      @Nullable String sdkKey,
                       @NonNull Logger logger,
                       long datafileDownloadInterval,
                       @NonNull DatafileHandler datafileHandler,
@@ -83,9 +83,10 @@ public class OptimizelyManager {
                       long eventDispatchInterval,
                       @NonNull EventHandler eventHandler,
                       @NonNull UserProfileService userProfileService) {
+        assert(projectId != null || sdkKey != null);
         this.projectId = projectId;
-        this.environmentUrl = environmentUrl;
-        this.datafileConfig = new DatafileConfig(this.projectId, this.environmentUrl);
+        this.sdkKey = sdkKey;
+        this.datafileConfig = new DatafileConfig(this.projectId, this.sdkKey);
         this.logger = logger;
         this.datafileDownloadInterval = datafileDownloadInterval;
         this.datafileHandler = datafileHandler;
@@ -107,7 +108,7 @@ public class OptimizelyManager {
      * @return a {@link OptimizelyManager.Builder}
      */
     @NonNull
-    public static Builder builder(@NonNull String projectId) {
+    public static Builder builder(@Nullable String projectId) {
         return new Builder(projectId);
     }
 
@@ -467,7 +468,7 @@ public class OptimizelyManager {
         }
         else {
             // the builder creates the default user profile service. So, this should never happen.
-            userProfileService = DefaultUserProfileService.newInstance(datafileConfig.getProjectId(), context);
+            userProfileService = DefaultUserProfileService.newInstance(datafileConfig.getKey(), context);
             builder.withUserProfileService(userProfileService);
         }
 
@@ -585,7 +586,7 @@ public class OptimizelyManager {
     @SuppressWarnings("WeakerAccess")
     public static class Builder {
 
-        @NonNull private final String projectId;
+        @Nullable private final String projectId;
 
         // -1 will cause the background download to not be initiated.
         private long datafileDownloadInterval = -1L;
@@ -596,7 +597,7 @@ public class OptimizelyManager {
         @Nullable private EventHandler eventHandler = null;
         @Nullable private ErrorHandler errorHandler = null;
         @Nullable private UserProfileService userProfileService = null;
-        @Nullable private String environmentUrl = null;
+        @Nullable private String sdkKey = null;
 
         Builder(@NonNull String projectId) {
             this.projectId = projectId;
@@ -625,8 +626,8 @@ public class OptimizelyManager {
             return this;
         }
 
-        public Builder withEnvironmentUrl(String environmentUrl) {
-            this.environmentUrl = environmentUrl;
+        public Builder withSDKKey(String sdkKey) {
+            this.sdkKey = sdkKey;
             return this;
         }
 
@@ -732,7 +733,12 @@ public class OptimizelyManager {
                 eventHandler = DefaultEventHandler.getInstance(context);
             }
 
-            return new OptimizelyManager(projectId, environmentUrl,
+            if (projectId == null && sdkKey == null) {
+                logger.error("ProjectId and SDKKey cannot both be null");
+                return null;
+            }
+
+            return new OptimizelyManager(projectId, sdkKey,
                     logger,
                     datafileDownloadInterval,
                     datafileHandler,

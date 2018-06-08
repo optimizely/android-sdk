@@ -66,7 +66,7 @@ public class DatafileClientTest {
 
     @Test
     public void request200() throws IOException {
-        URL url = new URL(new DatafileConfig("1").getUrl());
+        URL url = new URL(new DatafileConfig("1", null).getUrl());
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(200);
         when(client.readStream(urlConnection)).thenReturn("{}");
@@ -98,8 +98,8 @@ public class DatafileClientTest {
      */
     @Test
     public void testLastModified() throws IOException {
-        final URL url1 = new URL(new DatafileConfig("1").getUrl());
-        final URL url2 = new URL(new DatafileConfig("2").getUrl());
+        final URL url1 = new URL(new DatafileConfig("1", null).getUrl());
+        final URL url2 = new URL(new DatafileConfig("2", null).getUrl());
         HttpURLConnection urlConnection2 = mock(HttpURLConnection.class);
         when(urlConnection.getURL()).thenReturn(url1);
         when(urlConnection2.getURL()).thenReturn(url2);
@@ -200,7 +200,7 @@ public class DatafileClientTest {
 
     @Test
     public void request201() throws IOException {
-        URL url = new URL(new DatafileConfig("1").getUrl());
+        URL url = new URL(new DatafileConfig("1", null).getUrl());
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(201);
         when(client.readStream(urlConnection)).thenReturn("{}");
@@ -225,7 +225,7 @@ public class DatafileClientTest {
 
     @Test
     public void request299() throws IOException {
-        URL url = new URL(new DatafileConfig("1").getUrl());
+        URL url = new URL(new DatafileConfig("1", null).getUrl());
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(299);
         when(client.readStream(urlConnection)).thenReturn("{}");
@@ -250,7 +250,7 @@ public class DatafileClientTest {
 
     @Test
     public void request300() throws IOException {
-        URL url = new URL(new DatafileConfig("1").getUrl());
+        URL url = new URL(new DatafileConfig("1", null).getUrl());
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(300);
 
@@ -270,7 +270,7 @@ public class DatafileClientTest {
 
     @Test
     public void handlesIOException() throws IOException {
-        URL url = new URL(new DatafileConfig("1").getUrl());
+        URL url = new URL(new DatafileConfig("1", null).getUrl());
         when(client.openConnection(url)).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(200);
         doThrow(new IOException()).when(urlConnection).connect();
@@ -292,14 +292,14 @@ public class DatafileClientTest {
 
     @Test
     public void handlesNullResponse() throws MalformedURLException {
-        URL url = new URL(new DatafileConfig("1").getUrl());
+        URL url = new URL(new DatafileConfig("1", null).getUrl());
         when(client.execute(any(Client.Request.class), eq(DatafileClient.REQUEST_BACKOFF_TIMEOUT), eq(DatafileClient.REQUEST_RETRIES_POWER))).thenReturn(null);
         assertNull(datafileClient.request(url.toString()));
     }
 
     @Test
     public void handlesEmptyStringResponse() throws MalformedURLException {
-        URL url = new URL(new DatafileConfig("1").getUrl());
+        URL url = new URL(new DatafileConfig("1", null).getUrl());
         when(client.execute(any(Client.Request.class), eq(DatafileClient.REQUEST_BACKOFF_TIMEOUT), eq(DatafileClient.REQUEST_RETRIES_POWER))).thenReturn("");
         assertEquals("", datafileClient.request(url.toString()));
     }
