@@ -85,7 +85,7 @@ public class BackgroundWatchersCacheTest {
         assertTrue(backgroundWatchersCache.isWatching(new DatafileConfig("2", null)));
         assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("3", null)));
 
-        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
+        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingDatafileConfigs();
         assertTrue(watchingProjectIds.contains(new DatafileConfig("2", null)));
     }
 
@@ -100,7 +100,7 @@ public class BackgroundWatchersCacheTest {
         assertTrue(backgroundWatchersCache.isWatching(new DatafileConfig("2", "2")));
         assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("3", "3")));
 
-        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
+        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingDatafileConfigs();
         assertTrue(watchingProjectIds.contains(new DatafileConfig("2", null)));
     }
 
@@ -117,7 +117,7 @@ public class BackgroundWatchersCacheTest {
         assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("1", null)));
         verify(logger).error(contains("Unable check if project id is being watched"), any(JSONException.class));
 
-        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
+        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingDatafileConfigs();
         assertTrue(watchingProjectIds.isEmpty());
         verify(logger).error(contains("Unable to get watching project ids"), any(JSONException.class));
     }

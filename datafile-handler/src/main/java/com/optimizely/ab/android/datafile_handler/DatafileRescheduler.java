@@ -90,7 +90,7 @@ public class DatafileRescheduler extends BroadcastReceiver {
         }
 
         void dispatch(Intent intent) {
-            List<DatafileConfig> projectIds = backgroundWatchersCache.getWatchingProjectIds();
+            List<DatafileConfig> projectIds = backgroundWatchersCache.getWatchingDatafileConfigs();
 
             for (DatafileConfig projectId : projectIds) {
                 // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs

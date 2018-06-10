@@ -47,20 +47,11 @@ public class DatafileConfig {
     }
 
     /**
-     * This returns the current project id string.
-     * @return project id string.
+     * This returns the current datafile key string.
+     * @return datafile key string.
      */
     public String getKey() {
         return sdkKey != null ? sdkKey : projectId;
-    }
-
-    /**
-     * The environment key object for this project id.
-     * This can be null.
-     * @return environment object for current project config if any.
-     */
-    private String getSdkKey() {
-        return sdkKey;
     }
 
     /**
@@ -70,11 +61,7 @@ public class DatafileConfig {
      * @return cache key used to cache datafile.
      */
     public String getCacheKey() {
-        if (sdkKey != null) {
-            return sdkKey;
-        }
-
-        return projectId;
+        return getKey();
     }
 
     /**
@@ -83,12 +70,7 @@ public class DatafileConfig {
      * @return url of current project configuration.
      */
     public String getUrl() {
-        if (sdkKey != null) {
-            return String.format(projectUrl, sdkKey);
-        }
-        else {
-            return String.format(projectUrl, projectId);
-        }
+        return String.format(projectUrl, getKey());
     }
 
     public String toJSONString() {
@@ -107,14 +89,15 @@ public class DatafileConfig {
     public static DatafileConfig fromJSONString(String jsonString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
+            String projectId = null;
             if (jsonObject.has("projectId")) {
-                String projectId = jsonObject.getString("projectId");
-                String environmentKey = null;
-                if (jsonObject.has("sdkKey")) {
-                    environmentKey = jsonObject.getString("sdkKey");
-                }
-                return new DatafileConfig(projectId, environmentKey);
+                projectId = jsonObject.getString("projectId");
             }
+            String environmentKey = null;
+            if (jsonObject.has("sdkKey")) {
+                environmentKey = jsonObject.getString("sdkKey");
+            }
+            return new DatafileConfig(projectId, environmentKey);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -128,7 +111,7 @@ public class DatafileConfig {
      */
     @Override
     public String toString() {
-        return projectId + (sdkKey != null? delimitor + sdkKey.toString() : "");
+        return projectId != null ? projectId : "null" + (sdkKey != null? sdkKey : "null");
     }
 
     public boolean equals(Object o) {
@@ -139,16 +122,15 @@ public class DatafileConfig {
             return false;
         }
         DatafileConfig p = (DatafileConfig) o;
-        return p.projectId.equals(((DatafileConfig) o).projectId) &&
-                (p.getSdkKey() == null && ((DatafileConfig) o).getSdkKey() == null) ||
-                (p.getSdkKey() != null && p.getSdkKey().equals(((DatafileConfig) o).getSdkKey()) ||
-                        ((DatafileConfig) o).getSdkKey() != null &&
-                                ((DatafileConfig) o).getSdkKey().equals(p.getSdkKey()));
+        return p.projectId != null ? p.projectId.equals(((DatafileConfig) o).projectId) : ((DatafileConfig) o).projectId == null
+                &&
+                p.sdkKey != null? p.sdkKey.equals(((DatafileConfig) o).projectId) : ((DatafileConfig) o).sdkKey == null;
+
     }
 
     public int hashCode() {
         int result = 17;
-        result = 31 * result + projectId.hashCode() + (getSdkKey() == null ? 0 : getSdkKey().hashCode());
+        result = 31 * result + (projectId == null ? 0 : projectId.hashCode()) + (sdkKey == null ? 0 : sdkKey.hashCode());
         return result;
     }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2016-2018, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -115,9 +115,9 @@ class BackgroundWatchersCache {
 
     /**
      * Get a list of all project ids that are being watched for backgrounding.
-     * @return a list of project ids
+     * @return a list of DatafileConfig
      */
-    List<DatafileConfig> getWatchingProjectIds() {
+    List<DatafileConfig> getWatchingDatafileConfigs() {
         List<DatafileConfig> projectIds = new ArrayList<>();
         try {
             JSONObject backgroundWatchers = load();

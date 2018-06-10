@@ -83,7 +83,10 @@ public class OptimizelyManager {
                       long eventDispatchInterval,
                       @NonNull EventHandler eventHandler,
                       @NonNull UserProfileService userProfileService) {
-        assert(projectId != null || sdkKey != null);
+
+        if (projectId == null && sdkKey == null) {
+            logger.error("projectId and sdkKey are both null!");
+        }
         this.projectId = projectId;
         this.sdkKey = sdkKey;
         this.datafileConfig = new DatafileConfig(this.projectId, this.sdkKey);
@@ -599,7 +602,7 @@ public class OptimizelyManager {
         @Nullable private UserProfileService userProfileService = null;
         @Nullable private String sdkKey = null;
 
-        Builder(@NonNull String projectId) {
+        Builder(@Nullable String projectId) {
             this.projectId = projectId;
         }
 
