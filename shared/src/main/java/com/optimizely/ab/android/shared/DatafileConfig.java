@@ -101,7 +101,7 @@ public class DatafileConfig {
      */
     @Override
     public String toString() {
-        return projectId != null ? projectId : "null" + (sdkKey != null? sdkKey : "null");
+        return projectId != null ? projectId : "null" + delimitor + (sdkKey != null? sdkKey : "null");
     }
 
     public boolean equals(Object o) {
@@ -112,9 +112,9 @@ public class DatafileConfig {
             return false;
         }
         DatafileConfig p = (DatafileConfig) o;
-        return p.projectId != null ? p.projectId.equals(((DatafileConfig) o).projectId) : ((DatafileConfig) o).projectId == null
+        return this.projectId != null ? (p.projectId != null ? this.projectId.equals(p.projectId) : this.projectId == p.projectId) : p.projectId == null
                 &&
-                p.sdkKey != null? p.sdkKey.equals(((DatafileConfig) o).projectId) : ((DatafileConfig) o).sdkKey == null;
+                this.sdkKey != null ? (p.sdkKey != null ? this.sdkKey.equals(p.sdkKey) : this.sdkKey == p.sdkKey) : p.sdkKey == null;
 
     }
 

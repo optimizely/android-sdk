@@ -91,17 +91,17 @@ public class BackgroundWatchersCacheTest {
 
     @Test
     public void setIsWatchingPersistsWithEnvironment() {
-        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("1", "1"), true));
-        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("2", "2"), true));
-        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("3", "3"), false));
-        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("1", "1"), false));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "1-1"), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "2-2"), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "3-3"), false));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "1-1"), false));
 
-        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("1", "1")));
-        assertTrue(backgroundWatchersCache.isWatching(new DatafileConfig("2", "2")));
-        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("3", "3")));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig(null, "1-1")));
+        assertTrue(backgroundWatchersCache.isWatching(new DatafileConfig(null, "2-2")));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig(null, "3-3")));
 
         List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingDatafileConfigs();
-        assertTrue(watchingProjectIds.contains(new DatafileConfig("2", null)));
+        assertTrue(watchingProjectIds.contains(new DatafileConfig(null, "2-2")));
     }
 
     @Test
