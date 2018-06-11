@@ -1,0 +1,5 @@
+com.optimizely.ab.android.datafile_handler
+com.optimizely.ab.android.event_handler
+com.optimizely.ab.android.sdk
+com.optimizely.ab.android.shared
+com.optimizely.ab.android.user_profile
