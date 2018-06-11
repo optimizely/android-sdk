@@ -177,7 +177,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
      */
     public void saveDatafile(Context context, DatafileConfig datafileConfig, String dataFile) {
         DatafileCache datafileCache = new DatafileCache(
-                datafileConfig.getCacheKey(),
+                datafileConfig.getKey(),
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DatafileCache.class)
         );
@@ -195,7 +195,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
      */
     public String loadSavedDatafile(Context context, DatafileConfig datafileConfig) {
         DatafileCache datafileCache = new DatafileCache(
-                datafileConfig.getCacheKey(),
+                datafileConfig.getKey(),
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DatafileCache.class)
         );
@@ -217,7 +217,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
      */
     public Boolean isDatafileSaved(Context context, DatafileConfig datafileConfig) {
         DatafileCache datafileCache = new DatafileCache(
-                datafileConfig.getCacheKey(),
+                datafileConfig.getKey(),
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DatafileCache.class)
         );
@@ -229,11 +229,11 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * Remove the datafile in cache.
      *
      * @param context   application context
-     * @param projectId project id of the datafile
+     * @param datafileConfig DatafileConfig of the current datafile.
      */
-    public void removeSavedDatafile(Context context, DatafileConfig projectId) {
+    public void removeSavedDatafile(Context context, DatafileConfig datafileConfig) {
         DatafileCache datafileCache = new DatafileCache(
-                projectId.getCacheKey(),
+                datafileConfig.getKey(),
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DatafileCache.class)
         );

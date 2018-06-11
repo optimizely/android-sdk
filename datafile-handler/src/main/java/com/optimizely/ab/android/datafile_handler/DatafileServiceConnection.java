@@ -40,19 +40,19 @@ import java.util.concurrent.Executors;
 public class DatafileServiceConnection implements ServiceConnection {
 
     @NonNull private final Context context;
-    @NonNull private final DatafileConfig projectId;
+    @NonNull private final DatafileConfig datafileConfig;
     @NonNull private final DatafileLoadedListener listener;
 
     private boolean bound = false;
 
     /**
      * Create a datafile service connection object.
-     * @param projectId project id for service
+     * @param datafileConfig for this datafile.
      * @param context current application context.
      * @param listener listener to call after service download has completed.
      */
-    public DatafileServiceConnection(@NonNull DatafileConfig projectId, @NonNull Context context, @NonNull DatafileLoadedListener listener) {
-        this.projectId = projectId;
+    public DatafileServiceConnection(@NonNull DatafileConfig datafileConfig, @NonNull Context context, @NonNull DatafileLoadedListener listener) {
+        this.datafileConfig = datafileConfig;
         this.context = context;
         this.listener = listener;
     }
@@ -80,7 +80,7 @@ public class DatafileServiceConnection implements ServiceConnection {
                     LoggerFactory.getLogger(DatafileClient.class));
 
             DatafileCache datafileCache = new DatafileCache(
-                    projectId.getCacheKey(),
+                    datafileConfig.getKey(),
                     new Cache(context.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
                     LoggerFactory.getLogger(DatafileCache.class));
 
@@ -90,7 +90,7 @@ public class DatafileServiceConnection implements ServiceConnection {
                     Executors.newSingleThreadExecutor(),
                     LoggerFactory.getLogger(DatafileLoader.class));
 
-            datafileService.getDatafile(projectId.getUrl(), datafileLoader, listener);
+            datafileService.getDatafile(datafileConfig.getUrl(), datafileLoader, listener);
         }
         bound = true;
     }

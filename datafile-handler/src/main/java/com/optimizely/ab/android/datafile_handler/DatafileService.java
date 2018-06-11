@@ -60,16 +60,16 @@ public class DatafileService extends Service {
         if (intent != null) {
             if (intent.hasExtra(EXTRA_DATAFILE_CONFIG)) {
                 String extraProjectId = intent.getStringExtra(EXTRA_DATAFILE_CONFIG);
-                DatafileConfig projectId = DatafileConfig.fromJSONString(extraProjectId);
+                DatafileConfig datafileConfig = DatafileConfig.fromJSONString(extraProjectId);
                 DatafileClient datafileClient = new DatafileClient(
                         new Client(new OptlyStorage(this.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
                         LoggerFactory.getLogger(DatafileClient.class));
                 DatafileCache datafileCache = new DatafileCache(
-                        projectId.getCacheKey(),
+                        datafileConfig.getKey(),
                         new Cache(this.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
                         LoggerFactory.getLogger(DatafileCache.class));
 
-                String datafileUrl = projectId.getUrl();
+                String datafileUrl = datafileConfig.getUrl();
                 DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
                 datafileLoader.getDatafile(datafileUrl, null);
             } else {

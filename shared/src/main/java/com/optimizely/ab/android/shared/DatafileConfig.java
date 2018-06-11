@@ -55,16 +55,6 @@ public class DatafileConfig {
     }
 
     /**
-     * Return the cache key for this project id. Or, return
-     * the environment cache key if there is an environment.
-     *
-     * @return cache key used to cache datafile.
-     */
-    public String getCacheKey() {
-        return getKey();
-    }
-
-    /**
      * Get the url associated with this project.  If there is an environment,
      * that url is returned.
      * @return url of current project configuration.
