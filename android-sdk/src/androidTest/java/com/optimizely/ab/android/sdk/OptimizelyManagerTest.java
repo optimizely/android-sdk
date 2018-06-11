@@ -117,7 +117,30 @@ public class OptimizelyManagerTest {
 
     }
     @Test
-    public void initializeSync() {
+    public void initializeSyncWithoutEnvironment() {
+        /*
+         * Scenario#1: when datafile is not Empty
+         * Scenario#2: when datafile is Empty
+         */
+        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
+
+        assertNotNull(optimizelyManager.getOptimizely());
+        assertNotNull(optimizelyManager.getDatafileHandler());
+
+        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(),(Integer) null);
+        verify(logger).error(eq("Invalid datafile resource ID."));
+    }
+    @Test
+    public void initializeSyncWithEnvironment() {
+        Logger logger = mock(Logger.class);
+        DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
+        EventHandler eventHandler = mock(DefaultEventHandler.class);
+        OptimizelyManager optimizelyManager = new OptimizelyManager(null, testProjectId,logger, 3600L, datafileHandler, null, 3600L,
+                eventHandler, null);
         /*
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
@@ -169,7 +192,13 @@ public class OptimizelyManagerTest {
         assertNotNull(optimizelyManager.getDatafileHandler());
     }
     @Test
-    public void initializeAsync() {
+    public void initializeAsyncWithEnvironment() {
+        Logger logger = mock(Logger.class);
+        DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
+        EventHandler eventHandler = mock(DefaultEventHandler.class);
+        final OptimizelyManager optimizelyManager = new OptimizelyManager(null, testProjectId,logger, 3600L, datafileHandler, null, 3600L,
+                eventHandler, null);
+
         /*
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
@@ -189,6 +218,29 @@ public class OptimizelyManagerTest {
 
 
     }
+
+    @Test
+    public void initializeAsyncWithoutEnvironment() {
+        /*
+         * Scenario#1: when datafile is not Empty
+         * Scenario#2: when datafile is Empty
+         */
+        optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, new OptimizelyStartListener() {
+            @Override
+            public void onStart(OptimizelyClient optimizely) {
+                assertNotNull(optimizelyManager.getOptimizely());
+                assertNotNull(optimizelyManager.getDatafileHandler());
+                assertNull(optimizelyManager.getOptimizelyStartListener());
+            }
+        });
+
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
+
+
+    }
+
     @Test
     public void initializeWithEmptyDatafile() {
         Context context = mock(Context.class);

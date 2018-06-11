@@ -35,8 +35,8 @@ public class DatafileConfig {
     private final String sdkKey;
 
     /**
-     * Constructor used to construct a ProjectId to get cache key, url,
-     * and environment.
+     * Constructor used to construct a DatafileConfig to get cache key, url,
+     * for the appropriate environment.  One or the other can be null.  But, not both.
      * @param projectId project id string.
      * @param sdkKey the environment url.
      */
