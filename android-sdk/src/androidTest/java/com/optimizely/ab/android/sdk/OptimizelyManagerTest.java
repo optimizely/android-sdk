@@ -67,6 +67,7 @@ import static org.mockito.Mockito.when;
 public class OptimizelyManagerTest {
 
     private String testProjectId = "7595190003";
+    private String testSdkKey = "123-2232323-343423423-435345345";
     private ListeningExecutorService executor;
     private Logger logger;
     private OptimizelyManager optimizelyManager;
@@ -139,7 +140,7 @@ public class OptimizelyManagerTest {
         Logger logger = mock(Logger.class);
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
-        OptimizelyManager optimizelyManager = new OptimizelyManager(null, testProjectId,logger, 3600L, datafileHandler, null, 3600L,
+        OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey,logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
         /*
          * Scenario#1: when datafile is not Empty
@@ -149,7 +150,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/123-2232323-343423423-435345345.json" );
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -196,7 +197,7 @@ public class OptimizelyManagerTest {
         Logger logger = mock(Logger.class);
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
-        final OptimizelyManager optimizelyManager = new OptimizelyManager(null, testProjectId,logger, 3600L, datafileHandler, null, 3600L,
+        final OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey,logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
 
         /*
@@ -214,7 +215,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/123-2232323-343423423-435345345.json" );
 
 
     }

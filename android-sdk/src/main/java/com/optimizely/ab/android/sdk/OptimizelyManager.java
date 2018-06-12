@@ -110,9 +110,14 @@ public class OptimizelyManager {
      * @param projectId your project's id
      * @return a {@link OptimizelyManager.Builder}
      */
+    @Deprecated
     @NonNull
     public static Builder builder(@Nullable String projectId) {
         return new Builder(projectId);
+    }
+
+    public static Builder builder(@Nullable String projectId, @Nullable String sdkKey) {
+        return new Builder(projectId, sdkKey);
     }
 
     @Nullable
@@ -602,9 +607,16 @@ public class OptimizelyManager {
         @Nullable private UserProfileService userProfileService = null;
         @Nullable private String sdkKey = null;
 
+        @Deprecated
         Builder(@Nullable String projectId) {
             this.projectId = projectId;
         }
+
+        Builder(@Nullable String projectId, @Nullable String sdkKey) {
+            this.projectId = projectId;
+            this.sdkKey = sdkKey;
+        }
+
 
         /**
          * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
