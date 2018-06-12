@@ -34,6 +34,7 @@ import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.sdk.test.R;
+import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -117,7 +118,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
 
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(InstrumentationRegistry.getTargetContext()), eq(testProjectId), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(InstrumentationRegistry.getTargetContext()), eq(new DatafileConfig(testProjectId, null)), eq(3600L));
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
 
@@ -216,7 +217,7 @@ public class OptimizelyManagerTest {
                         ((DatafileLoadedListener) invocation.getArguments()[2]).onDatafileLoaded(null);
                         return null;
                     }
-                }).when(optimizelyManager.getDatafileHandler()).downloadDatafile(any(Context.class), any(String.class),
+                }).when(optimizelyManager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class),
                 any(DatafileLoadedListener.class));
 
         OptimizelyStartListener listener = new OptimizelyStartListener() {
@@ -229,7 +230,7 @@ public class OptimizelyManagerTest {
         };
         optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, listener);
 
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(any(Context.class), eq(testProjectId), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(any(Context.class), eq(new DatafileConfig(testProjectId, testSdkKey)), eq(3600L));
 
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
@@ -343,7 +344,7 @@ public class OptimizelyManagerTest {
 
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(testProjectId), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(new DatafileConfig(testProjectId, null)), eq(3600L));
 
     }
 
@@ -362,7 +363,7 @@ public class OptimizelyManagerTest {
             fail("Timed out");
         }
 
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(testProjectId), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(new DatafileConfig(testProjectId, null)), eq(3600L));
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
     }
