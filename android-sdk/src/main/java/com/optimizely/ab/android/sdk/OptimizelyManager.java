@@ -116,8 +116,8 @@ public class OptimizelyManager {
         return new Builder(projectId);
     }
 
-    public static Builder builder(@Nullable String projectId, @Nullable String sdkKey) {
-        return new Builder(projectId, sdkKey);
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Nullable
@@ -612,9 +612,8 @@ public class OptimizelyManager {
             this.projectId = projectId;
         }
 
-        Builder(@Nullable String projectId, @Nullable String sdkKey) {
-            this.projectId = projectId;
-            this.sdkKey = sdkKey;
+        Builder() {
+            this.projectId = null;
         }
 
 

@@ -71,7 +71,7 @@ public class MyApplication extends Application {
         // This app is built against a real Optimizely project with real experiments set.  Automated
         // espresso tests are run against this project id.  Changing it will make the Optimizely
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
-         OptimizelyManager.Builder builder = OptimizelyManager.builder(null);
+         OptimizelyManager.Builder builder = OptimizelyManager.builder();
          if (BuildConfig.DEBUG) {
                     builder = builder.withSDKKey(PROJECT_ID);
          }
