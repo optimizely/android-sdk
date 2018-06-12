@@ -400,7 +400,6 @@ public class OptimizelyManager {
     public @NonNull String getDatafileUrl() {
         return datafileConfig.getUrl();
     }
-
     @NonNull
     public String getProjectId() {
         return projectId;
