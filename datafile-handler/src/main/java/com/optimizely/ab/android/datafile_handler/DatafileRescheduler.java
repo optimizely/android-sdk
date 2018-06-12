@@ -90,15 +90,15 @@ public class DatafileRescheduler extends BroadcastReceiver {
         }
 
         void dispatch(Intent intent) {
-            List<DatafileConfig> projectIds = backgroundWatchersCache.getWatchingDatafileConfigs();
+            List<DatafileConfig> datafileConfigs = backgroundWatchersCache.getWatchingDatafileConfigs();
 
-            for (DatafileConfig projectId : projectIds) {
+            for (DatafileConfig datafileConfig : datafileConfigs) {
                 // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
                 // so, we don't need to do anything.
                // if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                    intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, projectId.toJSONString());
+                    intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, datafileConfig.toJSONString());
                     ServiceScheduler.startService(context, DatafileService.JOB_ID, intent);
-                    logger.info("Rescheduled data file watching for project {}", projectId);
+                    logger.info("Rescheduled data file watching for project {}", datafileConfig);
                 //}
             }
 

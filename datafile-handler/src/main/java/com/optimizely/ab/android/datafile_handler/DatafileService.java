@@ -59,8 +59,8 @@ public class DatafileService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             if (intent.hasExtra(EXTRA_DATAFILE_CONFIG)) {
-                String extraProjectId = intent.getStringExtra(EXTRA_DATAFILE_CONFIG);
-                DatafileConfig datafileConfig = DatafileConfig.fromJSONString(extraProjectId);
+                String extraDatafileConfig = intent.getStringExtra(EXTRA_DATAFILE_CONFIG);
+                DatafileConfig datafileConfig = DatafileConfig.fromJSONString(extraDatafileConfig);
                 DatafileClient datafileClient = new DatafileClient(
                         new Client(new OptlyStorage(this.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
                         LoggerFactory.getLogger(DatafileClient.class));
