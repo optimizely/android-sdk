@@ -12,7 +12,7 @@ Devel<br/>
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 ## Overview
 
-This repository houses the Android SDK for Optimizely's Mobile product. To find out more check out the [documentation](https://developers.optimizely.com/x/solutions/sdks/introduction/index.html?language=android&platform=mobile).
+This repository houses the official Android SDK for Optimizely Mobile. To find out more check out the [documentation](https://developers.optimizely.com/x/solutions/sdks/introduction/index.html?language=android&platform=mobile).
 
 This repo depends on the [Optimizely Java SDK](https://github.com/optimizely/java-sdk).
 
