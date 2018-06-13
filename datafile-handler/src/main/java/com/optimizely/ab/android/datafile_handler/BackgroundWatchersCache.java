@@ -118,7 +118,7 @@ class BackgroundWatchersCache {
      * @return a list of DatafileConfig
      */
     List<DatafileConfig> getWatchingDatafileConfigs() {
-        List<DatafileConfig> projectIds = new ArrayList<>();
+        List<DatafileConfig> datafileConfigs = new ArrayList<>();
         try {
             JSONObject backgroundWatchers = load();
             if (backgroundWatchers != null) {
@@ -133,7 +133,7 @@ class BackgroundWatchersCache {
                         else {
                             datafileConfig = new DatafileConfig(projectKey, null);
                         }
-                        projectIds.add(datafileConfig);
+                        datafileConfigs.add(datafileConfig);
                     }
                 }
             }
@@ -141,7 +141,7 @@ class BackgroundWatchersCache {
             logger.error("Unable to get watching project ids", e);
         }
 
-        return projectIds;
+        return datafileConfigs;
     }
 
     /**
