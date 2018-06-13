@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.optimizely.ab.android.shared.DatafileConfig;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,15 +40,30 @@ public class DefaultDatafileHandlerTest {
     }
 
     @Test
-    public void testSaveExistsRemove() throws Exception {
+    public void testSaveExistsRemoveWithoutEnvironment() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.saveDatafile(appContext, "1", "{}");
-        assertTrue(datafileHandler.isDatafileSaved(appContext, "1"));
-        assertNotNull(datafileHandler.loadSavedDatafile(appContext, "1"));
-        datafileHandler.removeSavedDatafile(appContext, "1");
-        assertFalse(datafileHandler.isDatafileSaved(appContext, "1"));
+        DatafileConfig projectId = new DatafileConfig("1", null);
+        datafileHandler.saveDatafile(appContext, projectId, "{}");
+        assertTrue(datafileHandler.isDatafileSaved(appContext, projectId));
+        assertNotNull(datafileHandler.loadSavedDatafile(appContext, projectId));
+        datafileHandler.removeSavedDatafile(appContext, projectId);
+        assertFalse(datafileHandler.isDatafileSaved(appContext, projectId));
+        assertEquals("com.optimizely.ab.android.datafile_handler.test", appContext.getPackageName());
+    }
+
+    @Test
+    public void testSaveExistsRemoveWithEnvironments() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+        DatafileConfig projectId = new DatafileConfig("1", "2");
+        datafileHandler.saveDatafile(appContext, projectId, "{}");
+        assertTrue(datafileHandler.isDatafileSaved(appContext, projectId));
+        assertNotNull(datafileHandler.loadSavedDatafile(appContext, projectId));
+        datafileHandler.removeSavedDatafile(appContext, projectId);
+        assertFalse(datafileHandler.isDatafileSaved(appContext, projectId));
         assertEquals("com.optimizely.ab.android.datafile_handler.test", appContext.getPackageName());
     }
 
@@ -55,17 +72,27 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        String datafile = datafileHandler.downloadDatafile(appContext, "1");
+        String datafile = datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", null));
 
         assertNull(datafile);
     }
 
     @Test
-    public void testAsyncDownload() throws Exception {
+    public void testDownloadWithEnvironmemt() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.downloadDatafile(appContext, "1", new DatafileLoadedListener() {
+        String datafile = datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", "2"));
+
+        assertNull(datafile);
+    }
+
+    @Test
+    public void testAsyncDownloadWithoutEnvironment() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+        datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", null), new DatafileLoadedListener() {
             @Override
             public void onDatafileLoaded(@Nullable String dataFile) {
                 assertNull(dataFile);
@@ -80,15 +107,48 @@ public class DefaultDatafileHandlerTest {
     }
 
     @Test
-    public void testBackground() throws Exception {
+    public void testAsyncDownloadWithEnvironment() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.startBackgroundUpdates(appContext, "1", 24 * 60 * 60L);
+        datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", "2"), new DatafileLoadedListener() {
+            @Override
+            public void onDatafileLoaded(@Nullable String dataFile) {
+                assertNull(dataFile);
+            }
+
+            @Override
+            public void onStop(Context context) {
+
+            }
+        });
+
+    }
+
+    @Test
+    public void testBackgroundWithoutEnvironment() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", null), 24 * 60 * 60L);
 
         assertTrue(true);
 
-        datafileHandler.stopBackgroundUpdates(appContext, "1");
+        datafileHandler.stopBackgroundUpdates(appContext,  new DatafileConfig("1", null));
+
+        assertTrue(true);
+    }
+
+    @Test
+    public void testBackgroundWithEnvironment() throws Exception {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getTargetContext();
+
+        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", "2"), 24 * 60 * 60L);
+
+        assertTrue(true);
+
+        datafileHandler.stopBackgroundUpdates(appContext,  new DatafileConfig("1", "2"));
 
         assertTrue(true);
     }

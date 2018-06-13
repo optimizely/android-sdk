@@ -31,10 +31,11 @@ import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileLoader;
 import com.optimizely.ab.android.datafile_handler.DatafileServiceConnection;
+import com.optimizely.ab.android.shared.DatafileConfig;
+
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,7 +52,7 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
     @Before
     public void setup() {
         Context context = mock(Context.class);
-        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDatafileLoadedListener(context,null));
+        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getDatafileConfig(), context, optimizelyManager.getDatafileLoadedListener(context,null));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -62,12 +63,13 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
         Context context = mock(Context.class);
         when(service.getApplicationContext()).thenReturn(context);
         when(binder.getService()).thenReturn(service);
-        when(optimizelyManager.getProjectId()).thenReturn("1");
+        when(optimizelyManager.getDatafileConfig()).thenReturn(new DatafileConfig("1", (String)null));
         when(optimizelyManager.getDatafileLoadedListener(context,null)).thenReturn(mock(DatafileLoadedListener.class));
         ArgumentCaptor<DatafileLoadedListener> captor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
-        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getProjectId(), context, optimizelyManager.getDatafileLoadedListener(context,null) );
+        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getDatafileConfig(), context, optimizelyManager.getDatafileLoadedListener(context,null) );
         datafileServiceConnection.onServiceConnected(null, binder);
-        verify(service).getDatafile(same("1"), any(DatafileLoader.class), any(DatafileLoadedListener.class));
+        String sameString = optimizelyManager.getDatafileConfig().getUrl();
+        verify(service).getDatafile(eq(sameString), any(DatafileLoader.class), any(DatafileLoadedListener.class));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

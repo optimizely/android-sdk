@@ -2,6 +2,8 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 
+import com.optimizely.ab.android.shared.DatafileConfig;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -22,6 +24,6 @@ public class DefaultDatafileHandlerUnitTest {
         handler = new DefaultDatafileHandler();
         Context context = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(context);
-        assertFalse(handler.isDatafileSaved(context, "1"));
+        assertFalse(handler.isDatafileSaved(context, new DatafileConfig("1", null)));
     }
 }

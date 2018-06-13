@@ -39,13 +39,13 @@ public class DatafileCache {
 
     /**
      * Create a DatafileCache Object
-     * @param projectId project id for cache
+     * @param cacheKey key used to cache
      * @param cache shared generic file based {link Cache}
      * @param logger logger to use
      */
-    public DatafileCache(@NonNull String projectId, @NonNull Cache cache, @NonNull Logger logger) {
+    public DatafileCache(@NonNull String cacheKey, @NonNull Cache cache, @NonNull Logger logger) {
         this.cache = cache;
-        this.filename = String.format(FILENAME, projectId);
+        this.filename = String.format(FILENAME, cacheKey);
         this.logger = logger;
     }
 

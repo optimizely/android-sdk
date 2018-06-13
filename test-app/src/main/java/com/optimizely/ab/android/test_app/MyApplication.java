@@ -33,7 +33,7 @@ public class MyApplication extends Application {
     // Project ID owned by mobile-test@optimizely.com
     // if you'd like to configure your own experiment please check out https://developers.optimizely.com/x/solutions/sdks/getting-started/index.html?language=android&platform=mobile
     // to create your own project and experiment. Then just replace your project ID below.
-    public static final String PROJECT_ID = "8136462271";
+    public static final String PROJECT_ID = "10554895220";
     private OptimizelyManager optimizelyManager;
 
     public OptimizelyManager getOptimizelyManager() {
@@ -70,10 +70,12 @@ public class MyApplication extends Application {
 
         // This app is built against a real Optimizely project with real experiments set.  Automated
         // espresso tests are run against this project id.  Changing it will make the Optimizely
-        // tests setup not work and the Espresso tests will fail.  Also, the project id passed here
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
-        optimizelyManager = OptimizelyManager.builder(PROJECT_ID)
-                .withEventDispatchInterval(60L * 10L)
+         OptimizelyManager.Builder builder = OptimizelyManager.builder();
+         if (BuildConfig.DEBUG) {
+                    builder = builder.withSDKKey(PROJECT_ID);
+         }
+         optimizelyManager =  builder.withEventDispatchInterval(60L * 10L)
                 .withDatafileDownloadInterval(60L * 10L)
                 .build(getApplicationContext());
     }

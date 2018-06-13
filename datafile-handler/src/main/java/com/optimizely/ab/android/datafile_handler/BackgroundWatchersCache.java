@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2016-2018, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -21,7 +21,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.optimizely.ab.android.shared.Cache;
+import com.optimizely.ab.android.shared.DatafileConfig;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -35,12 +37,14 @@ import java.util.List;
  * This is used by the rescheduler to determine if backgrounding was on for a project id.  If backgrounding is on,
  * then when the device is restarted or the app is reinstalled, the rescheduler will kick in and reschedule the datafile background
  * download.  In order to use this the rescheduler needs to be included in the application manifest.
- * Calling {@link DatafileHandler#stopBackgroundUpdates(Context, String)} sets this background cache to false.
+ * Calling {@link DatafileHandler#stopBackgroundUpdates(Context, DatafileConfig)} sets this background cache to false.
  */
 class BackgroundWatchersCache {
     static final String BACKGROUND_WATCHERS_FILE_NAME = "optly-background-watchers.json";
     @NonNull private final Cache cache;
     @NonNull private final Logger logger;
+
+    static final String WATCHING = "watching";
 
     /**
      * Create BackgroundWatchersCache Object.
@@ -55,12 +59,12 @@ class BackgroundWatchersCache {
 
     /**
      * Set the watching flag for the project id.
-     * @param projectId project id to set watching.
+     * @param datafileConfig project id to set watching.
      * @param watching flag to signify if the project is running in the background.
      * @return boolean indicating whether the set succeed or not
      */
-    boolean setIsWatching(@NonNull String projectId, boolean watching) {
-        if (projectId.isEmpty()) {
+    boolean setIsWatching(@NonNull DatafileConfig datafileConfig, boolean watching) {
+        if (datafileConfig.getKey().isEmpty()) {
             logger.error("Passed in an empty string for projectId");
             return false;
         }
@@ -68,7 +72,9 @@ class BackgroundWatchersCache {
         try {
             JSONObject backgroundWatchers = load();
             if (backgroundWatchers != null) {
-                backgroundWatchers.put(projectId, watching);
+
+                backgroundWatchers.put(datafileConfig.getKey(), watching);
+
                 return save(backgroundWatchers.toString());
             }
         } catch (JSONException e) {
@@ -80,11 +86,11 @@ class BackgroundWatchersCache {
 
     /**
      * Return if the project is set to be watched in the background or not.
-     * @param projectId project id to test
+     * @param datafileConfig project id to test
      * @return true if it has backgrounding, false if not.
      */
-    boolean isWatching(@NonNull String projectId) {
-        if (projectId.isEmpty()) {
+    boolean isWatching(@NonNull DatafileConfig datafileConfig) {
+        if (datafileConfig.getKey().isEmpty()) {
             logger.error("Passed in an empty string for projectId");
             return false;
         }
@@ -93,8 +99,12 @@ class BackgroundWatchersCache {
             JSONObject backgroundWatchers = load();
 
             if (backgroundWatchers != null) {
-                return backgroundWatchers.getBoolean(projectId);
-
+                if (backgroundWatchers.has(datafileConfig.getKey())) {
+                    return backgroundWatchers.getBoolean(datafileConfig.getKey());
+                }
+                else {
+                    return false;
+                }
             }
         } catch (JSONException e) {
             logger.error("Unable check if project id is being watched", e);
@@ -105,18 +115,25 @@ class BackgroundWatchersCache {
 
     /**
      * Get a list of all project ids that are being watched for backgrounding.
-     * @return a list of project ids
+     * @return a list of DatafileConfig
      */
-    List<String> getWatchingProjectIds() {
-        List<String> projectIds = new ArrayList<>();
+    List<DatafileConfig> getWatchingDatafileConfigs() {
+        List<DatafileConfig> datafileConfigs = new ArrayList<>();
         try {
             JSONObject backgroundWatchers = load();
             if (backgroundWatchers != null) {
                 Iterator<String> iterator = backgroundWatchers.keys();
                 while (iterator.hasNext()) {
-                    final String projectId = iterator.next();
-                    if (backgroundWatchers.getBoolean(projectId)) {
-                        projectIds.add(projectId);
+                    final String projectKey = iterator.next();
+                    if (backgroundWatchers.getBoolean(projectKey)) {
+                        DatafileConfig datafileConfig = null;
+                        if (projectKey.contains("-")) {
+                            datafileConfig = new DatafileConfig(null, projectKey);
+                        }
+                        else {
+                            datafileConfig = new DatafileConfig(projectKey, null);
+                        }
+                        datafileConfigs.add(datafileConfig);
                     }
                 }
             }
@@ -124,7 +141,7 @@ class BackgroundWatchersCache {
             logger.error("Unable to get watching project ids", e);
         }
 
-        return projectIds;
+        return datafileConfigs;
     }
 
     /**
