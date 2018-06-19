@@ -1,0 +1,115 @@
+\href{https://travis-ci.org/optimizely/objective-c-sdk/}{\tt } \href{http://www.apache.org/licenses/LICENSE-2.0}{\tt } \href{https://github.com/carthage/carthage}{\tt }  \href{https://cocoapods.org/pods/OptimizelySDKiOS}{\tt }  \href{https://cocoapods.org/pods/OptimizelySDKTVOS}{\tt }
+
+This repository houses the \mbox{\hyperlink{interface_optimizely}{Optimizely}} Mobile and O\+TT experimentation S\+D\+Ks.
+
+\subsubsection*{Using the S\+DK}
+
+See the \href{https://developers.optimizely.com/x/solutions/sdks/reference/index.html?language=objectivec&platform=mobile}{\tt Mobile developer documentation} or \href{https://developers.optimizely.com/x/solutions/sdks/reference/index.html?language=objectivec&platform=ott}{\tt O\+TT developer documentation} to learn how to set up an \mbox{\hyperlink{interface_optimizely}{Optimizely}} X project and start using the S\+DK.
+
+\subsubsection*{Requirements}
+
+
+\begin{DoxyItemize}
+\item i\+OS 8.\+0+ / tv\+OS 9.\+0+
+\end{DoxyItemize}
+
+\subsubsection*{Installing the S\+DK}
+
+Please note below that \+\_\+$<$platform$>$\+\_\+ is used to represent the platform on which you are building your app. Currently, we support {\ttfamily i\+OS} and {\ttfamily tv\+OS} platforms.
+
+\#\#\#\# Cocoapod
+\begin{DoxyEnumerate}
+\item Add the following lines to the {\itshape Podfile}\+:
+\begin{DoxyPre}
+    ```use\_frameworks!```
+    ```pod 'OptimizelySDK<platform>'```
+\end{DoxyPre}
+
+\item Run the following command\+: 
+\begin{DoxyPre}``` pod install ```\end{DoxyPre}
+
+\end{DoxyEnumerate}
+
+Further installation instructions for Cocoapods\+: \href{https://guides.cocoapods.org/using/getting-started.html}{\tt https\+://guides.\+cocoapods.\+org/using/getting-\/started.\+html}
+
+\#\#\#\# Carthage
+\begin{DoxyEnumerate}
+\item Add the following lines to the {\itshape Cartfile}\+:
+\begin{DoxyPre} 
+github "optimizely/objective-c-sdk"
+\end{DoxyPre}
+
+\item Run the following command\+:
+\begin{DoxyPre}```carthage update```\end{DoxyPre}
+
+\item Link the frameworks to your project. Go to your project target\textquotesingle{}s {\bfseries Link Binary With Libraries} and drag over the following from the {\itshape Carthage/\+Build/$<$platform$>$} folder\+: 
+\begin{DoxyPre} 
+      OptimizelySDKCore.framework
+      OptimizelySDKDatafileManager.framework
+      OptimizelySDKEventDispatcher.framework
+      OptimizelySDKShared.framework
+      OptimizelySDKUserProfileService.framework
+      OptimizelySDK<platform>.framework\end{DoxyPre}
+
+\item To ensure that proper bitcode-\/related files and d\+S\+Y\+Ms are copied when archiving your app, you will need to install a Carthage build script\+:
+\begin{DoxyItemize}
+\item Add a new {\bfseries Run Script} phase in your target\textquotesingle{}s {\bfseries Build Phase}.
+\item In the script area include\+:
+\begin{DoxyPre}
+      ```/usr/local/bin/carthage copy-frameworks```\end{DoxyPre}
+
+\item Add the frameworks to the {\bfseries Input Files} list\+:
+\begin{DoxyPre}
+            ```/Carthage/Build/<platform>/OptimizelySDKCore.framework```
+            ```/Carthage/Build/<platform>/OptimizelySDKDatafileManager.framework```
+            ```/Carthage/Build/<platform>/OptimizelySDKEventDispatcher.framework```
+            ```/Carthage/Build/<platform>/OptimizelySDKShared.framework```
+            ```/Carthage/Build/<platform>/OptimizelySDKUserProfileService.framework```
+            ```/Carthage/Build/<platform>/OptimizelySDK<platform>.framework```\end{DoxyPre}
+
+\end{DoxyItemize}
+\end{DoxyEnumerate}
+
+Futher installation instructions for Carthage\+: \href{https://github.com/Carthage/Carthage}{\tt https\+://github.\+com/\+Carthage/\+Carthage}
+
+\paragraph*{Manual Installation}
+
+The universal framework can be used in an application without the need for a third-\/party dependency manager. The universal framework packages up all \mbox{\hyperlink{interface_optimizely}{Optimizely}} X Mobile modules, which include\+:
+\begin{DoxyPre}
+    ```OptimizelySDKCore```
+    ```OptimizelySDKShared```
+    ```OptimizelySDKDatafileManager```
+    ```OptimizelySDKEventDispatcher```
+    ```OptimizelySDKUserProfileService```\end{DoxyPre}
+
+
+The universal framework for i\+OS includes builds for the following architectures\+:
+\begin{DoxyPre}
+    ```i386```
+    ```x86\_64```
+    ```ARMv7```
+    ```ARMv7s```
+    ```ARM64```\end{DoxyPre}
+
+
+The universal framework for tv\+OS includes builds for the following architectures\+:
+\begin{DoxyPre}
+    ```x86\_64```
+    ```ARM64```\end{DoxyPre}
+
+
+Bitcode is enabled for both the i\+OS and tv\+OS universal frameworks.
+
+In order to install the universal framework, follow the steps below\+:
+
+
+\begin{DoxyEnumerate}
+\item Download the \href{./OptimizelySDKUniversal/generated-frameworks/Release-iOS-universal-SDK/OptimizelySDKiOS.framework.zip}{\tt i\+OS} or \href{./OptimizelySDKUniversal/generated-frameworks/Release-tvOS-universal-SDK/OptimizelySDKTVOS.framework.zip}{\tt tv\+OS} framework.
+\item Unzip the framework, then drag the framework to your project in Xcode; Xcode should prompt you to select a target. Go to {\bfseries Build Phases} and make sure that the framework is under the {\bfseries Link Binary with Libraries} section.
+\item Go to the {\bfseries General} tab and add the framework to the {\bfseries Embedded Binaries} section. If the {\bfseries Embedded Binaries} section is not visible, add the framework in the {\bfseries Copy Files} section (you can add this section in {\bfseries Build Settings}).
+\item The Apple store will reject your app if you have the universal framework installed as it includes simulator binaries. Therefore, a script to strip the extra binaries needs to be run before you upload the app. To do this, go to {\bfseries Build Phases} and add a {\bfseries Run Script} section by clicking the {\ttfamily +} symbol. Copy and paste the following script (make sure you replace the {\ttfamily F\+R\+A\+M\+E\+W\+O\+R\+K\+\_\+\+N\+A\+ME} with the proper framework name! )\+: \`{}\`{}\`{} F\+R\+A\+M\+E\+W\+O\+RK=\char`\"{}\+F\+R\+A\+M\+E\+W\+O\+R\+K\+\_\+\+N\+A\+M\+E\char`\"{} F\+R\+A\+M\+E\+W\+O\+R\+K\+\_\+\+E\+X\+E\+C\+U\+T\+A\+B\+L\+E\+\_\+\+P\+A\+TH=\char`\"{}\$\{\+B\+U\+I\+L\+T\+\_\+\+P\+R\+O\+D\+U\+C\+T\+S\+\_\+\+D\+I\+R\}/\$\{\+F\+R\+A\+M\+E\+W\+O\+R\+K\+S\+\_\+\+F\+O\+L\+D\+E\+R\+\_\+\+P\+A\+T\+H\}/\$\+F\+R\+A\+M\+E\+W\+O\+R\+K.\+framework/\$\+F\+R\+A\+M\+E\+W\+O\+R\+K\char`\"{} E\+X\+T\+R\+A\+C\+T\+E\+D\+\_\+\+A\+R\+C\+HS=() for A\+R\+CH in \$\+A\+R\+C\+HS do lipo -\/extract \char`\"{}\$\+A\+R\+C\+H\char`\"{} \char`\"{}\$\+F\+R\+A\+M\+E\+W\+O\+R\+K\+\_\+\+E\+X\+E\+C\+U\+T\+A\+B\+L\+E\+\_\+\+P\+A\+T\+H\char`\"{} -\/o \char`\"{}\$\+F\+R\+A\+M\+E\+W\+O\+R\+K\+\_\+\+E\+X\+E\+C\+U\+T\+A\+B\+L\+E\+\_\+\+P\+A\+T\+H-\/\$\+A\+R\+C\+H\char`\"{} E\+X\+T\+R\+A\+C\+T\+E\+D\+\_\+\+A\+R\+C\+H\+S+=(\char`\"{}\$\+F\+R\+A\+M\+E\+W\+O\+R\+K\+\_\+\+E\+X\+E\+C\+U\+T\+A\+B\+L\+E\+\_\+\+P\+A\+T\+H-\/\$\+A\+R\+C\+H\char`\"{}) done lipo -\/o \char`\"{}\$\+F\+R\+A\+M\+E\+W\+O\+R\+K\+\_\+\+E\+X\+E\+C\+U\+T\+A\+B\+L\+E\+\_\+\+P\+A\+T\+H-\/merged\char`\"{} -\/create \char`\"{}\$\{\+E\+X\+T\+R\+A\+C\+T\+E\+D\+\_\+\+A\+R\+C\+H\+S\mbox{[}@\mbox{]}\}\char`\"{} rm \char`\"{}\$\{\+E\+X\+T\+R\+A\+C\+T\+E\+D\+\_\+\+A\+R\+C\+H\+S\mbox{[}@\mbox{]}\}\char`\"{} rm \char`\"{}\$\+F\+R\+A\+M\+E\+W\+O\+R\+K\+\_\+\+E\+X\+E\+C\+U\+T\+A\+B\+L\+E\+\_\+\+P\+A\+T\+H\char`\"{} mv \char`\"{}\$\+F\+R\+A\+M\+E\+W\+O\+R\+K\+\_\+\+E\+X\+E\+C\+U\+T\+A\+B\+L\+E\+\_\+\+P\+A\+T\+H-\/merged\char`\"{} \char`\"{}\$\+F\+R\+A\+M\+E\+W\+O\+R\+K\+\_\+\+E\+X\+E\+C\+U\+T\+A\+B\+L\+E\+\_\+\+P\+A\+T\+H\char`\"{} {\ttfamily  If you choose to build the universal framework yourself, you can do so by running the}Optimizely\+S\+D\+Ki\+O\+S-\/\+Universal{\ttfamily or}Optimizely\+S\+D\+K\+T\+V\+O\+S-\/\+Universal\`{}\`{}\`{} schemes. After building these schemes, the frameworks are output in the {\bfseries Optimizely\+S\+D\+K\+Universal/generated-\/frameworks} folder.
+\end{DoxyEnumerate}
+
+\subsubsection*{Contributing}
+
+Please see C\+O\+N\+T\+R\+I\+B\+U\+T\+I\+NG. 

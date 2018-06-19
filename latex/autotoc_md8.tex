@@ -1,0 +1,49 @@
+We welcome contributions and feedback! All contributors must sign our \href{https://docs.google.com/a/optimizely.com/forms/d/e/1FAIpQLSf9cbouWptIpMgukAKZZOIAhafvjFCV8hS00XJLWQnWDFtwtA/viewform}{\tt Contributor License Agreement (C\+LA)} to be eligible to contribute. Please read the R\+E\+A\+D\+ME to set up your development environment, then read the guidelines below for information on submitting your code.
+
+
+\begin{DoxyEnumerate}
+\item Create a branch off of {\ttfamily master}\+: {\ttfamily git checkout -\/b Y\+O\+U\+R\+\_\+\+N\+A\+M\+E/branch\+\_\+name}.
+\item Commit your changes. Make sure to add tests!
+\item Run Objective-\/C linter (T\+BD).
+\item {\ttfamily git push} your changes to Git\+Hub.
+\item Make sure that all unit tests are passing and that there are no merge conflicts between your branch and {\ttfamily master}.
+\item Open a pull request from {\ttfamily Y\+O\+U\+R\+\_\+\+N\+A\+M\+E/branch\+\_\+name} to {\ttfamily master}.
+\item A repository maintainer will review your pull request and, if all goes well, squash and merge it!
+\end{DoxyEnumerate}
+
+
+\begin{DoxyItemize}
+\item {\bfseries All code must have test coverage.} We use unittest. Changes in functionality should have accompanying unit tests. Bug fixes should have accompanying regression tests.
+\begin{DoxyItemize}
+\item Tests are located in each module with one file per class.
+\end{DoxyItemize}
+\item Please don\textquotesingle{}t change the S\+DK Version. We\textquotesingle{}ll take care of bumping the version when we next release.
+\end{DoxyItemize}
+
+We follow the \href{https://github.com/raywenderlich/objective-c-style-guide}{\tt Ray Wenderlich style guide} since they have put a lot of thought into making their code more legible. While we aim for our \mbox{\hyperlink{interface_optimizely}{Optimizely}} S\+DK to be performant and bug free, we also want all customers and third party developers read and understand our code easily.
+
+All contributions are under the C\+LA mentioned above. For this project, \mbox{\hyperlink{interface_optimizely}{Optimizely}} uses the Apache 2.\+0 license, and so asks that by contributing your code, you agree to license your contribution under the terms of the \href{http://www.apache.org/licenses/LICENSE-2.0}{\tt Apache License v2.\+0}. Your contributions should also include the following header\+:
+
+
+\begin{DoxyCode}
+/****************************************************************************
+ * Copyright YEAR, Optimizely, Inc. and contributors                        *
+ *                                                                          *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ *                                                                          *
+ *    http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ ***************************************************************************/
+\end{DoxyCode}
+
+
+The Y\+E\+AR above should be the year of the contribution. If work on the file has been done over multiple years, list each year in the section above. Example\+: \mbox{\hyperlink{interface_optimizely}{Optimizely}} writes the file and releases it in 2014. No changes are made in 2015. Change made in 2016. Y\+E\+AR should be “2014, 2016”.
+
+If you have questions, please contact \href{mailto:developers@optimizely.com}{\tt developers@optimizely.\+com}. 

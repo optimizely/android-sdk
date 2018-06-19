@@ -1,0 +1,50 @@
+\hypertarget{protocol_o_p_t_l_y_error_handler_01-p}{}\section{$<$O\+P\+T\+L\+Y\+Error\+Handler $>$ Protocol Reference}
+\label{protocol_o_p_t_l_y_error_handler_01-p}\index{$<$\+O\+P\+T\+L\+Y\+Error\+Handler $>$@{$<$\+O\+P\+T\+L\+Y\+Error\+Handler $>$}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+Error\+Handler.\+h$>$}
+
+
+
+Inherits $<$\+N\+S\+Object$>$.
+
+\subsection*{Instance Methods}
+\begin{DoxyCompactItemize}
+\item 
+(void) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_error_handler_01-p_a346526856c1f8c58aab0143b77d5a226}{handle\+Error\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_error_handler_01-p_a3540e8a0461cc0d9d3b117ca3febda23}{handle\+Exception\+:}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class determines how the \mbox{\hyperlink{interface_optimizely}{Optimizely}} S\+DK will handle exceptions and errors. 
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_error_handler_01-p_a346526856c1f8c58aab0143b77d5a226}\label{protocol_o_p_t_l_y_error_handler_01-p_a346526856c1f8c58aab0143b77d5a226}} 
+\index{O\+P\+T\+L\+Y\+Error\+Handler -\/p@{O\+P\+T\+L\+Y\+Error\+Handler -\/p}!handle\+Error\+:@{handle\+Error\+:}}
+\index{handle\+Error\+:@{handle\+Error\+:}!O\+P\+T\+L\+Y\+Error\+Handler -\/p@{O\+P\+T\+L\+Y\+Error\+Handler -\/p}}
+\subsubsection{\texorpdfstring{handle\+Error\+:()}{handleError:()}}
+{\footnotesize\ttfamily -\/ (void O\+P\+T\+L\+Y\+Error\+Handler) handle\+Error\+: \begin{DoxyParamCaption}\item[{(N\+S\+Error $\ast$)}]{error }\end{DoxyParamCaption}}
+
+Handle an error thrown by the S\+DK. 
+\begin{DoxyParams}{Parameters}
+{\em error} & The error object to be handled. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_error_handler_01-p_a3540e8a0461cc0d9d3b117ca3febda23}\label{protocol_o_p_t_l_y_error_handler_01-p_a3540e8a0461cc0d9d3b117ca3febda23}} 
+\index{O\+P\+T\+L\+Y\+Error\+Handler -\/p@{O\+P\+T\+L\+Y\+Error\+Handler -\/p}!handle\+Exception\+:@{handle\+Exception\+:}}
+\index{handle\+Exception\+:@{handle\+Exception\+:}!O\+P\+T\+L\+Y\+Error\+Handler -\/p@{O\+P\+T\+L\+Y\+Error\+Handler -\/p}}
+\subsubsection{\texorpdfstring{handle\+Exception\+:()}{handleException:()}}
+{\footnotesize\ttfamily -\/ (void O\+P\+T\+L\+Y\+Error\+Handler) handle\+Exception\+: \begin{DoxyParamCaption}\item[{(N\+S\+Exception $\ast$)}]{exception }\end{DoxyParamCaption}}
+
+Handle an exception thrown by the S\+DK. 
+\begin{DoxyParams}{Parameters}
+{\em exception} & The exception object to be handled. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this protocol was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Core/\+Optimizely\+S\+D\+K\+Core/O\+P\+T\+L\+Y\+Error\+Handler.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,92 @@
+\hypertarget{interface_optimizely}{}\section{Optimizely Class Reference}
+\label{interface_optimizely}\index{Optimizely@{Optimizely}}
+
+
+{\ttfamily \#import $<$Optimizely.\+h$>$}
+
+
+
+Inherits N\+S\+Object, and $<$\+Optimizely$>$.
+
+\subsection*{Instance Methods}
+\begin{DoxyCompactItemize}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_optimizely_ac8630f5b706a02b20e7ba66e15addc42}{track\+:user\+Id\+:attributes\+:event\+Tags\+:}}
+\end{DoxyCompactItemize}
+\subsection*{Class Methods}
+\begin{DoxyCompactItemize}
+\item 
+(nullable instancetype) + \mbox{\hyperlink{interface_optimizely_a6fdb3abc6df8054f6780cf27c16b6e51}{init\+:}}
+\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{interface_optimizely_ab2fa0e0e6e3508512e3ac1f0b7830df0}\label{interface_optimizely_ab2fa0e0e6e3508512e3ac1f0b7830df0}} 
+id$<$ \mbox{\hyperlink{interface_o_p_t_l_y_bucketer}{O\+P\+T\+L\+Y\+Bucketer}} $>$ {\bfseries bucketer}
+\item 
+\mbox{\Hypertarget{interface_optimizely_ad55471f26d95ba25e98293161cf32b04}\label{interface_optimizely_ad55471f26d95ba25e98293161cf32b04}} 
+O\+P\+T\+L\+Y\+Decision\+Service $\ast$ {\bfseries decision\+Service}
+\item 
+\mbox{\Hypertarget{interface_optimizely_ad7b66955e3671a88243230296fb2a64f}\label{interface_optimizely_ad7b66955e3671a88243230296fb2a64f}} 
+O\+P\+T\+L\+Y\+Project\+Config $\ast$ {\bfseries config}
+\item 
+\mbox{\Hypertarget{interface_optimizely_a18617a3176caa057ffa6d7a3cf0b1c48}\label{interface_optimizely_a18617a3176caa057ffa6d7a3cf0b1c48}} 
+id$<$ O\+P\+T\+L\+Y\+Error\+Handler $>$ {\bfseries error\+Handler}
+\item 
+\mbox{\Hypertarget{interface_optimizely_a60bc1f37b132b4c30e95288baea2b8d3}\label{interface_optimizely_a60bc1f37b132b4c30e95288baea2b8d3}} 
+id$<$ O\+P\+T\+L\+Y\+Event\+Builder $>$ {\bfseries event\+Builder}
+\item 
+\mbox{\Hypertarget{interface_optimizely_af75d59ef122a9d4a0b480445ba5061ac}\label{interface_optimizely_af75d59ef122a9d4a0b480445ba5061ac}} 
+id$<$ O\+P\+T\+L\+Y\+Event\+Dispatcher $>$ {\bfseries event\+Dispatcher}
+\item 
+\mbox{\Hypertarget{interface_optimizely_a7e01da650635386d48ca825fcc8cd207}\label{interface_optimizely_a7e01da650635386d48ca825fcc8cd207}} 
+id$<$ O\+P\+T\+L\+Y\+Logger $>$ {\bfseries logger}
+\item 
+\mbox{\Hypertarget{interface_optimizely_a97c4d344863bbb0e10d6f127e684140b}\label{interface_optimizely_a97c4d344863bbb0e10d6f127e684140b}} 
+id$<$ O\+P\+T\+L\+Y\+User\+Profile\+Service $>$ {\bfseries user\+Profile\+Service}
+\item 
+\mbox{\Hypertarget{interface_optimizely_a02a4a3b420ad898203e886106e5883d4}\label{interface_optimizely_a02a4a3b420ad898203e886106e5883d4}} 
+O\+P\+T\+L\+Y\+Notification\+Center $\ast$ {\bfseries notification\+Center}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class defines the \mbox{\hyperlink{interface_optimizely}{Optimizely}} S\+DK interface. \mbox{\hyperlink{interface_optimizely}{Optimizely}} Instance 
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{interface_optimizely_a6fdb3abc6df8054f6780cf27c16b6e51}\label{interface_optimizely_a6fdb3abc6df8054f6780cf27c16b6e51}} 
+\index{Optimizely@{Optimizely}!init\+:@{init\+:}}
+\index{init\+:@{init\+:}!Optimizely@{Optimizely}}
+\subsubsection{\texorpdfstring{init\+:()}{init:()}}
+{\footnotesize\ttfamily + (nullable instancetype) init\+: \begin{DoxyParamCaption}\item[{(nonnull O\+P\+T\+L\+Y\+Builder\+Block)}]{builder\+Block }\end{DoxyParamCaption}}
+
+Init with builder block 
+\begin{DoxyParams}{Parameters}
+{\em builder\+Block} & The builder block, where the logger, error\+Handler, and event\+Dispatcher can be set. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{interface_optimizely}{Optimizely}} instance. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_optimizely_ac8630f5b706a02b20e7ba66e15addc42}\label{interface_optimizely_ac8630f5b706a02b20e7ba66e15addc42}} 
+\index{Optimizely@{Optimizely}!track\+:user\+Id\+:attributes\+:event\+Tags\+:@{track\+:user\+Id\+:attributes\+:event\+Tags\+:}}
+\index{track\+:user\+Id\+:attributes\+:event\+Tags\+:@{track\+:user\+Id\+:attributes\+:event\+Tags\+:}!Optimizely@{Optimizely}}
+\subsubsection{\texorpdfstring{track\+:user\+Id\+:attributes\+:event\+Tags\+:()}{track:userId:attributes:eventTags:()}}
+{\footnotesize\ttfamily -\/ (void) track\+: \begin{DoxyParamCaption}\item[{(nonnull N\+S\+String $\ast$)}]{event\+Key }\item[{userId:(nonnull N\+S\+String $\ast$)}]{user\+Id }\item[{attributes:(nullable N\+S\+Dictionary$<$ N\+S\+String $\ast$, N\+S\+String $\ast$ $>$ $\ast$)}]{attributes }\item[{eventTags:(nullable N\+S\+Dictionary$<$ N\+S\+String $\ast$, id $>$ $\ast$)}]{event\+Tags }\end{DoxyParamCaption}}
+
+Track an event 
+\begin{DoxyParams}{Parameters}
+{\em event\+Key} & The event name \\
+\hline
+{\em user\+Id} & The user ID associated with the event to track \\
+\hline
+{\em attributes} & A map of attribute names to current user attribute values. \\
+\hline
+{\em event\+Tags} & A map of event tag names to event tag values (string, number, or boolean) \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Core/\+Optimizely\+S\+D\+K\+Core/Optimizely.\+h\end{DoxyCompactItemize}

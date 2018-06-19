@@ -1,0 +1,832 @@
+\hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set}{}\section{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set Class Reference}
+\label{interface_o_p_t_l_y_f_m_d_b_result_set}\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set.\+h$>$}
+
+
+
+Inherits N\+S\+Object.
+
+\subsection*{Instance Methods}
+\begin{Indent}\textbf{ Iterating through the result set}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_aed75988ef0079729eca9fcfdef92ec07}{next}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_adf8089c880322493cc638aaa8f6ebb9b}{next\+With\+Error\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_aba289dd61c9163a368b2898ab3aea0ae}{has\+Another\+Row}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Key value coding magic}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a2a8f33f21659c2f4594c4a8328baae55}{kvc\+Magic\+:}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_ac9bd0c449ab199280aaeb642b039aefa}\label{interface_o_p_t_l_y_f_m_d_b_result_set_ac9bd0c449ab199280aaeb642b039aefa}} 
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$ {\bfseries parent\+DB}
+\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Properties}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+N\+S\+String $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a2f247f56c6b1c242b89b38d5e55ac9fb}{query}}
+\item 
+N\+S\+Mutable\+Dictionary $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_aff55486dac355fb5d90db027a8797fcc}{column\+Name\+To\+Index\+Map}}
+\item 
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}} $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ac1f92d7773e65a7b06489992f8758857}{statement}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Creating and closing database}
+\label{_amgrp9a90ac90a86e18a43da006011947f137}%
+
+
+ 
+
+ \begin{DoxyCompactItemize}
+\item 
+(instancetype) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_aa8f1fbdb3cee5f32ae5a6c133519e8fe}{result\+Set\+With\+Statement\+:using\+Parent\+Database\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a446f25547db5f2b36547ea9f2da75529}{close}}
+\end{DoxyCompactItemize}
+\subsection*{Retrieving information from result set}
+\label{_amgrpe6c219bc0e9e934ed2f5bbb2f99b6bd3}%
+
+
+ 
+
+ \begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a82ad3b97a57b4a6e0967e3babd794ffb}{column\+Count}}
+\item 
+N\+S\+Dictionary $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ace597b275ab7cc2b3f351aec058ac048}{result\+Dictionary}}
+\item 
+(int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a5c0e3b88a4b01e1a0975e348eeabac0e}{column\+Index\+For\+Name\+:}}
+\item 
+(N\+S\+String $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ac153e81c5ea4d8ba8a09ccd60c8841b5}{column\+Name\+For\+Index\+:}}
+\item 
+(int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ae668c33cb56f14743d1daddca94ea3d1}{int\+For\+Column\+:}}
+\item 
+(int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a891494b15f1c7e1951275501891669f7}{int\+For\+Column\+Index\+:}}
+\item 
+(long) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a2bf75874eac8d72b119174865ab365f5}{long\+For\+Column\+:}}
+\item 
+(long) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a7d32a06b46ea37f2ef83ceaf93364c84}{long\+For\+Column\+Index\+:}}
+\item 
+(long long int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a7035cde8cd8ec3d38f40686e9f86b234}{long\+Long\+Int\+For\+Column\+:}}
+\item 
+(long long int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ace4f1c69bc1d2c014bba100a44fdc4e9}{long\+Long\+Int\+For\+Column\+Index\+:}}
+\item 
+(unsigned long long int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a690f0dcd5f0e4314128f04b1441a5713}{unsigned\+Long\+Long\+Int\+For\+Column\+:}}
+\item 
+(unsigned long long int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ad3f626894ab5132ee0c41383951ce62d}{unsigned\+Long\+Long\+Int\+For\+Column\+Index\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_acc9546fd178b809056eb3fd592c359b9}{bool\+For\+Column\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a3621b2d8e197c699958d4f2d21eb764e}{bool\+For\+Column\+Index\+:}}
+\item 
+(double) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a65460490ebc13600470cab4ae42f4bb4}{double\+For\+Column\+:}}
+\item 
+(double) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_add5fea1d6cda3b32f38de2fb4b0d7817}{double\+For\+Column\+Index\+:}}
+\item 
+(N\+S\+String $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a809b02921be458f48d375b5c1cb0a39e}{string\+For\+Column\+:}}
+\item 
+(N\+S\+String $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a781fca5064058907dc16d9723ee2a4b6}{string\+For\+Column\+Index\+:}}
+\item 
+(N\+S\+Date $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a2896eb3784b41a2408744c77f78512f5}{date\+For\+Column\+:}}
+\item 
+(N\+S\+Date $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ae5c24425fd6b0f63bb7cec97f26dc8ed}{date\+For\+Column\+Index\+:}}
+\item 
+(N\+S\+Data $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_aabb9796a0926d185627cb5e24c88f978}{data\+For\+Column\+:}}
+\item 
+(N\+S\+Data $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_aa66982b843b56f09bdeb3ee7b5b8fa36}{data\+For\+Column\+Index\+:}}
+\item 
+(const unsigned char $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ae19dc3c97fc5fa7fef98ce2a74471294}{U\+T\+F8\+String\+For\+Column\+:}}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_aeb20bd8380eb1dae59458b1639068cb9}\label{interface_o_p_t_l_y_f_m_d_b_result_set_aeb20bd8380eb1dae59458b1639068cb9}} 
+(const unsigned char $\ast$\+\_\+\+Nullable) -\/ {\bfseries U\+T\+F8\+String\+For\+Column\+Name\+:}
+\item 
+(const unsigned char $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a7a6aeb37554ce04a0573ef4007110df4}{U\+T\+F8\+String\+For\+Column\+Index\+:}}
+\item 
+(id \+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_adc62819e11eff432ebf07e784e4ef86f}{object\+For\+Column\+:}}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a8a54e6edfb9c3a4279a10651121c5daa}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a8a54e6edfb9c3a4279a10651121c5daa}} 
+(id \+\_\+\+Nullable) -\/ {\bfseries object\+For\+Column\+Name\+:}
+\item 
+(id \+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a8ab70c23da0b55086576b3cecfdef898}{object\+For\+Column\+Index\+:}}
+\item 
+(id \+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ae62a2c515a8cfe62a26bc5d340f91f72}{object\+For\+Keyed\+Subscript\+:}}
+\item 
+(id \+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a497f36dbe6e774a9951b329d4bb7f4b1}{object\+At\+Indexed\+Subscript\+:}}
+\item 
+(N\+S\+Data $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a4408546aea90f5eaf2044315b286edc6}{data\+No\+Copy\+For\+Column\+:}}
+\item 
+(N\+S\+Data $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_aa044fe54559ae3068230851fb0f7c7b1}{data\+No\+Copy\+For\+Column\+Index\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_abd2a9b52acb48553a5a57f21a4e23b8d}{column\+Index\+Is\+Null\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a110b4b8b0c9fd97fd591c3354139900a}{column\+Is\+Null\+:}}
+\item 
+(\char`\"{}Use \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ace597b275ab7cc2b3f351aec058ac048}{result\+Dictionary}} instead\char`\"{}) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a758db86030ebe9ba567e2b37d0914352}{\+\_\+\+\_\+deprecated\+\_\+msg}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents the results of executing a query on an {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}$>$}.
+
+\paragraph*{See also}
+
+
+\begin{DoxyItemize}
+\item {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}$>$} 
+\end{DoxyItemize}
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a758db86030ebe9ba567e2b37d0914352}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a758db86030ebe9ba567e2b37d0914352}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!\+\_\+\+\_\+deprecated\+\_\+msg@{\+\_\+\+\_\+deprecated\+\_\+msg}}
+\index{\+\_\+\+\_\+deprecated\+\_\+msg@{\+\_\+\+\_\+deprecated\+\_\+msg}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{\+\_\+\+\_\+deprecated\+\_\+msg()}{\_\_deprecated\_msg()}}
+{\footnotesize\ttfamily -\/ (\char`\"{}Use \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ace597b275ab7cc2b3f351aec058ac048}{result\+Dictionary}} instead\char`\"{}) \+\_\+\+\_\+deprecated\+\_\+msg \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Returns a dictionary of the row results
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ace597b275ab7cc2b3f351aec058ac048}{result\+Dictionary}}
+\end{DoxySeeAlso}
+\begin{DoxyWarning}{Warning}
+{\bfseries Deprecated}\+: Please use {\ttfamily $<$result\+Dictionary$>$} instead. Also, beware that {\ttfamily $<$result\+Dictionary$>$} is case sensitive! 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_acc9546fd178b809056eb3fd592c359b9}\label{interface_o_p_t_l_y_f_m_d_b_result_set_acc9546fd178b809056eb3fd592c359b9}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!bool\+For\+Column\+:@{bool\+For\+Column\+:}}
+\index{bool\+For\+Column\+:@{bool\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{bool\+For\+Column\+:()}{boolForColumn:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) bool\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set {\ttfamily B\+O\+OL} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily B\+O\+OL} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a3621b2d8e197c699958d4f2d21eb764e}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a3621b2d8e197c699958d4f2d21eb764e}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!bool\+For\+Column\+Index\+:@{bool\+For\+Column\+Index\+:}}
+\index{bool\+For\+Column\+Index\+:@{bool\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{bool\+For\+Column\+Index\+:()}{boolForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) bool\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set {\ttfamily B\+O\+OL} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily B\+O\+OL} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a446f25547db5f2b36547ea9f2da75529}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a446f25547db5f2b36547ea9f2da75529}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!close@{close}}
+\index{close@{close}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{close()}{close()}}
+{\footnotesize\ttfamily -\/ (void) close \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Close result set \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a5c0e3b88a4b01e1a0975e348eeabac0e}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a5c0e3b88a4b01e1a0975e348eeabac0e}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!column\+Index\+For\+Name\+:@{column\+Index\+For\+Name\+:}}
+\index{column\+Index\+For\+Name\+:@{column\+Index\+For\+Name\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{column\+Index\+For\+Name\+:()}{columnIndexForName:()}}
+{\footnotesize\ttfamily -\/ (int) column\+Index\+For\+Name\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Column index for column name
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Zero-\/based index for column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_abd2a9b52acb48553a5a57f21a4e23b8d}\label{interface_o_p_t_l_y_f_m_d_b_result_set_abd2a9b52acb48553a5a57f21a4e23b8d}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!column\+Index\+Is\+Null\+:@{column\+Index\+Is\+Null\+:}}
+\index{column\+Index\+Is\+Null\+:@{column\+Index\+Is\+Null\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{column\+Index\+Is\+Null\+:()}{columnIndexIsNull:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) column\+Index\+Is\+Null\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Is the column {\ttfamily N\+U\+LL}?
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if column is {\ttfamily N\+U\+LL}; {\ttfamily NO} if not {\ttfamily N\+U\+LL}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a110b4b8b0c9fd97fd591c3354139900a}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a110b4b8b0c9fd97fd591c3354139900a}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!column\+Is\+Null\+:@{column\+Is\+Null\+:}}
+\index{column\+Is\+Null\+:@{column\+Is\+Null\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{column\+Is\+Null\+:()}{columnIsNull:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) column\+Is\+Null\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Is the column {\ttfamily N\+U\+LL}?
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if column is {\ttfamily N\+U\+LL}; {\ttfamily NO} if not {\ttfamily N\+U\+LL}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_ac153e81c5ea4d8ba8a09ccd60c8841b5}\label{interface_o_p_t_l_y_f_m_d_b_result_set_ac153e81c5ea4d8ba8a09ccd60c8841b5}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!column\+Name\+For\+Index\+:@{column\+Name\+For\+Index\+:}}
+\index{column\+Name\+For\+Index\+:@{column\+Name\+For\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{column\+Name\+For\+Index\+:()}{columnNameForIndex:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+String $\ast$) column\+Name\+For\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Column name for column index
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+column\+Name {\ttfamily N\+S\+String} value of the name of the column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_aabb9796a0926d185627cb5e24c88f978}\label{interface_o_p_t_l_y_f_m_d_b_result_set_aabb9796a0926d185627cb5e24c88f978}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!data\+For\+Column\+:@{data\+For\+Column\+:}}
+\index{data\+For\+Column\+:@{data\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{data\+For\+Column\+:()}{dataForColumn:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Data $\ast$) data\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set {\ttfamily N\+S\+Data} value for column.
+
+This is useful when storing binary data in table (such as image or the like).
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Data value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_aa66982b843b56f09bdeb3ee7b5b8fa36}\label{interface_o_p_t_l_y_f_m_d_b_result_set_aa66982b843b56f09bdeb3ee7b5b8fa36}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!data\+For\+Column\+Index\+:@{data\+For\+Column\+Index\+:}}
+\index{data\+For\+Column\+Index\+:@{data\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{data\+For\+Column\+Index\+:()}{dataForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Data $\ast$) data\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set {\ttfamily N\+S\+Data} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Data value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a4408546aea90f5eaf2044315b286edc6}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a4408546aea90f5eaf2044315b286edc6}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!data\+No\+Copy\+For\+Column\+:@{data\+No\+Copy\+For\+Column\+:}}
+\index{data\+No\+Copy\+For\+Column\+:@{data\+No\+Copy\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{data\+No\+Copy\+For\+Column\+:()}{dataNoCopyForColumn:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Data $\ast$) data\+No\+Copy\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{N\+S\+\_\+\+R\+E\+T\+U\+R\+N\+S\+\_\+\+N\+O\+T\+\_\+\+R\+E\+T\+A\+I\+N\+ED }\end{DoxyParamCaption}}
+
+Result set {\ttfamily N\+S\+Data} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Data value of the result set\textquotesingle{}s column.
+\end{DoxyReturn}
+\begin{DoxyWarning}{Warning}
+If you are going to use this data after you iterate over the next row, or after you close the result set, make sure to make a copy of the data first (or just use {\ttfamily $<$data\+For\+Column\+:$>$}/{\ttfamily $<$data\+For\+Column\+Index\+:$>$}) If you don\textquotesingle{}t, you\textquotesingle{}re going to be in a world of hurt when you try and use the data. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_aa044fe54559ae3068230851fb0f7c7b1}\label{interface_o_p_t_l_y_f_m_d_b_result_set_aa044fe54559ae3068230851fb0f7c7b1}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!data\+No\+Copy\+For\+Column\+Index\+:@{data\+No\+Copy\+For\+Column\+Index\+:}}
+\index{data\+No\+Copy\+For\+Column\+Index\+:@{data\+No\+Copy\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{data\+No\+Copy\+For\+Column\+Index\+:()}{dataNoCopyForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Data $\ast$) data\+No\+Copy\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{N\+S\+\_\+\+R\+E\+T\+U\+R\+N\+S\+\_\+\+N\+O\+T\+\_\+\+R\+E\+T\+A\+I\+N\+ED }\end{DoxyParamCaption}}
+
+Result set {\ttfamily N\+S\+Data} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Data value of the result set\textquotesingle{}s column.
+\end{DoxyReturn}
+\begin{DoxyWarning}{Warning}
+If you are going to use this data after you iterate over the next row, or after you close the result set, make sure to make a copy of the data first (or just use {\ttfamily $<$data\+For\+Column\+:$>$}/{\ttfamily $<$data\+For\+Column\+Index\+:$>$}) If you don\textquotesingle{}t, you\textquotesingle{}re going to be in a world of hurt when you try and use the data. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a2896eb3784b41a2408744c77f78512f5}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a2896eb3784b41a2408744c77f78512f5}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!date\+For\+Column\+:@{date\+For\+Column\+:}}
+\index{date\+For\+Column\+:@{date\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{date\+For\+Column\+:()}{dateForColumn:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Date $\ast$) date\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set {\ttfamily N\+S\+Date} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Date value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_ae5c24425fd6b0f63bb7cec97f26dc8ed}\label{interface_o_p_t_l_y_f_m_d_b_result_set_ae5c24425fd6b0f63bb7cec97f26dc8ed}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!date\+For\+Column\+Index\+:@{date\+For\+Column\+Index\+:}}
+\index{date\+For\+Column\+Index\+:@{date\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{date\+For\+Column\+Index\+:()}{dateForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Date $\ast$) date\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set {\ttfamily N\+S\+Date} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Date value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a65460490ebc13600470cab4ae42f4bb4}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a65460490ebc13600470cab4ae42f4bb4}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!double\+For\+Column\+:@{double\+For\+Column\+:}}
+\index{double\+For\+Column\+:@{double\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{double\+For\+Column\+:()}{doubleForColumn:()}}
+{\footnotesize\ttfamily -\/ (double) double\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set {\ttfamily double} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily double} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_add5fea1d6cda3b32f38de2fb4b0d7817}\label{interface_o_p_t_l_y_f_m_d_b_result_set_add5fea1d6cda3b32f38de2fb4b0d7817}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!double\+For\+Column\+Index\+:@{double\+For\+Column\+Index\+:}}
+\index{double\+For\+Column\+Index\+:@{double\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{double\+For\+Column\+Index\+:()}{doubleForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (double) double\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set {\ttfamily double} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily double} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_aba289dd61c9163a368b2898ab3aea0ae}\label{interface_o_p_t_l_y_f_m_d_b_result_set_aba289dd61c9163a368b2898ab3aea0ae}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!has\+Another\+Row@{has\+Another\+Row}}
+\index{has\+Another\+Row@{has\+Another\+Row}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{has\+Another\+Row()}{hasAnotherRow()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) has\+Another\+Row \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Did the last call to {\ttfamily $<$next$>$} succeed in retrieving another row?
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if the last call to {\ttfamily $<$next$>$} succeeded in retrieving another record; {\ttfamily NO} if not.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_aed75988ef0079729eca9fcfdef92ec07}{-\/ next}}
+\end{DoxySeeAlso}
+\begin{DoxyWarning}{Warning}
+The {\ttfamily has\+Another\+Row} method must follow a call to {\ttfamily $<$next$>$}. If the previous database interaction was something other than a call to {\ttfamily next}, then this method may return {\ttfamily NO}, whether there is another row of data or not. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_ae668c33cb56f14743d1daddca94ea3d1}\label{interface_o_p_t_l_y_f_m_d_b_result_set_ae668c33cb56f14743d1daddca94ea3d1}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!int\+For\+Column\+:@{int\+For\+Column\+:}}
+\index{int\+For\+Column\+:@{int\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{int\+For\+Column\+:()}{intForColumn:()}}
+{\footnotesize\ttfamily -\/ (int) int\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set integer value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily int} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a891494b15f1c7e1951275501891669f7}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a891494b15f1c7e1951275501891669f7}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!int\+For\+Column\+Index\+:@{int\+For\+Column\+Index\+:}}
+\index{int\+For\+Column\+Index\+:@{int\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{int\+For\+Column\+Index\+:()}{intForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (int) int\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set integer value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily int} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a2a8f33f21659c2f4594c4a8328baae55}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a2a8f33f21659c2f4594c4a8328baae55}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!kvc\+Magic\+:@{kvc\+Magic\+:}}
+\index{kvc\+Magic\+:@{kvc\+Magic\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{kvc\+Magic\+:()}{kvcMagic:()}}
+{\footnotesize\ttfamily -\/ (void) kvc\+Magic\+: \begin{DoxyParamCaption}\item[{(id)}]{object }\end{DoxyParamCaption}}
+
+Performs {\ttfamily set\+Value} to yield support for key value observing.
+
+
+\begin{DoxyParams}{Parameters}
+{\em object} & The object for which the values will be set. This is the key-\/value-\/coding compliant object that you might, for example, observe. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a2bf75874eac8d72b119174865ab365f5}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a2bf75874eac8d72b119174865ab365f5}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!long\+For\+Column\+:@{long\+For\+Column\+:}}
+\index{long\+For\+Column\+:@{long\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{long\+For\+Column\+:()}{longForColumn:()}}
+{\footnotesize\ttfamily -\/ (long) long\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set {\ttfamily long} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily long} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a7d32a06b46ea37f2ef83ceaf93364c84}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a7d32a06b46ea37f2ef83ceaf93364c84}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!long\+For\+Column\+Index\+:@{long\+For\+Column\+Index\+:}}
+\index{long\+For\+Column\+Index\+:@{long\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{long\+For\+Column\+Index\+:()}{longForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (long) long\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set long value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily long} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a7035cde8cd8ec3d38f40686e9f86b234}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a7035cde8cd8ec3d38f40686e9f86b234}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!long\+Long\+Int\+For\+Column\+:@{long\+Long\+Int\+For\+Column\+:}}
+\index{long\+Long\+Int\+For\+Column\+:@{long\+Long\+Int\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{long\+Long\+Int\+For\+Column\+:()}{longLongIntForColumn:()}}
+{\footnotesize\ttfamily -\/ (long long int) long\+Long\+Int\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set {\ttfamily long long int} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily long long int} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_ace4f1c69bc1d2c014bba100a44fdc4e9}\label{interface_o_p_t_l_y_f_m_d_b_result_set_ace4f1c69bc1d2c014bba100a44fdc4e9}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!long\+Long\+Int\+For\+Column\+Index\+:@{long\+Long\+Int\+For\+Column\+Index\+:}}
+\index{long\+Long\+Int\+For\+Column\+Index\+:@{long\+Long\+Int\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{long\+Long\+Int\+For\+Column\+Index\+:()}{longLongIntForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (long long int) long\+Long\+Int\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set {\ttfamily long long int} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily long long int} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_aed75988ef0079729eca9fcfdef92ec07}\label{interface_o_p_t_l_y_f_m_d_b_result_set_aed75988ef0079729eca9fcfdef92ec07}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!next@{next}}
+\index{next@{next}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{next()}{next()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) next \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Retrieve next row for result set.
+
+You must always invoke {\ttfamily next} or {\ttfamily next\+With\+Error} before attempting to access the values returned in a query, even if you\textquotesingle{}re only expecting one.
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if row successfully retrieved; {\ttfamily NO} if end of result set reached
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_aba289dd61c9163a368b2898ab3aea0ae}{-\/ has\+Another\+Row}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_adf8089c880322493cc638aaa8f6ebb9b}\label{interface_o_p_t_l_y_f_m_d_b_result_set_adf8089c880322493cc638aaa8f6ebb9b}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!next\+With\+Error\+:@{next\+With\+Error\+:}}
+\index{next\+With\+Error\+:@{next\+With\+Error\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{next\+With\+Error\+:()}{nextWithError:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) next\+With\+Error\+: \begin{DoxyParamCaption}\item[{(N\+S\+Error $\ast$\+\_\+\+Nullable $\ast$)}]{out\+Err }\end{DoxyParamCaption}}
+
+Retrieve next row for result set.
+
+You must always invoke {\ttfamily next} or {\ttfamily next\+With\+Error} before attempting to access the values returned in a query, even if you\textquotesingle{}re only expecting one.
+
+
+\begin{DoxyParams}{Parameters}
+{\em out\+Err} & A \textquotesingle{}N\+S\+Error\textquotesingle{} object to receive any error object (if any).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\textquotesingle{}Y\+ES\textquotesingle{} if row successfully retrieved; \textquotesingle{}NO\textquotesingle{} if end of result set reached
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_aba289dd61c9163a368b2898ab3aea0ae}{-\/ has\+Another\+Row}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a497f36dbe6e774a9951b329d4bb7f4b1}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a497f36dbe6e774a9951b329d4bb7f4b1}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!object\+At\+Indexed\+Subscript\+:@{object\+At\+Indexed\+Subscript\+:}}
+\index{object\+At\+Indexed\+Subscript\+:@{object\+At\+Indexed\+Subscript\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{object\+At\+Indexed\+Subscript\+:()}{objectAtIndexedSubscript:()}}
+{\footnotesize\ttfamily -\/ (id) object\+At\+Indexed\+Subscript\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set object for column.
+
+This method allows the use of the \char`\"{}boxed\char`\"{} syntax supported in Modern Objective-\/C. For example, by defining this method, the following syntax is now supported\+:
+
+id result = rs\mbox{[}0\mbox{]};
+
+This simplified syntax is equivalent to calling\+:
+
+id result = \mbox{[}rs object\+For\+Keyed\+Subscript\+:0\mbox{]};
+
+which is, it turns out, equivalent to calling\+:
+
+id result = \mbox{[}rs object\+For\+Column\+Name\+:0\mbox{]};
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Either {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Data}, or {\ttfamily N\+S\+Null}. If the column was {\ttfamily N\+U\+LL}, this returns {\ttfamily \mbox{[}N\+S\+Null null\mbox{]}} object. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_adc62819e11eff432ebf07e784e4ef86f}\label{interface_o_p_t_l_y_f_m_d_b_result_set_adc62819e11eff432ebf07e784e4ef86f}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!object\+For\+Column\+:@{object\+For\+Column\+:}}
+\index{object\+For\+Column\+:@{object\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{object\+For\+Column\+:()}{objectForColumn:()}}
+{\footnotesize\ttfamily -\/ (id) object\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set object for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & Name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Either {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Data}, or {\ttfamily N\+S\+Null}. If the column was {\ttfamily N\+U\+LL}, this returns {\ttfamily \mbox{[}N\+S\+Null null\mbox{]}} object.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_ae62a2c515a8cfe62a26bc5d340f91f72}{-\/ object\+For\+Keyed\+Subscript\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a8ab70c23da0b55086576b3cecfdef898}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a8ab70c23da0b55086576b3cecfdef898}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!object\+For\+Column\+Index\+:@{object\+For\+Column\+Index\+:}}
+\index{object\+For\+Column\+Index\+:@{object\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{object\+For\+Column\+Index\+:()}{objectForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (id) object\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set object for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Either {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Data}, or {\ttfamily N\+S\+Null}. If the column was {\ttfamily N\+U\+LL}, this returns {\ttfamily \mbox{[}N\+S\+Null null\mbox{]}} object.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set_a497f36dbe6e774a9951b329d4bb7f4b1}{-\/ object\+At\+Indexed\+Subscript\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_ae62a2c515a8cfe62a26bc5d340f91f72}\label{interface_o_p_t_l_y_f_m_d_b_result_set_ae62a2c515a8cfe62a26bc5d340f91f72}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!object\+For\+Keyed\+Subscript\+:@{object\+For\+Keyed\+Subscript\+:}}
+\index{object\+For\+Keyed\+Subscript\+:@{object\+For\+Keyed\+Subscript\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{object\+For\+Keyed\+Subscript\+:()}{objectForKeyedSubscript:()}}
+{\footnotesize\ttfamily -\/ (id) object\+For\+Keyed\+Subscript\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set object for column.
+
+This method allows the use of the \char`\"{}boxed\char`\"{} syntax supported in Modern Objective-\/C. For example, by defining this method, the following syntax is now supported\+:
+
+id result = rs\mbox{[}"employee\+\_\+name"\mbox{]};
+
+This simplified syntax is equivalent to calling\+:
+
+id result = \mbox{[}rs object\+For\+Keyed\+Subscript\+:"employee\+\_\+name"\mbox{]};
+
+which is, it turns out, equivalent to calling\+:
+
+id result = \mbox{[}rs object\+For\+Column\+Name\+:"employee\+\_\+name"\mbox{]};
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Either {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Data}, or {\ttfamily N\+S\+Null}. If the column was {\ttfamily N\+U\+LL}, this returns {\ttfamily \mbox{[}N\+S\+Null null\mbox{]}} object. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_aa8f1fbdb3cee5f32ae5a6c133519e8fe}\label{interface_o_p_t_l_y_f_m_d_b_result_set_aa8f1fbdb3cee5f32ae5a6c133519e8fe}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!result\+Set\+With\+Statement\+:using\+Parent\+Database\+:@{result\+Set\+With\+Statement\+:using\+Parent\+Database\+:}}
+\index{result\+Set\+With\+Statement\+:using\+Parent\+Database\+:@{result\+Set\+With\+Statement\+:using\+Parent\+Database\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{result\+Set\+With\+Statement\+:using\+Parent\+Database\+:()}{resultSetWithStatement:usingParentDatabase:()}}
+{\footnotesize\ttfamily + (instancetype) result\+Set\+With\+Statement\+: \begin{DoxyParamCaption}\item[{(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}} $\ast$)}]{statement }\item[{usingParentDatabase:(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}$\ast$)}]{a\+DB }\end{DoxyParamCaption}}
+
+Create result set from {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}$>$}
+
+
+\begin{DoxyParams}{Parameters}
+{\em statement} & A {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}$>$} to be performed\\
+\hline
+{\em a\+DB} & A {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}$>$} to be used\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}} on success; {\ttfamily nil} on failure 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a809b02921be458f48d375b5c1cb0a39e}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a809b02921be458f48d375b5c1cb0a39e}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!string\+For\+Column\+:@{string\+For\+Column\+:}}
+\index{string\+For\+Column\+:@{string\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{string\+For\+Column\+:()}{stringForColumn:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+String $\ast$) string\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set {\ttfamily N\+S\+String} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+String value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a781fca5064058907dc16d9723ee2a4b6}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a781fca5064058907dc16d9723ee2a4b6}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!string\+For\+Column\+Index\+:@{string\+For\+Column\+Index\+:}}
+\index{string\+For\+Column\+Index\+:@{string\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{string\+For\+Column\+Index\+:()}{stringForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+String $\ast$) string\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set {\ttfamily N\+S\+String} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+String value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a690f0dcd5f0e4314128f04b1441a5713}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a690f0dcd5f0e4314128f04b1441a5713}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!unsigned\+Long\+Long\+Int\+For\+Column\+:@{unsigned\+Long\+Long\+Int\+For\+Column\+:}}
+\index{unsigned\+Long\+Long\+Int\+For\+Column\+:@{unsigned\+Long\+Long\+Int\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{unsigned\+Long\+Long\+Int\+For\+Column\+:()}{unsignedLongLongIntForColumn:()}}
+{\footnotesize\ttfamily -\/ (unsigned long long int) unsigned\+Long\+Long\+Int\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set {\ttfamily unsigned long long int} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily unsigned long long int} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_ad3f626894ab5132ee0c41383951ce62d}\label{interface_o_p_t_l_y_f_m_d_b_result_set_ad3f626894ab5132ee0c41383951ce62d}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!unsigned\+Long\+Long\+Int\+For\+Column\+Index\+:@{unsigned\+Long\+Long\+Int\+For\+Column\+Index\+:}}
+\index{unsigned\+Long\+Long\+Int\+For\+Column\+Index\+:@{unsigned\+Long\+Long\+Int\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{unsigned\+Long\+Long\+Int\+For\+Column\+Index\+:()}{unsignedLongLongIntForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (unsigned long long int) unsigned\+Long\+Long\+Int\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set {\ttfamily unsigned long long int} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily unsigned long long int} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_ae19dc3c97fc5fa7fef98ce2a74471294}\label{interface_o_p_t_l_y_f_m_d_b_result_set_ae19dc3c97fc5fa7fef98ce2a74471294}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!U\+T\+F8\+String\+For\+Column\+:@{U\+T\+F8\+String\+For\+Column\+:}}
+\index{U\+T\+F8\+String\+For\+Column\+:@{U\+T\+F8\+String\+For\+Column\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{U\+T\+F8\+String\+For\+Column\+:()}{UTF8StringForColumn:()}}
+{\footnotesize\ttfamily -\/ (const unsigned char $\ast$) U\+T\+F8\+String\+For\+Column\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{column\+Name }\end{DoxyParamCaption}}
+
+Result set {\ttfamily (const unsigned char $\ast$)} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Name} & {\ttfamily N\+S\+String} value of the name of the column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily (const unsigned char $\ast$)} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a7a6aeb37554ce04a0573ef4007110df4}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a7a6aeb37554ce04a0573ef4007110df4}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!U\+T\+F8\+String\+For\+Column\+Index\+:@{U\+T\+F8\+String\+For\+Column\+Index\+:}}
+\index{U\+T\+F8\+String\+For\+Column\+Index\+:@{U\+T\+F8\+String\+For\+Column\+Index\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{U\+T\+F8\+String\+For\+Column\+Index\+:()}{UTF8StringForColumnIndex:()}}
+{\footnotesize\ttfamily -\/ (const unsigned char $\ast$) U\+T\+F8\+String\+For\+Column\+Index\+: \begin{DoxyParamCaption}\item[{(int)}]{column\+Idx }\end{DoxyParamCaption}}
+
+Result set {\ttfamily (const unsigned char $\ast$)} value for column.
+
+
+\begin{DoxyParams}{Parameters}
+{\em column\+Idx} & Zero-\/based index for column.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily (const unsigned char $\ast$)} value of the result set\textquotesingle{}s column. 
+\end{DoxyReturn}
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a82ad3b97a57b4a6e0967e3babd794ffb}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a82ad3b97a57b4a6e0967e3babd794ffb}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!column\+Count@{column\+Count}}
+\index{column\+Count@{column\+Count}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{column\+Count}{columnCount}}
+{\footnotesize\ttfamily -\/ (int) column\+Count\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+How many columns in result set
+
+\begin{DoxyReturn}{Returns}
+Integer value of the number of columns. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_aff55486dac355fb5d90db027a8797fcc}\label{interface_o_p_t_l_y_f_m_d_b_result_set_aff55486dac355fb5d90db027a8797fcc}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!column\+Name\+To\+Index\+Map@{column\+Name\+To\+Index\+Map}}
+\index{column\+Name\+To\+Index\+Map@{column\+Name\+To\+Index\+Map}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{column\+Name\+To\+Index\+Map}{columnNameToIndexMap}}
+{\footnotesize\ttfamily -\/ (N\+S\+Mutable\+Dictionary $\ast$) column\+Name\+To\+Index\+Map\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [atomic]}, {\ttfamily [assign]}}
+
+{\ttfamily N\+S\+Mutable\+Dictionary} mapping column names to numeric index \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_a2f247f56c6b1c242b89b38d5e55ac9fb}\label{interface_o_p_t_l_y_f_m_d_b_result_set_a2f247f56c6b1c242b89b38d5e55ac9fb}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!query@{query}}
+\index{query@{query}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{query}{query}}
+{\footnotesize\ttfamily -\/ (N\+S\+String$\ast$) query\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [retain]}}
+
+Executed query \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_ace597b275ab7cc2b3f351aec058ac048}\label{interface_o_p_t_l_y_f_m_d_b_result_set_ace597b275ab7cc2b3f351aec058ac048}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!result\+Dictionary@{result\+Dictionary}}
+\index{result\+Dictionary@{result\+Dictionary}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{result\+Dictionary}{resultDictionary}}
+{\footnotesize\ttfamily -\/ (N\+S\+Dictionary $\ast$) result\+Dictionary\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+Returns a dictionary of the row results mapped to case sensitive keys of the column names.
+
+\begin{DoxyWarning}{Warning}
+The keys to the dictionary are case sensitive of the column names. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_result_set_ac1f92d7773e65a7b06489992f8758857}\label{interface_o_p_t_l_y_f_m_d_b_result_set_ac1f92d7773e65a7b06489992f8758857}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}!statement@{statement}}
+\index{statement@{statement}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}
+\subsubsection{\texorpdfstring{statement}{statement}}
+{\footnotesize\ttfamily -\/ (\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}$\ast$) statement\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [retain]}}
+
+{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}} used by result set. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Shared/\+O\+P\+T\+L\+Y\+F\+M\+D\+B/src/optlyfmdb/O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set.\+h\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Shared/\+O\+P\+T\+L\+Y\+F\+M\+D\+B/src/optlyfmdb/O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set.\+m\end{DoxyCompactItemize}

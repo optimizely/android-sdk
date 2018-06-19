@@ -1,0 +1,92 @@
+\hypertarget{interface_o_p_t_l_y_bucketer}{}\section{O\+P\+T\+L\+Y\+Bucketer Class Reference}
+\label{interface_o_p_t_l_y_bucketer}\index{O\+P\+T\+L\+Y\+Bucketer@{O\+P\+T\+L\+Y\+Bucketer}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+Bucketer.\+h$>$}
+
+
+
+Inherits N\+S\+Object, and $<$\+O\+P\+T\+L\+Y\+Bucketer$>$.
+
+\subsection*{Instance Methods}
+\begin{DoxyCompactItemize}
+\item 
+(nullable instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_bucketer_a7bfb8596f8a8671c1df60e2b363ba783}{init\+With\+Config\+:}}
+\item 
+(nullable O\+P\+T\+L\+Y\+Experiment $\ast$) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_bucketer_a1d62331bfcbb1264333256918f40a030}{bucket\+To\+Experiment\+:with\+Bucketing\+Id\+:}}
+\item 
+(int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_bucketer_a18416626947bc0b34c3a0e4a3f90bb87}{generate\+Bucket\+Value\+:}}
+\item 
+(nonnull N\+S\+String $\ast$) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_bucketer_ac2a6df329e8a9960499c272b1c0b47a9}{make\+Hash\+Id\+From\+Bucketing\+Id\+:and\+Entity\+Id\+:}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Default \mbox{\hyperlink{interface_optimizely}{Optimizely}} bucketing algorithm that evenly distributes users using the Murmur3 hash of some provided identifier. The user ID can not be a null or empty string. 
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{interface_o_p_t_l_y_bucketer_a1d62331bfcbb1264333256918f40a030}\label{interface_o_p_t_l_y_bucketer_a1d62331bfcbb1264333256918f40a030}} 
+\index{O\+P\+T\+L\+Y\+Bucketer@{O\+P\+T\+L\+Y\+Bucketer}!bucket\+To\+Experiment\+:with\+Bucketing\+Id\+:@{bucket\+To\+Experiment\+:with\+Bucketing\+Id\+:}}
+\index{bucket\+To\+Experiment\+:with\+Bucketing\+Id\+:@{bucket\+To\+Experiment\+:with\+Bucketing\+Id\+:}!O\+P\+T\+L\+Y\+Bucketer@{O\+P\+T\+L\+Y\+Bucketer}}
+\subsubsection{\texorpdfstring{bucket\+To\+Experiment\+:with\+Bucketing\+Id\+:()}{bucketToExperiment:withBucketingId:()}}
+{\footnotesize\ttfamily -\/ (nullable O\+P\+T\+L\+Y\+Experiment $\ast$) bucket\+To\+Experiment\+: \begin{DoxyParamCaption}\item[{(nonnull O\+P\+T\+L\+Y\+Group $\ast$)}]{group }\item[{withBucketingId:(nonnull N\+S\+String $\ast$)}]{bucketing\+Id }\end{DoxyParamCaption}}
+
+Bucket experiment based on bucket value and traffic allocations. 
+\begin{DoxyParams}{Parameters}
+{\em group} & representing \mbox{\hyperlink{protocol_o_p_t_l_y_group-p}{O\+P\+T\+L\+Y\+Group}} from which experiment belongs to. \\
+\hline
+{\em bucketing\+Id} & Id to be used for bucketing the user. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+experiment which represent \mbox{\hyperlink{protocol_o_p_t_l_y_experiment-p}{O\+P\+T\+L\+Y\+Experiment}}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_bucketer_a18416626947bc0b34c3a0e4a3f90bb87}\label{interface_o_p_t_l_y_bucketer_a18416626947bc0b34c3a0e4a3f90bb87}} 
+\index{O\+P\+T\+L\+Y\+Bucketer@{O\+P\+T\+L\+Y\+Bucketer}!generate\+Bucket\+Value\+:@{generate\+Bucket\+Value\+:}}
+\index{generate\+Bucket\+Value\+:@{generate\+Bucket\+Value\+:}!O\+P\+T\+L\+Y\+Bucketer@{O\+P\+T\+L\+Y\+Bucketer}}
+\subsubsection{\texorpdfstring{generate\+Bucket\+Value\+:()}{generateBucketValue:()}}
+{\footnotesize\ttfamily -\/ (int) generate\+Bucket\+Value\+: \begin{DoxyParamCaption}\item[{(nonnull N\+S\+String $\ast$)}]{bucketing\+Id }\end{DoxyParamCaption}}
+
+Hash the bucketing ID and map it to the range \mbox{[}0, 10000). 
+\begin{DoxyParams}{Parameters}
+{\em bucketing\+Id} & The ID for which to generate the hash and bucket values. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A value in the range \mbox{[}0, 10000). 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_bucketer_a7bfb8596f8a8671c1df60e2b363ba783}\label{interface_o_p_t_l_y_bucketer_a7bfb8596f8a8671c1df60e2b363ba783}} 
+\index{O\+P\+T\+L\+Y\+Bucketer@{O\+P\+T\+L\+Y\+Bucketer}!init\+With\+Config\+:@{init\+With\+Config\+:}}
+\index{init\+With\+Config\+:@{init\+With\+Config\+:}!O\+P\+T\+L\+Y\+Bucketer@{O\+P\+T\+L\+Y\+Bucketer}}
+\subsubsection{\texorpdfstring{init\+With\+Config\+:()}{initWithConfig:()}}
+{\footnotesize\ttfamily -\/ (nullable instancetype) init\+With\+Config\+: \begin{DoxyParamCaption}\item[{(nonnull O\+P\+T\+L\+Y\+Project\+Config $\ast$)}]{config }\end{DoxyParamCaption}}
+
+Initialize the default bucketer with the project config. 
+\begin{DoxyParams}{Parameters}
+{\em config} & The project config that the bucketer will use for reference. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The bucketer that has been created. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_bucketer_ac2a6df329e8a9960499c272b1c0b47a9}\label{interface_o_p_t_l_y_bucketer_ac2a6df329e8a9960499c272b1c0b47a9}} 
+\index{O\+P\+T\+L\+Y\+Bucketer@{O\+P\+T\+L\+Y\+Bucketer}!make\+Hash\+Id\+From\+Bucketing\+Id\+:and\+Entity\+Id\+:@{make\+Hash\+Id\+From\+Bucketing\+Id\+:and\+Entity\+Id\+:}}
+\index{make\+Hash\+Id\+From\+Bucketing\+Id\+:and\+Entity\+Id\+:@{make\+Hash\+Id\+From\+Bucketing\+Id\+:and\+Entity\+Id\+:}!O\+P\+T\+L\+Y\+Bucketer@{O\+P\+T\+L\+Y\+Bucketer}}
+\subsubsection{\texorpdfstring{make\+Hash\+Id\+From\+Bucketing\+Id\+:and\+Entity\+Id\+:()}{makeHashIdFromBucketingId:andEntityId:()}}
+{\footnotesize\ttfamily -\/ (nonnull N\+S\+String $\ast$) make\+Hash\+Id\+From\+Bucketing\+Id\+: \begin{DoxyParamCaption}\item[{(nonnull N\+S\+String $\ast$)}]{bucketing\+Id }\item[{andEntityId:(nonnull N\+S\+String $\ast$)}]{entity\+Id }\end{DoxyParamCaption}}
+
+Generate an ID to be used in Murmur3 hash based on the provided User ID and the ID of the entity the user is bucketed into. 
+\begin{DoxyParams}{Parameters}
+{\em bucketing\+Id} & The bucket ID provided to the bucketing A\+PI. \\
+\hline
+{\em entity\+Id} & The ID of the entity the user is being bucketed into. ex\+: O\+P\+T\+L\+Y\+Experiment.\+experiment\+Id. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The string to be used in the Murmur3 hash for bucketing. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Core/\+Optimizely\+S\+D\+K\+Core/O\+P\+T\+L\+Y\+Bucketer.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,316 @@
+\hypertarget{interface_o_p_t_l_y_j_s_o_n_model}{}\section{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model Class Reference}
+\label{interface_o_p_t_l_y_j_s_o_n_model}\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model.\+h$>$}
+
+
+
+Inherits N\+S\+Object, $<$\+Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol$>$, and $<$\+N\+S\+Secure\+Coding$>$.
+
+
+
+Inherited by O\+P\+T\+L\+Y\+Attribute, O\+P\+T\+L\+Y\+Audience, O\+P\+T\+L\+Y\+Base\+Condition, O\+P\+T\+L\+Y\+Decision\+Event\+Ticket, O\+P\+T\+L\+Y\+Decision\+Service, O\+P\+T\+L\+Y\+Event, O\+P\+T\+L\+Y\+Event\+Audience, O\+P\+T\+L\+Y\+Event\+Decision, O\+P\+T\+L\+Y\+Event\+Decision\+Ticket, O\+P\+T\+L\+Y\+Event\+Feature, O\+P\+T\+L\+Y\+Event\+Header, O\+P\+T\+L\+Y\+Event\+Layer\+State, O\+P\+T\+L\+Y\+Event\+Metric, O\+P\+T\+L\+Y\+Event\+Related\+Event, O\+P\+T\+L\+Y\+Event\+View, O\+P\+T\+L\+Y\+Experiment, O\+P\+T\+L\+Y\+Experiment\+Bucket\+Map\+Entity, O\+P\+T\+L\+Y\+Feature\+Flag, O\+P\+T\+L\+Y\+Feature\+Variable, O\+P\+T\+L\+Y\+Group, O\+P\+T\+L\+Y\+Project\+Config, O\+P\+T\+L\+Y\+Rollout, O\+P\+T\+L\+Y\+Traffic\+Allocation, O\+P\+T\+L\+Y\+User\+Profile, O\+P\+T\+L\+Y\+Variable\+Usage, and O\+P\+T\+L\+Y\+Variation.
+
+\subsection*{Instance Methods}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_af492404f6c3eb4ad3917fd3fa42bdc22}\label{interface_o_p_t_l_y_j_s_o_n_model_af492404f6c3eb4ad3917fd3fa42bdc22}} 
+(void) -\/ {\bfseries merge\+From\+Dictionary\+:use\+Key\+Mapping\+:}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a37ff00b4f8f6aea4b23bca04d3f61eaa}\label{interface_o_p_t_l_y_j_s_o_n_model_a37ff00b4f8f6aea4b23bca04d3f61eaa}} 
+(N\+S\+String $\ast$) -\/ {\bfseries D\+E\+P\+R\+E\+C\+A\+T\+E\+D\+\_\+\+A\+T\+T\+R\+I\+B\+U\+TE}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a7c781cd2455aa4eea748637a151b46cb}\label{interface_o_p_t_l_y_j_s_o_n_model_a7c781cd2455aa4eea748637a151b46cb}} 
+(N\+S\+Comparison\+Result) -\/ {\bfseries compare\+:}
+\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Creating and initializing models}\par
+\begin{DoxyCompactItemize}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a1f1a61cd0197acd5306284ca658cbbf5}{init\+With\+String\+:error\+:}}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_af84f531355d015c8c7e6cbaca8215476}{init\+With\+String\+:using\+Encoding\+:error\+:}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Exporting model contents}\par
+\begin{DoxyCompactItemize}
+\item 
+(N\+S\+String $\ast$) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a0c49b24832149f756d011e17225cb5b1}{to\+J\+S\+O\+N\+String}}
+\item 
+(N\+S\+Data $\ast$) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a5b08f6a900e32f655981c0c2cbcca3f8}{to\+J\+S\+O\+N\+Data}}
+\item 
+(N\+S\+String $\ast$) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a7877db814d4a807b4fa309e6e4a613ce}{to\+J\+S\+O\+N\+String\+With\+Keys\+:}}
+\item 
+(N\+S\+Data $\ast$) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a55de253c412617cfd23a55b064571e13}{to\+J\+S\+O\+N\+Data\+With\+Keys\+:}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Validation}\par
+\begin{DoxyCompactItemize}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a7f6a3cd6f85c5edc5cb2629bb651b26f}{validate\+:}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Class Methods}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a37c10b6272f91bcb4d01d72b7889c009}\label{interface_o_p_t_l_y_j_s_o_n_model_a37c10b6272f91bcb4d01d72b7889c009}} 
+(N\+S\+Mutable\+Array $\ast$) + {\bfseries array\+Of\+Models\+From\+Dictionaries\+:}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a9b85be790c03c2667ad4bff77489f8c4}\label{interface_o_p_t_l_y_j_s_o_n_model_a9b85be790c03c2667ad4bff77489f8c4}} 
+(void) + {\bfseries set\+Global\+Key\+Mapper\+:}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a5928de9aac4847a452a4ef3d812fd6ff}\label{interface_o_p_t_l_y_j_s_o_n_model_a5928de9aac4847a452a4ef3d812fd6ff}} 
+(N\+S\+String $\ast$) + {\bfseries protocol\+For\+Array\+Property\+:}
+\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Batch methods}\par
+\begin{DoxyCompactItemize}
+\item 
+(N\+S\+Mutable\+Array $\ast$) + \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_aa02b3f8f701603689c9a3c4aeb4b8763}{array\+Of\+Models\+From\+Dictionaries\+:error\+:}}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a97dba2cf17f890951ffe4d6eed4eeb46}\label{interface_o_p_t_l_y_j_s_o_n_model_a97dba2cf17f890951ffe4d6eed4eeb46}} 
+(N\+S\+Mutable\+Array $\ast$) + {\bfseries array\+Of\+Models\+From\+Data\+:error\+:}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a1a254997ddecf8db74c664b53c8ce544}\label{interface_o_p_t_l_y_j_s_o_n_model_a1a254997ddecf8db74c664b53c8ce544}} 
+(N\+S\+Mutable\+Array $\ast$) + {\bfseries array\+Of\+Models\+From\+String\+:error\+:}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_aa04b799da39b43e2ed117fd8fcf9d2e1}\label{interface_o_p_t_l_y_j_s_o_n_model_aa04b799da39b43e2ed117fd8fcf9d2e1}} 
+(N\+S\+Mutable\+Dictionary $\ast$) + {\bfseries dictionary\+Of\+Models\+From\+Dictionary\+:error\+:}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a952e7b9a00a930c887cd8f2794269e0e}\label{interface_o_p_t_l_y_j_s_o_n_model_a952e7b9a00a930c887cd8f2794269e0e}} 
+(N\+S\+Mutable\+Dictionary $\ast$) + {\bfseries dictionary\+Of\+Models\+From\+Data\+:error\+:}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_ad45ff075542dd910a4a7b60929fa8add}\label{interface_o_p_t_l_y_j_s_o_n_model_ad45ff075542dd910a4a7b60929fa8add}} 
+(N\+S\+Mutable\+Dictionary $\ast$) + {\bfseries dictionary\+Of\+Models\+From\+String\+:error\+:}
+\item 
+(N\+S\+Mutable\+Array $\ast$) + \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a6094627ef7b6ea29638aa744cf529090}{array\+Of\+Dictionaries\+From\+Models\+:}}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a620bc19b72f467bfb996b1ac8b0ece66}\label{interface_o_p_t_l_y_j_s_o_n_model_a620bc19b72f467bfb996b1ac8b0ece66}} 
+(N\+S\+Mutable\+Dictionary $\ast$) + {\bfseries dictionary\+Of\+Dictionaries\+From\+Models\+:}
+\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Key mapping}
+\begin{DoxyCompactItemize}
+\item 
+(\mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_key_mapper}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Key\+Mapper}} $\ast$) + \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a9acd086d25e51329aea4858803fe4098}{key\+Mapper}}
+\item 
+(B\+O\+OL) + \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_afaf77fcb6d2307217a858c764df3ae75}{property\+Is\+Optional\+:}}
+\item 
+(B\+O\+OL) + \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a49b04a9bf083b74205921a22b5521ef6}{property\+Is\+Ignored\+:}}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a79852a1652daab78edcad1d1c5c46953}\label{interface_o_p_t_l_y_j_s_o_n_model_a79852a1652daab78edcad1d1c5c46953}} 
+(Class) + {\bfseries class\+For\+Collection\+Property\+:}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a892d35a66375282061bec1305ff48446}{merge\+From\+Dictionary\+:use\+Key\+Mapping\+:error\+:}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} is an abstract model class, you should not instantiate it directly, as it does not have any properties, and therefore cannot serve as a data model. Instead you should subclass it, and define the properties you want your data model to have as properties of your own class. 
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a6094627ef7b6ea29638aa744cf529090}\label{interface_o_p_t_l_y_j_s_o_n_model_a6094627ef7b6ea29638aa744cf529090}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!array\+Of\+Dictionaries\+From\+Models\+:@{array\+Of\+Dictionaries\+From\+Models\+:}}
+\index{array\+Of\+Dictionaries\+From\+Models\+:@{array\+Of\+Dictionaries\+From\+Models\+:}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{array\+Of\+Dictionaries\+From\+Models\+:()}{arrayOfDictionariesFromModels:()}}
+{\footnotesize\ttfamily + (N\+S\+Mutable\+Array $\ast$) array\+Of\+Dictionaries\+From\+Models\+: \begin{DoxyParamCaption}\item[{(N\+S\+Array $\ast$)}]{array }\end{DoxyParamCaption}}
+
+If you have an N\+S\+Array of data model objects, this method takes it in and outputs a list of the matching dictionaries. This method does the opposite of array\+Of\+Objects\+From\+Dictionaries\+: 
+\begin{DoxyParams}{Parameters}
+{\em array} & list of \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} objects \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a list of N\+S\+Dictionary objects 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Type\+Not\+Allowed\+Exception} & thrown when unsupported type is found in the incoming J\+S\+ON, or a property type in your model is not supported by \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_value_transformer}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Value\+Transformer}} and its categories \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxySeeAlso}{See also}
+array\+Of\+Models\+From\+Dictionaries\+: 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_aa02b3f8f701603689c9a3c4aeb4b8763}\label{interface_o_p_t_l_y_j_s_o_n_model_aa02b3f8f701603689c9a3c4aeb4b8763}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!array\+Of\+Models\+From\+Dictionaries\+:error\+:@{array\+Of\+Models\+From\+Dictionaries\+:error\+:}}
+\index{array\+Of\+Models\+From\+Dictionaries\+:error\+:@{array\+Of\+Models\+From\+Dictionaries\+:error\+:}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{array\+Of\+Models\+From\+Dictionaries\+:error\+:()}{arrayOfModelsFromDictionaries:error:()}}
+{\footnotesize\ttfamily + (N\+S\+Mutable\+Array $\ast$) array\+Of\+Models\+From\+Dictionaries\+: \begin{DoxyParamCaption}\item[{(N\+S\+Array $\ast$)}]{array }\item[{error:(N\+S\+Error $\ast$\+\_\+\+\_\+autoreleasing $\ast$)}]{err }\end{DoxyParamCaption}}
+
+If you have a list of dictionaries in a J\+S\+ON feed, you can use this method to create an N\+S\+Array of model objects. Handy when importing J\+S\+ON data lists. This method will loop over the input list and initialize a data model for every dictionary in the list.
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & list of dictionaries to be imported as models \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+list of initialized data model objects 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Type\+Not\+Allowed\+Exception} & thrown when unsupported type is found in the incoming J\+S\+ON, or a property type in your model is not supported by \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_value_transformer}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Value\+Transformer}} and its categories \\
+\hline
+{\em O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Invalid\+Data\+Exception} & thrown when the input data does not include all required keys \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_a6094627ef7b6ea29638aa744cf529090}{+ array\+Of\+Dictionaries\+From\+Models\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a1f1a61cd0197acd5306284ca658cbbf5}\label{interface_o_p_t_l_y_j_s_o_n_model_a1f1a61cd0197acd5306284ca658cbbf5}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!init\+With\+String\+:error\+:@{init\+With\+String\+:error\+:}}
+\index{init\+With\+String\+:error\+:@{init\+With\+String\+:error\+:}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{init\+With\+String\+:error\+:()}{initWithString:error:()}}
+{\footnotesize\ttfamily -\/ (id) init\+With\+String\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{string }\item[{error:(\mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_error}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Error}} $\ast$$\ast$)}]{err }\end{DoxyParamCaption}}
+
+Create a new model instance and initialize it with the J\+S\+ON from a text parameter. The method assumes U\+T\+F8 encoded input text. 
+\begin{DoxyParams}{Parameters}
+{\em string} & J\+S\+ON text data \\
+\hline
+{\em err} & an initialization error or nil \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Type\+Not\+Allowed\+Exception} & thrown when unsupported type is found in the incoming J\+S\+ON, or a property type in your model is not supported by \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_value_transformer}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Value\+Transformer}} and its categories \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_af84f531355d015c8c7e6cbaca8215476}{-\/ init\+With\+String\+:using\+Encoding\+:error\+:}} for use of custom text encodings 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_af84f531355d015c8c7e6cbaca8215476}\label{interface_o_p_t_l_y_j_s_o_n_model_af84f531355d015c8c7e6cbaca8215476}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!init\+With\+String\+:using\+Encoding\+:error\+:@{init\+With\+String\+:using\+Encoding\+:error\+:}}
+\index{init\+With\+String\+:using\+Encoding\+:error\+:@{init\+With\+String\+:using\+Encoding\+:error\+:}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{init\+With\+String\+:using\+Encoding\+:error\+:()}{initWithString:usingEncoding:error:()}}
+{\footnotesize\ttfamily -\/ (id) init\+With\+String\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{string }\item[{usingEncoding:(N\+S\+String\+Encoding)}]{encoding }\item[{error:(\mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_error}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Error}} $\ast$$\ast$)}]{err }\end{DoxyParamCaption}}
+
+Create a new model instance and initialize it with the J\+S\+ON from a text parameter using the given encoding. 
+\begin{DoxyParams}{Parameters}
+{\em string} & J\+S\+ON text data \\
+\hline
+{\em encoding} & the text encoding to use when parsing the string (see N\+S\+String\+Encoding) \\
+\hline
+{\em err} & an initialization error or nil \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Type\+Not\+Allowed\+Exception} & thrown when unsupported type is found in the incoming J\+S\+ON, or a property type in your model is not supported by \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_value_transformer}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Value\+Transformer}} and its categories \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a9acd086d25e51329aea4858803fe4098}\label{interface_o_p_t_l_y_j_s_o_n_model_a9acd086d25e51329aea4858803fe4098}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!key\+Mapper@{key\+Mapper}}
+\index{key\+Mapper@{key\+Mapper}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{key\+Mapper()}{keyMapper()}}
+{\footnotesize\ttfamily + (\mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_key_mapper}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Key\+Mapper}} $\ast$) key\+Mapper \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Overwrite in your models if your property names don\textquotesingle{}t match your J\+S\+ON key names. Lookup \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_key_mapper}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Key\+Mapper}} docs for more details. \mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a892d35a66375282061bec1305ff48446}\label{interface_o_p_t_l_y_j_s_o_n_model_a892d35a66375282061bec1305ff48446}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!merge\+From\+Dictionary\+:use\+Key\+Mapping\+:error\+:@{merge\+From\+Dictionary\+:use\+Key\+Mapping\+:error\+:}}
+\index{merge\+From\+Dictionary\+:use\+Key\+Mapping\+:error\+:@{merge\+From\+Dictionary\+:use\+Key\+Mapping\+:error\+:}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{merge\+From\+Dictionary\+:use\+Key\+Mapping\+:error\+:()}{mergeFromDictionary:useKeyMapping:error:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) merge\+From\+Dictionary\+: \begin{DoxyParamCaption}\item[{(N\+S\+Dictionary $\ast$)}]{dict }\item[{useKeyMapping:(B\+O\+OL)}]{use\+Key\+Mapping }\item[{error:(N\+S\+Error $\ast$ \+\_\+\+\_\+autoreleasing $\ast$)}]{error }\end{DoxyParamCaption}}
+
+Merges values from the given dictionary into the model instance. 
+\begin{DoxyParams}{Parameters}
+{\em dict} & dictionary with values \\
+\hline
+{\em use\+Key\+Mapping} & if Y\+ES the method will use the model\textquotesingle{}s key mapper and the global key mapper, if NO it\textquotesingle{}ll just try to match the dictionary keys to the model\textquotesingle{}s properties \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a49b04a9bf083b74205921a22b5521ef6}\label{interface_o_p_t_l_y_j_s_o_n_model_a49b04a9bf083b74205921a22b5521ef6}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!property\+Is\+Ignored\+:@{property\+Is\+Ignored\+:}}
+\index{property\+Is\+Ignored\+:@{property\+Is\+Ignored\+:}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{property\+Is\+Ignored\+:()}{propertyIsIgnored:()}}
+{\footnotesize\ttfamily + (B\+O\+OL) property\+Is\+Ignored\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{property\+Name }\end{DoxyParamCaption}}
+
+Indicates whether the property with the given name is Ignored. To have a model with all of its properties being Ignored just return Y\+ES. This method returns by default NO, since the default behaviour is to have all properties required. 
+\begin{DoxyParams}{Parameters}
+{\em property\+Name} & the name of the property \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a B\+O\+OL result indicating whether the property is ignored 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_afaf77fcb6d2307217a858c764df3ae75}\label{interface_o_p_t_l_y_j_s_o_n_model_afaf77fcb6d2307217a858c764df3ae75}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!property\+Is\+Optional\+:@{property\+Is\+Optional\+:}}
+\index{property\+Is\+Optional\+:@{property\+Is\+Optional\+:}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{property\+Is\+Optional\+:()}{propertyIsOptional:()}}
+{\footnotesize\ttfamily + (B\+O\+OL) property\+Is\+Optional\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{property\+Name }\end{DoxyParamCaption}}
+
+Indicates whether the property with the given name is \mbox{\hyperlink{protocol_optional-p}{Optional}}. To have a model with all of its properties being \mbox{\hyperlink{protocol_optional-p}{Optional}} just return Y\+ES. This method returns by default NO, since the default behaviour is to have all properties required. 
+\begin{DoxyParams}{Parameters}
+{\em property\+Name} & the name of the property \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a B\+O\+OL result indicating whether the property is optional 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a5b08f6a900e32f655981c0c2cbcca3f8}\label{interface_o_p_t_l_y_j_s_o_n_model_a5b08f6a900e32f655981c0c2cbcca3f8}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!to\+J\+S\+O\+N\+Data@{to\+J\+S\+O\+N\+Data}}
+\index{to\+J\+S\+O\+N\+Data@{to\+J\+S\+O\+N\+Data}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{to\+J\+S\+O\+N\+Data()}{toJSONData()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Data $\ast$) to\+J\+S\+O\+N\+Data \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Export the whole object to a J\+S\+ON data text string \begin{DoxyReturn}{Returns}
+J\+S\+ON text data describing the data model 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a55de253c412617cfd23a55b064571e13}\label{interface_o_p_t_l_y_j_s_o_n_model_a55de253c412617cfd23a55b064571e13}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!to\+J\+S\+O\+N\+Data\+With\+Keys\+:@{to\+J\+S\+O\+N\+Data\+With\+Keys\+:}}
+\index{to\+J\+S\+O\+N\+Data\+With\+Keys\+:@{to\+J\+S\+O\+N\+Data\+With\+Keys\+:}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{to\+J\+S\+O\+N\+Data\+With\+Keys\+:()}{toJSONDataWithKeys:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Data $\ast$) to\+J\+S\+O\+N\+Data\+With\+Keys\+: \begin{DoxyParamCaption}\item[{(N\+S\+Array $\ast$)}]{property\+Names }\end{DoxyParamCaption}}
+
+Export the specified properties of the object to a J\+S\+ON data text string 
+\begin{DoxyParams}{Parameters}
+{\em property\+Names} & the properties to export; if nil, all properties exported \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+J\+S\+ON text data describing the data model 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a0c49b24832149f756d011e17225cb5b1}\label{interface_o_p_t_l_y_j_s_o_n_model_a0c49b24832149f756d011e17225cb5b1}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!to\+J\+S\+O\+N\+String@{to\+J\+S\+O\+N\+String}}
+\index{to\+J\+S\+O\+N\+String@{to\+J\+S\+O\+N\+String}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{to\+J\+S\+O\+N\+String()}{toJSONString()}}
+{\footnotesize\ttfamily -\/ (N\+S\+String $\ast$) to\+J\+S\+O\+N\+String \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Export the whole object to a J\+S\+ON data text string \begin{DoxyReturn}{Returns}
+J\+S\+ON text describing the data model 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a7877db814d4a807b4fa309e6e4a613ce}\label{interface_o_p_t_l_y_j_s_o_n_model_a7877db814d4a807b4fa309e6e4a613ce}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!to\+J\+S\+O\+N\+String\+With\+Keys\+:@{to\+J\+S\+O\+N\+String\+With\+Keys\+:}}
+\index{to\+J\+S\+O\+N\+String\+With\+Keys\+:@{to\+J\+S\+O\+N\+String\+With\+Keys\+:}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{to\+J\+S\+O\+N\+String\+With\+Keys\+:()}{toJSONStringWithKeys:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+String $\ast$) to\+J\+S\+O\+N\+String\+With\+Keys\+: \begin{DoxyParamCaption}\item[{(N\+S\+Array $\ast$)}]{property\+Names }\end{DoxyParamCaption}}
+
+Export the specified properties of the object to a J\+S\+ON data text string 
+\begin{DoxyParams}{Parameters}
+{\em property\+Names} & the properties to export; if nil, all properties exported \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+J\+S\+ON text describing the data model 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_j_s_o_n_model_a7f6a3cd6f85c5edc5cb2629bb651b26f}\label{interface_o_p_t_l_y_j_s_o_n_model_a7f6a3cd6f85c5edc5cb2629bb651b26f}} 
+\index{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}!validate\+:@{validate\+:}}
+\index{validate\+:@{validate\+:}!O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model@{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}}
+\subsubsection{\texorpdfstring{validate\+:()}{validate:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) validate\+: \begin{DoxyParamCaption}\item[{(N\+S\+Error $\ast$\+\_\+\+\_\+autoreleasing $\ast$)}]{error }\end{DoxyParamCaption}}
+
+Overwrite the validate method in your own models if you need to perform some custom validation over the model data. This method gets called at the very end of the \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} initializer, thus the model is in the state that you would get it back when initialized. Check the values of any property that needs to be validated and if any invalid values are encountered return NO and set the error parameter to an N\+S\+Error object. If the model is valid return Y\+ES.
+
+NB\+: Only setting the error parameter is not enough to fail the validation, you also need to return a NO value.
+
+
+\begin{DoxyParams}{Parameters}
+{\em error} & a pointer to an N\+S\+Error object, to pass back an error if needed \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a B\+O\+OL result, showing whether the model data validates or not. You can use the convenience method \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model_error}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Error}} error\+Model\+Is\+Invalid\mbox{]} to set the N\+S\+Error param if the data fails your custom validation 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Core/\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model/\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model/\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model/O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model.\+h\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Core/\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model/\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model/\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model/O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model.\+m\end{DoxyCompactItemize}

@@ -1,0 +1,19 @@
+\mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} allows rapid creation of smart data models. You can use it in your i\+OS, mac\+OS, watch\+OS and tv\+OS apps. Automatic introspection of your model classes and J\+S\+ON input drastically reduces the amount of code you have to write.
+
+\mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} is a modified copy of the original J\+S\+O\+N\+Model covered by the \char`\"{}\+L\+I\+C\+E\+N\+S\+E\char`\"{} file mentioned at the end of this document.
+
+Consider you have J\+S\+ON like this\+:
+
+
+\begin{DoxyCode}
+\{ "id": 10, "country": "Germany", "dialCode": 49, "isInEurope": true \}
+\end{DoxyCode}
+
+
+
+\begin{DoxyItemize}
+\item create a \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} subclass for your data model
+\item declare properties in your header file with the name of the J\+S\+ON keys\+:
+\end{DoxyItemize}
+
+\`{}\`{}\`{}objc 

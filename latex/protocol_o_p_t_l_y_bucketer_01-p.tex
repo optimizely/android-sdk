@@ -1,0 +1,42 @@
+\hypertarget{protocol_o_p_t_l_y_bucketer_01-p}{}\section{$<$O\+P\+T\+L\+Y\+Bucketer $>$ Protocol Reference}
+\label{protocol_o_p_t_l_y_bucketer_01-p}\index{$<$\+O\+P\+T\+L\+Y\+Bucketer $>$@{$<$\+O\+P\+T\+L\+Y\+Bucketer $>$}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+Bucketer.\+h$>$}
+
+
+
+Inherits $<$\+N\+S\+Object$>$.
+
+\subsection*{Instance Methods}
+\begin{DoxyCompactItemize}
+\item 
+(nullable O\+P\+T\+L\+Y\+Variation $\ast$) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_bucketer_01-p_a7316146d28fad734f09733b331560a36}{bucket\+Experiment\+:with\+Bucketing\+Id\+:}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This protocol describes the behavior any bucketer needs to exhibit to be used in the \mbox{\hyperlink{interface_optimizely}{Optimizely}} S\+DK. 
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_bucketer_01-p_a7316146d28fad734f09733b331560a36}\label{protocol_o_p_t_l_y_bucketer_01-p_a7316146d28fad734f09733b331560a36}} 
+\index{O\+P\+T\+L\+Y\+Bucketer -\/p@{O\+P\+T\+L\+Y\+Bucketer -\/p}!bucket\+Experiment\+:with\+Bucketing\+Id\+:@{bucket\+Experiment\+:with\+Bucketing\+Id\+:}}
+\index{bucket\+Experiment\+:with\+Bucketing\+Id\+:@{bucket\+Experiment\+:with\+Bucketing\+Id\+:}!O\+P\+T\+L\+Y\+Bucketer -\/p@{O\+P\+T\+L\+Y\+Bucketer -\/p}}
+\subsubsection{\texorpdfstring{bucket\+Experiment\+:with\+Bucketing\+Id\+:()}{bucketExperiment:withBucketingId:()}}
+{\footnotesize\ttfamily -\/ (nullable O\+P\+T\+L\+Y\+Variation $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_bucketer}{O\+P\+T\+L\+Y\+Bucketer}}) bucket\+Experiment\+: \begin{DoxyParamCaption}\item[{(nonnull O\+P\+T\+L\+Y\+Experiment $\ast$)}]{experiment }\item[{withBucketingId:(nonnull N\+S\+String $\ast$)}]{bucketing\+Id }\end{DoxyParamCaption}}
+
+Bucket a bucketing\+Id into an experiment. 
+\begin{DoxyParams}{Parameters}
+{\em experiment} & The experiment in which to bucket the bucketing\+Id. \\
+\hline
+{\em bucketing\+Id} & The ID to bucket. This must be a non-\/null, non-\/empty string. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The variation the bucketing\+Id was bucketed into. 
+\end{DoxyReturn}
+
+
+The documentation for this protocol was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Core/\+Optimizely\+S\+D\+K\+Core/O\+P\+T\+L\+Y\+Bucketer.\+h\end{DoxyCompactItemize}

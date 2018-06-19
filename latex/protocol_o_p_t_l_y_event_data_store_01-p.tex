@@ -1,0 +1,152 @@
+\hypertarget{protocol_o_p_t_l_y_event_data_store_01-p}{}\section{$<$O\+P\+T\+L\+Y\+Event\+Data\+Store $>$ Protocol Reference}
+\label{protocol_o_p_t_l_y_event_data_store_01-p}\index{$<$\+O\+P\+T\+L\+Y\+Event\+Data\+Store $>$@{$<$\+O\+P\+T\+L\+Y\+Event\+Data\+Store $>$}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+Event\+Data\+Store.\+h$>$}
+
+
+
+Inherits $<$\+N\+S\+Object$>$.
+
+\subsection*{Instance Methods}
+\begin{DoxyCompactItemize}
+\item 
+(nullable instancetype) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_event_data_store_01-p_a896d8f51ae3ba19b59bf1448301c2df9}{init\+With\+Base\+Dir\+:error\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_event_data_store_01-p_acda8107731ff62f01b767c35d39d5b2b}{save\+Event\+:event\+Type\+:error\+:}}
+\item 
+(nullable N\+S\+Array $\ast$) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_event_data_store_01-p_a1d0c6fe9b9aea7a190cca6fd78c5f413}{get\+First\+N\+Events\+:event\+Type\+:error\+:}}
+\item 
+(N\+S\+Integer) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_event_data_store_01-p_a82c02b9f8d997fc8436b956043858054}{get\+Last\+Event\+Id\+:error\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_event_data_store_01-p_a3b0e0225eaaf2e0c108e0fd167eec660}{remove\+First\+N\+Events\+:event\+Type\+:error\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_event_data_store_01-p_ad94b56bc2e37603df7e868f11b38a9b8}{remove\+Event\+:event\+Type\+:error\+:}}
+\item 
+(N\+S\+Integer) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_event_data_store_01-p_a59aa5d4995f2d9bcaca525c9001043f4}{number\+Of\+Events\+:error\+:}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Any type of event data storage must implement these following methods. 
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_event_data_store_01-p_a1d0c6fe9b9aea7a190cca6fd78c5f413}\label{protocol_o_p_t_l_y_event_data_store_01-p_a1d0c6fe9b9aea7a190cca6fd78c5f413}} 
+\index{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}!get\+First\+N\+Events\+:event\+Type\+:error\+:@{get\+First\+N\+Events\+:event\+Type\+:error\+:}}
+\index{get\+First\+N\+Events\+:event\+Type\+:error\+:@{get\+First\+N\+Events\+:event\+Type\+:error\+:}!O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}}
+\subsubsection{\texorpdfstring{get\+First\+N\+Events\+:event\+Type\+:error\+:()}{getFirstNEvents:eventType:error:()}}
+{\footnotesize\ttfamily -\/ (nullable N\+S\+Array $\ast$ O\+P\+T\+L\+Y\+Event\+Data\+Store) get\+First\+N\+Events\+: \begin{DoxyParamCaption}\item[{(N\+S\+Integer)}]{number\+Of\+Events }\item[{eventType:(nonnull N\+S\+String $\ast$)}]{event\+Type\+Name }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable \+\_\+\+\_\+autoreleasing $\ast$\+\_\+\+Nullable)}]{error }\end{DoxyParamCaption}}
+
+Gets the first N entries (i.\+e., the N oldest events).
+
+
+\begin{DoxyParams}{Parameters}
+{\em number\+Of\+Events} & The number of events to retrieve. \\
+\hline
+{\em event\+Type\+Name} & The name of the event type of the data that needs to be removed. \\
+\hline
+{\em error} & An error object is returned if an error occurs. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_event_data_store_01-p_a82c02b9f8d997fc8436b956043858054}\label{protocol_o_p_t_l_y_event_data_store_01-p_a82c02b9f8d997fc8436b956043858054}} 
+\index{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}!get\+Last\+Event\+Id\+:error\+:@{get\+Last\+Event\+Id\+:error\+:}}
+\index{get\+Last\+Event\+Id\+:error\+:@{get\+Last\+Event\+Id\+:error\+:}!O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}}
+\subsubsection{\texorpdfstring{get\+Last\+Event\+Id\+:error\+:()}{getLastEventId:error:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Integer O\+P\+T\+L\+Y\+Event\+Data\+Store) get\+Last\+Event\+Id\+: \begin{DoxyParamCaption}\item[{(nonnull N\+S\+String $\ast$)}]{event\+Type\+Name }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable \+\_\+\+\_\+autoreleasing $\ast$\+\_\+\+Nullable)}]{error }\end{DoxyParamCaption}}
+
+Gets the last entry id.
+
+
+\begin{DoxyParams}{Parameters}
+{\em event\+Type\+Name} & The name of the event type of the data that needs to be removed. \\
+\hline
+{\em error} & An error object is returned if an error occurs. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_event_data_store_01-p_a896d8f51ae3ba19b59bf1448301c2df9}\label{protocol_o_p_t_l_y_event_data_store_01-p_a896d8f51ae3ba19b59bf1448301c2df9}} 
+\index{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}!init\+With\+Base\+Dir\+:error\+:@{init\+With\+Base\+Dir\+:error\+:}}
+\index{init\+With\+Base\+Dir\+:error\+:@{init\+With\+Base\+Dir\+:error\+:}!O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}}
+\subsubsection{\texorpdfstring{init\+With\+Base\+Dir\+:error\+:()}{initWithBaseDir:error:()}}
+{\footnotesize\ttfamily -\/ (nullable instancetype O\+P\+T\+L\+Y\+Event\+Data\+Store) init\+With\+Base\+Dir\+: \begin{DoxyParamCaption}\item[{(nonnull N\+S\+String $\ast$)}]{base\+Dir }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable \+\_\+\+\_\+autoreleasing $\ast$\+\_\+\+Nullable)}]{error }\end{DoxyParamCaption}}
+
+Initialize a new \mbox{\hyperlink{interface_optimizely}{Optimizely}} data store instance
+
+
+\begin{DoxyParams}{Parameters}
+{\em base\+Dir} & The base directory to store the events \\
+\hline
+{\em error} & An error object is returned if an error occurs. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_event_data_store_01-p_a59aa5d4995f2d9bcaca525c9001043f4}\label{protocol_o_p_t_l_y_event_data_store_01-p_a59aa5d4995f2d9bcaca525c9001043f4}} 
+\index{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}!number\+Of\+Events\+:error\+:@{number\+Of\+Events\+:error\+:}}
+\index{number\+Of\+Events\+:error\+:@{number\+Of\+Events\+:error\+:}!O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}}
+\subsubsection{\texorpdfstring{number\+Of\+Events\+:error\+:()}{numberOfEvents:error:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Integer O\+P\+T\+L\+Y\+Event\+Data\+Store) number\+Of\+Events\+: \begin{DoxyParamCaption}\item[{(nonnull N\+S\+String $\ast$)}]{event\+Type\+Name }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable \+\_\+\+\_\+autoreleasing $\ast$\+\_\+\+Nullable)}]{error }\end{DoxyParamCaption}}
+
+Returns the number of saved events.
+
+
+\begin{DoxyParams}{Parameters}
+{\em event\+Type\+Name} & The name of the event type of the data. \\
+\hline
+{\em error} & An error object is returned if an error occurs. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The number of events saved. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_event_data_store_01-p_ad94b56bc2e37603df7e868f11b38a9b8}\label{protocol_o_p_t_l_y_event_data_store_01-p_ad94b56bc2e37603df7e868f11b38a9b8}} 
+\index{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}!remove\+Event\+:event\+Type\+:error\+:@{remove\+Event\+:event\+Type\+:error\+:}}
+\index{remove\+Event\+:event\+Type\+:error\+:@{remove\+Event\+:event\+Type\+:error\+:}!O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}}
+\subsubsection{\texorpdfstring{remove\+Event\+:event\+Type\+:error\+:()}{removeEvent:eventType:error:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL O\+P\+T\+L\+Y\+Event\+Data\+Store) remove\+Event\+: \begin{DoxyParamCaption}\item[{(nonnull N\+S\+Dictionary $\ast$)}]{event }\item[{eventType:(nonnull N\+S\+String $\ast$)}]{event\+Type\+Name }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable \+\_\+\+\_\+autoreleasing $\ast$\+\_\+\+Nullable)}]{error }\end{DoxyParamCaption}}
+
+Removes an event
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & The event to remove \\
+\hline
+{\em event\+Type\+Name} & The name of The name of the event type of the data that needs to be removed. \\
+\hline
+{\em error} & An error object is returned if an error occurs. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_event_data_store_01-p_a3b0e0225eaaf2e0c108e0fd167eec660}\label{protocol_o_p_t_l_y_event_data_store_01-p_a3b0e0225eaaf2e0c108e0fd167eec660}} 
+\index{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}!remove\+First\+N\+Events\+:event\+Type\+:error\+:@{remove\+First\+N\+Events\+:event\+Type\+:error\+:}}
+\index{remove\+First\+N\+Events\+:event\+Type\+:error\+:@{remove\+First\+N\+Events\+:event\+Type\+:error\+:}!O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}}
+\subsubsection{\texorpdfstring{remove\+First\+N\+Events\+:event\+Type\+:error\+:()}{removeFirstNEvents:eventType:error:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL O\+P\+T\+L\+Y\+Event\+Data\+Store) remove\+First\+N\+Events\+: \begin{DoxyParamCaption}\item[{(N\+S\+Integer)}]{number\+Of\+Events }\item[{eventType:(nonnull N\+S\+String $\ast$)}]{event\+Type\+Name }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable \+\_\+\+\_\+autoreleasing $\ast$\+\_\+\+Nullable)}]{error }\end{DoxyParamCaption}}
+
+Deletes the first N events (i.\+e., the N oldest events).
+
+
+\begin{DoxyParams}{Parameters}
+{\em number\+Of\+Events} & The number of events to retrieve. \\
+\hline
+{\em event\+Type\+Name} & The name of The name of the event type of the data that needs to be removed. \\
+\hline
+{\em error} & An error object is returned if an error occurs. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_event_data_store_01-p_acda8107731ff62f01b767c35d39d5b2b}\label{protocol_o_p_t_l_y_event_data_store_01-p_acda8107731ff62f01b767c35d39d5b2b}} 
+\index{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}!save\+Event\+:event\+Type\+:error\+:@{save\+Event\+:event\+Type\+:error\+:}}
+\index{save\+Event\+:event\+Type\+:error\+:@{save\+Event\+:event\+Type\+:error\+:}!O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p@{O\+P\+T\+L\+Y\+Event\+Data\+Store -\/p}}
+\subsubsection{\texorpdfstring{save\+Event\+:event\+Type\+:error\+:()}{saveEvent:eventType:error:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL O\+P\+T\+L\+Y\+Event\+Data\+Store) save\+Event\+: \begin{DoxyParamCaption}\item[{(nonnull N\+S\+Dictionary $\ast$)}]{data }\item[{eventType:(nonnull N\+S\+String $\ast$)}]{event\+Type\+Name }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable \+\_\+\+\_\+autoreleasing $\ast$\+\_\+\+Nullable)}]{error }\end{DoxyParamCaption}}
+
+Saves Data 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to be saved. \\
+\hline
+{\em event\+Type\+Name} & The name of the event type of the data that needs to be saved. \\
+\hline
+{\em error} & An error object is returned if an error occurs. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this protocol was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Shared/\+Optimizely\+S\+D\+K\+Shared/O\+P\+T\+L\+Y\+Event\+Data\+Store.\+h\end{DoxyCompactItemize}

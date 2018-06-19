@@ -1,0 +1,2059 @@
+\hypertarget{interface_o_p_t_l_y_f_m_d_b_database}{}\section{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database Class Reference}
+\label{interface_o_p_t_l_y_f_m_d_b_database}\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database.\+h$>$}
+
+
+
+Inherits N\+S\+Object.
+
+\subsection*{Instance Methods}
+\begin{Indent}\textbf{ Retrieving results}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ad749b1bd0f19dc48b36867d1622d201a}{execute\+Query\+:}}
+\item 
+(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a679072fb9c6007f6700d3506658d9de3}{execute\+Query\+With\+Format\+:}}
+\item 
+(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ad30659f8bbdc3b55166b307f5f130cbe}{execute\+Query\+:with\+Arguments\+In\+Array\+:}}
+\item 
+(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a6e88b56561812ad35813f9053a85cad2}{execute\+Query\+:values\+:error\+:}}
+\item 
+(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a21ab2761ffb8dbae2a6ef70106010122}{execute\+Query\+:with\+Parameter\+Dictionary\+:}}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_aeee5f94a8e375840c1b5e4094a4e4b04}\label{interface_o_p_t_l_y_f_m_d_b_database_aeee5f94a8e375840c1b5e4094a4e4b04}} 
+(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$\+\_\+\+Nullable) -\/ {\bfseries execute\+Query\+:with\+V\+A\+List\+:}
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Encryption methods}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a2b567d61e78a76a365b37df2f8d65bf7}{set\+Key\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af64a2ede2ac7642bada99f4ba1d905f2}{rekey\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a7cbf561f5cbeae819eefdc0b873f1730}{set\+Key\+With\+Data\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ae1454ed91642c4d127fd36f370f04d8c}{rekey\+With\+Data\+:}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Save points}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a394534a47e9f054edfc63021f2a1ebc3}{start\+Save\+Point\+With\+Name\+:error\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_afb6f13df41c3e8e1813a00f6d1ec0428}{release\+Save\+Point\+With\+Name\+:error\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a8ae3bd5f48fed1f09b14328fc777dab5}{rollback\+To\+Save\+Point\+With\+Name\+:error\+:}}
+\item 
+(N\+S\+Error $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a5ced1981fdf00e7f6609195c0255e71d}{in\+Save\+Point\+:}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Make S\+QL function}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{make\+Function\+Named\+:arguments\+:block\+:}}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a2361ae36cc7de06a9a5922baf0fdc35c}\label{interface_o_p_t_l_y_f_m_d_b_database_a2361ae36cc7de06a9a5922baf0fdc35c}} 
+(void) -\/ {\bfseries make\+Function\+Named\+:maximum\+Arguments\+:with\+Block\+:}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ab820cc7df63b06209a24ae5660025852}\label{interface_o_p_t_l_y_f_m_d_b_database_ab820cc7df63b06209a24ae5660025852}} 
+(typedef) -\/ {\bfseries N\+S\+\_\+\+E\+N\+UM}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_aa2bc57e60b8571485b851ab26ce616e7}\label{interface_o_p_t_l_y_f_m_d_b_database_aa2bc57e60b8571485b851ab26ce616e7}} 
+(Sqlite\+Value\+Type) -\/ {\bfseries value\+Type\+:}
+\item 
+(int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ae86df2d5f08b22824e4f5c14fb436b7a}{value\+Int\+:}}
+\item 
+(long long) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aebdb8f230b7998ffa60011e4ebba56cc}{value\+Long\+:}}
+\item 
+(double) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aa7c954c5231ffbb5843f9a4893b7761b}{value\+Double\+:}}
+\item 
+(N\+S\+Data $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a8ad2d164fca13ab7f1818c039bda56ec}{value\+Data\+:}}
+\item 
+(N\+S\+String $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ab21c078e774eff96b5bcbd0d2c66823b}{value\+String\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aba9df34d2c12d9e68c205e3ae2234400}{result\+Null\+In\+Context\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_adc1fa43c23f123a21fa106f9a7f6482f}{result\+Int\+:context\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ac26186953f5c9ce369dce9dd94356be2}{result\+Long\+:context\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ac039575b6d5bc656bb54eeb6f88d71e6}{result\+Double\+:context\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_abd92d5bcab93f267421e36f920c2a474}{result\+Data\+:context\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ac7c27744e97581b6cc0f50ba72c5874c}{result\+String\+:context\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aef8ca2bd4709a1411f10757daec353cf}{result\+Error\+:context\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a08861b58136840fe405473721abcd26f}{result\+Error\+Code\+:context\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a664d742e398dd193a735e287b8a32435}{result\+Error\+No\+Memory\+In\+Context\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ac51aeb563e8af7a9f9ee4dd562c083d8}{result\+Error\+Too\+Big\+In\+Context\+:}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Class Methods}
+\begin{Indent}\textbf{ S\+Q\+Lite library status}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+(B\+O\+OL) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a38f39fc14807b0903098b977d3a04649}{is\+S\+Q\+Lite\+Thread\+Safe}}
+\item 
+(N\+S\+String $\ast$) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af059d6a70119fd76bf338759d92b4a46}{sqlite\+Lib\+Version}}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a7cd3bea80e22d10767441e2dc94ed872}\label{interface_o_p_t_l_y_f_m_d_b_database_a7cd3bea80e22d10767441e2dc94ed872}} 
+(N\+S\+String $\ast$) + {\bfseries O\+P\+T\+L\+Y\+F\+M\+D\+B\+User\+Version}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a029f167be1ae69696b87fc5775abd678}\label{interface_o_p_t_l_y_f_m_d_b_database_a029f167be1ae69696b87fc5775abd678}} 
+(S\+Int32) + {\bfseries O\+P\+T\+L\+Y\+F\+M\+D\+B\+Version}
+\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Properties}
+\begin{Indent}\textbf{ Properties}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+B\+O\+OL \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a498285315912a9465dd182db98395f14}{trace\+Execution}}
+\item 
+B\+O\+OL \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a2962c4e030eb187582879f45745b7824}{checked\+Out}}
+\item 
+B\+O\+OL \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aaa9eea76060a763d104644f2ab490d45}{crash\+On\+Errors}}
+\item 
+B\+O\+OL \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a80ce796b9a9582c2be9ce9563988c517}{logs\+Errors}}
+\item 
+N\+S\+Mutable\+Dictionary $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a25e5eb9e27622135363052a7d12bcebe}{cached\+Statements}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ General inquiry methods}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+N\+S\+String $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a3406fc73143884735d193f37bff82923}{database\+Path}}
+\item 
+N\+S\+U\+RL $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a94c6a37fcaadbc2b48772903b2a12eed}{database\+U\+RL}}
+\item 
+void $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ac63c7ff97fef8256e42d286f0f9962de}{sqlite\+Handle}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Initialization}
+\label{_amgrp61bcd96a2c1f8026527cbf2019d6e9a4}%
+
+
+ 
+
+ \begin{DoxyCompactItemize}
+\item 
+(instancetype) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a3828d13a7756446dca522294b569e0e7}{database\+With\+Path\+:}}
+\item 
+(instancetype) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a13bb79efcda5db13674420ac4f805dd5}{database\+With\+U\+R\+L\+:}}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a146d2b8c55019b67f45217aeb008e78e}{init\+With\+Path\+:}}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a4fe721948e8ceefcdd65f0850b7c07b7}{init\+With\+U\+R\+L\+:}}
+\end{DoxyCompactItemize}
+\subsection*{Opening and closing database}
+\label{_amgrp53491ef07cbf8f5e62a2c5067f8c9c29}%
+
+
+ 
+
+ \begin{DoxyCompactItemize}
+\item 
+B\+O\+OL \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ae9afe3b7a030648d6f719f53678bb9ba}{good\+Connection}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_afc3b896f0808f555b09064bb6d514f93}{open}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a088fc6d53b7e5b2713d5cacef74807ad}{open\+With\+Flags\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a5019a19308c2d2f53901bc15e18b2f31}{open\+With\+Flags\+:vfs\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a6979a72ddb72bf8187a06607943bee98}{close}}
+\end{DoxyCompactItemize}
+\subsection*{Perform updates}
+\label{_amgrpbca248ee7e608fbce8913fd2bf72d636}%
+
+
+ 
+
+ \begin{DoxyCompactItemize}
+\item 
+int64\+\_\+t \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af5291c062e84adebb1d7ca5319d33166}{last\+Insert\+Row\+Id}}
+\item 
+int \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a757690d92c32d70c0c0402980cb14cee}{changes}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a1281526ad6641e7ef2198c3e9d971754}{execute\+Update\+:with\+Error\+And\+Bindings\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a704a87863281b6dc997a9b31d09565ac}{update\+:with\+Error\+And\+Bindings\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aacce81f6c3456a804e1d558462bca313}{execute\+Update\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a5c251162dad20491a8b2a6278812c2e6}{execute\+Update\+With\+Format\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9e25e942df88213f251527ba03eafeea}{execute\+Update\+:with\+Arguments\+In\+Array\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a0d75e3c094f6e03946a5b8278a215c42}{execute\+Update\+:values\+:error\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a16f1eabe0aa7027ed5be1534e932399e}{execute\+Update\+:with\+Parameter\+Dictionary\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a60bf317707b63828faee1d70f28f65f3}{execute\+Update\+:with\+V\+A\+List\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ad8c3bdc64c602dac7827a4f560928168}{execute\+Statements\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a11d5b1db0e9be3d5a0fb68d1c4bac0e3}{execute\+Statements\+:with\+Result\+Block\+:}}
+\end{DoxyCompactItemize}
+\subsection*{Transactions}
+\label{_amgrp31112aca11d0e9e6eb7db96f317dda49}%
+
+
+ 
+
+ \begin{DoxyCompactItemize}
+\item 
+B\+O\+OL \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aad9ac9a8b17ad02d9595a11567ceb404}{is\+In\+Transaction}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aa49b282394be0570adb7ae4b8544b6b5}{begin\+Transaction}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ae42926b392d7862b8e4a2c7da6e12552}{begin\+Deferred\+Transaction}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a13149a1989b1cdb7a6f7b8f2b4207cfd}{commit}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a511569a0ee0c82136255920ebe9d28e6}{rollback}}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a257b2b3e8fcfb0809ec3329e2b8688af}\label{interface_o_p_t_l_y_f_m_d_b_database_a257b2b3e8fcfb0809ec3329e2b8688af}} 
+(\char`\"{}Use \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aad9ac9a8b17ad02d9595a11567ceb404}{is\+In\+Transaction}} property instead\char`\"{}) -\/ {\bfseries \+\_\+\+\_\+deprecated\+\_\+msg}
+\end{DoxyCompactItemize}
+\subsection*{Cached statements and result sets}
+\label{_amgrpee330c7fa0c879a9d7c7b6f532a0fea3}%
+
+
+ 
+
+ \begin{DoxyCompactItemize}
+\item 
+B\+O\+OL \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a0fb326e01f4c551f821558e71709c104}{has\+Open\+Result\+Sets}}
+\item 
+B\+O\+OL \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a892d607f231db0ffb8b98bbf5d914f2d}{should\+Cache\+Statements}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a749d75414bd0c8525bcec404b9c746f1}{clear\+Cached\+Statements}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a7b1edc77522099779f49fa74fcfe0036}{close\+Open\+Result\+Sets}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a1aa9233533d16b1fb7b68f272b2d488a}{interrupt}}
+\end{DoxyCompactItemize}
+\subsection*{Retrieving error codes}
+\label{_amgrpc11573836c47c2d152691d4f0b5c8e00}%
+
+
+ 
+
+ \begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a4e99efb63bf76c6822b28edf26f5db37}\label{interface_o_p_t_l_y_f_m_d_b_database_a4e99efb63bf76c6822b28edf26f5db37}} 
+N\+S\+Time\+Interval {\bfseries max\+Busy\+Retry\+Time\+Interval}
+\item 
+(N\+S\+String $\ast$) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{last\+Error\+Message}}
+\item 
+(int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{last\+Error\+Code}}
+\item 
+(int) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a1f6aef053fa570de3c6c3d1e8bc34989}{last\+Extended\+Error\+Code}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_afc9d747532c96f0f2afb78dd84caee87}{had\+Error}}
+\item 
+(N\+S\+Error $\ast$) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{last\+Error}}
+\end{DoxyCompactItemize}
+\subsection*{Date formatter}
+\label{_amgrpfedd80d3d4f54fb7c04e443000dc1e76}%
+
+
+ 
+
+ \begin{DoxyCompactItemize}
+\item 
+(N\+S\+Date\+Formatter $\ast$) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_acb3eef48cd21dcb11407b88dac662c57}{storeable\+Date\+Format\+:}}
+\item 
+(B\+O\+OL) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a820a1ababb4c5496800b9bcd5f2de784}{has\+Date\+Formatter}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a48c1936bc68ddd11cea9aa177b0cc94e}{set\+Date\+Format\+:}}
+\item 
+(N\+S\+Date $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a5368268fe8e6d881d0da4d3538607768}{date\+From\+String\+:}}
+\item 
+(N\+S\+String $\ast$) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a60793c2b214e29c00143fdf9510837d7}{string\+From\+Date\+:}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A S\+Q\+Lite (\href{http://sqlite.org/}{\tt http\+://sqlite.\+org/}) Objective-\/C wrapper.
+
+\paragraph*{Usage}
+
+The three main classes in O\+P\+T\+L\+Y\+F\+M\+DB are\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} -\/ Represents a single S\+Q\+Lite database. Used for executing S\+QL statements.
+\item {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} -\/ Represents the results of executing a query on an {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}}.
+\item {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}$>$} -\/ If you want to perform queries and updates on multiple threads, you\textquotesingle{}ll want to use this class.
+\end{DoxyItemize}
+
+\paragraph*{See also}
+
+
+\begin{DoxyItemize}
+\item {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}$>$} -\/ A wrapper for {\ttfamily sqlite\+\_\+stmt}.
+\end{DoxyItemize}
+
+\paragraph*{External links}
+
+
+\begin{DoxyItemize}
+\item \href{https://github.com/ccgus/optlyfmdb}{\tt O\+P\+T\+L\+Y\+F\+M\+DB on Git\+Hub} including introductory documentation
+\item \href{http://sqlite.org/}{\tt S\+Q\+Lite web site}
+\item \href{http://groups.google.com/group/optlyfmdb}{\tt O\+P\+T\+L\+Y\+F\+M\+DB mailing list}
+\item \href{http://www.sqlite.org/faq.html}{\tt S\+Q\+Lite F\+AQ}
+\end{DoxyItemize}
+
+\begin{DoxyWarning}{Warning}
+Do not instantiate a single {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} object and use it across multiple threads. Instead, use {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}$>$}. 
+\end{DoxyWarning}
+
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ae42926b392d7862b8e4a2c7da6e12552}\label{interface_o_p_t_l_y_f_m_d_b_database_ae42926b392d7862b8e4a2c7da6e12552}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!begin\+Deferred\+Transaction@{begin\+Deferred\+Transaction}}
+\index{begin\+Deferred\+Transaction@{begin\+Deferred\+Transaction}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{begin\+Deferred\+Transaction()}{beginDeferredTransaction()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) begin\+Deferred\+Transaction \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Begin a deferred transaction
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} on success; {\ttfamily NO} on failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a13149a1989b1cdb7a6f7b8f2b4207cfd}{-\/ commit}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a511569a0ee0c82136255920ebe9d28e6}{-\/ rollback}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aa49b282394be0570adb7ae4b8544b6b5}{-\/ begin\+Transaction}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aad9ac9a8b17ad02d9595a11567ceb404}{is\+In\+Transaction}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_aa49b282394be0570adb7ae4b8544b6b5}\label{interface_o_p_t_l_y_f_m_d_b_database_aa49b282394be0570adb7ae4b8544b6b5}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!begin\+Transaction@{begin\+Transaction}}
+\index{begin\+Transaction@{begin\+Transaction}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{begin\+Transaction()}{beginTransaction()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) begin\+Transaction \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Begin a transaction
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} on success; {\ttfamily NO} on failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a13149a1989b1cdb7a6f7b8f2b4207cfd}{-\/ commit}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a511569a0ee0c82136255920ebe9d28e6}{-\/ rollback}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ae42926b392d7862b8e4a2c7da6e12552}{-\/ begin\+Deferred\+Transaction}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aad9ac9a8b17ad02d9595a11567ceb404}{is\+In\+Transaction}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a749d75414bd0c8525bcec404b9c746f1}\label{interface_o_p_t_l_y_f_m_d_b_database_a749d75414bd0c8525bcec404b9c746f1}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!clear\+Cached\+Statements@{clear\+Cached\+Statements}}
+\index{clear\+Cached\+Statements@{clear\+Cached\+Statements}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{clear\+Cached\+Statements()}{clearCachedStatements()}}
+{\footnotesize\ttfamily -\/ (void) clear\+Cached\+Statements \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Clear cached statements \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a6979a72ddb72bf8187a06607943bee98}\label{interface_o_p_t_l_y_f_m_d_b_database_a6979a72ddb72bf8187a06607943bee98}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!close@{close}}
+\index{close@{close}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{close()}{close()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) close \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Closing a database connection
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if success, {\ttfamily NO} on error.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/close.html}{\tt sqlite3\+\_\+close()} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_afc3b896f0808f555b09064bb6d514f93}{-\/ open}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a088fc6d53b7e5b2713d5cacef74807ad}{-\/ open\+With\+Flags\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a7b1edc77522099779f49fa74fcfe0036}\label{interface_o_p_t_l_y_f_m_d_b_database_a7b1edc77522099779f49fa74fcfe0036}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!close\+Open\+Result\+Sets@{close\+Open\+Result\+Sets}}
+\index{close\+Open\+Result\+Sets@{close\+Open\+Result\+Sets}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{close\+Open\+Result\+Sets()}{closeOpenResultSets()}}
+{\footnotesize\ttfamily -\/ (void) close\+Open\+Result\+Sets \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Close all open result sets \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a13149a1989b1cdb7a6f7b8f2b4207cfd}\label{interface_o_p_t_l_y_f_m_d_b_database_a13149a1989b1cdb7a6f7b8f2b4207cfd}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!commit@{commit}}
+\index{commit@{commit}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{commit()}{commit()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) commit \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Commit a transaction
+
+Commit a transaction that was initiated with either {\ttfamily $<$begin\+Transaction$>$} or with {\ttfamily $<$begin\+Deferred\+Transaction$>$}.
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} on success; {\ttfamily NO} on failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aa49b282394be0570adb7ae4b8544b6b5}{-\/ begin\+Transaction}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ae42926b392d7862b8e4a2c7da6e12552}{-\/ begin\+Deferred\+Transaction}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a511569a0ee0c82136255920ebe9d28e6}{-\/ rollback}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aad9ac9a8b17ad02d9595a11567ceb404}{is\+In\+Transaction}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a3828d13a7756446dca522294b569e0e7}\label{interface_o_p_t_l_y_f_m_d_b_database_a3828d13a7756446dca522294b569e0e7}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!database\+With\+Path\+:@{database\+With\+Path\+:}}
+\index{database\+With\+Path\+:@{database\+With\+Path\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{database\+With\+Path\+:()}{databaseWithPath:()}}
+{\footnotesize\ttfamily + (instancetype) database\+With\+Path\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$\+\_\+\+Nullable)}]{in\+Path }\end{DoxyParamCaption}}
+
+Create a {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} object.
+
+An {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} is created with a path to a S\+Q\+Lite database file. This path can be one of these three\+:
+
+
+\begin{DoxyEnumerate}
+\item A file system path. The file does not have to exist on disk. If it does not exist, it is created for you.
+\item An empty string ({\ttfamily @\char`\"{}\char`\"{}}). An empty database is created at a temporary location. This database is deleted with the {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} connection is closed.
+\item {\ttfamily nil}. An in-\/memory database is created. This database will be destroyed with the {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} connection is closed.
+\end{DoxyEnumerate}
+
+For example, to create/open a database in your Mac OS X {\ttfamily tmp} folder\+:
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db = \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} database\+With\+Path\+:"/tmp/tmp.db"\mbox{]};
+
+Or, in i\+OS, you might open a database in the app\textquotesingle{}s {\ttfamily Documents} directory\+:
+
+N\+S\+String $\ast$docs\+Path = N\+S\+Search\+Path\+For\+Directories\+In\+Domains(\+N\+S\+Document\+Directory, N\+S\+User\+Domain\+Mask, Y\+E\+S)\mbox{[}0\mbox{]}; N\+S\+String $\ast$db\+Path = \mbox{[}docs\+Path string\+By\+Appending\+Path\+Component\+:"test.\+db"\mbox{]}; \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db = \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} database\+With\+Path\+:db\+Path\mbox{]};
+
+(For more information on temporary and in-\/memory databases, read the sqlite documentation on the subject\+: \href{http://www.sqlite.org/inmemorydb.html}{\tt http\+://www.\+sqlite.\+org/inmemorydb.\+html})
+
+
+\begin{DoxyParams}{Parameters}
+{\em in\+Path} & Path of database file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} object if successful; {\ttfamily nil} if failure. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a13bb79efcda5db13674420ac4f805dd5}\label{interface_o_p_t_l_y_f_m_d_b_database_a13bb79efcda5db13674420ac4f805dd5}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!database\+With\+U\+R\+L\+:@{database\+With\+U\+R\+L\+:}}
+\index{database\+With\+U\+R\+L\+:@{database\+With\+U\+R\+L\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{database\+With\+U\+R\+L\+:()}{databaseWithURL:()}}
+{\footnotesize\ttfamily + (instancetype) database\+With\+U\+R\+L\+: \begin{DoxyParamCaption}\item[{(N\+S\+U\+RL $\ast$\+\_\+\+Nullable)}]{url }\end{DoxyParamCaption}}
+
+Create a {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} object.
+
+An {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} is created with a path to a S\+Q\+Lite database file. This path can be one of these three\+:
+
+
+\begin{DoxyEnumerate}
+\item A file system U\+RL. The file does not have to exist on disk. If it does not exist, it is created for you.
+\item {\ttfamily nil}. An in-\/memory database is created. This database will be destroyed with the {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} connection is closed.
+\end{DoxyEnumerate}
+
+For example, to create/open a database in your Mac OS X {\ttfamily tmp} folder\+:
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db = \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} database\+With\+Path\+:"/tmp/tmp.db"\mbox{]};
+
+Or, in i\+OS, you might open a database in the app\textquotesingle{}s {\ttfamily Documents} directory\+:
+
+N\+S\+String $\ast$docs\+Path = N\+S\+Search\+Path\+For\+Directories\+In\+Domains(\+N\+S\+Document\+Directory, N\+S\+User\+Domain\+Mask, Y\+E\+S)\mbox{[}0\mbox{]}; N\+S\+String $\ast$db\+Path = \mbox{[}docs\+Path string\+By\+Appending\+Path\+Component\+:"test.\+db"\mbox{]}; \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db = \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} database\+With\+Path\+:db\+Path\mbox{]};
+
+(For more information on temporary and in-\/memory databases, read the sqlite documentation on the subject\+: \href{http://www.sqlite.org/inmemorydb.html}{\tt http\+://www.\+sqlite.\+org/inmemorydb.\+html})
+
+
+\begin{DoxyParams}{Parameters}
+{\em url} & The local file U\+RL (not remote U\+RL) of database file\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} object if successful; {\ttfamily nil} if failure. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a5368268fe8e6d881d0da4d3538607768}\label{interface_o_p_t_l_y_f_m_d_b_database_a5368268fe8e6d881d0da4d3538607768}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!date\+From\+String\+:@{date\+From\+String\+:}}
+\index{date\+From\+String\+:@{date\+From\+String\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{date\+From\+String\+:()}{dateFromString:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Date $\ast$) date\+From\+String\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{s }\end{DoxyParamCaption}}
+
+Convert the supplied N\+S\+String to N\+S\+Date, using the current database formatter.
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & {\ttfamily N\+S\+String} to convert to {\ttfamily N\+S\+Date}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily N\+S\+Date} object; or {\ttfamily nil} if no formatter is set.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a820a1ababb4c5496800b9bcd5f2de784}{-\/ has\+Date\+Formatter}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a48c1936bc68ddd11cea9aa177b0cc94e}{-\/ set\+Date\+Format\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a5368268fe8e6d881d0da4d3538607768}{-\/ date\+From\+String\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a60793c2b214e29c00143fdf9510837d7}{-\/ string\+From\+Date\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_acb3eef48cd21dcb11407b88dac662c57}{+ storeable\+Date\+Format\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ad749b1bd0f19dc48b36867d1622d201a}\label{interface_o_p_t_l_y_f_m_d_b_database_ad749b1bd0f19dc48b36867d1622d201a}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Query\+:@{execute\+Query\+:}}
+\index{execute\+Query\+:@{execute\+Query\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Query\+:()}{executeQuery:()}}
+{\footnotesize\ttfamily -\/ (\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$) execute\+Query\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{sql }\item[{,}]{... }\end{DoxyParamCaption}}
+
+Execute select statement
+
+Executing queries returns an {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} object if successful, and {\ttfamily nil} upon failure. Like executing updates, there is a variant that accepts an {\ttfamily N\+S\+Error $\ast$ \+\_\+\+\_\+autoreleasing $\ast$} parameter. Otherwise you should use the {\ttfamily $<$last\+Error\+Message$>$} and {\ttfamily $<$last\+Error\+Message$>$} methods to determine why a query failed.
+
+In order to iterate through the results of your query, you use a {\ttfamily while()} loop. You also need to \char`\"{}step\char`\"{} (via {\ttfamily $<$\mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next\mbox{]}$>$}) from one record to the other.
+
+This method employs \href{http://sqlite.org/c3ref/bind_blob.html}{\tt {\ttfamily sqlite3\+\_\+bind}} for any optional value parameters. This properly escapes any characters that need escape sequences (e.\+g. quotation marks), which eliminates simple S\+QL errors as well as protects against S\+QL injection attacks. This method natively handles {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+Null}, {\ttfamily N\+S\+Date}, and {\ttfamily N\+S\+Data} objects. All other object types will be interpreted as text values using the object\textquotesingle{}s {\ttfamily description} method.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+E\+L\+E\+CT statement to be performed, with optional {\ttfamily ?} placeholders.\\
+\hline
+{\em ...} & \mbox{\hyperlink{protocol_optional-p}{Optional}} parameters to bind to {\ttfamily ?} placeholders in the S\+QL statement. These should be Objective-\/C objects (e.\+g. {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Number}, etc.), not fundamental C data types (e.\+g. {\ttfamily int}, {\ttfamily char $\ast$}, etc.).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} for the result set upon success; {\ttfamily nil} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} 
+
+\mbox{[}{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next}\mbox{]}($<$\mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next\mbox{]}$>$) 
+
+\href{http://sqlite.org/c3ref/bind_blob.html}{\tt {\ttfamily sqlite3\+\_\+bind}}
+\end{DoxySeeAlso}
+\begin{DoxyNote}{Note}
+You cannot use this method from Swift due to incompatibilities between Swift and Objective-\/C variadic implementations. Consider using {\ttfamily $<$execute\+Query\+:values\+:$>$} instead. 
+\end{DoxyNote}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a6e88b56561812ad35813f9053a85cad2}\label{interface_o_p_t_l_y_f_m_d_b_database_a6e88b56561812ad35813f9053a85cad2}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Query\+:values\+:error\+:@{execute\+Query\+:values\+:error\+:}}
+\index{execute\+Query\+:values\+:error\+:@{execute\+Query\+:values\+:error\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Query\+:values\+:error\+:()}{executeQuery:values:error:()}}
+{\footnotesize\ttfamily -\/ (\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$ \+\_\+\+Nullable) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ad749b1bd0f19dc48b36867d1622d201a}{execute\+Query\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{sql }\item[{values:(N\+S\+Array $\ast$\+\_\+\+Nullable)}]{values }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable \+\_\+\+\_\+autoreleasing $\ast$)}]{error }\end{DoxyParamCaption}}
+
+Execute select statement
+
+Executing queries returns an {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} object if successful, and {\ttfamily nil} upon failure. Like executing updates, there is a variant that accepts an {\ttfamily N\+S\+Error $\ast$ \+\_\+\+\_\+autoreleasing $\ast$} parameter. Otherwise you should use the {\ttfamily $<$last\+Error\+Message$>$} and {\ttfamily $<$last\+Error\+Message$>$} methods to determine why a query failed.
+
+In order to iterate through the results of your query, you use a {\ttfamily while()} loop. You also need to \char`\"{}step\char`\"{} (via {\ttfamily $<$\mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next\mbox{]}$>$}) from one record to the other.
+
+This is similar to {\ttfamily $<$execute\+Query\+:with\+Arguments\+In\+Array\+:$>$}, except that this also accepts a pointer to a {\ttfamily N\+S\+Error} pointer, so that errors can be returned.
+
+In Swift, this throws errors, as if it were defined as follows\+:
+
+{\ttfamily func execute\+Query(sql\+: String, values\+: \mbox{[}Any\mbox{]}?) throws -\/$>$ O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set!}
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+E\+L\+E\+CT statement to be performed, with optional {\ttfamily ?} placeholders.\\
+\hline
+{\em values} & A {\ttfamily N\+S\+Array} of objects to be used when binding values to the {\ttfamily ?} placeholders in the S\+QL statement.\\
+\hline
+{\em error} & A {\ttfamily N\+S\+Error} object to receive any error object (if any).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} for the result set upon success; {\ttfamily nil} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} 
+
+\mbox{[}{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next}\mbox{]}($<$\mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next\mbox{]}$>$)
+\end{DoxySeeAlso}
+\begin{DoxyNote}{Note}
+When called from Swift, only use the first two parameters, {\ttfamily sql} and {\ttfamily values}. This but throws the error. 
+\end{DoxyNote}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ad30659f8bbdc3b55166b307f5f130cbe}\label{interface_o_p_t_l_y_f_m_d_b_database_ad30659f8bbdc3b55166b307f5f130cbe}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Query\+:with\+Arguments\+In\+Array\+:@{execute\+Query\+:with\+Arguments\+In\+Array\+:}}
+\index{execute\+Query\+:with\+Arguments\+In\+Array\+:@{execute\+Query\+:with\+Arguments\+In\+Array\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Query\+:with\+Arguments\+In\+Array\+:()}{executeQuery:withArgumentsInArray:()}}
+{\footnotesize\ttfamily -\/ (\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ad749b1bd0f19dc48b36867d1622d201a}{execute\+Query\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{sql }\item[{withArgumentsInArray:(N\+S\+Array $\ast$)}]{arguments }\end{DoxyParamCaption}}
+
+Execute select statement
+
+Executing queries returns an {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} object if successful, and {\ttfamily nil} upon failure. Like executing updates, there is a variant that accepts an {\ttfamily N\+S\+Error $\ast$ \+\_\+\+\_\+autoreleasing $\ast$} parameter. Otherwise you should use the {\ttfamily $<$last\+Error\+Message$>$} and {\ttfamily $<$last\+Error\+Message$>$} methods to determine why a query failed.
+
+In order to iterate through the results of your query, you use a {\ttfamily while()} loop. You also need to \char`\"{}step\char`\"{} (via {\ttfamily $<$\mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next\mbox{]}$>$}) from one record to the other.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+E\+L\+E\+CT statement to be performed, with optional {\ttfamily ?} placeholders.\\
+\hline
+{\em arguments} & A {\ttfamily N\+S\+Array} of objects to be used when binding values to the {\ttfamily ?} placeholders in the S\+QL statement.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} for the result set upon success; {\ttfamily nil} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+-\/execute\+Query\+:values\+:error\+: 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} 
+
+\mbox{[}{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next}\mbox{]}($<$\mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next\mbox{]}$>$) 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a21ab2761ffb8dbae2a6ef70106010122}\label{interface_o_p_t_l_y_f_m_d_b_database_a21ab2761ffb8dbae2a6ef70106010122}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Query\+:with\+Parameter\+Dictionary\+:@{execute\+Query\+:with\+Parameter\+Dictionary\+:}}
+\index{execute\+Query\+:with\+Parameter\+Dictionary\+:@{execute\+Query\+:with\+Parameter\+Dictionary\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Query\+:with\+Parameter\+Dictionary\+:()}{executeQuery:withParameterDictionary:()}}
+{\footnotesize\ttfamily -\/ (\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$ \+\_\+\+Nullable) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ad749b1bd0f19dc48b36867d1622d201a}{execute\+Query\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{sql }\item[{withParameterDictionary:(N\+S\+Dictionary $\ast$\+\_\+\+Nullable)}]{arguments }\end{DoxyParamCaption}}
+
+Execute select statement
+
+Executing queries returns an {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} object if successful, and {\ttfamily nil} upon failure. Like executing updates, there is a variant that accepts an {\ttfamily N\+S\+Error $\ast$ \+\_\+\+\_\+autoreleasing $\ast$} parameter. Otherwise you should use the {\ttfamily $<$last\+Error\+Message$>$} and {\ttfamily $<$last\+Error\+Message$>$} methods to determine why a query failed.
+
+In order to iterate through the results of your query, you use a {\ttfamily while()} loop. You also need to \char`\"{}step\char`\"{} (via {\ttfamily $<$\mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next\mbox{]}$>$}) from one record to the other.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+E\+L\+E\+CT statement to be performed, with optional {\ttfamily ?} placeholders.\\
+\hline
+{\em arguments} & A {\ttfamily N\+S\+Dictionary} of objects keyed by column names that will be used when binding values to the {\ttfamily ?} placeholders in the S\+QL statement.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} for the result set upon success; {\ttfamily nil} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} 
+
+\mbox{[}{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next}\mbox{]}($<$\mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next\mbox{]}$>$) 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a679072fb9c6007f6700d3506658d9de3}\label{interface_o_p_t_l_y_f_m_d_b_database_a679072fb9c6007f6700d3506658d9de3}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Query\+With\+Format\+:@{execute\+Query\+With\+Format\+:}}
+\index{execute\+Query\+With\+Format\+:@{execute\+Query\+With\+Format\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Query\+With\+Format\+:()}{executeQueryWithFormat:()}}
+{\footnotesize\ttfamily -\/ (\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$ \+\_\+\+Nullable) execute\+Query\+With\+Format\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{format }\item[{,(1)}]{ }\item[{(2)}]{N\+S\+\_\+\+F\+O\+R\+M\+A\+T\+\_\+\+F\+U\+N\+C\+T\+I\+ON }\end{DoxyParamCaption}}
+
+Execute select statement
+
+Executing queries returns an {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} object if successful, and {\ttfamily nil} upon failure. Like executing updates, there is a variant that accepts an {\ttfamily N\+S\+Error $\ast$ \+\_\+\+\_\+autoreleasing $\ast$} parameter. Otherwise you should use the {\ttfamily $<$last\+Error\+Message$>$} and {\ttfamily $<$last\+Error\+Message$>$} methods to determine why a query failed.
+
+In order to iterate through the results of your query, you use a {\ttfamily while()} loop. You also need to \char`\"{}step\char`\"{} (via {\ttfamily $<$\mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next\mbox{]}$>$}) from one record to the other.
+
+
+\begin{DoxyParams}{Parameters}
+{\em format} & The S\+QL to be performed, with {\ttfamily printf}-\/style escape sequences.\\
+\hline
+{\em ...} & \mbox{\hyperlink{protocol_optional-p}{Optional}} parameters to bind to use in conjunction with the {\ttfamily printf}-\/style escape sequences in the S\+QL statement.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} for the result set upon success; {\ttfamily nil} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ad749b1bd0f19dc48b36867d1622d201a}{-\/ execute\+Query\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} 
+
+\mbox{[}{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next}\mbox{]}($<$\mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} next\mbox{]}$>$)
+\end{DoxySeeAlso}
+\begin{DoxyNote}{Note}
+This method does not technically perform a traditional printf-\/style replacement. What this method actually does is replace the printf-\/style percent sequences with a S\+Q\+Lite {\ttfamily ?} placeholder, and then bind values to that placeholder. Thus the following command
+\end{DoxyNote}
+\mbox{[}db execute\+Query\+With\+Format\+:"S\+E\+L\+E\+CT $\ast$ F\+R\+OM test W\+H\+E\+RE name=\%", "Gus"\mbox{]};
+
+is actually replacing the {\ttfamily \%@} with {\ttfamily ?} placeholder, and then performing something equivalent to {\ttfamily $<$execute\+Query\+:$>$}
+
+\mbox{[}db execute\+Query\+:"S\+E\+L\+E\+CT $\ast$ F\+R\+OM test W\+H\+E\+RE name=?\char`\"{}, @\char`\"{}Gus"\mbox{]};
+
+There are two reasons why this distinction is important. First, the printf-\/style escape sequences can only be used where it is permissible to use a S\+Q\+Lite {\ttfamily ?} placeholder. You can use it only for values in S\+QL statements, but not for table names or column names or any other non-\/value context. This method also cannot be used in conjunction with {\ttfamily pragma} statements and the like. Second, note the lack of quotation marks in the S\+QL. The {\ttfamily W\+H\+E\+RE} clause was {\itshape not} `W\+H\+E\+RE name='\%@\textquotesingle{}{\ttfamily (like you might have to do if you built a S\+QL statement using}N\+S\+String{\ttfamily method}string\+With\+Format{\ttfamily ), but rather simply}W\+H\+E\+RE name=\%@\`{}. \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ad8c3bdc64c602dac7827a4f560928168}\label{interface_o_p_t_l_y_f_m_d_b_database_ad8c3bdc64c602dac7827a4f560928168}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Statements\+:@{execute\+Statements\+:}}
+\index{execute\+Statements\+:@{execute\+Statements\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Statements\+:()}{executeStatements:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) execute\+Statements\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{sql }\end{DoxyParamCaption}}
+
+Execute multiple S\+QL statements
+
+This executes a series of S\+QL statements that are combined in a single string (e.\+g. the S\+QL generated by the {\ttfamily sqlite3} command line {\ttfamily .dump} command). This accepts no value parameters, but rather simply expects a single string with multiple S\+QL statements, each terminated with a semicolon. This uses {\ttfamily sqlite3\+\_\+exec}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+QL to be performed\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} upon success; {\ttfamily NO} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a11d5b1db0e9be3d5a0fb68d1c4bac0e3}{-\/ execute\+Statements\+:with\+Result\+Block\+:}} 
+
+\href{http://sqlite.org/c3ref/exec.html}{\tt sqlite3\+\_\+exec()} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a11d5b1db0e9be3d5a0fb68d1c4bac0e3}\label{interface_o_p_t_l_y_f_m_d_b_database_a11d5b1db0e9be3d5a0fb68d1c4bac0e3}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Statements\+:with\+Result\+Block\+:@{execute\+Statements\+:with\+Result\+Block\+:}}
+\index{execute\+Statements\+:with\+Result\+Block\+:@{execute\+Statements\+:with\+Result\+Block\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Statements\+:with\+Result\+Block\+:()}{executeStatements:withResultBlock:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ad8c3bdc64c602dac7827a4f560928168}{execute\+Statements\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{sql }\item[{withResultBlock:(\+\_\+\+\_\+attribute\+\_\+\+\_\+((noescape)) O\+P\+T\+L\+Y\+F\+M\+D\+B\+Execute\+Statements\+Callback\+Block \+\_\+\+Nullable)}]{block }\end{DoxyParamCaption}}
+
+Execute multiple S\+QL statements with callback handler
+
+This executes a series of S\+QL statements that are combined in a single string (e.\+g. the S\+QL generated by the {\ttfamily sqlite3} command line {\ttfamily .dump} command). This accepts no value parameters, but rather simply expects a single string with multiple S\+QL statements, each terminated with a semicolon. This uses {\ttfamily sqlite3\+\_\+exec}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+QL to be performed. \\
+\hline
+{\em block} & A block that will be called for any result sets returned by any S\+QL statements. Note, if you supply this block, it must return integer value, zero upon success (this would be a good opportunity to use S\+Q\+L\+I\+T\+E\+\_\+\+OK), non-\/zero value upon failure (which will stop the bulk execution of the S\+QL). If a statement returns values, the block will be called with the results from the query in N\+S\+Dictionary $\ast$results\+Dictionary. This may be {\ttfamily nil} if you don\textquotesingle{}t care to receive any results.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} upon success; {\ttfamily NO} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ad8c3bdc64c602dac7827a4f560928168}{-\/ execute\+Statements\+:}} 
+
+\href{http://sqlite.org/c3ref/exec.html}{\tt sqlite3\+\_\+exec()} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_aacce81f6c3456a804e1d558462bca313}\label{interface_o_p_t_l_y_f_m_d_b_database_aacce81f6c3456a804e1d558462bca313}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Update\+:@{execute\+Update\+:}}
+\index{execute\+Update\+:@{execute\+Update\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Update\+:()}{executeUpdate:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) execute\+Update\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{sql }\item[{,}]{... }\end{DoxyParamCaption}}
+
+Execute single update statement
+
+This method executes a single S\+QL update statement (i.\+e. any S\+QL that does not return results, such as {\ttfamily U\+P\+D\+A\+TE}, {\ttfamily I\+N\+S\+E\+RT}, or {\ttfamily D\+E\+L\+E\+TE}. This method employs \href{http://sqlite.org/c3ref/prepare.html}{\tt {\ttfamily sqlite3\+\_\+prepare\+\_\+v2}}, \href{http://sqlite.org/c3ref/bind_blob.html}{\tt {\ttfamily sqlite3\+\_\+bind}} to bind values to {\ttfamily ?} placeholders in the S\+QL with the optional list of parameters, and \href{http://sqlite.org/c3ref/step.html}{\tt {\ttfamily sqlite\+\_\+step}} to perform the update.
+
+The optional values provided to this method should be objects (e.\+g. {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+Null}, {\ttfamily N\+S\+Date}, and {\ttfamily N\+S\+Data} objects), not fundamental data types (e.\+g. {\ttfamily int}, {\ttfamily long}, {\ttfamily N\+S\+Integer}, etc.). This method automatically handles the aforementioned object types, and all other object types will be interpreted as text values using the object\textquotesingle{}s {\ttfamily description} method.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+QL to be performed, with optional {\ttfamily ?} placeholders.\\
+\hline
+{\em ...} & \mbox{\hyperlink{protocol_optional-p}{Optional}} parameters to bind to {\ttfamily ?} placeholders in the S\+QL statement. These should be Objective-\/C objects (e.\+g. {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Number}, etc.), not fundamental C data types (e.\+g. {\ttfamily int}, {\ttfamily char $\ast$}, etc.).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} upon success; {\ttfamily NO} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{-\/ last\+Error\+Code}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}} 
+
+\href{http://sqlite.org/c3ref/bind_blob.html}{\tt {\ttfamily sqlite3\+\_\+bind}}
+\end{DoxySeeAlso}
+\begin{DoxyNote}{Note}
+This technique supports the use of {\ttfamily ?} placeholders in the S\+QL, automatically binding any supplied value parameters to those placeholders. This approach is more robust than techniques that entail using {\ttfamily string\+With\+Format} to manually build S\+QL statements, which can be problematic if the values happened to include any characters that needed to be quoted.
+
+You cannot use this method from Swift due to incompatibilities between Swift and Objective-\/C variadic implementations. Consider using {\ttfamily $<$execute\+Update\+:values\+:$>$} instead. 
+\end{DoxyNote}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a0d75e3c094f6e03946a5b8278a215c42}\label{interface_o_p_t_l_y_f_m_d_b_database_a0d75e3c094f6e03946a5b8278a215c42}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Update\+:values\+:error\+:@{execute\+Update\+:values\+:error\+:}}
+\index{execute\+Update\+:values\+:error\+:@{execute\+Update\+:values\+:error\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Update\+:values\+:error\+:()}{executeUpdate:values:error:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aacce81f6c3456a804e1d558462bca313}{execute\+Update\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{sql }\item[{values:(N\+S\+Array $\ast$\+\_\+\+Nullable)}]{values }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable \+\_\+\+\_\+autoreleasing $\ast$)}]{error }\end{DoxyParamCaption}}
+
+Execute single update statement
+
+This method executes a single S\+QL update statement (i.\+e. any S\+QL that does not return results, such as {\ttfamily U\+P\+D\+A\+TE}, {\ttfamily I\+N\+S\+E\+RT}, or {\ttfamily D\+E\+L\+E\+TE}. This method employs \href{http://sqlite.org/c3ref/prepare.html}{\tt {\ttfamily sqlite3\+\_\+prepare\+\_\+v2}} and \href{http://sqlite.org/c3ref/bind_blob.html}{\tt {\ttfamily sqlite3\+\_\+bind}} binding any {\ttfamily ?} placeholders in the S\+QL with the optional list of parameters.
+
+The optional values provided to this method should be objects (e.\+g. {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+Null}, {\ttfamily N\+S\+Date}, and {\ttfamily N\+S\+Data} objects), not fundamental data types (e.\+g. {\ttfamily int}, {\ttfamily long}, {\ttfamily N\+S\+Integer}, etc.). This method automatically handles the aforementioned object types, and all other object types will be interpreted as text values using the object\textquotesingle{}s {\ttfamily description} method.
+
+This is similar to {\ttfamily $<$execute\+Update\+:with\+Arguments\+In\+Array\+:$>$}, except that this also accepts a pointer to a {\ttfamily N\+S\+Error} pointer, so that errors can be returned.
+
+In Swift, this throws errors, as if it were defined as follows\+:
+
+{\ttfamily func execute\+Update(sql\+: String, values\+: \mbox{[}Any\mbox{]}?) throws -\/$>$ Bool}
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+QL to be performed, with optional {\ttfamily ?} placeholders.\\
+\hline
+{\em values} & A {\ttfamily N\+S\+Array} of objects to be used when binding values to the {\ttfamily ?} placeholders in the S\+QL statement.\\
+\hline
+{\em error} & A {\ttfamily N\+S\+Error} object to receive any error object (if any).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} upon success; {\ttfamily NO} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{-\/ last\+Error\+Code}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a9e25e942df88213f251527ba03eafeea}\label{interface_o_p_t_l_y_f_m_d_b_database_a9e25e942df88213f251527ba03eafeea}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Update\+:with\+Arguments\+In\+Array\+:@{execute\+Update\+:with\+Arguments\+In\+Array\+:}}
+\index{execute\+Update\+:with\+Arguments\+In\+Array\+:@{execute\+Update\+:with\+Arguments\+In\+Array\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Update\+:with\+Arguments\+In\+Array\+:()}{executeUpdate:withArgumentsInArray:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aacce81f6c3456a804e1d558462bca313}{execute\+Update\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{sql }\item[{withArgumentsInArray:(N\+S\+Array $\ast$)}]{arguments }\end{DoxyParamCaption}}
+
+Execute single update statement
+
+This method executes a single S\+QL update statement (i.\+e. any S\+QL that does not return results, such as {\ttfamily U\+P\+D\+A\+TE}, {\ttfamily I\+N\+S\+E\+RT}, or {\ttfamily D\+E\+L\+E\+TE}. This method employs \href{http://sqlite.org/c3ref/prepare.html}{\tt {\ttfamily sqlite3\+\_\+prepare\+\_\+v2}} and \href{http://sqlite.org/c3ref/bind_blob.html}{\tt {\ttfamily sqlite3\+\_\+bind}} binding any {\ttfamily ?} placeholders in the S\+QL with the optional list of parameters.
+
+The optional values provided to this method should be objects (e.\+g. {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+Null}, {\ttfamily N\+S\+Date}, and {\ttfamily N\+S\+Data} objects), not fundamental data types (e.\+g. {\ttfamily int}, {\ttfamily long}, {\ttfamily N\+S\+Integer}, etc.). This method automatically handles the aforementioned object types, and all other object types will be interpreted as text values using the object\textquotesingle{}s {\ttfamily description} method.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+QL to be performed, with optional {\ttfamily ?} placeholders.\\
+\hline
+{\em arguments} & A {\ttfamily N\+S\+Array} of objects to be used when binding values to the {\ttfamily ?} placeholders in the S\+QL statement.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} upon success; {\ttfamily NO} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a0d75e3c094f6e03946a5b8278a215c42}{-\/ execute\+Update\+:values\+:error\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{-\/ last\+Error\+Code}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a1281526ad6641e7ef2198c3e9d971754}\label{interface_o_p_t_l_y_f_m_d_b_database_a1281526ad6641e7ef2198c3e9d971754}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Update\+:with\+Error\+And\+Bindings\+:@{execute\+Update\+:with\+Error\+And\+Bindings\+:}}
+\index{execute\+Update\+:with\+Error\+And\+Bindings\+:@{execute\+Update\+:with\+Error\+And\+Bindings\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Update\+:with\+Error\+And\+Bindings\+:()}{executeUpdate:withErrorAndBindings:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aacce81f6c3456a804e1d558462bca313}{execute\+Update\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{sql }\item[{withErrorAndBindings:(N\+S\+Error $\ast$\+\_\+\+Nullable $\ast$)}]{out\+Err }\item[{,}]{... }\end{DoxyParamCaption}}
+
+Execute single update statement
+
+This method executes a single S\+QL update statement (i.\+e. any S\+QL that does not return results, such as {\ttfamily U\+P\+D\+A\+TE}, {\ttfamily I\+N\+S\+E\+RT}, or {\ttfamily D\+E\+L\+E\+TE}. This method employs \href{http://sqlite.org/c3ref/prepare.html}{\tt {\ttfamily sqlite3\+\_\+prepare\+\_\+v2}}, \href{http://sqlite.org/c3ref/bind_blob.html}{\tt {\ttfamily sqlite3\+\_\+bind}} to bind values to {\ttfamily ?} placeholders in the S\+QL with the optional list of parameters, and \href{http://sqlite.org/c3ref/step.html}{\tt {\ttfamily sqlite\+\_\+step}} to perform the update.
+
+The optional values provided to this method should be objects (e.\+g. {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+Null}, {\ttfamily N\+S\+Date}, and {\ttfamily N\+S\+Data} objects), not fundamental data types (e.\+g. {\ttfamily int}, {\ttfamily long}, {\ttfamily N\+S\+Integer}, etc.). This method automatically handles the aforementioned object types, and all other object types will be interpreted as text values using the object\textquotesingle{}s {\ttfamily description} method.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+QL to be performed, with optional {\ttfamily ?} placeholders.\\
+\hline
+{\em out\+Err} & A reference to the {\ttfamily N\+S\+Error} pointer to be updated with an auto released {\ttfamily N\+S\+Error} object if an error if an error occurs. If {\ttfamily nil}, no {\ttfamily N\+S\+Error} object will be returned.\\
+\hline
+{\em ...} & \mbox{\hyperlink{protocol_optional-p}{Optional}} parameters to bind to {\ttfamily ?} placeholders in the S\+QL statement. These should be Objective-\/C objects (e.\+g. {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Number}, etc.), not fundamental C data types (e.\+g. {\ttfamily int}, {\ttfamily char $\ast$}, etc.).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} upon success; {\ttfamily NO} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{-\/ last\+Error\+Code}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}} 
+
+\href{http://sqlite.org/c3ref/bind_blob.html}{\tt {\ttfamily sqlite3\+\_\+bind}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a16f1eabe0aa7027ed5be1534e932399e}\label{interface_o_p_t_l_y_f_m_d_b_database_a16f1eabe0aa7027ed5be1534e932399e}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Update\+:with\+Parameter\+Dictionary\+:@{execute\+Update\+:with\+Parameter\+Dictionary\+:}}
+\index{execute\+Update\+:with\+Parameter\+Dictionary\+:@{execute\+Update\+:with\+Parameter\+Dictionary\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Update\+:with\+Parameter\+Dictionary\+:()}{executeUpdate:withParameterDictionary:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aacce81f6c3456a804e1d558462bca313}{execute\+Update\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{sql }\item[{withParameterDictionary:(N\+S\+Dictionary $\ast$)}]{arguments }\end{DoxyParamCaption}}
+
+Execute single update statement
+
+This method executes a single S\+QL update statement (i.\+e. any S\+QL that does not return results, such as {\ttfamily U\+P\+D\+A\+TE}, {\ttfamily I\+N\+S\+E\+RT}, or {\ttfamily D\+E\+L\+E\+TE}. This method employs \href{http://sqlite.org/c3ref/prepare.html}{\tt {\ttfamily sqlite3\+\_\+prepare\+\_\+v2}} and \href{http://sqlite.org/c3ref/step.html}{\tt {\ttfamily sqlite\+\_\+step}} to perform the update. Unlike the other {\ttfamily execute\+Update} methods, this uses printf-\/style formatters (e.\+g. {\ttfamily s}, {\ttfamily d}, etc.) to build the S\+QL.
+
+The optional values provided to this method should be objects (e.\+g. {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+Null}, {\ttfamily N\+S\+Date}, and {\ttfamily N\+S\+Data} objects), not fundamental data types (e.\+g. {\ttfamily int}, {\ttfamily long}, {\ttfamily N\+S\+Integer}, etc.). This method automatically handles the aforementioned object types, and all other object types will be interpreted as text values using the object\textquotesingle{}s {\ttfamily description} method.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+QL to be performed, with optional {\ttfamily ?} placeholders.\\
+\hline
+{\em arguments} & A {\ttfamily N\+S\+Dictionary} of objects keyed by column names that will be used when binding values to the {\ttfamily ?} placeholders in the S\+QL statement.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} upon success; {\ttfamily NO} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{-\/ last\+Error\+Code}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a60bf317707b63828faee1d70f28f65f3}\label{interface_o_p_t_l_y_f_m_d_b_database_a60bf317707b63828faee1d70f28f65f3}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Update\+:with\+V\+A\+List\+:@{execute\+Update\+:with\+V\+A\+List\+:}}
+\index{execute\+Update\+:with\+V\+A\+List\+:@{execute\+Update\+:with\+V\+A\+List\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Update\+:with\+V\+A\+List\+:()}{executeUpdate:withVAList:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aacce81f6c3456a804e1d558462bca313}{execute\+Update\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{sql }\item[{withVAList:(va\+\_\+list)}]{args }\end{DoxyParamCaption}}
+
+Execute single update statement
+
+This method executes a single S\+QL update statement (i.\+e. any S\+QL that does not return results, such as {\ttfamily U\+P\+D\+A\+TE}, {\ttfamily I\+N\+S\+E\+RT}, or {\ttfamily D\+E\+L\+E\+TE}. This method employs \href{http://sqlite.org/c3ref/prepare.html}{\tt {\ttfamily sqlite3\+\_\+prepare\+\_\+v2}} and \href{http://sqlite.org/c3ref/step.html}{\tt {\ttfamily sqlite\+\_\+step}} to perform the update. Unlike the other {\ttfamily execute\+Update} methods, this uses printf-\/style formatters (e.\+g. {\ttfamily s}, {\ttfamily d}, etc.) to build the S\+QL.
+
+The optional values provided to this method should be objects (e.\+g. {\ttfamily N\+S\+String}, {\ttfamily N\+S\+Number}, {\ttfamily N\+S\+Null}, {\ttfamily N\+S\+Date}, and {\ttfamily N\+S\+Data} objects), not fundamental data types (e.\+g. {\ttfamily int}, {\ttfamily long}, {\ttfamily N\+S\+Integer}, etc.). This method automatically handles the aforementioned object types, and all other object types will be interpreted as text values using the object\textquotesingle{}s {\ttfamily description} method.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sql} & The S\+QL to be performed, with optional {\ttfamily ?} placeholders.\\
+\hline
+{\em args} & A {\ttfamily va\+\_\+list} of arguments.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} upon success; {\ttfamily NO} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{-\/ last\+Error\+Code}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a5c251162dad20491a8b2a6278812c2e6}\label{interface_o_p_t_l_y_f_m_d_b_database_a5c251162dad20491a8b2a6278812c2e6}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!execute\+Update\+With\+Format\+:@{execute\+Update\+With\+Format\+:}}
+\index{execute\+Update\+With\+Format\+:@{execute\+Update\+With\+Format\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{execute\+Update\+With\+Format\+:()}{executeUpdateWithFormat:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) execute\+Update\+With\+Format\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{format }\item[{,(1)}]{ }\item[{(2)}]{N\+S\+\_\+\+F\+O\+R\+M\+A\+T\+\_\+\+F\+U\+N\+C\+T\+I\+ON }\end{DoxyParamCaption}}
+
+Execute single update statement
+
+This method executes a single S\+QL update statement (i.\+e. any S\+QL that does not return results, such as {\ttfamily U\+P\+D\+A\+TE}, {\ttfamily I\+N\+S\+E\+RT}, or {\ttfamily D\+E\+L\+E\+TE}. This method employs \href{http://sqlite.org/c3ref/prepare.html}{\tt {\ttfamily sqlite3\+\_\+prepare\+\_\+v2}} and \href{http://sqlite.org/c3ref/step.html}{\tt {\ttfamily sqlite\+\_\+step}} to perform the update. Unlike the other {\ttfamily execute\+Update} methods, this uses printf-\/style formatters (e.\+g. {\ttfamily s}, {\ttfamily d}, etc.) to build the S\+QL. Do not use {\ttfamily ?} placeholders in the S\+QL if you use this method.
+
+
+\begin{DoxyParams}{Parameters}
+{\em format} & The S\+QL to be performed, with {\ttfamily printf}-\/style escape sequences.\\
+\hline
+{\em ...} & \mbox{\hyperlink{protocol_optional-p}{Optional}} parameters to bind to use in conjunction with the {\ttfamily printf}-\/style escape sequences in the S\+QL statement.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} upon success; {\ttfamily NO} upon failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aacce81f6c3456a804e1d558462bca313}{-\/ execute\+Update\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{-\/ last\+Error\+Code}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}}
+\end{DoxySeeAlso}
+\begin{DoxyNote}{Note}
+This method does not technically perform a traditional printf-\/style replacement. What this method actually does is replace the printf-\/style percent sequences with a S\+Q\+Lite {\ttfamily ?} placeholder, and then bind values to that placeholder. Thus the following command
+\end{DoxyNote}
+\mbox{[}db execute\+Update\+With\+Format\+:"I\+N\+S\+E\+RT I\+N\+TO test (name) V\+A\+L\+U\+ES (\%@)\char`\"{}, @\char`\"{}Gus"\mbox{]};
+
+is actually replacing the {\ttfamily \%@} with {\ttfamily ?} placeholder, and then performing something equivalent to {\ttfamily $<$execute\+Update\+:$>$}
+
+\mbox{[}db execute\+Update\+:"I\+N\+S\+E\+RT I\+N\+TO test (name) V\+A\+L\+U\+ES (?)\char`\"{}, @\char`\"{}Gus"\mbox{]};
+
+There are two reasons why this distinction is important. First, the printf-\/style escape sequences can only be used where it is permissible to use a S\+Q\+Lite {\ttfamily ?} placeholder. You can use it only for values in S\+QL statements, but not for table names or column names or any other non-\/value context. This method also cannot be used in conjunction with {\ttfamily pragma} statements and the like. Second, note the lack of quotation marks in the S\+QL. The {\ttfamily V\+A\+L\+U\+ES} clause was {\itshape not} `V\+A\+L\+U\+ES ('\%@\textquotesingle{}){\ttfamily (like you might have to do if you built a S\+QL statement using}N\+S\+String{\ttfamily method}string\+With\+Format{\ttfamily ), but rather simply}V\+A\+L\+U\+ES (\%@)\`{}. \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_afc9d747532c96f0f2afb78dd84caee87}\label{interface_o_p_t_l_y_f_m_d_b_database_afc9d747532c96f0f2afb78dd84caee87}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!had\+Error@{had\+Error}}
+\index{had\+Error@{had\+Error}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{had\+Error()}{hadError()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) had\+Error \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Had error
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if there was an error, {\ttfamily NO} if no error.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{-\/ last\+Error\+Code}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a820a1ababb4c5496800b9bcd5f2de784}\label{interface_o_p_t_l_y_f_m_d_b_database_a820a1ababb4c5496800b9bcd5f2de784}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!has\+Date\+Formatter@{has\+Date\+Formatter}}
+\index{has\+Date\+Formatter@{has\+Date\+Formatter}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{has\+Date\+Formatter()}{hasDateFormatter()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) has\+Date\+Formatter \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Test whether the database has a date formatter assigned.
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if there is a date formatter; {\ttfamily NO} if not.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a820a1ababb4c5496800b9bcd5f2de784}{-\/ has\+Date\+Formatter}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a48c1936bc68ddd11cea9aa177b0cc94e}{-\/ set\+Date\+Format\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a5368268fe8e6d881d0da4d3538607768}{-\/ date\+From\+String\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a60793c2b214e29c00143fdf9510837d7}{-\/ string\+From\+Date\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_acb3eef48cd21dcb11407b88dac662c57}{+ storeable\+Date\+Format\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a146d2b8c55019b67f45217aeb008e78e}\label{interface_o_p_t_l_y_f_m_d_b_database_a146d2b8c55019b67f45217aeb008e78e}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!init\+With\+Path\+:@{init\+With\+Path\+:}}
+\index{init\+With\+Path\+:@{init\+With\+Path\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{init\+With\+Path\+:()}{initWithPath:()}}
+{\footnotesize\ttfamily -\/ (instancetype) init\+With\+Path\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$\+\_\+\+Nullable)}]{path }\end{DoxyParamCaption}}
+
+Initialize a {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} object.
+
+An {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} is created with a path to a S\+Q\+Lite database file. This path can be one of these three\+:
+
+
+\begin{DoxyEnumerate}
+\item A file system path. The file does not have to exist on disk. If it does not exist, it is created for you.
+\item An empty string ({\ttfamily @\char`\"{}\char`\"{}}). An empty database is created at a temporary location. This database is deleted with the {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} connection is closed.
+\item {\ttfamily nil}. An in-\/memory database is created. This database will be destroyed with the {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} connection is closed.
+\end{DoxyEnumerate}
+
+For example, to create/open a database in your Mac OS X {\ttfamily tmp} folder\+:
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db = \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} database\+With\+Path\+:"/tmp/tmp.db"\mbox{]};
+
+Or, in i\+OS, you might open a database in the app\textquotesingle{}s {\ttfamily Documents} directory\+:
+
+N\+S\+String $\ast$docs\+Path = N\+S\+Search\+Path\+For\+Directories\+In\+Domains(\+N\+S\+Document\+Directory, N\+S\+User\+Domain\+Mask, Y\+E\+S)\mbox{[}0\mbox{]}; N\+S\+String $\ast$db\+Path = \mbox{[}docs\+Path string\+By\+Appending\+Path\+Component\+:"test.\+db"\mbox{]}; \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db = \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} database\+With\+Path\+:db\+Path\mbox{]};
+
+(For more information on temporary and in-\/memory databases, read the sqlite documentation on the subject\+: \href{http://www.sqlite.org/inmemorydb.html}{\tt http\+://www.\+sqlite.\+org/inmemorydb.\+html})
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & Path of database file.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} object if successful; {\ttfamily nil} if failure. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a4fe721948e8ceefcdd65f0850b7c07b7}\label{interface_o_p_t_l_y_f_m_d_b_database_a4fe721948e8ceefcdd65f0850b7c07b7}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!init\+With\+U\+R\+L\+:@{init\+With\+U\+R\+L\+:}}
+\index{init\+With\+U\+R\+L\+:@{init\+With\+U\+R\+L\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{init\+With\+U\+R\+L\+:()}{initWithURL:()}}
+{\footnotesize\ttfamily -\/ (instancetype) init\+With\+U\+R\+L\+: \begin{DoxyParamCaption}\item[{(N\+S\+U\+RL $\ast$\+\_\+\+Nullable)}]{url }\end{DoxyParamCaption}}
+
+Initialize a {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} object.
+
+An {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} is created with a local file U\+RL to a S\+Q\+Lite database file. This path can be one of these three\+:
+
+
+\begin{DoxyEnumerate}
+\item A file system U\+RL. The file does not have to exist on disk. If it does not exist, it is created for you.
+\item {\ttfamily nil}. An in-\/memory database is created. This database will be destroyed with the {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} connection is closed.
+\end{DoxyEnumerate}
+
+For example, to create/open a database in your Mac OS X {\ttfamily tmp} folder\+:
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db = \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} database\+With\+Path\+:"/tmp/tmp.db"\mbox{]};
+
+Or, in i\+OS, you might open a database in the app\textquotesingle{}s {\ttfamily Documents} directory\+:
+
+N\+S\+String $\ast$docs\+Path = N\+S\+Search\+Path\+For\+Directories\+In\+Domains(\+N\+S\+Document\+Directory, N\+S\+User\+Domain\+Mask, Y\+E\+S)\mbox{[}0\mbox{]}; N\+S\+String $\ast$db\+Path = \mbox{[}docs\+Path string\+By\+Appending\+Path\+Component\+:"test.\+db"\mbox{]}; \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db = \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} database\+With\+Path\+:db\+Path\mbox{]};
+
+(For more information on temporary and in-\/memory databases, read the sqlite documentation on the subject\+: \href{http://www.sqlite.org/inmemorydb.html}{\tt http\+://www.\+sqlite.\+org/inmemorydb.\+html})
+
+
+\begin{DoxyParams}{Parameters}
+{\em url} & The file {\ttfamily N\+S\+U\+RL} of database file.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}} object if successful; {\ttfamily nil} if failure. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a5ced1981fdf00e7f6609195c0255e71d}\label{interface_o_p_t_l_y_f_m_d_b_database_a5ced1981fdf00e7f6609195c0255e71d}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!in\+Save\+Point\+:@{in\+Save\+Point\+:}}
+\index{in\+Save\+Point\+:@{in\+Save\+Point\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{in\+Save\+Point\+:()}{inSavePoint:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Error $\ast$ \+\_\+\+Nullable) in\+Save\+Point\+: \begin{DoxyParamCaption}\item[{(\+\_\+\+\_\+attribute\+\_\+\+\_\+((noescape)) void($^\wedge$)(B\+O\+OL $\ast$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a511569a0ee0c82136255920ebe9d28e6}{rollback}}))}]{block }\end{DoxyParamCaption}}
+
+Start save point
+
+
+\begin{DoxyParams}{Parameters}
+{\em block} & Block of code to perform from within save point.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The N\+S\+Error corresponding to the error, if any. If no error, returns {\ttfamily nil}.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a394534a47e9f054edfc63021f2a1ebc3}{-\/ start\+Save\+Point\+With\+Name\+:error\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_afb6f13df41c3e8e1813a00f6d1ec0428}{-\/ release\+Save\+Point\+With\+Name\+:error\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a8ae3bd5f48fed1f09b14328fc777dab5}{-\/ rollback\+To\+Save\+Point\+With\+Name\+:error\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a1aa9233533d16b1fb7b68f272b2d488a}\label{interface_o_p_t_l_y_f_m_d_b_database_a1aa9233533d16b1fb7b68f272b2d488a}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!interrupt@{interrupt}}
+\index{interrupt@{interrupt}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{interrupt()}{interrupt()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) interrupt \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Interupt pending database operation
+
+This method causes any pending database operation to abort and return at its earliest opportunity
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} on success; {\ttfamily NO} on failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a38f39fc14807b0903098b977d3a04649}\label{interface_o_p_t_l_y_f_m_d_b_database_a38f39fc14807b0903098b977d3a04649}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!is\+S\+Q\+Lite\+Thread\+Safe@{is\+S\+Q\+Lite\+Thread\+Safe}}
+\index{is\+S\+Q\+Lite\+Thread\+Safe@{is\+S\+Q\+Lite\+Thread\+Safe}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{is\+S\+Q\+Lite\+Thread\+Safe()}{isSQLiteThreadSafe()}}
+{\footnotesize\ttfamily + (B\+O\+OL) is\+S\+Q\+Lite\+Thread\+Safe \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Test to see if the library is threadsafe
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily NO} if and only if S\+Q\+Lite was compiled with mutexing code omitted due to the S\+Q\+L\+I\+T\+E\+\_\+\+T\+H\+R\+E\+A\+D\+S\+A\+FE compile-\/time option being set to 0.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/threadsafe.html}{\tt sqlite3\+\_\+threadsafe()} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}\label{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!last\+Error@{last\+Error}}
+\index{last\+Error@{last\+Error}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{last\+Error()}{lastError()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Error $\ast$) last\+Error \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Last error
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily N\+S\+Error} representing the last error.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{-\/ last\+Error\+Code}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}\label{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!last\+Error\+Code@{last\+Error\+Code}}
+\index{last\+Error\+Code@{last\+Error\+Code}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{last\+Error\+Code()}{lastErrorCode()}}
+{\footnotesize\ttfamily -\/ (int) last\+Error\+Code \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Last error code
+
+Returns the numeric result code or extended result code for the most recent failed S\+Q\+Lite A\+PI call associated with a database connection. If a prior A\+PI call failed but the most recent A\+PI call succeeded, this return value is undefined.
+
+\begin{DoxyReturn}{Returns}
+Integer value of the last error code.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/errcode.html}{\tt sqlite3\+\_\+errcode()} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}\label{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!last\+Error\+Message@{last\+Error\+Message}}
+\index{last\+Error\+Message@{last\+Error\+Message}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{last\+Error\+Message()}{lastErrorMessage()}}
+{\footnotesize\ttfamily -\/ (N\+S\+String $\ast$) last\+Error\+Message \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Last error message
+
+Returns the English-\/language text that describes the most recent failed S\+Q\+Lite A\+PI call associated with a database connection. If a prior A\+PI call failed but the most recent A\+PI call succeeded, this return value is undefined.
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily N\+S\+String} of the last error message.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/errcode.html}{\tt sqlite3\+\_\+errmsg()} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a9f15cf87d3c764783ce0c6beb39393a9}{-\/ last\+Error\+Code}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a1f6aef053fa570de3c6c3d1e8bc34989}\label{interface_o_p_t_l_y_f_m_d_b_database_a1f6aef053fa570de3c6c3d1e8bc34989}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!last\+Extended\+Error\+Code@{last\+Extended\+Error\+Code}}
+\index{last\+Extended\+Error\+Code@{last\+Extended\+Error\+Code}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{last\+Extended\+Error\+Code()}{lastExtendedErrorCode()}}
+{\footnotesize\ttfamily -\/ (int) last\+Extended\+Error\+Code \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Last extended error code
+
+Returns the numeric extended result code for the most recent failed S\+Q\+Lite A\+PI call associated with a database connection. If a prior A\+PI call failed but the most recent A\+PI call succeeded, this return value is undefined.
+
+\begin{DoxyReturn}{Returns}
+Integer value of the last extended error code.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/errcode.html}{\tt sqlite3\+\_\+errcode()} 
+
+\href{http://sqlite.org/rescode.html#primary_result_codes_versus_extended_result_codes}{\tt 2. Primary Result Codes versus Extended Result Codes} 
+
+\href{http://sqlite.org/rescode.html#extrc}{\tt 5. Extended Result Code List} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a082c5d58576df07956308656064e1f63}{-\/ last\+Error\+Message}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a477a6ff4d9daaac53a56c0a058a0d2f7}{-\/ last\+Error}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}\label{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!make\+Function\+Named\+:arguments\+:block\+:@{make\+Function\+Named\+:arguments\+:block\+:}}
+\index{make\+Function\+Named\+:arguments\+:block\+:@{make\+Function\+Named\+:arguments\+:block\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{make\+Function\+Named\+:arguments\+:block\+:()}{makeFunctionNamed:arguments:block:()}}
+{\footnotesize\ttfamily -\/ (void) make\+Function\+Named\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{name }\item[{arguments:(int)}]{arguments }\item[{block:(void($^\wedge$)(void $\ast$context, int argc, void $\ast$\+\_\+\+Nonnull $\ast$\+\_\+\+Nonnull argv))}]{block }\end{DoxyParamCaption}}
+
+Adds S\+QL functions or aggregates or to redefine the behavior of existing S\+QL functions or aggregates.
+
+For example\+:
+
+\mbox{[}db make\+Function\+Named\+:"Remove\+Diacritics" arguments\+:1 block\+:$^\wedge$(void $\ast$context, int argc, void $\ast$$\ast$argv) \{ Sqlite\+Value\+Type type = \mbox{[}self.\+db value\+Type\+:argv\mbox{[}0\mbox{]}\mbox{]}; if (type == Sqlite\+Value\+Type\+Null) \{ \mbox{[}self.\+db result\+Null\+In\+Context\+:context\mbox{]}; return; \} if (type != Sqlite\+Value\+Type\+Text) \{ \mbox{[}self.\+db result\+Error\+:"Expected text" context\+:context\mbox{]}; return; \} N\+S\+String $\ast$string = \mbox{[}self.\+db value\+String\+:argv\mbox{[}0\mbox{]}\mbox{]}; N\+S\+String $\ast$result = \mbox{[}string string\+By\+Folding\+With\+Options\+:N\+S\+Diacritic\+Insensitive\+Search locale\+:nil\mbox{]}; \mbox{[}self.\+db result\+String\+:result context\+:context\mbox{]}; \}\mbox{]};
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$rs = \mbox{[}db execute\+Query\+:"S\+E\+L\+E\+CT $\ast$ F\+R\+OM employees W\+H\+E\+RE Remove\+Diacritics(first\+\_\+name) L\+I\+KE \textquotesingle{}jose\textquotesingle{}\char`\"{}\mbox{]};
+   N\+S\+Assert(rs, @\char`\"{}Error \%", \mbox{[}db last\+Error\+Message\mbox{]});
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name of function.\\
+\hline
+{\em arguments} & Maximum number of parameters.\\
+\hline
+{\em block} & The block of code for the function.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/create_function.html}{\tt sqlite3\+\_\+create\+\_\+function()} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_afc3b896f0808f555b09064bb6d514f93}\label{interface_o_p_t_l_y_f_m_d_b_database_afc3b896f0808f555b09064bb6d514f93}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!open@{open}}
+\index{open@{open}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{open()}{open()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) open \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Opening a new database connection
+
+The database is opened for reading and writing, and is created if it does not already exist.
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if successful, {\ttfamily NO} on error.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/open.html}{\tt sqlite3\+\_\+open()} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a088fc6d53b7e5b2713d5cacef74807ad}{-\/ open\+With\+Flags\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a6979a72ddb72bf8187a06607943bee98}{-\/ close}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a088fc6d53b7e5b2713d5cacef74807ad}\label{interface_o_p_t_l_y_f_m_d_b_database_a088fc6d53b7e5b2713d5cacef74807ad}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!open\+With\+Flags\+:@{open\+With\+Flags\+:}}
+\index{open\+With\+Flags\+:@{open\+With\+Flags\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{open\+With\+Flags\+:()}{openWithFlags:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) open\+With\+Flags\+: \begin{DoxyParamCaption}\item[{(int)}]{flags }\end{DoxyParamCaption}}
+
+Opening a new database connection with flags and an optional virtual file system (V\+FS)
+
+
+\begin{DoxyParams}{Parameters}
+{\em flags} & one of the following three values, optionally combined with the {\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+N\+O\+M\+U\+T\+EX}, {\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+F\+U\+L\+L\+M\+U\+T\+EX}, {\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+S\+H\+A\+R\+E\+D\+C\+A\+C\+HE}, {\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+P\+R\+I\+V\+A\+T\+E\+C\+A\+C\+HE}, and/or {\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+U\+RI} flags\+:\\
+\hline
+\end{DoxyParams}
+{\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+R\+E\+A\+D\+O\+N\+LY}
+
+The database is opened in read-\/only mode. If the database does not already exist, an error is returned.
+
+{\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+R\+E\+A\+D\+W\+R\+I\+TE}
+
+The database is opened for reading and writing if possible, or reading only if the file is write protected by the operating system. In either case the database must already exist, otherwise an error is returned.
+
+{\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+R\+E\+A\+D\+W\+R\+I\+TE $\vert$ S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+C\+R\+E\+A\+TE}
+
+The database is opened for reading and writing, and is created if it does not already exist. This is the behavior that is always used for {\ttfamily open} method.
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if successful, {\ttfamily NO} on error.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/open.html}{\tt sqlite3\+\_\+open\+\_\+v2()} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_afc3b896f0808f555b09064bb6d514f93}{-\/ open}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a6979a72ddb72bf8187a06607943bee98}{-\/ close}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a5019a19308c2d2f53901bc15e18b2f31}\label{interface_o_p_t_l_y_f_m_d_b_database_a5019a19308c2d2f53901bc15e18b2f31}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!open\+With\+Flags\+:vfs\+:@{open\+With\+Flags\+:vfs\+:}}
+\index{open\+With\+Flags\+:vfs\+:@{open\+With\+Flags\+:vfs\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{open\+With\+Flags\+:vfs\+:()}{openWithFlags:vfs:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a088fc6d53b7e5b2713d5cacef74807ad}{open\+With\+Flags\+:}} \begin{DoxyParamCaption}\item[{(int)}]{flags }\item[{vfs:(N\+S\+String $\ast$\+\_\+\+Nullable)}]{vfs\+Name }\end{DoxyParamCaption}}
+
+Opening a new database connection with flags and an optional virtual file system (V\+FS)
+
+
+\begin{DoxyParams}{Parameters}
+{\em flags} & one of the following three values, optionally combined with the {\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+N\+O\+M\+U\+T\+EX}, {\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+F\+U\+L\+L\+M\+U\+T\+EX}, {\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+S\+H\+A\+R\+E\+D\+C\+A\+C\+HE}, {\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+P\+R\+I\+V\+A\+T\+E\+C\+A\+C\+HE}, and/or {\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+U\+RI} flags\+:\\
+\hline
+\end{DoxyParams}
+{\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+R\+E\+A\+D\+O\+N\+LY}
+
+The database is opened in read-\/only mode. If the database does not already exist, an error is returned.
+
+{\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+R\+E\+A\+D\+W\+R\+I\+TE}
+
+The database is opened for reading and writing if possible, or reading only if the file is write protected by the operating system. In either case the database must already exist, otherwise an error is returned.
+
+{\ttfamily S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+R\+E\+A\+D\+W\+R\+I\+TE $\vert$ S\+Q\+L\+I\+T\+E\+\_\+\+O\+P\+E\+N\+\_\+\+C\+R\+E\+A\+TE}
+
+The database is opened for reading and writing, and is created if it does not already exist. This is the behavior that is always used for {\ttfamily open} method.
+
+
+\begin{DoxyParams}{Parameters}
+{\em vfs\+Name} & If vfs is given the value is passed to the vfs parameter of sqlite3\+\_\+open\+\_\+v2.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if successful, {\ttfamily NO} on error.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/open.html}{\tt sqlite3\+\_\+open\+\_\+v2()} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_afc3b896f0808f555b09064bb6d514f93}{-\/ open}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a6979a72ddb72bf8187a06607943bee98}{-\/ close}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_af64a2ede2ac7642bada99f4ba1d905f2}\label{interface_o_p_t_l_y_f_m_d_b_database_af64a2ede2ac7642bada99f4ba1d905f2}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!rekey\+:@{rekey\+:}}
+\index{rekey\+:@{rekey\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{rekey\+:()}{rekey:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) rekey\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{key }\end{DoxyParamCaption}}
+
+Reset encryption key
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The key to be used.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if success, {\ttfamily NO} on error.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{https://www.zetetic.net/sqlcipher/}{\tt https\+://www.\+zetetic.\+net/sqlcipher/}
+\end{DoxySeeAlso}
+\begin{DoxyWarning}{Warning}
+You need to have purchased the sqlite encryption extensions for this method to work. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ae1454ed91642c4d127fd36f370f04d8c}\label{interface_o_p_t_l_y_f_m_d_b_database_ae1454ed91642c4d127fd36f370f04d8c}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!rekey\+With\+Data\+:@{rekey\+With\+Data\+:}}
+\index{rekey\+With\+Data\+:@{rekey\+With\+Data\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{rekey\+With\+Data\+:()}{rekeyWithData:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) rekey\+With\+Data\+: \begin{DoxyParamCaption}\item[{(N\+S\+Data $\ast$)}]{key\+Data }\end{DoxyParamCaption}}
+
+Reset encryption key using {\ttfamily key\+Data}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em key\+Data} & The {\ttfamily N\+S\+Data} to be used.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if success, {\ttfamily NO} on error.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{https://www.zetetic.net/sqlcipher/}{\tt https\+://www.\+zetetic.\+net/sqlcipher/}
+\end{DoxySeeAlso}
+\begin{DoxyWarning}{Warning}
+You need to have purchased the sqlite encryption extensions for this method to work. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_afb6f13df41c3e8e1813a00f6d1ec0428}\label{interface_o_p_t_l_y_f_m_d_b_database_afb6f13df41c3e8e1813a00f6d1ec0428}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!release\+Save\+Point\+With\+Name\+:error\+:@{release\+Save\+Point\+With\+Name\+:error\+:}}
+\index{release\+Save\+Point\+With\+Name\+:error\+:@{release\+Save\+Point\+With\+Name\+:error\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{release\+Save\+Point\+With\+Name\+:error\+:()}{releaseSavePointWithName:error:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) release\+Save\+Point\+With\+Name\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{name }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable $\ast$)}]{out\+Err }\end{DoxyParamCaption}}
+
+Release save point
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name of save point.\\
+\hline
+{\em out\+Err} & A {\ttfamily N\+S\+Error} object to receive any error object (if any).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} on success; {\ttfamily NO} on failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a394534a47e9f054edfc63021f2a1ebc3}{-\/ start\+Save\+Point\+With\+Name\+:error\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a8ae3bd5f48fed1f09b14328fc777dab5}{-\/ rollback\+To\+Save\+Point\+With\+Name\+:error\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_abd92d5bcab93f267421e36f920c2a474}\label{interface_o_p_t_l_y_f_m_d_b_database_abd92d5bcab93f267421e36f920c2a474}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!result\+Data\+:context\+:@{result\+Data\+:context\+:}}
+\index{result\+Data\+:context\+:@{result\+Data\+:context\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{result\+Data\+:context\+:()}{resultData:context:()}}
+{\footnotesize\ttfamily -\/ (void) result\+Data\+: \begin{DoxyParamCaption}\item[{(N\+S\+Data $\ast$)}]{data }\item[{context:(void $\ast$)}]{context }\end{DoxyParamCaption}}
+
+Return {\ttfamily N\+S\+Data} object from custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The {\ttfamily N\+S\+Data} object to be returned. \\
+\hline
+{\em context} & The context to which the value will be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ac039575b6d5bc656bb54eeb6f88d71e6}\label{interface_o_p_t_l_y_f_m_d_b_database_ac039575b6d5bc656bb54eeb6f88d71e6}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!result\+Double\+:context\+:@{result\+Double\+:context\+:}}
+\index{result\+Double\+:context\+:@{result\+Double\+:context\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{result\+Double\+:context\+:()}{resultDouble:context:()}}
+{\footnotesize\ttfamily -\/ (void) result\+Double\+: \begin{DoxyParamCaption}\item[{(double)}]{value }\item[{context:(void $\ast$)}]{context }\end{DoxyParamCaption}}
+
+Return double value from custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The double value to be returned. \\
+\hline
+{\em context} & The context to which the value will be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_aef8ca2bd4709a1411f10757daec353cf}\label{interface_o_p_t_l_y_f_m_d_b_database_aef8ca2bd4709a1411f10757daec353cf}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!result\+Error\+:context\+:@{result\+Error\+:context\+:}}
+\index{result\+Error\+:context\+:@{result\+Error\+:context\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{result\+Error\+:context\+:()}{resultError:context:()}}
+{\footnotesize\ttfamily -\/ (void) result\+Error\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{error }\item[{context:(void $\ast$)}]{context }\end{DoxyParamCaption}}
+
+Return error string from custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em error} & The error string to be returned. \\
+\hline
+{\em context} & The context to which the error will be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a08861b58136840fe405473721abcd26f}\label{interface_o_p_t_l_y_f_m_d_b_database_a08861b58136840fe405473721abcd26f}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!result\+Error\+Code\+:context\+:@{result\+Error\+Code\+:context\+:}}
+\index{result\+Error\+Code\+:context\+:@{result\+Error\+Code\+:context\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{result\+Error\+Code\+:context\+:()}{resultErrorCode:context:()}}
+{\footnotesize\ttfamily -\/ (void) result\+Error\+Code\+: \begin{DoxyParamCaption}\item[{(int)}]{error\+Code }\item[{context:(void $\ast$)}]{context }\end{DoxyParamCaption}}
+
+Return error code from custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em error\+Code} & The integer error code to be returned. \\
+\hline
+{\em context} & The context to which the error will be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a664d742e398dd193a735e287b8a32435}\label{interface_o_p_t_l_y_f_m_d_b_database_a664d742e398dd193a735e287b8a32435}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!result\+Error\+No\+Memory\+In\+Context\+:@{result\+Error\+No\+Memory\+In\+Context\+:}}
+\index{result\+Error\+No\+Memory\+In\+Context\+:@{result\+Error\+No\+Memory\+In\+Context\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{result\+Error\+No\+Memory\+In\+Context\+:()}{resultErrorNoMemoryInContext:()}}
+{\footnotesize\ttfamily -\/ (void) result\+Error\+No\+Memory\+In\+Context\+: \begin{DoxyParamCaption}\item[{(result\+Error\+No\+Memory(context\+:))}]{N\+S\+\_\+\+S\+W\+I\+F\+T\+\_\+\+N\+A\+ME }\end{DoxyParamCaption}}
+
+Report memory error in custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & The context to which the error will be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ac51aeb563e8af7a9f9ee4dd562c083d8}\label{interface_o_p_t_l_y_f_m_d_b_database_ac51aeb563e8af7a9f9ee4dd562c083d8}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!result\+Error\+Too\+Big\+In\+Context\+:@{result\+Error\+Too\+Big\+In\+Context\+:}}
+\index{result\+Error\+Too\+Big\+In\+Context\+:@{result\+Error\+Too\+Big\+In\+Context\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{result\+Error\+Too\+Big\+In\+Context\+:()}{resultErrorTooBigInContext:()}}
+{\footnotesize\ttfamily -\/ (void) result\+Error\+Too\+Big\+In\+Context\+: \begin{DoxyParamCaption}\item[{(result\+Error\+Too\+Big(context\+:))}]{N\+S\+\_\+\+S\+W\+I\+F\+T\+\_\+\+N\+A\+ME }\end{DoxyParamCaption}}
+
+Report that string or B\+L\+OB is too long to represent in custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & The context to which the error will be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_adc1fa43c23f123a21fa106f9a7f6482f}\label{interface_o_p_t_l_y_f_m_d_b_database_adc1fa43c23f123a21fa106f9a7f6482f}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!result\+Int\+:context\+:@{result\+Int\+:context\+:}}
+\index{result\+Int\+:context\+:@{result\+Int\+:context\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{result\+Int\+:context\+:()}{resultInt:context:()}}
+{\footnotesize\ttfamily -\/ (void) result\+Int\+: \begin{DoxyParamCaption}\item[{(int)}]{value }\item[{context:(void $\ast$)}]{context }\end{DoxyParamCaption}}
+
+Return integer value from custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The integer value to be returned. \\
+\hline
+{\em context} & The context to which the value will be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ac26186953f5c9ce369dce9dd94356be2}\label{interface_o_p_t_l_y_f_m_d_b_database_ac26186953f5c9ce369dce9dd94356be2}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!result\+Long\+:context\+:@{result\+Long\+:context\+:}}
+\index{result\+Long\+:context\+:@{result\+Long\+:context\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{result\+Long\+:context\+:()}{resultLong:context:()}}
+{\footnotesize\ttfamily -\/ (void) result\+Long\+: \begin{DoxyParamCaption}\item[{(long long)}]{value }\item[{context:(void $\ast$)}]{context }\end{DoxyParamCaption}}
+
+Return long value from custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The long value to be returned. \\
+\hline
+{\em context} & The context to which the value will be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_aba9df34d2c12d9e68c205e3ae2234400}\label{interface_o_p_t_l_y_f_m_d_b_database_aba9df34d2c12d9e68c205e3ae2234400}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!result\+Null\+In\+Context\+:@{result\+Null\+In\+Context\+:}}
+\index{result\+Null\+In\+Context\+:@{result\+Null\+In\+Context\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{result\+Null\+In\+Context\+:()}{resultNullInContext:()}}
+{\footnotesize\ttfamily -\/ (void) result\+Null\+In\+Context\+: \begin{DoxyParamCaption}\item[{(result\+Null(context\+:))}]{N\+S\+\_\+\+S\+W\+I\+F\+T\+\_\+\+N\+A\+ME }\end{DoxyParamCaption}}
+
+Return null value from custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & The context to which the null value will be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ac7c27744e97581b6cc0f50ba72c5874c}\label{interface_o_p_t_l_y_f_m_d_b_database_ac7c27744e97581b6cc0f50ba72c5874c}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!result\+String\+:context\+:@{result\+String\+:context\+:}}
+\index{result\+String\+:context\+:@{result\+String\+:context\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{result\+String\+:context\+:()}{resultString:context:()}}
+{\footnotesize\ttfamily -\/ (void) result\+String\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{value }\item[{context:(void $\ast$)}]{context }\end{DoxyParamCaption}}
+
+Return string value from custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The string value to be returned. \\
+\hline
+{\em context} & The context to which the value will be returned.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a511569a0ee0c82136255920ebe9d28e6}\label{interface_o_p_t_l_y_f_m_d_b_database_a511569a0ee0c82136255920ebe9d28e6}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!rollback@{rollback}}
+\index{rollback@{rollback}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{rollback()}{rollback()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) rollback \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Rollback a transaction
+
+Rollback a transaction that was initiated with either {\ttfamily $<$begin\+Transaction$>$} or with {\ttfamily $<$begin\+Deferred\+Transaction$>$}.
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} on success; {\ttfamily NO} on failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aa49b282394be0570adb7ae4b8544b6b5}{-\/ begin\+Transaction}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ae42926b392d7862b8e4a2c7da6e12552}{-\/ begin\+Deferred\+Transaction}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a13149a1989b1cdb7a6f7b8f2b4207cfd}{-\/ commit}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aad9ac9a8b17ad02d9595a11567ceb404}{is\+In\+Transaction}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a8ae3bd5f48fed1f09b14328fc777dab5}\label{interface_o_p_t_l_y_f_m_d_b_database_a8ae3bd5f48fed1f09b14328fc777dab5}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!rollback\+To\+Save\+Point\+With\+Name\+:error\+:@{rollback\+To\+Save\+Point\+With\+Name\+:error\+:}}
+\index{rollback\+To\+Save\+Point\+With\+Name\+:error\+:@{rollback\+To\+Save\+Point\+With\+Name\+:error\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{rollback\+To\+Save\+Point\+With\+Name\+:error\+:()}{rollbackToSavePointWithName:error:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) rollback\+To\+Save\+Point\+With\+Name\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{name }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable $\ast$)}]{out\+Err }\end{DoxyParamCaption}}
+
+Roll back to save point
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name of save point. \\
+\hline
+{\em out\+Err} & A {\ttfamily N\+S\+Error} object to receive any error object (if any).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} on success; {\ttfamily NO} on failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a394534a47e9f054edfc63021f2a1ebc3}{-\/ start\+Save\+Point\+With\+Name\+:error\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_afb6f13df41c3e8e1813a00f6d1ec0428}{-\/ release\+Save\+Point\+With\+Name\+:error\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a48c1936bc68ddd11cea9aa177b0cc94e}\label{interface_o_p_t_l_y_f_m_d_b_database_a48c1936bc68ddd11cea9aa177b0cc94e}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!set\+Date\+Format\+:@{set\+Date\+Format\+:}}
+\index{set\+Date\+Format\+:@{set\+Date\+Format\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{set\+Date\+Format\+:()}{setDateFormat:()}}
+{\footnotesize\ttfamily -\/ (void) set\+Date\+Format\+: \begin{DoxyParamCaption}\item[{(N\+S\+Date\+Formatter $\ast$)}]{format }\end{DoxyParamCaption}}
+
+Set to a date formatter to use string dates with sqlite instead of the default U\+N\+IX timestamps.
+
+
+\begin{DoxyParams}{Parameters}
+{\em format} & Set to nil to use U\+N\+IX timestamps. Defaults to nil. Should be set using a formatter generated using O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+::storeable\+Date\+Format.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a820a1ababb4c5496800b9bcd5f2de784}{-\/ has\+Date\+Formatter}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a48c1936bc68ddd11cea9aa177b0cc94e}{-\/ set\+Date\+Format\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a5368268fe8e6d881d0da4d3538607768}{-\/ date\+From\+String\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a60793c2b214e29c00143fdf9510837d7}{-\/ string\+From\+Date\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_acb3eef48cd21dcb11407b88dac662c57}{+ storeable\+Date\+Format\+:}}
+\end{DoxySeeAlso}
+\begin{DoxyWarning}{Warning}
+Note there is no direct getter for the {\ttfamily N\+S\+Date\+Formatter}, and you should not use the formatter you pass to O\+P\+T\+L\+Y\+F\+M\+DB for other purposes, as {\ttfamily N\+S\+Date\+Formatter} is not thread-\/safe. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a2b567d61e78a76a365b37df2f8d65bf7}\label{interface_o_p_t_l_y_f_m_d_b_database_a2b567d61e78a76a365b37df2f8d65bf7}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!set\+Key\+:@{set\+Key\+:}}
+\index{set\+Key\+:@{set\+Key\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{set\+Key\+:()}{setKey:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) set\+Key\+: \begin{DoxyParamCaption}\item[{(N\+S\+String$\ast$)}]{key }\end{DoxyParamCaption}}
+
+Set encryption key.
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & The key to be used.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if success, {\ttfamily NO} on error.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{https://www.zetetic.net/sqlcipher/}{\tt https\+://www.\+zetetic.\+net/sqlcipher/}
+\end{DoxySeeAlso}
+\begin{DoxyWarning}{Warning}
+You need to have purchased the sqlite encryption extensions for this method to work. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a7cbf561f5cbeae819eefdc0b873f1730}\label{interface_o_p_t_l_y_f_m_d_b_database_a7cbf561f5cbeae819eefdc0b873f1730}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!set\+Key\+With\+Data\+:@{set\+Key\+With\+Data\+:}}
+\index{set\+Key\+With\+Data\+:@{set\+Key\+With\+Data\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{set\+Key\+With\+Data\+:()}{setKeyWithData:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) set\+Key\+With\+Data\+: \begin{DoxyParamCaption}\item[{(N\+S\+Data $\ast$)}]{key\+Data }\end{DoxyParamCaption}}
+
+Set encryption key using {\ttfamily key\+Data}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em key\+Data} & The {\ttfamily N\+S\+Data} to be used.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if success, {\ttfamily NO} on error.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{https://www.zetetic.net/sqlcipher/}{\tt https\+://www.\+zetetic.\+net/sqlcipher/}
+\end{DoxySeeAlso}
+\begin{DoxyWarning}{Warning}
+You need to have purchased the sqlite encryption extensions for this method to work. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_af059d6a70119fd76bf338759d92b4a46}\label{interface_o_p_t_l_y_f_m_d_b_database_af059d6a70119fd76bf338759d92b4a46}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!sqlite\+Lib\+Version@{sqlite\+Lib\+Version}}
+\index{sqlite\+Lib\+Version@{sqlite\+Lib\+Version}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{sqlite\+Lib\+Version()}{sqliteLibVersion()}}
+{\footnotesize\ttfamily + (N\+S\+String $\ast$) sqlite\+Lib\+Version \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Run-\/time library version numbers
+
+\begin{DoxyReturn}{Returns}
+The sqlite library version string.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/libversion.html}{\tt sqlite3\+\_\+libversion()} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a394534a47e9f054edfc63021f2a1ebc3}\label{interface_o_p_t_l_y_f_m_d_b_database_a394534a47e9f054edfc63021f2a1ebc3}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!start\+Save\+Point\+With\+Name\+:error\+:@{start\+Save\+Point\+With\+Name\+:error\+:}}
+\index{start\+Save\+Point\+With\+Name\+:error\+:@{start\+Save\+Point\+With\+Name\+:error\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{start\+Save\+Point\+With\+Name\+:error\+:()}{startSavePointWithName:error:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) start\+Save\+Point\+With\+Name\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{name }\item[{error:(N\+S\+Error $\ast$\+\_\+\+Nullable $\ast$)}]{out\+Err }\end{DoxyParamCaption}}
+
+Start save point
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name of save point.\\
+\hline
+{\em out\+Err} & A {\ttfamily N\+S\+Error} object to receive any error object (if any).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} on success; {\ttfamily NO} on failure. If failed, you can call {\ttfamily $<$last\+Error$>$}, {\ttfamily $<$last\+Error\+Code$>$}, or {\ttfamily $<$last\+Error\+Message$>$} for diagnostic information regarding the failure.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_afb6f13df41c3e8e1813a00f6d1ec0428}{-\/ release\+Save\+Point\+With\+Name\+:error\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a8ae3bd5f48fed1f09b14328fc777dab5}{-\/ rollback\+To\+Save\+Point\+With\+Name\+:error\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_acb3eef48cd21dcb11407b88dac662c57}\label{interface_o_p_t_l_y_f_m_d_b_database_acb3eef48cd21dcb11407b88dac662c57}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!storeable\+Date\+Format\+:@{storeable\+Date\+Format\+:}}
+\index{storeable\+Date\+Format\+:@{storeable\+Date\+Format\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{storeable\+Date\+Format\+:()}{storeableDateFormat:()}}
+{\footnotesize\ttfamily + (N\+S\+Date\+Formatter $\ast$) storeable\+Date\+Format\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{format }\end{DoxyParamCaption}}
+
+Generate an {\ttfamily N\+S\+Date\+Formatter} that won\textquotesingle{}t be broken by permutations of timezones or locales.
+
+Use this method to generate values to set the date\+Format property.
+
+Example\+:
+
+my\+D\+B.\+date\+Format = \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} storeable\+Date\+Format\+:"yyyy-\/\+M\+M-\/dd H\+H\+:mm\+:ss"\mbox{]};
+
+
+\begin{DoxyParams}{Parameters}
+{\em format} & A valid N\+S\+Date\+Formatter format string.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A {\ttfamily N\+S\+Date\+Formatter} that can be used for converting dates to strings and vice versa.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a820a1ababb4c5496800b9bcd5f2de784}{-\/ has\+Date\+Formatter}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a48c1936bc68ddd11cea9aa177b0cc94e}{-\/ set\+Date\+Format\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a5368268fe8e6d881d0da4d3538607768}{-\/ date\+From\+String\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a60793c2b214e29c00143fdf9510837d7}{-\/ string\+From\+Date\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_acb3eef48cd21dcb11407b88dac662c57}{+ storeable\+Date\+Format\+:}}
+\end{DoxySeeAlso}
+\begin{DoxyWarning}{Warning}
+Note that {\ttfamily N\+S\+Date\+Formatter} is not thread-\/safe, so the formatter generated by this method should be assigned to only one O\+P\+T\+L\+Y\+F\+M\+DB instance and should not be used for other purposes. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a60793c2b214e29c00143fdf9510837d7}\label{interface_o_p_t_l_y_f_m_d_b_database_a60793c2b214e29c00143fdf9510837d7}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!string\+From\+Date\+:@{string\+From\+Date\+:}}
+\index{string\+From\+Date\+:@{string\+From\+Date\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{string\+From\+Date\+:()}{stringFromDate:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+String $\ast$) string\+From\+Date\+: \begin{DoxyParamCaption}\item[{(N\+S\+Date $\ast$)}]{date }\end{DoxyParamCaption}}
+
+Convert the supplied N\+S\+Date to N\+S\+String, using the current database formatter.
+
+
+\begin{DoxyParams}{Parameters}
+{\em date} & {\ttfamily N\+S\+Date} of date to convert to {\ttfamily N\+S\+String}.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily N\+S\+String} representation of the date; {\ttfamily nil} if no formatter is set.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a820a1ababb4c5496800b9bcd5f2de784}{-\/ has\+Date\+Formatter}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a48c1936bc68ddd11cea9aa177b0cc94e}{-\/ set\+Date\+Format\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a5368268fe8e6d881d0da4d3538607768}{-\/ date\+From\+String\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a60793c2b214e29c00143fdf9510837d7}{-\/ string\+From\+Date\+:}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_acb3eef48cd21dcb11407b88dac662c57}{+ storeable\+Date\+Format\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a704a87863281b6dc997a9b31d09565ac}\label{interface_o_p_t_l_y_f_m_d_b_database_a704a87863281b6dc997a9b31d09565ac}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!update\+:with\+Error\+And\+Bindings\+:@{update\+:with\+Error\+And\+Bindings\+:}}
+\index{update\+:with\+Error\+And\+Bindings\+:@{update\+:with\+Error\+And\+Bindings\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{update\+:with\+Error\+And\+Bindings\+:()}{update:withErrorAndBindings:()}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) update\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$)}]{sql }\item[{withErrorAndBindings:(N\+S\+Error $\ast$\+\_\+\+Nullable $\ast$)}]{out\+Err }\item[{,(\char`\"{}Use \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a1281526ad6641e7ef2198c3e9d971754}{execute\+Update\+:with\+Error\+And\+Bindings\+:}} instead\char`\"{})}]{\+\_\+\+\_\+deprecated\+\_\+msg }\end{DoxyParamCaption}}
+
+Execute single update statement
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a1281526ad6641e7ef2198c3e9d971754}{-\/ execute\+Update\+:with\+Error\+And\+Bindings\+:}}
+\end{DoxySeeAlso}
+\begin{DoxyWarning}{Warning}
+{\bfseries Deprecated}\+: Please use {\ttfamily $<$execute\+Update\+:with\+Error\+And\+Bindings$>$} instead. 
+\end{DoxyWarning}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a8ad2d164fca13ab7f1818c039bda56ec}\label{interface_o_p_t_l_y_f_m_d_b_database_a8ad2d164fca13ab7f1818c039bda56ec}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!value\+Data\+:@{value\+Data\+:}}
+\index{value\+Data\+:@{value\+Data\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{value\+Data\+:()}{valueData:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Data $\ast$) value\+Data\+: \begin{DoxyParamCaption}\item[{(void $\ast$)}]{value }\end{DoxyParamCaption}}
+
+Get {\ttfamily N\+S\+Data} value of parameter in custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The argument whose value to return. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The data object.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_aa7c954c5231ffbb5843f9a4893b7761b}\label{interface_o_p_t_l_y_f_m_d_b_database_aa7c954c5231ffbb5843f9a4893b7761b}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!value\+Double\+:@{value\+Double\+:}}
+\index{value\+Double\+:@{value\+Double\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{value\+Double\+:()}{valueDouble:()}}
+{\footnotesize\ttfamily -\/ (double) value\+Double\+: \begin{DoxyParamCaption}\item[{(void $\ast$)}]{value }\end{DoxyParamCaption}}
+
+Get double value of parameter in custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The argument whose value to return. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The double value.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ae86df2d5f08b22824e4f5c14fb436b7a}\label{interface_o_p_t_l_y_f_m_d_b_database_ae86df2d5f08b22824e4f5c14fb436b7a}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!value\+Int\+:@{value\+Int\+:}}
+\index{value\+Int\+:@{value\+Int\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{value\+Int\+:()}{valueInt:()}}
+{\footnotesize\ttfamily -\/ (int) value\+Int\+: \begin{DoxyParamCaption}\item[{(void $\ast$)}]{value }\end{DoxyParamCaption}}
+
+Get integer value of parameter in custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The argument whose value to return. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The integer value.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_aebdb8f230b7998ffa60011e4ebba56cc}\label{interface_o_p_t_l_y_f_m_d_b_database_aebdb8f230b7998ffa60011e4ebba56cc}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!value\+Long\+:@{value\+Long\+:}}
+\index{value\+Long\+:@{value\+Long\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{value\+Long\+:()}{valueLong:()}}
+{\footnotesize\ttfamily -\/ (long long) value\+Long\+: \begin{DoxyParamCaption}\item[{(void $\ast$)}]{value }\end{DoxyParamCaption}}
+
+Get long value of parameter in custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The argument whose value to return. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The long value.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ab21c078e774eff96b5bcbd0d2c66823b}\label{interface_o_p_t_l_y_f_m_d_b_database_ab21c078e774eff96b5bcbd0d2c66823b}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!value\+String\+:@{value\+String\+:}}
+\index{value\+String\+:@{value\+String\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{value\+String\+:()}{valueString:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+String $\ast$) value\+String\+: \begin{DoxyParamCaption}\item[{(void $\ast$)}]{value }\end{DoxyParamCaption}}
+
+Get string value of parameter in custom function.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The argument whose value to return. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The string value.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_af2c3e10041c8d0a95e2feb84a2ffa645}{-\/ make\+Function\+Named\+:arguments\+:block\+:}} 
+\end{DoxySeeAlso}
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a25e5eb9e27622135363052a7d12bcebe}\label{interface_o_p_t_l_y_f_m_d_b_database_a25e5eb9e27622135363052a7d12bcebe}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!cached\+Statements@{cached\+Statements}}
+\index{cached\+Statements@{cached\+Statements}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{cached\+Statements}{cachedStatements}}
+{\footnotesize\ttfamily -\/ (N\+S\+Mutable\+Dictionary$\ast$) cached\+Statements\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [retain]}}
+
+Dictionary of cached statements \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a757690d92c32d70c0c0402980cb14cee}\label{interface_o_p_t_l_y_f_m_d_b_database_a757690d92c32d70c0c0402980cb14cee}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!changes@{changes}}
+\index{changes@{changes}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{changes}{changes}}
+{\footnotesize\ttfamily -\/ (int) changes\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+The number of rows changed by prior S\+QL statement.
+
+This function returns the number of database rows that were changed or inserted or deleted by the most recently completed S\+QL statement on the database connection specified by the first parameter. Only changes that are directly specified by the I\+N\+S\+E\+RT, U\+P\+D\+A\+TE, or D\+E\+L\+E\+TE statement are counted.
+
+\begin{DoxyReturn}{Returns}
+The number of rows changed by prior S\+QL statement.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/changes.html}{\tt sqlite3\+\_\+changes()} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a2962c4e030eb187582879f45745b7824}\label{interface_o_p_t_l_y_f_m_d_b_database_a2962c4e030eb187582879f45745b7824}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!checked\+Out@{checked\+Out}}
+\index{checked\+Out@{checked\+Out}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{checked\+Out}{checkedOut}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) checked\+Out\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [assign]}}
+
+Whether checked out or not \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_aaa9eea76060a763d104644f2ab490d45}\label{interface_o_p_t_l_y_f_m_d_b_database_aaa9eea76060a763d104644f2ab490d45}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!crash\+On\+Errors@{crash\+On\+Errors}}
+\index{crash\+On\+Errors@{crash\+On\+Errors}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{crash\+On\+Errors}{crashOnErrors}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) crash\+On\+Errors\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [assign]}}
+
+Crash on errors \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a3406fc73143884735d193f37bff82923}\label{interface_o_p_t_l_y_f_m_d_b_database_a3406fc73143884735d193f37bff82923}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!database\+Path@{database\+Path}}
+\index{database\+Path@{database\+Path}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{database\+Path}{databasePath}}
+{\footnotesize\ttfamily -\/ (N\+S\+String$\ast$) database\+Path\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+The path of the database file \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a94c6a37fcaadbc2b48772903b2a12eed}\label{interface_o_p_t_l_y_f_m_d_b_database_a94c6a37fcaadbc2b48772903b2a12eed}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!database\+U\+RL@{database\+U\+RL}}
+\index{database\+U\+RL@{database\+U\+RL}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{database\+U\+RL}{databaseURL}}
+{\footnotesize\ttfamily -\/ (N\+S\+U\+RL $\ast$) database\+U\+RL\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+The file U\+RL of the database file. \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ae9afe3b7a030648d6f719f53678bb9ba}\label{interface_o_p_t_l_y_f_m_d_b_database_ae9afe3b7a030648d6f719f53678bb9ba}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!good\+Connection@{good\+Connection}}
+\index{good\+Connection@{good\+Connection}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{good\+Connection}{goodConnection}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) good\+Connection\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+Test to see if we have a good connection to the database.
+
+This will confirm whether\+:
+
+
+\begin{DoxyItemize}
+\item is database open
+\item if open, it will try a simple S\+E\+L\+E\+CT statement and confirm that it succeeds.
+\end{DoxyItemize}
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if everything succeeds, {\ttfamily NO} on failure. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a0fb326e01f4c551f821558e71709c104}\label{interface_o_p_t_l_y_f_m_d_b_database_a0fb326e01f4c551f821558e71709c104}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!has\+Open\+Result\+Sets@{has\+Open\+Result\+Sets}}
+\index{has\+Open\+Result\+Sets@{has\+Open\+Result\+Sets}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{has\+Open\+Result\+Sets}{hasOpenResultSets}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) has\+Open\+Result\+Sets\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+Whether database has any open result sets
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily Y\+ES} if there are open result sets; {\ttfamily NO} if not. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_aad9ac9a8b17ad02d9595a11567ceb404}\label{interface_o_p_t_l_y_f_m_d_b_database_aad9ac9a8b17ad02d9595a11567ceb404}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!is\+In\+Transaction@{is\+In\+Transaction}}
+\index{is\+In\+Transaction@{is\+In\+Transaction}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{is\+In\+Transaction}{isInTransaction}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) is\+In\+Transaction\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+Identify whether currently in a transaction or not
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_aa49b282394be0570adb7ae4b8544b6b5}{-\/ begin\+Transaction}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_ae42926b392d7862b8e4a2c7da6e12552}{-\/ begin\+Deferred\+Transaction}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a13149a1989b1cdb7a6f7b8f2b4207cfd}{-\/ commit}} 
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_a511569a0ee0c82136255920ebe9d28e6}{-\/ rollback}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_af5291c062e84adebb1d7ca5319d33166}\label{interface_o_p_t_l_y_f_m_d_b_database_af5291c062e84adebb1d7ca5319d33166}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!last\+Insert\+Row\+Id@{last\+Insert\+Row\+Id}}
+\index{last\+Insert\+Row\+Id@{last\+Insert\+Row\+Id}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{last\+Insert\+Row\+Id}{lastInsertRowId}}
+{\footnotesize\ttfamily -\/ (sqlite\+\_\+int64) last\+Insert\+Row\+Id\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+Last insert rowid
+
+Each entry in an S\+Q\+Lite table has a unique 64-\/bit signed integer key called the \char`\"{}rowid\char`\"{}. The rowid is always available as an undeclared column named {\ttfamily R\+O\+W\+ID}, {\ttfamily O\+ID}, or {\ttfamily \+\_\+\+R\+O\+W\+I\+D\+\_\+} as long as those names are not also used by explicitly declared columns. If the table has a column of type {\ttfamily I\+N\+T\+E\+G\+ER P\+R\+I\+M\+A\+RY K\+EY} then that column is another alias for the rowid.
+
+This routine returns the rowid of the most recent successful {\ttfamily I\+N\+S\+E\+RT} into the database from the database connection in the first argument. As of S\+Q\+Lite version 3.\+7.\+7, this routines records the last insert rowid of both ordinary tables and virtual tables. If no successful {\ttfamily I\+N\+S\+E\+RT}s have ever occurred on that database connection, zero is returned.
+
+\begin{DoxyReturn}{Returns}
+The rowid of the last inserted row.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{http://sqlite.org/c3ref/last_insert_rowid.html}{\tt sqlite3\+\_\+last\+\_\+insert\+\_\+rowid()} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a80ce796b9a9582c2be9ce9563988c517}\label{interface_o_p_t_l_y_f_m_d_b_database_a80ce796b9a9582c2be9ce9563988c517}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!logs\+Errors@{logs\+Errors}}
+\index{logs\+Errors@{logs\+Errors}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{logs\+Errors}{logsErrors}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) logs\+Errors\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [assign]}}
+
+Logs errors \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a892d607f231db0ffb8b98bbf5d914f2d}\label{interface_o_p_t_l_y_f_m_d_b_database_a892d607f231db0ffb8b98bbf5d914f2d}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!should\+Cache\+Statements@{should\+Cache\+Statements}}
+\index{should\+Cache\+Statements@{should\+Cache\+Statements}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{should\+Cache\+Statements}{shouldCacheStatements}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) should\+Cache\+Statements\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+Whether should cache statements or not \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_ac63c7ff97fef8256e42d286f0f9962de}\label{interface_o_p_t_l_y_f_m_d_b_database_ac63c7ff97fef8256e42d286f0f9962de}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!sqlite\+Handle@{sqlite\+Handle}}
+\index{sqlite\+Handle@{sqlite\+Handle}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{sqlite\+Handle}{sqliteHandle}}
+{\footnotesize\ttfamily -\/ (void $\ast$) sqlite\+Handle\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [nonatomic]}, {\ttfamily [assign]}}
+
+The underlying S\+Q\+Lite handle
+
+\begin{DoxyReturn}{Returns}
+The {\ttfamily sqlite3} pointer. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_a498285315912a9465dd182db98395f14}\label{interface_o_p_t_l_y_f_m_d_b_database_a498285315912a9465dd182db98395f14}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}!trace\+Execution@{trace\+Execution}}
+\index{trace\+Execution@{trace\+Execution}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}
+\subsubsection{\texorpdfstring{trace\+Execution}{traceExecution}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) trace\+Execution\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [assign]}}
+
+Whether should trace execution 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Shared/\+O\+P\+T\+L\+Y\+F\+M\+D\+B/src/optlyfmdb/O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database.\+h\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Shared/\+O\+P\+T\+L\+Y\+F\+M\+D\+B/src/optlyfmdb/O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database.\+m\end{DoxyCompactItemize}

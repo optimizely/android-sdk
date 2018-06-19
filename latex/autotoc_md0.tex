@@ -1,0 +1,67 @@
+May 17, 2018
+
+{\bfseries This \char`\"{}-\/beta1\char`\"{} pre-\/release corrects two significant bugs present in the previous 2.\+0.\+x releases which have been withdrawn. Please note that 2.\+0+ S\+D\+Ks are incompatible with existing 1.\+x Mobile \mbox{\hyperlink{interface_optimizely}{Optimizely}} projects. Before you use 2.\+0+ and Feature Management, please contact your \mbox{\hyperlink{interface_optimizely}{Optimizely}} account team. If you are not upgrading to Feature Management, we recommend remaining on your current 1.\+x S\+DK.}
+
+This major release of the \mbox{\hyperlink{interface_optimizely}{Optimizely}} S\+DK introduces A\+P\+Is for Feature Management.
+
+\subsubsection*{New Features}
+
+
+\begin{DoxyItemize}
+\item Introduces the {\ttfamily is\+Feature\+Enabled\+:user\+Id\+:attributes\+:} A\+PI to determine whether to show a feature to a user or not. 
+\begin{DoxyCode}
+/**
+ * Determine whether a feature is enabled.
+ * Send an impression event if the user is bucketed into an experiment using the feature.
+ * @param featureKey The key for the feature flag.
+ * @param userId The user ID to be used for bucketing.
+ * @param attributes The user's attributes.
+ * @return YES if feature is enabled, false otherwise.
+ */
+- (BOOL)isFeatureEnabled:(nullable NSString *)featureKey userId:(nullable NSString *)userId
+       attributes:(nullable NSDictionary<NSString *, NSString *> *)attributes;
+\end{DoxyCode}
+
+\item You can get all the enabled features for the user by calling the {\ttfamily get\+Enabled\+Features\+:attributes\+:} A\+PI which returns an array of strings representing the feature keys\+: 
+\begin{DoxyCode}
+/**
+ * Get array of features that are enabled for the user.
+ * @param userId The user ID to be used for bucketing.
+ * @param attributes The user's attributes.
+ * @return NSArray<NSString> Array of feature keys that are enabled for the user.
+ */
+- (NSArray<NSString *> *\_Nonnull)getEnabledFeatures:(nullable NSString *)userId
+                                         attributes:(nullable NSDictionary<NSString *, NSString *>
+       *)attributes;
+\end{DoxyCode}
+
+\item Introduces Feature Variables to configure or parameterize your feature. There are four variable types\+: {\ttfamily B\+O\+OL}, {\ttfamily double}, {\ttfamily int}, {\ttfamily N\+S\+String$\ast$}. 
+\begin{DoxyCode}
+/**
+ * API's that get feature variable values.
+ * @param featureKey The key for the feature flag.
+ * @param variableKey The key for the variable.
+ * @param userId The user ID to be used for bucketing.
+ * @param attributes The user's attributes.
+ * @return feature variable value.
+ */
+- (BOOL)getFeatureVariableBoolean:(nullable NSString *)featureKey
+                      variableKey:(nullable NSString *)variableKey
+                           userId:(nullable NSString *)userId
+                       attributes:(nullable NSDictionary<NSString *, NSString *> *)attributes;
+- (double)getFeatureVariableDouble:(nullable NSString *)featureKey
+                       variableKey:(nullable NSString *)variableKey
+                            userId:(nullable NSString *)userId
+                        attributes:(nullable NSDictionary<NSString *, NSString *> *)attributes;
+- (int)getFeatureVariableInteger:(nullable NSString *)featureKey
+                     variableKey:(nullable NSString *)variableKey
+                          userId:(nullable NSString *)userId
+                      attributes:(nullable NSDictionary<NSString *, NSString *> *)attributes;
+- (NSString *\_Nullable)getFeatureVariableString:(nullable NSString *)featureKey
+                           variableKey:(nullable NSString *)variableKey
+                                userId:(nullable NSString *)userId
+                            attributes:(nullable NSDictionary<NSString *, NSString *> *)attributes;
+\end{DoxyCode}
+
+\item Introducing \mbox{\hyperlink{interface_optimizely}{Optimizely}} Notification Center with Notification Listeners \mbox{\hyperlink{interface_optimizely}{Optimizely}} object now has a Notification Center \`{}\`{}\`{} 
+\end{DoxyItemize}

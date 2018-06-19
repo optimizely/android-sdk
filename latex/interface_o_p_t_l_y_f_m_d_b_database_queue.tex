@@ -1,0 +1,396 @@
+\hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue}{}\section{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue Class Reference}
+\label{interface_o_p_t_l_y_f_m_d_b_database_queue}\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue.\+h$>$}
+
+
+
+Inherits N\+S\+Object.
+
+\subsection*{Instance Methods}
+\begin{Indent}\textbf{ Dispatching database operations to queue}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_abc4d8336b211f69f6bd9dddfbf867e77}{in\+Database\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a2b3f5f9d9820bb35c8b199bf0f551f2f}{in\+Transaction\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a89496d5659141d09463b0f06232a6985}{in\+Deferred\+Transaction\+:}}
+\item 
+(N\+S\+Error $\ast$\+\_\+\+Nullable) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_af31652390dec87fa2d97d9e9724558f9}{in\+Save\+Point\+:}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+N\+S\+String $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a8b1238f775d8242d4cccc2e797b24ff1}{path}}
+\item 
+int \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_aa1c1ac1e51de11c9ea80f46b87e93cfa}{open\+Flags}}
+\item 
+N\+S\+String $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_acd3178ef3045e2fdda8e33d7af3a1115}{vfs\+Name}}
+\end{DoxyCompactItemize}
+\subsection*{Initialization, opening, and closing of queue}
+\label{_amgrp655593ffab6e21838f5ebeedaa7009e5}%
+
+
+ 
+
+ \begin{DoxyCompactItemize}
+\item 
+(instancetype) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a70c1b4d9fba1dec4e6b6e1d19df6d7d9}{database\+Queue\+With\+Path\+:}}
+\item 
+(instancetype) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_af55595f0000fc655efb628f84a90a4cd}{database\+Queue\+With\+U\+R\+L\+:}}
+\item 
+(instancetype) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a04d59bdf3e5e66955ead0ee7cd39bae7}{database\+Queue\+With\+Path\+:flags\+:}}
+\item 
+(instancetype) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a9ae8cd3cf5543edf1f92ceb7125af1bd}{database\+Queue\+With\+U\+R\+L\+:flags\+:}}
+\item 
+(Class) + \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a998bccd16ef33262eac8a8e88e23d78b}{database\+Class}}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_affaf3bb46813b9631b2dc4c8e0703e3a}{init\+With\+Path\+:}}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a554f6477a5ed4fe69ae83bb2200edb48}{init\+With\+U\+R\+L\+:}}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_ab6767258c1a06d640d46994382479be4}{init\+With\+Path\+:flags\+:}}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a4136c9e6ec92245fee3c768a370e670f}{init\+With\+U\+R\+L\+:flags\+:}}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a208f0214f8b43cb1b41d5ecfe481d6ae}{init\+With\+Path\+:flags\+:vfs\+:}}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_ae2e52eded98d3648fb6251de8404c9f8}{init\+With\+U\+R\+L\+:flags\+:vfs\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a342c60b5e86c99c87c10d562f23f32ff}{close}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_aabcbc11840a3e9e384ca5a6503292ef5}{interrupt}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+To perform queries and updates on multiple threads, you\textquotesingle{}ll want to use {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}}.
+
+Using a single instance of {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}$>$} from multiple threads at once is a bad idea. It has always been OK to make a {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}$>$} object {\itshape per thread}. Just don\textquotesingle{}t share a single instance across threads, and definitely not across multiple threads at the same time.
+
+Instead, use {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}}. Here\textquotesingle{}s how to use it\+:
+
+First, make your queue.
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}} $\ast$queue = \mbox{[}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}} database\+Queue\+With\+Path\+:a\+Path\mbox{]};
+
+Then use it like so\+:
+
+\mbox{[}queue in\+Database\+:$^\wedge$(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db) \{ \mbox{[}db execute\+Update\+:"I\+N\+S\+E\+RT I\+N\+TO my\+Table V\+A\+L\+U\+ES (?)\char`\"{}, \mbox{[}\+N\+S\+Number number\+With\+Int\+:1\mbox{]}\mbox{]};
+        \mbox{[}db execute\+Update\+:@\char`\"{}I\+N\+S\+E\+RT I\+N\+TO my\+Table V\+A\+L\+U\+ES (?)\char`\"{}, \mbox{[}\+N\+S\+Number number\+With\+Int\+:2\mbox{]}\mbox{]};
+        \mbox{[}db execute\+Update\+:@\char`\"{}I\+N\+S\+E\+RT I\+N\+TO my\+Table V\+A\+L\+U\+ES (?)", \mbox{[}N\+S\+Number number\+With\+Int\+:3\mbox{]}\mbox{]};
+
+\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}} $\ast$rs = \mbox{[}db execute\+Query\+:"select $\ast$ from foo"\mbox{]}; while (\mbox{[}rs next\mbox{]}) \{ … \} \}\mbox{]};
+
+An easy way to wrap things up in a transaction can be done like this\+:
+
+\mbox{[}queue in\+Transaction\+:$^\wedge$(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db, B\+O\+OL $\ast$rollback) \{ \mbox{[}db execute\+Update\+:"I\+N\+S\+E\+RT I\+N\+TO my\+Table V\+A\+L\+U\+ES (?)\char`\"{}, \mbox{[}\+N\+S\+Number number\+With\+Int\+:1\mbox{]}\mbox{]};
+        \mbox{[}db execute\+Update\+:@\char`\"{}I\+N\+S\+E\+RT I\+N\+TO my\+Table V\+A\+L\+U\+ES (?)\char`\"{}, \mbox{[}\+N\+S\+Number number\+With\+Int\+:2\mbox{]}\mbox{]};
+        \mbox{[}db execute\+Update\+:@\char`\"{}I\+N\+S\+E\+RT I\+N\+TO my\+Table V\+A\+L\+U\+ES (?)", \mbox{[}N\+S\+Number number\+With\+Int\+:3\mbox{]}\mbox{]};
+
+if (whoops\+Something\+Wrong\+Happened) \{ rollback = Y\+ES; return; \} etc… \mbox{[}db execute\+Update\+:"I\+N\+S\+E\+RT I\+N\+TO my\+Table V\+A\+L\+U\+ES (?)", \mbox{[}N\+S\+Number number\+With\+Int\+:4\mbox{]}\mbox{]}; \}\mbox{]};
+
+{\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} will run the blocks on a serialized queue (hence the name of the class). So if you call {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}}\textquotesingle{}s methods from multiple threads at the same time, they will be executed in the order they are received. This way queries and updates won\textquotesingle{}t step on each other\textquotesingle{}s toes, and every one is happy.
+
+\paragraph*{See also}
+
+
+\begin{DoxyItemize}
+\item {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}$>$}
+\end{DoxyItemize}
+
+\begin{DoxyWarning}{Warning}
+Do not instantiate a single {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}$>$} object and use it across multiple threads. Use {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} instead.
+
+The calls to {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}}\textquotesingle{}s methods are blocking. So even though you are passing along blocks, they will {\bfseries not} be run on another thread. 
+\end{DoxyWarning}
+
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a342c60b5e86c99c87c10d562f23f32ff}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a342c60b5e86c99c87c10d562f23f32ff}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!close@{close}}
+\index{close@{close}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{close()}{close()}}
+{\footnotesize\ttfamily -\/ (void) close \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Close database used by queue. \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a998bccd16ef33262eac8a8e88e23d78b}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a998bccd16ef33262eac8a8e88e23d78b}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!database\+Class@{database\+Class}}
+\index{database\+Class@{database\+Class}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{database\+Class()}{databaseClass()}}
+{\footnotesize\ttfamily + (Class) database\+Class \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Returns the Class of \textquotesingle{}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}\textquotesingle{} subclass, that will be used to instantiate database object.
+
+Subclasses can override this method to return specified Class of \textquotesingle{}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}\textquotesingle{} subclass.
+
+\begin{DoxyReturn}{Returns}
+The Class of \textquotesingle{}\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}\textquotesingle{} subclass, that will be used to instantiate database object. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a70c1b4d9fba1dec4e6b6e1d19df6d7d9}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a70c1b4d9fba1dec4e6b6e1d19df6d7d9}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!database\+Queue\+With\+Path\+:@{database\+Queue\+With\+Path\+:}}
+\index{database\+Queue\+With\+Path\+:@{database\+Queue\+With\+Path\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{database\+Queue\+With\+Path\+:()}{databaseQueueWithPath:()}}
+{\footnotesize\ttfamily + (instancetype) database\+Queue\+With\+Path\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$\+\_\+\+Nullable)}]{a\+Path }\end{DoxyParamCaption}}
+
+Create queue using path.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Path} & The file path of the database.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} object. {\ttfamily nil} on error. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a04d59bdf3e5e66955ead0ee7cd39bae7}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a04d59bdf3e5e66955ead0ee7cd39bae7}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!database\+Queue\+With\+Path\+:flags\+:@{database\+Queue\+With\+Path\+:flags\+:}}
+\index{database\+Queue\+With\+Path\+:flags\+:@{database\+Queue\+With\+Path\+:flags\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{database\+Queue\+With\+Path\+:flags\+:()}{databaseQueueWithPath:flags:()}}
+{\footnotesize\ttfamily + (instancetype) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a70c1b4d9fba1dec4e6b6e1d19df6d7d9}{database\+Queue\+With\+Path\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$\+\_\+\+Nullable)}]{a\+Path }\item[{flags:(int)}]{open\+Flags }\end{DoxyParamCaption}}
+
+Create queue using path and specified flags.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Path} & The file path of the database. \\
+\hline
+{\em open\+Flags} & Flags passed to the open\+With\+Flags method of the database.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} object. {\ttfamily nil} on error. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_af55595f0000fc655efb628f84a90a4cd}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_af55595f0000fc655efb628f84a90a4cd}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!database\+Queue\+With\+U\+R\+L\+:@{database\+Queue\+With\+U\+R\+L\+:}}
+\index{database\+Queue\+With\+U\+R\+L\+:@{database\+Queue\+With\+U\+R\+L\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{database\+Queue\+With\+U\+R\+L\+:()}{databaseQueueWithURL:()}}
+{\footnotesize\ttfamily + (instancetype) database\+Queue\+With\+U\+R\+L\+: \begin{DoxyParamCaption}\item[{(N\+S\+U\+RL $\ast$\+\_\+\+Nullable)}]{url }\end{DoxyParamCaption}}
+
+Create queue using file U\+RL.
+
+
+\begin{DoxyParams}{Parameters}
+{\em url} & The file {\ttfamily N\+S\+U\+RL} of the database.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} object. {\ttfamily nil} on error. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a9ae8cd3cf5543edf1f92ceb7125af1bd}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a9ae8cd3cf5543edf1f92ceb7125af1bd}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!database\+Queue\+With\+U\+R\+L\+:flags\+:@{database\+Queue\+With\+U\+R\+L\+:flags\+:}}
+\index{database\+Queue\+With\+U\+R\+L\+:flags\+:@{database\+Queue\+With\+U\+R\+L\+:flags\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{database\+Queue\+With\+U\+R\+L\+:flags\+:()}{databaseQueueWithURL:flags:()}}
+{\footnotesize\ttfamily + (instancetype) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_af55595f0000fc655efb628f84a90a4cd}{database\+Queue\+With\+U\+R\+L\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+U\+RL $\ast$\+\_\+\+Nullable)}]{url }\item[{flags:(int)}]{open\+Flags }\end{DoxyParamCaption}}
+
+Create queue using file U\+RL and specified flags.
+
+
+\begin{DoxyParams}{Parameters}
+{\em url} & The file {\ttfamily N\+S\+U\+RL} of the database. \\
+\hline
+{\em open\+Flags} & Flags passed to the open\+With\+Flags method of the database.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} object. {\ttfamily nil} on error. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_abc4d8336b211f69f6bd9dddfbf867e77}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_abc4d8336b211f69f6bd9dddfbf867e77}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!in\+Database\+:@{in\+Database\+:}}
+\index{in\+Database\+:@{in\+Database\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{in\+Database\+:()}{inDatabase:()}}
+{\footnotesize\ttfamily -\/ (void) in\+Database\+: \begin{DoxyParamCaption}\item[{(\+\_\+\+\_\+attribute\+\_\+\+\_\+((noescape)) void($^\wedge$)(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db))}]{block }\end{DoxyParamCaption}}
+
+Synchronously perform database operations on queue.
+
+
+\begin{DoxyParams}{Parameters}
+{\em block} & The code to be run on the queue of {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a89496d5659141d09463b0f06232a6985}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a89496d5659141d09463b0f06232a6985}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!in\+Deferred\+Transaction\+:@{in\+Deferred\+Transaction\+:}}
+\index{in\+Deferred\+Transaction\+:@{in\+Deferred\+Transaction\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{in\+Deferred\+Transaction\+:()}{inDeferredTransaction:()}}
+{\footnotesize\ttfamily -\/ (void) in\+Deferred\+Transaction\+: \begin{DoxyParamCaption}\item[{(\+\_\+\+\_\+attribute\+\_\+\+\_\+((noescape)) void($^\wedge$)(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db, B\+O\+OL $\ast$rollback))}]{block }\end{DoxyParamCaption}}
+
+Synchronously perform database operations on queue, using deferred transactions.
+
+
+\begin{DoxyParams}{Parameters}
+{\em block} & The code to be run on the queue of {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_affaf3bb46813b9631b2dc4c8e0703e3a}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_affaf3bb46813b9631b2dc4c8e0703e3a}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!init\+With\+Path\+:@{init\+With\+Path\+:}}
+\index{init\+With\+Path\+:@{init\+With\+Path\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{init\+With\+Path\+:()}{initWithPath:()}}
+{\footnotesize\ttfamily -\/ (instancetype) init\+With\+Path\+: \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$\+\_\+\+Nullable)}]{a\+Path }\end{DoxyParamCaption}}
+
+Create queue using path.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Path} & The file path of the database.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} object. {\ttfamily nil} on error. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_ab6767258c1a06d640d46994382479be4}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_ab6767258c1a06d640d46994382479be4}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!init\+With\+Path\+:flags\+:@{init\+With\+Path\+:flags\+:}}
+\index{init\+With\+Path\+:flags\+:@{init\+With\+Path\+:flags\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{init\+With\+Path\+:flags\+:()}{initWithPath:flags:()}}
+{\footnotesize\ttfamily -\/ (instancetype) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_affaf3bb46813b9631b2dc4c8e0703e3a}{init\+With\+Path\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$\+\_\+\+Nullable)}]{a\+Path }\item[{flags:(int)}]{open\+Flags }\end{DoxyParamCaption}}
+
+Create queue using path and specified flags.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Path} & The file path of the database. \\
+\hline
+{\em open\+Flags} & Flags passed to the open\+With\+Flags method of the database.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} object. {\ttfamily nil} on error. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a208f0214f8b43cb1b41d5ecfe481d6ae}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a208f0214f8b43cb1b41d5ecfe481d6ae}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!init\+With\+Path\+:flags\+:vfs\+:@{init\+With\+Path\+:flags\+:vfs\+:}}
+\index{init\+With\+Path\+:flags\+:vfs\+:@{init\+With\+Path\+:flags\+:vfs\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{init\+With\+Path\+:flags\+:vfs\+:()}{initWithPath:flags:vfs:()}}
+{\footnotesize\ttfamily -\/ (instancetype) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_affaf3bb46813b9631b2dc4c8e0703e3a}{init\+With\+Path\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+String $\ast$\+\_\+\+Nullable)}]{a\+Path }\item[{flags:(int)}]{open\+Flags }\item[{vfs:(N\+S\+String $\ast$\+\_\+\+Nullable)}]{vfs\+Name }\end{DoxyParamCaption}}
+
+Create queue using path and specified flags.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Path} & The file path of the database. \\
+\hline
+{\em open\+Flags} & Flags passed to the open\+With\+Flags method of the database \\
+\hline
+{\em vfs\+Name} & The name of a custom virtual file system\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} object. {\ttfamily nil} on error. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a554f6477a5ed4fe69ae83bb2200edb48}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a554f6477a5ed4fe69ae83bb2200edb48}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!init\+With\+U\+R\+L\+:@{init\+With\+U\+R\+L\+:}}
+\index{init\+With\+U\+R\+L\+:@{init\+With\+U\+R\+L\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{init\+With\+U\+R\+L\+:()}{initWithURL:()}}
+{\footnotesize\ttfamily -\/ (instancetype) init\+With\+U\+R\+L\+: \begin{DoxyParamCaption}\item[{(N\+S\+U\+RL $\ast$\+\_\+\+Nullable)}]{url }\end{DoxyParamCaption}}
+
+Create queue using file U\+RL.
+
+
+\begin{DoxyParams}{Parameters}
+{\em url} & The file \`{}\+N\+S\+U\+RL of the database.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} object. {\ttfamily nil} on error. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a4136c9e6ec92245fee3c768a370e670f}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a4136c9e6ec92245fee3c768a370e670f}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!init\+With\+U\+R\+L\+:flags\+:@{init\+With\+U\+R\+L\+:flags\+:}}
+\index{init\+With\+U\+R\+L\+:flags\+:@{init\+With\+U\+R\+L\+:flags\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{init\+With\+U\+R\+L\+:flags\+:()}{initWithURL:flags:()}}
+{\footnotesize\ttfamily -\/ (instancetype) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a554f6477a5ed4fe69ae83bb2200edb48}{init\+With\+U\+R\+L\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+U\+RL $\ast$\+\_\+\+Nullable)}]{url }\item[{flags:(int)}]{open\+Flags }\end{DoxyParamCaption}}
+
+Create queue using file U\+RL and specified flags.
+
+
+\begin{DoxyParams}{Parameters}
+{\em url} & The file path of the database. \\
+\hline
+{\em open\+Flags} & Flags passed to the open\+With\+Flags method of the database.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} object. {\ttfamily nil} on error. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_ae2e52eded98d3648fb6251de8404c9f8}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_ae2e52eded98d3648fb6251de8404c9f8}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!init\+With\+U\+R\+L\+:flags\+:vfs\+:@{init\+With\+U\+R\+L\+:flags\+:vfs\+:}}
+\index{init\+With\+U\+R\+L\+:flags\+:vfs\+:@{init\+With\+U\+R\+L\+:flags\+:vfs\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{init\+With\+U\+R\+L\+:flags\+:vfs\+:()}{initWithURL:flags:vfs:()}}
+{\footnotesize\ttfamily -\/ (instancetype) \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue_a554f6477a5ed4fe69ae83bb2200edb48}{init\+With\+U\+R\+L\+:}} \begin{DoxyParamCaption}\item[{(N\+S\+U\+RL $\ast$\+\_\+\+Nullable)}]{url }\item[{flags:(int)}]{open\+Flags }\item[{vfs:(N\+S\+String $\ast$\+\_\+\+Nullable)}]{vfs\+Name }\end{DoxyParamCaption}}
+
+Create queue using file U\+RL and specified flags.
+
+
+\begin{DoxyParams}{Parameters}
+{\em url} & The file \`{}\+N\+S\+U\+RL of the database. \\
+\hline
+{\em open\+Flags} & Flags passed to the open\+With\+Flags method of the database \\
+\hline
+{\em vfs\+Name} & The name of a custom virtual file system\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} object. {\ttfamily nil} on error. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_af31652390dec87fa2d97d9e9724558f9}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_af31652390dec87fa2d97d9e9724558f9}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!in\+Save\+Point\+:@{in\+Save\+Point\+:}}
+\index{in\+Save\+Point\+:@{in\+Save\+Point\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{in\+Save\+Point\+:()}{inSavePoint:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Error $\ast$ \+\_\+\+Nullable) in\+Save\+Point\+: \begin{DoxyParamCaption}\item[{(\+\_\+\+\_\+attribute\+\_\+\+\_\+((noescape)) void($^\wedge$)(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db, B\+O\+OL $\ast$rollback))}]{block }\end{DoxyParamCaption}}
+
+Synchronously perform database operations using save point.
+
+
+\begin{DoxyParams}{Parameters}
+{\em block} & The code to be run on the queue of {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_aabcbc11840a3e9e384ca5a6503292ef5}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_aabcbc11840a3e9e384ca5a6503292ef5}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!interrupt@{interrupt}}
+\index{interrupt@{interrupt}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{interrupt()}{interrupt()}}
+{\footnotesize\ttfamily -\/ (void) interrupt \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Interupt pending database operation. \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a2b3f5f9d9820bb35c8b199bf0f551f2f}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a2b3f5f9d9820bb35c8b199bf0f551f2f}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!in\+Transaction\+:@{in\+Transaction\+:}}
+\index{in\+Transaction\+:@{in\+Transaction\+:}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{in\+Transaction\+:()}{inTransaction:()}}
+{\footnotesize\ttfamily -\/ (void) in\+Transaction\+: \begin{DoxyParamCaption}\item[{(\+\_\+\+\_\+attribute\+\_\+\+\_\+((noescape)) void($^\wedge$)(\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}} $\ast$db, B\+O\+OL $\ast$rollback))}]{block }\end{DoxyParamCaption}}
+
+Synchronously perform database operations on queue, using transactions.
+
+
+\begin{DoxyParams}{Parameters}
+{\em block} & The code to be run on the queue of {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database_queue}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}} \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_aa1c1ac1e51de11c9ea80f46b87e93cfa}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_aa1c1ac1e51de11c9ea80f46b87e93cfa}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!open\+Flags@{open\+Flags}}
+\index{open\+Flags@{open\+Flags}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{open\+Flags}{openFlags}}
+{\footnotesize\ttfamily -\/ (int) open\+Flags\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [atomic]}, {\ttfamily [assign]}}
+
+Open flags \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_a8b1238f775d8242d4cccc2e797b24ff1}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_a8b1238f775d8242d4cccc2e797b24ff1}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!path@{path}}
+\index{path@{path}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{path}{path}}
+{\footnotesize\ttfamily -\/ (N\+S\+String$\ast$) path\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [retain]}}
+
+Path of database \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_database_queue_acd3178ef3045e2fdda8e33d7af3a1115}\label{interface_o_p_t_l_y_f_m_d_b_database_queue_acd3178ef3045e2fdda8e33d7af3a1115}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}!vfs\+Name@{vfs\+Name}}
+\index{vfs\+Name@{vfs\+Name}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue}}
+\subsubsection{\texorpdfstring{vfs\+Name}{vfsName}}
+{\footnotesize\ttfamily -\/ (N\+S\+String$\ast$) vfs\+Name\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [copy]}}
+
+Custom virtual file system name 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Shared/\+O\+P\+T\+L\+Y\+F\+M\+D\+B/src/optlyfmdb/O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue.\+h\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Shared/\+O\+P\+T\+L\+Y\+F\+M\+D\+B/src/optlyfmdb/O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database\+Queue.\+m\end{DoxyCompactItemize}

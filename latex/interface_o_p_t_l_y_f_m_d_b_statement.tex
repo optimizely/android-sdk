@@ -1,0 +1,122 @@
+\hypertarget{interface_o_p_t_l_y_f_m_d_b_statement}{}\section{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement Class Reference}
+\label{interface_o_p_t_l_y_f_m_d_b_statement}\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database.\+h$>$}
+
+
+
+Inherits N\+S\+Object.
+
+\subsection*{Instance Methods}
+\begin{Indent}\textbf{ Closing and Resetting}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement_a64f8208aeac1c0ab804673c360b5fd5d}{close}}
+\item 
+(void) -\/ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement_a2dcd78fdd876271a736127bb5d339e04}{reset}}
+\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_statement_af7eb82bda0fcf9f357601e228869cc21}\label{interface_o_p_t_l_y_f_m_d_b_statement_af7eb82bda0fcf9f357601e228869cc21}} 
+void $\ast$ {\bfseries \+\_\+statement}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_statement_af276596d0bc3d3c5962ded46b92d1ec4}\label{interface_o_p_t_l_y_f_m_d_b_statement_af276596d0bc3d3c5962ded46b92d1ec4}} 
+N\+S\+String $\ast$ {\bfseries \+\_\+query}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_statement_a59c032163a80ad8f9777ea606c8ed1c6}\label{interface_o_p_t_l_y_f_m_d_b_statement_a59c032163a80ad8f9777ea606c8ed1c6}} 
+long {\bfseries \+\_\+use\+Count}
+\item 
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_statement_a51c60ad168cd78f72fd93952ec256e78}\label{interface_o_p_t_l_y_f_m_d_b_statement_a51c60ad168cd78f72fd93952ec256e78}} 
+B\+O\+OL {\bfseries \+\_\+in\+Use}
+\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{Indent}\textbf{ Properties}\par
+{\em 
+
+ 
+
+ }\begin{DoxyCompactItemize}
+\item 
+long \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement_af1794014297f7736c19ec236ff9782dd}{use\+Count}}
+\item 
+N\+S\+String $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement_a9afb5dd315ed4995b9def5d96b8ed0b8}{query}}
+\item 
+void $\ast$ \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement_a83c6eecfa4b68376594f3fc83f540849}{statement}}
+\item 
+B\+O\+OL \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement_a891190e3df41ab56f047b172e19ef871}{in\+Use}}
+\end{DoxyCompactItemize}
+\end{Indent}
+
+
+\subsection{Detailed Description}
+Objective-\/C wrapper for {\ttfamily sqlite3\+\_\+stmt}
+
+This is a wrapper for a S\+Q\+Lite {\ttfamily sqlite3\+\_\+stmt}. Generally when using O\+P\+T\+L\+Y\+F\+M\+DB you will not need to interact directly with {\ttfamily \mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_statement}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}}, but rather with {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}$>$} and {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$} only.
+
+\paragraph*{See also}
+
+
+\begin{DoxyItemize}
+\item {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_database}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database}}$>$}
+\item {\ttfamily $<$\mbox{\hyperlink{interface_o_p_t_l_y_f_m_d_b_result_set}{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Result\+Set}}$>$}
+\item \href{http://www.sqlite.org/c3ref/stmt.html}{\tt {\ttfamily sqlite3\+\_\+stmt}} 
+\end{DoxyItemize}
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_statement_a64f8208aeac1c0ab804673c360b5fd5d}\label{interface_o_p_t_l_y_f_m_d_b_statement_a64f8208aeac1c0ab804673c360b5fd5d}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}!close@{close}}
+\index{close@{close}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}
+\subsubsection{\texorpdfstring{close()}{close()}}
+{\footnotesize\ttfamily -\/ (void) close \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Close statement \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_statement_a2dcd78fdd876271a736127bb5d339e04}\label{interface_o_p_t_l_y_f_m_d_b_statement_a2dcd78fdd876271a736127bb5d339e04}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}!reset@{reset}}
+\index{reset@{reset}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}
+\subsubsection{\texorpdfstring{reset()}{reset()}}
+{\footnotesize\ttfamily -\/ (void) reset \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}}
+
+Reset statement 
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_statement_a891190e3df41ab56f047b172e19ef871}\label{interface_o_p_t_l_y_f_m_d_b_statement_a891190e3df41ab56f047b172e19ef871}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}!in\+Use@{in\+Use}}
+\index{in\+Use@{in\+Use}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}
+\subsubsection{\texorpdfstring{in\+Use}{inUse}}
+{\footnotesize\ttfamily -\/ (B\+O\+OL) in\+Use\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [assign]}}
+
+Indication of whether the statement is in use \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_statement_a9afb5dd315ed4995b9def5d96b8ed0b8}\label{interface_o_p_t_l_y_f_m_d_b_statement_a9afb5dd315ed4995b9def5d96b8ed0b8}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}!query@{query}}
+\index{query@{query}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}
+\subsubsection{\texorpdfstring{query}{query}}
+{\footnotesize\ttfamily -\/ (N\+S\+String$\ast$) query\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [retain]}}
+
+S\+QL statement \mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_statement_a83c6eecfa4b68376594f3fc83f540849}\label{interface_o_p_t_l_y_f_m_d_b_statement_a83c6eecfa4b68376594f3fc83f540849}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}!statement@{statement}}
+\index{statement@{statement}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}
+\subsubsection{\texorpdfstring{statement}{statement}}
+{\footnotesize\ttfamily -\/ (void$\ast$) statement\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [assign]}}
+
+S\+Q\+Lite sqlite3\+\_\+stmt
+
+\begin{DoxySeeAlso}{See also}
+\href{http://www.sqlite.org/c3ref/stmt.html}{\tt {\ttfamily sqlite3\+\_\+stmt}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{interface_o_p_t_l_y_f_m_d_b_statement_af1794014297f7736c19ec236ff9782dd}\label{interface_o_p_t_l_y_f_m_d_b_statement_af1794014297f7736c19ec236ff9782dd}} 
+\index{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}!use\+Count@{use\+Count}}
+\index{use\+Count@{use\+Count}!O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement@{O\+P\+T\+L\+Y\+F\+M\+D\+B\+Statement}}
+\subsubsection{\texorpdfstring{use\+Count}{useCount}}
+{\footnotesize\ttfamily -\/ (long) use\+Count\hspace{0.3cm}{\ttfamily [read]}, {\ttfamily [write]}, {\ttfamily [atomic]}, {\ttfamily [assign]}}
+
+Usage count 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Shared/\+O\+P\+T\+L\+Y\+F\+M\+D\+B/src/optlyfmdb/O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database.\+h\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Shared/\+O\+P\+T\+L\+Y\+F\+M\+D\+B/src/optlyfmdb/O\+P\+T\+L\+Y\+F\+M\+D\+B\+Database.\+m\end{DoxyCompactItemize}

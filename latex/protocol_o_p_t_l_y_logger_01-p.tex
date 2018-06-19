@@ -1,0 +1,53 @@
+\hypertarget{protocol_o_p_t_l_y_logger_01-p}{}\section{$<$O\+P\+T\+L\+Y\+Logger $>$ Protocol Reference}
+\label{protocol_o_p_t_l_y_logger_01-p}\index{$<$\+O\+P\+T\+L\+Y\+Logger $>$@{$<$\+O\+P\+T\+L\+Y\+Logger $>$}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+Logger.\+h$>$}
+
+
+
+Inherits $<$\+N\+S\+Object$>$.
+
+\subsection*{Instance Methods}
+\begin{DoxyCompactItemize}
+\item 
+(nullable instancetype) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_logger_01-p_a78b9ba674dd53756ffa1ecf0e877e105}{init\+With\+Log\+Level\+:}}
+\item 
+(void) -\/ \mbox{\hyperlink{protocol_o_p_t_l_y_logger_01-p_ada43d041642cbaab84a54b8b7d7d7681}{log\+Message\+:with\+Level\+:}}
+\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{protocol_o_p_t_l_y_logger_01-p_a7cb017169d62a344183db4928889bc6d}\label{protocol_o_p_t_l_y_logger_01-p_a7cb017169d62a344183db4928889bc6d}} 
+Optimizely\+Log\+Level \mbox{\hyperlink{protocol_o_p_t_l_y_logger_01-p_a7cb017169d62a344183db4928889bc6d}{log\+Level}}
+\begin{DoxyCompactList}\small\item\em The log level the Logger is initialized with. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Any logger must implement these following methods. 
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{protocol_o_p_t_l_y_logger_01-p_a78b9ba674dd53756ffa1ecf0e877e105}\label{protocol_o_p_t_l_y_logger_01-p_a78b9ba674dd53756ffa1ecf0e877e105}} 
+\index{O\+P\+T\+L\+Y\+Logger -\/p@{O\+P\+T\+L\+Y\+Logger -\/p}!init\+With\+Log\+Level\+:@{init\+With\+Log\+Level\+:}}
+\index{init\+With\+Log\+Level\+:@{init\+With\+Log\+Level\+:}!O\+P\+T\+L\+Y\+Logger -\/p@{O\+P\+T\+L\+Y\+Logger -\/p}}
+\subsubsection{\texorpdfstring{init\+With\+Log\+Level\+:()}{initWithLogLevel:()}}
+{\footnotesize\ttfamily -\/ (nullable instancetype O\+P\+T\+L\+Y\+Logger) init\+With\+Log\+Level\+: \begin{DoxyParamCaption}\item[{(Optimizely\+Log\+Level)}]{log\+Level }\end{DoxyParamCaption}}
+
+Initialize a new \mbox{\hyperlink{interface_optimizely}{Optimizely}} Logger instance. \mbox{\Hypertarget{protocol_o_p_t_l_y_logger_01-p_ada43d041642cbaab84a54b8b7d7d7681}\label{protocol_o_p_t_l_y_logger_01-p_ada43d041642cbaab84a54b8b7d7d7681}} 
+\index{O\+P\+T\+L\+Y\+Logger -\/p@{O\+P\+T\+L\+Y\+Logger -\/p}!log\+Message\+:with\+Level\+:@{log\+Message\+:with\+Level\+:}}
+\index{log\+Message\+:with\+Level\+:@{log\+Message\+:with\+Level\+:}!O\+P\+T\+L\+Y\+Logger -\/p@{O\+P\+T\+L\+Y\+Logger -\/p}}
+\subsubsection{\texorpdfstring{log\+Message\+:with\+Level\+:()}{logMessage:withLevel:()}}
+{\footnotesize\ttfamily -\/ (void O\+P\+T\+L\+Y\+Logger) log\+Message\+: \begin{DoxyParamCaption}\item[{(nonnull N\+S\+String $\ast$)}]{message }\item[{withLevel:(Optimizely\+Log\+Level)}]{level }\end{DoxyParamCaption}}
+
+Log a message at a certain level. 
+\begin{DoxyParams}{Parameters}
+{\em message} & The message to log. \\
+\hline
+{\em level} & The priority level of the log. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this protocol was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Core/\+Optimizely\+S\+D\+K\+Core/O\+P\+T\+L\+Y\+Logger.\+h\end{DoxyCompactItemize}

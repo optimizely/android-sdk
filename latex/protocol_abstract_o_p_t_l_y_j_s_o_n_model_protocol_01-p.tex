@@ -1,0 +1,105 @@
+\hypertarget{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p}{}\section{$<$Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol $>$ Protocol Reference}
+\label{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p}\index{$<$\+Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol $>$@{$<$\+Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol $>$}}
+
+
+{\ttfamily \#import $<$O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model.\+h$>$}
+
+
+
+Inherits $<$\+N\+S\+Copying$>$, and $<$\+N\+S\+Coding$>$.
+
+\subsection*{Instance Methods}
+\begin{DoxyCompactItemize}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_a04d7259bbbe3915cf45d1c290bc29e69}{init\+With\+Dictionary\+:error\+:}}
+\item 
+(instancetype) -\/ \mbox{\hyperlink{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_a97c99c4fddbf463c00d93ec636b631f3}{init\+With\+Data\+:error\+:}}
+\item 
+(N\+S\+Dictionary $\ast$) -\/ \mbox{\hyperlink{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_a49abcea522cfa69004786000aaeb935a}{to\+Dictionary}}
+\item 
+(N\+S\+Dictionary $\ast$) -\/ \mbox{\hyperlink{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_ae7ec29d3e3b0044f07da386cf0a10d8d}{to\+Dictionary\+With\+Keys\+:}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A protocol describing an abstract \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} class \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} conforms to this protocol, so it can use itself abstractly 
+
+\subsection{Method Documentation}
+\mbox{\Hypertarget{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_a97c99c4fddbf463c00d93ec636b631f3}\label{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_a97c99c4fddbf463c00d93ec636b631f3}} 
+\index{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p@{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p}!init\+With\+Data\+:error\+:@{init\+With\+Data\+:error\+:}}
+\index{init\+With\+Data\+:error\+:@{init\+With\+Data\+:error\+:}!Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p@{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p}}
+\subsubsection{\texorpdfstring{init\+With\+Data\+:error\+:()}{initWithData:error:()}}
+{\footnotesize\ttfamily -\/ (instancetype Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol) init\+With\+Data\+: \begin{DoxyParamCaption}\item[{(N\+S\+Data $\ast$)}]{data }\item[{error:(N\+S\+Error $\ast$\+\_\+\+\_\+autoreleasing $\ast$)}]{error }\end{DoxyParamCaption}\hspace{0.3cm}{\ttfamily [required]}}
+
+All \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} classes should implement init\+With\+Data\+:error\+:
+
+For most classes the default init\+With\+Data\+: inherited from \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} itself should suffice, but developers have the option to also overwrite it if needed.
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & representing a J\+S\+ON response (usually fetched from web), to be imported in the model. \\
+\hline
+{\em error} & an error or N\+U\+LL \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_a04d7259bbbe3915cf45d1c290bc29e69}\label{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_a04d7259bbbe3915cf45d1c290bc29e69}} 
+\index{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p@{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p}!init\+With\+Dictionary\+:error\+:@{init\+With\+Dictionary\+:error\+:}}
+\index{init\+With\+Dictionary\+:error\+:@{init\+With\+Dictionary\+:error\+:}!Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p@{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p}}
+\subsubsection{\texorpdfstring{init\+With\+Dictionary\+:error\+:()}{initWithDictionary:error:()}}
+{\footnotesize\ttfamily -\/ (instancetype Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol) init\+With\+Dictionary\+: \begin{DoxyParamCaption}\item[{(N\+S\+Dictionary $\ast$)}]{dict }\item[{error:(N\+S\+Error $\ast$\+\_\+\+\_\+autoreleasing $\ast$)}]{err }\end{DoxyParamCaption}\hspace{0.3cm}{\ttfamily [required]}}
+
+All \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} classes should implement init\+With\+Dictionary\+:
+
+For most classes the default init\+With\+Dictionary\+: inherited from \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} itself should suffice, but developers have the option to also overwrite it if needed.
+
+
+\begin{DoxyParams}{Parameters}
+{\em dict} & a dictionary holding J\+S\+ON objects, to be imported in the model. \\
+\hline
+{\em err} & an error or N\+U\+LL \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_a49abcea522cfa69004786000aaeb935a}\label{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_a49abcea522cfa69004786000aaeb935a}} 
+\index{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p@{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p}!to\+Dictionary@{to\+Dictionary}}
+\index{to\+Dictionary@{to\+Dictionary}!Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p@{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p}}
+\subsubsection{\texorpdfstring{to\+Dictionary()}{toDictionary()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Dictionary $\ast$ Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol) to\+Dictionary \begin{DoxyParamCaption}{ }\end{DoxyParamCaption}\hspace{0.3cm}{\ttfamily [required]}}
+
+All \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} classes should be able to export themselves as a dictionary of J\+S\+ON compliant objects.
+
+For most classes the inherited from \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_model}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model}} default to\+Dictionary implementation should suffice.
+
+\begin{DoxyReturn}{Returns}
+N\+S\+Dictionary dictionary of J\+S\+ON compliant objects 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Type\+Not\+Allowed\+Exception} & thrown when one of your model\textquotesingle{}s custom class properties does not have matching transformer method in an \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_value_transformer}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Value\+Transformer}}. \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_ae7ec29d3e3b0044f07da386cf0a10d8d}\label{protocol_abstract_o_p_t_l_y_j_s_o_n_model_protocol_01-p_ae7ec29d3e3b0044f07da386cf0a10d8d}} 
+\index{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p@{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p}!to\+Dictionary\+With\+Keys\+:@{to\+Dictionary\+With\+Keys\+:}}
+\index{to\+Dictionary\+With\+Keys\+:@{to\+Dictionary\+With\+Keys\+:}!Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p@{Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol -\/p}}
+\subsubsection{\texorpdfstring{to\+Dictionary\+With\+Keys\+:()}{toDictionaryWithKeys:()}}
+{\footnotesize\ttfamily -\/ (N\+S\+Dictionary $\ast$ Abstract\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Protocol) to\+Dictionary\+With\+Keys\+: \begin{DoxyParamCaption}\item[{(N\+S\+Array $\ast$)}]{property\+Names }\end{DoxyParamCaption}\hspace{0.3cm}{\ttfamily [required]}}
+
+Export a model class to a dictionary, including only given properties
+
+
+\begin{DoxyParams}{Parameters}
+{\em property\+Names} & the properties to export; if nil, all properties exported \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+N\+S\+Dictionary dictionary of J\+S\+ON compliant objects 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model\+Type\+Not\+Allowed\+Exception} & thrown when one of your model\textquotesingle{}s custom class properties does not have matching transformer method in an \mbox{\hyperlink{interface_o_p_t_l_y_j_s_o_n_value_transformer}{O\+P\+T\+L\+Y\+J\+S\+O\+N\+Value\+Transformer}}. \\
+\hline
+\end{DoxyExceptions}
+
+
+The documentation for this protocol was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+objective-\/c-\/sdk/\+Optimizely\+S\+D\+K\+Core/\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model/\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model/\+O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model/O\+P\+T\+L\+Y\+J\+S\+O\+N\+Model.\+h\end{DoxyCompactItemize}
