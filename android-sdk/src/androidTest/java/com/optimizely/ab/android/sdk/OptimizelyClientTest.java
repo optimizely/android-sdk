@@ -68,6 +68,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 public class OptimizelyClientTest {
+    static String BUCKETING_ATTRIBUTE = "$opt_bucketing_id";
+
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][] {
@@ -311,7 +313,7 @@ public class OptimizelyClientTest {
         final HashMap<String, String> attributes = new HashMap<>();
         String bucketingId = "1";
         Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get(FEATURE_ANDROID_EXPERIMENT_KEY);
-        attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+        attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.activate(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
         verify(bucketer).bucket( experiment, bucketingId);
     }
@@ -453,7 +455,7 @@ public class OptimizelyClientTest {
         Map<String,String> attributes = new HashMap<>();
         String bucketingId = "1";
         Experiment experiment = optimizelyClient.getProjectConfig().getExperimentsForEventKey("test_event").get(0);
-        attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+        attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         optimizelyClient.track("test_event", "userId", attributes);
         verify(bucketer).bucket(experiment, bucketingId);
         verifyZeroInteractions(logger);
@@ -853,7 +855,7 @@ public class OptimizelyClientTest {
         Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get("android_experiment_key");
         String bucketingId = "1";
         Map<String, String> attributes = new HashMap<>();
-        attributes.put(DecisionService.BUCKETING_ATTRIBUTE, bucketingId);
+        attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.getVariation("android_experiment_key", "userId", attributes);
         verify(bucketer).bucket(experiment, bucketingId);
     }
