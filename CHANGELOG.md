@@ -1,5 +1,11 @@
 # Optimizely Android X SDK Changelog
 
+## 2.0.0-beta3
+June 21, 2018
+
+### Bug Fixes
+* Fix impression sent from feature experiment variation toggled off. (#205)
+
 ## 2.0.0-beta2
 
 May 17, 2018
