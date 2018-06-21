@@ -1,10 +1,21 @@
 # Optimizely Android X SDK Changelog
 
-## 2.0.0-beta3
+## 2.0.0-beta4
 June 21, 2018
 
 ### Bug Fixes
 * Fix impression sent from feature experiment variation toggled off. (#205)
+
+## 2.0.0-beta3
+
+### New Features
+* Introduce support for SDK Key so we can poll for datafiles from different environments.
+
+### Deprecated
+* Live Variables getters are now deprecated. Please use Feature Variables instead.
+
+### Bug Fixes
+* Fix for datafile download start when datafile has not changed or when starting synchronously.
 
 ## 2.0.0-beta2
 
