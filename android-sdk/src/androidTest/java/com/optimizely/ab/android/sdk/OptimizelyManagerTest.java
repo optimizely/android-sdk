@@ -34,6 +34,7 @@ import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.sdk.test.R;
+import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -71,6 +72,7 @@ import static org.mockito.Mockito.when;
 public class OptimizelyManagerTest {
 
     private String testProjectId = "7595190003";
+    private String testSdkKey = "123-2232323-343423423-435345345";
     private ListeningExecutorService executor;
     private Logger logger;
     private OptimizelyManager optimizelyManager;
@@ -93,7 +95,7 @@ public class OptimizelyManagerTest {
         executor = MoreExecutors.newDirectExecutorService();
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
-        optimizelyManager = new OptimizelyManager(testProjectId, logger, 3600L, datafileHandler, null, 3600L,
+        optimizelyManager = new OptimizelyManager(testProjectId, null,logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
     }
 
@@ -114,15 +116,38 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
 
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(InstrumentationRegistry.getTargetContext()), eq(testProjectId), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(InstrumentationRegistry.getTargetContext()), eq(new DatafileConfig(testProjectId, null)), eq(3600L));
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
 
     }
     @Test
-    public void initializeSync() {
+    public void initializeSyncWithoutEnvironment() {
+        /*
+         * Scenario#1: when datafile is not Empty
+         * Scenario#2: when datafile is Empty
+         */
+        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
+
+        assertNotNull(optimizelyManager.getOptimizely());
+        assertNotNull(optimizelyManager.getDatafileHandler());
+
+        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(),(Integer) null);
+        verify(logger).error(eq("Invalid datafile resource ID."));
+    }
+    @Test
+    public void initializeSyncWithEnvironment() {
+        Logger logger = mock(Logger.class);
+        DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
+        EventHandler eventHandler = mock(DefaultEventHandler.class);
+        OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey,logger, 3600L, datafileHandler, null, 3600L,
+                eventHandler, null);
         /*
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
@@ -131,7 +156,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/123-2232323-343423423-435345345.json" );
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -169,12 +194,18 @@ public class OptimizelyManagerTest {
         */
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
         String datafile =  optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), String.format("https://cdn.optimizely.com/json/%s.json", testProjectId) );
         assertNotNull(datafile);
         assertNotNull(optimizelyManager.getDatafileHandler());
     }
     @Test
-    public void initializeAsync() {
+    public void initializeAsyncWithEnvironment() {
+        Logger logger = mock(Logger.class);
+        DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
+        EventHandler eventHandler = mock(DefaultEventHandler.class);
+        final OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey,logger, 3600L, datafileHandler, null, 3600L,
+                eventHandler, null);
+
         /*
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
@@ -186,7 +217,7 @@ public class OptimizelyManagerTest {
                         ((DatafileLoadedListener) invocation.getArguments()[2]).onDatafileLoaded(null);
                         return null;
                     }
-                }).when(optimizelyManager.getDatafileHandler()).downloadDatafile(any(Context.class), any(String.class),
+                }).when(optimizelyManager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class),
                 any(DatafileLoadedListener.class));
 
         OptimizelyStartListener listener = new OptimizelyStartListener() {
@@ -199,15 +230,38 @@ public class OptimizelyManagerTest {
         };
         optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, listener);
 
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(any(Context.class), eq(testProjectId), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(any(Context.class), eq(new DatafileConfig(testProjectId, testSdkKey)), eq(3600L));
 
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl("1"), "https://cdn.optimizely.com/json/1.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/123-2232323-343423423-435345345.json" );
 
 
     }
+
+    @Test
+    public void initializeAsyncWithoutEnvironment() {
+        /*
+         * Scenario#1: when datafile is not Empty
+         * Scenario#2: when datafile is Empty
+         */
+        optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, new OptimizelyStartListener() {
+            @Override
+            public void onStart(OptimizelyClient optimizely) {
+                assertNotNull(optimizelyManager.getOptimizely());
+                assertNotNull(optimizelyManager.getDatafileHandler());
+                assertNull(optimizelyManager.getOptimizelyStartListener());
+            }
+        });
+
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
+
+
+    }
+
     @Test
     public void initializeWithEmptyDatafile() {
         Context context = mock(Context.class);
@@ -266,7 +320,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
 
-        optimizelyManager.getDatafileHandler().downloadDatafile(context, optimizelyManager.getProjectId(), null);
+        optimizelyManager.getDatafileHandler().downloadDatafile(context, optimizelyManager.getDatafileConfig(), null);
 
         optimizelyManager.stop(context);
 
@@ -290,7 +344,7 @@ public class OptimizelyManagerTest {
 
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(testProjectId), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(new DatafileConfig(testProjectId, null)), eq(3600L));
 
     }
 
@@ -309,7 +363,7 @@ public class OptimizelyManagerTest {
             fail("Timed out");
         }
 
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(testProjectId), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(new DatafileConfig(testProjectId, null)), eq(3600L));
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
     }
@@ -342,7 +396,7 @@ public class OptimizelyManagerTest {
                 .PendingIntentFactory(context);
 
         Intent intent = new Intent(context, DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, optimizelyManager.getProjectId());
+        intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, optimizelyManager.getDatafileConfig().toJSONString());
         serviceScheduler.schedule(intent, optimizelyManager.getDatafileDownloadInterval() * 1000);
 
         try {
@@ -356,7 +410,7 @@ public class OptimizelyManagerTest {
 
         Intent intent2 = captor.getValue();
         assertTrue(intent2.getComponent().getShortClassName().contains("DatafileService"));
-        assertEquals(optimizelyManager.getProjectId(), intent2.getStringExtra(DatafileService.EXTRA_PROJECT_ID));
+        assertEquals(optimizelyManager.getDatafileConfig().toJSONString(), intent2.getStringExtra(DatafileService.EXTRA_DATAFILE_CONFIG));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

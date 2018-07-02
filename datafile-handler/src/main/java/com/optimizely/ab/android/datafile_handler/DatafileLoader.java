@@ -23,7 +23,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
-import org.json.JSONObject;
+import com.optimizely.ab.android.shared.DatafileConfig;
+
 import org.slf4j.Logger;
 
 import java.util.concurrent.Executor;
@@ -52,7 +53,7 @@ public class DatafileLoader {
         this.datafileCache = datafileCache;
         this.executor = executor;
 
-        new DatafileServiceConnection("projectId", datafileService.getApplicationContext(), new DatafileLoadedListener() {
+        new DatafileServiceConnection(new DatafileConfig("projectId", (String)null), datafileService.getApplicationContext(), new DatafileLoadedListener() {
             public void onDatafileLoaded(@Nullable String dataFile) {}
             public void onStop(Context context) {}
         });

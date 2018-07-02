@@ -1,10 +1,27 @@
 # Optimizely Android X SDK Changelog
 
-## 2.0.0
+## 2.0.0-beta4
+June 22, 2018
 
-April 25th, 2018
+### Bug Fixes
+* Fix impression sent from feature experiment variation toggled off. (#205)
 
-This major release of the Optimizely SDK introduces APIs for Feature Management. It also introduces some breaking changes listed below.
+## 2.0.0-beta3
+
+### New Features
+* Introduce support for SDK Key so we can poll for datafiles from different environments.
+
+### Deprecated
+* Live Variables getters are now deprecated. Please use Feature Variables instead.
+
+### Bug Fixes
+* Fix for datafile download start when datafile has not changed or when starting synchronously.
+
+## 2.0.0-beta2
+
+May 17, 2018
+
+**This "-beta2" replaces the rolled-back 2.0.x release because of usability issues uncovered during the 2.0.x launch. Please note that 2.0+ SDKs are incompatible with existing 1.x Mobile Optimizely projects. Before you use 2.0+ and Feature Management, please contact your Optimizely account team. If you are not upgrading to Feature Management, we recommend remaining on your current 1.x SDK.**
 
 ### New Features
 * Introduces the `isFeatureEnabled` API to determine whether to show a feature to a user or not.

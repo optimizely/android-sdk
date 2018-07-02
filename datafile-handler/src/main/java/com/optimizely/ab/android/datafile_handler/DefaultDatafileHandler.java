@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017, Optimizely, Inc. and contributors                        *
+ * Copyright 2017-2018, Optimizely, Inc. and contributors                        *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -25,6 +25,7 @@ import android.support.annotation.RequiresApi;
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
+import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.json.JSONObject;
@@ -41,15 +42,15 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * Gets the file on the current thread from the Optimizely CDN.
      *
      * @param context   application context
-     * @param projectId project id of the project for the datafile
+     * @param datafileConfig DatafileConfig for the datafile
      * @return a valid datafile or null
      */
-    public String downloadDatafile(Context context, String projectId) {
+    public String downloadDatafile(Context context, DatafileConfig datafileConfig) {
         DatafileClient datafileClient = new DatafileClient(
                 new Client(new OptlyStorage(context), LoggerFactory.getLogger(OptlyStorage.class)),
                 LoggerFactory.getLogger(DatafileClient.class));
 
-        String datafileUrl = DatafileService.getDatafileUrl(projectId);
+        String datafileUrl = datafileConfig.getUrl();
 
         return datafileClient.request(datafileUrl);
     }
@@ -62,13 +63,13 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * This gets the project file from the Optimizely CDN.
      *
      * @param context   application context
-     * @param projectId project id of the datafile to get
+     * @param datafileConfig DatafileConfig for the datafile to get
      * @param listener  listener to call when datafile download complete
      */
-    public void downloadDatafile(final Context context, String projectId, final DatafileLoadedListener listener) {
+    public void downloadDatafile(final Context context, DatafileConfig datafileConfig, final DatafileLoadedListener listener) {
         final Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
         if (datafileServiceConnection == null) {
-            this.datafileServiceConnection = new DatafileServiceConnection(projectId, context.getApplicationContext(),
+            this.datafileServiceConnection = new DatafileServiceConnection(datafileConfig, context.getApplicationContext(),
                     new DatafileLoadedListener() {
                         @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
                         @Override
@@ -100,14 +101,16 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * new datafile to download at interval provided.  If there is a update, the new datafile is cached.
      *
      * @param context        application context
+     * @param datafileConfig DatafileConfig for the datafile
      * @param updateInterval frequency of updates in seconds
      */
-    public void startBackgroundUpdates(Context context, String projectId, Long updateInterval) {
-
+    public void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval) {
         // if already running, stop it
-        stopBackgroundUpdates(context, projectId);
+        stopBackgroundUpdates(context, datafileConfig);
 
-        enableBackgroundCache(context, projectId);
+        // save the project id background start is set.  If we get a reboot or a replace, we can restart via the
+        // DatafileRescheduler
+        enableBackgroundCache(context, datafileConfig);
 
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
                 .PendingIntentFactory(context.getApplicationContext());
@@ -115,7 +118,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
                 LoggerFactory.getLogger(ServiceScheduler.class));
 
         Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_PROJECT_ID, projectId);
+        intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, datafileConfig.toJSONString());
         serviceScheduler.schedule(intent, updateInterval * 1000);
 
         storeInterval(context, updateInterval * 1000);
@@ -135,9 +138,9 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * Stop the background updates.
      *
      * @param context   application context
-     * @param projectId project id of the datafile uploading
+     * @param datafileConfig DatafileConfig for the datafile
      */
-    public void stopBackgroundUpdates(Context context, String projectId) {
+    public void stopBackgroundUpdates(Context context, DatafileConfig datafileConfig) {
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
                 .PendingIntentFactory(context.getApplicationContext());
         ServiceScheduler serviceScheduler = new ServiceScheduler(context.getApplicationContext(), pendingIntentFactory,
@@ -145,19 +148,19 @@ public class DefaultDatafileHandler implements DatafileHandler {
         Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
         serviceScheduler.unschedule(intent);
 
-        clearBackgroundCache(context, projectId);
+        clearBackgroundCache(context, datafileConfig);
 
         storeInterval(context, -1);
     }
 
-    private void enableBackgroundCache(Context context, String projectId) {
+    private void enableBackgroundCache(Context context, DatafileConfig datafileConfig) {
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(BackgroundWatchersCache.class));
-        backgroundWatchersCache.setIsWatching(projectId, true);
+        backgroundWatchersCache.setIsWatching(datafileConfig, true);
     }
 
-    private void clearBackgroundCache(Context context, String projectId) {
+    private void clearBackgroundCache(Context context, DatafileConfig projectId) {
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(BackgroundWatchersCache.class));
@@ -169,12 +172,12 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * Save the datafile to cache.
      *
      * @param context   application context
-     * @param projectId project id of the datafile
+     * @param datafileConfig DatafileConfig for the datafile
      * @param dataFile  the datafile to save
      */
-    public void saveDatafile(Context context, String projectId, String dataFile) {
+    public void saveDatafile(Context context, DatafileConfig datafileConfig, String dataFile) {
         DatafileCache datafileCache = new DatafileCache(
-                projectId,
+                datafileConfig.getKey(),
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DatafileCache.class)
         );
@@ -187,12 +190,12 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * Load a cached datafile if it exists.
      *
      * @param context   application context
-     * @param projectId project id of the datafile to try and get from cache
+     * @param datafileConfig DatafileConfig for the datafile
      * @return the datafile cached or null if it was not available
      */
-    public String loadSavedDatafile(Context context, String projectId) {
+    public String loadSavedDatafile(Context context, DatafileConfig datafileConfig) {
         DatafileCache datafileCache = new DatafileCache(
-                projectId,
+                datafileConfig.getKey(),
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DatafileCache.class)
         );
@@ -209,12 +212,12 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * Is the datafile cached locally?
      *
      * @param context   application context
-     * @param projectId project id of the datafile
+     * @param datafileConfig DatafileConfig for the datafile
      * @return true if cached false if not
      */
-    public Boolean isDatafileSaved(Context context, String projectId) {
+    public Boolean isDatafileSaved(Context context, DatafileConfig datafileConfig) {
         DatafileCache datafileCache = new DatafileCache(
-                projectId,
+                datafileConfig.getKey(),
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DatafileCache.class)
         );
@@ -226,11 +229,11 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * Remove the datafile in cache.
      *
      * @param context   application context
-     * @param projectId project id of the datafile
+     * @param datafileConfig DatafileConfig of the current datafile.
      */
-    public void removeSavedDatafile(Context context, String projectId) {
+    public void removeSavedDatafile(Context context, DatafileConfig datafileConfig) {
         DatafileCache datafileCache = new DatafileCache(
-                projectId,
+                datafileConfig.getKey(),
                 new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DatafileCache.class)
         );

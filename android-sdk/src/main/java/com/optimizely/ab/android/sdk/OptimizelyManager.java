@@ -28,7 +28,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.VisibleForTesting;
-import android.util.Log;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
@@ -37,6 +36,7 @@ import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.event_handler.EventIntentService;
+import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.ProjectConfig;
@@ -47,11 +47,9 @@ import com.optimizely.ab.event.internal.payload.EventBatch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -68,13 +66,16 @@ public class OptimizelyManager {
     @Nullable private EventHandler eventHandler = null;
     @Nullable private ErrorHandler errorHandler;
     @NonNull private Logger logger;
-    @NonNull private final String projectId;
+    @Nullable private final String projectId;
+    @Nullable private final String sdkKey;
+    @NonNull private final DatafileConfig datafileConfig;
 
     @NonNull private UserProfileService userProfileService;
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
-    OptimizelyManager(@NonNull String projectId,
+    OptimizelyManager(@Nullable String projectId,
+                      @Nullable String sdkKey,
                       @NonNull Logger logger,
                       long datafileDownloadInterval,
                       @NonNull DatafileHandler datafileHandler,
@@ -82,7 +83,13 @@ public class OptimizelyManager {
                       long eventDispatchInterval,
                       @NonNull EventHandler eventHandler,
                       @NonNull UserProfileService userProfileService) {
+
+        if (projectId == null && sdkKey == null) {
+            logger.error("projectId and sdkKey are both null!");
+        }
         this.projectId = projectId;
+        this.sdkKey = sdkKey;
+        this.datafileConfig = new DatafileConfig(this.projectId, this.sdkKey);
         this.logger = logger;
         this.datafileDownloadInterval = datafileDownloadInterval;
         this.datafileHandler = datafileHandler;
@@ -103,9 +110,14 @@ public class OptimizelyManager {
      * @param projectId your project's id
      * @return a {@link OptimizelyManager.Builder}
      */
+    @Deprecated
     @NonNull
-    public static Builder builder(@NonNull String projectId) {
+    public static Builder builder(@Nullable String projectId) {
         return new Builder(projectId);
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Nullable
@@ -168,7 +180,7 @@ public class OptimizelyManager {
                 optimizelyClient = buildOptimizely(context, datafile);
 
                 if (datafileDownloadInterval > 0 && datafileHandler != null) {
-                    datafileHandler.startBackgroundUpdates(context, projectId, datafileDownloadInterval);
+                    datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval);
                 }
 
             }
@@ -183,7 +195,7 @@ public class OptimizelyManager {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
         if(downloadToCache){
-            datafileHandler.downloadDatafile(context, projectId, null);
+            datafileHandler.downloadDatafile(context, datafileConfig, null);
         }
 
         return optimizelyClient;
@@ -261,7 +273,7 @@ public class OptimizelyManager {
     public String getDatafile(Context context,@RawRes Integer datafileRes){
      try {
         if (isDatafileCached(context)) {
-            return datafileHandler.loadSavedDatafile(context, projectId);
+            return datafileHandler.loadSavedDatafile(context, datafileConfig);
         } else if (datafileRes!=null) {
             return loadRawResource(context, datafileRes);
         }else{
@@ -295,7 +307,7 @@ public class OptimizelyManager {
             return;
         }
         setOptimizelyStartListener(optimizelyStartListener);
-        datafileHandler.downloadDatafile(context, projectId,getDatafileLoadedListener(context,datafileRes));
+        datafileHandler.downloadDatafile(context, datafileConfig,getDatafileLoadedListener(context,datafileRes));
     }
 
     DatafileLoadedListener getDatafileLoadedListener(final Context context, @RawRes final Integer datafileRes) {
@@ -378,20 +390,24 @@ public class OptimizelyManager {
      * @return True if the datafile is cached on the disk
      */
     public boolean isDatafileCached(Context context) {
-        return datafileHandler.isDatafileSaved(context, projectId);
+        return datafileHandler.isDatafileSaved(context, datafileConfig);
     }
 
     /**
      * Returns the URL of the versioned datafile that this SDK expects to use
-     * @param projectId The id of the project for which we are getting the datafile
      * @return the CDN location of the datafile
      */
-    public @NonNull String getDatafileUrl(String projectId) {
-        return DatafileService.getDatafileUrl(projectId);
+    public @NonNull String getDatafileUrl() {
+        return datafileConfig.getUrl();
     }
     @NonNull
     public String getProjectId() {
         return projectId;
+    }
+
+    @NonNull
+    public DatafileConfig getDatafileConfig() {
+        return datafileConfig;
     }
 
     @NonNull
@@ -404,7 +420,7 @@ public class OptimizelyManager {
                           @NonNull final String datafile) {
 
         if (datafileDownloadInterval > 0 && datafileHandler != null) {
-            datafileHandler.startBackgroundUpdates(context, projectId, datafileDownloadInterval);
+            datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval);
         }
         try {
             optimizelyClient = buildOptimizely(context, datafile);
@@ -459,7 +475,7 @@ public class OptimizelyManager {
         }
         else {
             // the builder creates the default user profile service. So, this should never happen.
-            userProfileService = DefaultUserProfileService.newInstance(projectId, context);
+            userProfileService = DefaultUserProfileService.newInstance(datafileConfig.getKey(), context);
             builder.withUserProfileService(userProfileService);
         }
 
@@ -577,7 +593,7 @@ public class OptimizelyManager {
     @SuppressWarnings("WeakerAccess")
     public static class Builder {
 
-        @NonNull private final String projectId;
+        @Nullable private final String projectId;
 
         // -1 will cause the background download to not be initiated.
         private long datafileDownloadInterval = -1L;
@@ -588,10 +604,17 @@ public class OptimizelyManager {
         @Nullable private EventHandler eventHandler = null;
         @Nullable private ErrorHandler errorHandler = null;
         @Nullable private UserProfileService userProfileService = null;
+        @Nullable private String sdkKey = null;
 
-        Builder(@NonNull String projectId) {
+        @Deprecated
+        Builder(@Nullable String projectId) {
             this.projectId = projectId;
         }
+
+        Builder() {
+            this.projectId = null;
+        }
+
 
         /**
          * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
@@ -613,6 +636,11 @@ public class OptimizelyManager {
          */
         public Builder withDatafileHandler(DatafileHandler overrideHandler) {
             this.datafileHandler = overrideHandler;
+            return this;
+        }
+
+        public Builder withSDKKey(String sdkKey) {
+            this.sdkKey = sdkKey;
             return this;
         }
 
@@ -718,7 +746,12 @@ public class OptimizelyManager {
                 eventHandler = DefaultEventHandler.getInstance(context);
             }
 
-            return new OptimizelyManager(projectId,
+            if (projectId == null && sdkKey == null) {
+                logger.error("ProjectId and SDKKey cannot both be null");
+                return null;
+            }
+
+            return new OptimizelyManager(projectId, sdkKey,
                     logger,
                     datafileDownloadInterval,
                     datafileHandler,

@@ -119,7 +119,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         startActivity(intent);
 
         //call this method if you set an interval but want to now stop doing bakcground updates.
-        //optimizelyManager.getDatafileHandler().stopBackgroundUpdates(myApplication.getApplicationContext(), optimizelyManager.getProjectId());
+        //optimizelyManager.getDatafileHandler().stopBackgroundUpdates(myApplication.getApplicationContext(), optimizelyManager.getKey());
 
     }
 }

@@ -18,8 +18,8 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.support.test.InstrumentationRegistry;
 
-import com.optimizely.ab.android.datafile_handler.BackgroundWatchersCache;
 import com.optimizely.ab.android.shared.Cache;
+import com.optimizely.ab.android.shared.DatafileConfig;
 
 import org.json.JSONException;
 import org.junit.After;
@@ -64,29 +64,44 @@ public class BackgroundWatchersCacheTest {
 
     @Test
     public void setIsWatchingEmptyString() {
-        assertFalse(backgroundWatchersCache.setIsWatching("", false));
+        assertFalse(backgroundWatchersCache.setIsWatching(new DatafileConfig("", null), false));
         verify(logger).error("Passed in an empty string for projectId");
     }
 
     @Test
     public void isWatchingEmptyString() {
-        assertFalse(backgroundWatchersCache.isWatching(""));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("", null)));
         verify(logger).error("Passed in an empty string for projectId");
     }
 
     @Test
-    public void setIsWatchingPersists() {
-        assertTrue(backgroundWatchersCache.setIsWatching("1", true));
-        assertTrue(backgroundWatchersCache.setIsWatching("2", true));
-        assertTrue(backgroundWatchersCache.setIsWatching("3", false));
-        assertTrue(backgroundWatchersCache.setIsWatching("1", false));
+    public void setIsWatchingPersistsWithoutEnvironment() {
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("2", null), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("3", null), false));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), false));
 
-        assertFalse(backgroundWatchersCache.isWatching("1"));
-        assertTrue(backgroundWatchersCache.isWatching("2"));
-        assertFalse(backgroundWatchersCache.isWatching("3"));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("1", null)));
+        assertTrue(backgroundWatchersCache.isWatching(new DatafileConfig("2", null)));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("3", null)));
 
-        List<String> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
-        assertTrue(watchingProjectIds.contains("2"));
+        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingDatafileConfigs();
+        assertTrue(watchingProjectIds.contains(new DatafileConfig("2", null)));
+    }
+
+    @Test
+    public void setIsWatchingPersistsWithEnvironment() {
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "1-1"), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "2-2"), true));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "3-3"), false));
+        assertTrue(backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "1-1"), false));
+
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig(null, "1-1")));
+        assertTrue(backgroundWatchersCache.isWatching(new DatafileConfig(null, "2-2")));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig(null, "3-3")));
+
+        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingDatafileConfigs();
+        assertTrue(watchingProjectIds.contains(new DatafileConfig(null, "2-2")));
     }
 
     @Test
@@ -96,13 +111,13 @@ public class BackgroundWatchersCacheTest {
         // Cause a JSONException to be thrown
         when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenReturn("{");
 
-        assertFalse(backgroundWatchersCache.setIsWatching("1", true));
+        assertFalse(backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), true));
         verify(logger).error(contains("Unable to update watching state for project id"), any(JSONException.class));
 
-        assertFalse(backgroundWatchersCache.isWatching("1"));
+        assertFalse(backgroundWatchersCache.isWatching(new DatafileConfig("1", null)));
         verify(logger).error(contains("Unable check if project id is being watched"), any(JSONException.class));
 
-        List<String> watchingProjectIds = backgroundWatchersCache.getWatchingProjectIds();
+        List<DatafileConfig> watchingProjectIds = backgroundWatchersCache.getWatchingDatafileConfigs();
         assertTrue(watchingProjectIds.isEmpty());
         verify(logger).error(contains("Unable to get watching project ids"), any(JSONException.class));
     }
@@ -113,7 +128,7 @@ public class BackgroundWatchersCacheTest {
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
         // Cause a JSONException to be thrown
         when(cache.load(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME)).thenReturn(null);
-        assertFalse(backgroundWatchersCache.setIsWatching("1", true));
+        assertFalse(backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), true));
         verify(logger).info("Creating background watchers file {}.", BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }
 }
