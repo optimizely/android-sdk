@@ -76,6 +76,7 @@ public class OptimizelyManager {
 
     OptimizelyManager(@Nullable String projectId,
                       @Nullable String sdkKey,
+                      @Nullable DatafileConfig datafileConfig,
                       @NonNull Logger logger,
                       long datafileDownloadInterval,
                       @NonNull DatafileHandler datafileHandler,
@@ -89,7 +90,12 @@ public class OptimizelyManager {
         }
         this.projectId = projectId;
         this.sdkKey = sdkKey;
-        this.datafileConfig = new DatafileConfig(this.projectId, this.sdkKey);
+        if (datafileConfig == null) {
+            this.datafileConfig = new DatafileConfig(this.projectId, this.sdkKey);
+        }
+        else {
+            this.datafileConfig = datafileConfig;
+        }
         this.logger = logger;
         this.datafileDownloadInterval = datafileDownloadInterval;
         this.datafileHandler = datafileHandler;
@@ -605,6 +611,7 @@ public class OptimizelyManager {
         @Nullable private ErrorHandler errorHandler = null;
         @Nullable private UserProfileService userProfileService = null;
         @Nullable private String sdkKey = null;
+        @Nullable private DatafileConfig datafileConfig = null;
 
         @Deprecated
         Builder(@Nullable String projectId) {
@@ -698,6 +705,11 @@ public class OptimizelyManager {
             return this;
         }
 
+        public Builder withDatafileConfig(DatafileConfig datafileConfig) {
+            this.datafileConfig = datafileConfig;
+            return this;
+        }
+
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          * @param  context the application context used to create default service if not provided.
@@ -752,6 +764,7 @@ public class OptimizelyManager {
             }
 
             return new OptimizelyManager(projectId, sdkKey,
+                    datafileConfig,
                     logger,
                     datafileDownloadInterval,
                     datafileHandler,

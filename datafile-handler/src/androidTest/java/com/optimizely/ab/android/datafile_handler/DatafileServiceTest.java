@@ -220,6 +220,6 @@ public class DatafileServiceTest {
         // and url by accidentally changing those constants.
         // us to update this test.
         String datafileUrl = new DatafileConfig("1", "2").getUrl();
-        assertEquals("https://cdn.optimizely.com/json/2.json", datafileUrl);
+        assertEquals("https://cdn.optimizely.com/datafiles/2.json", datafileUrl);
     }
 }
