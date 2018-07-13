@@ -31,19 +31,19 @@ public class DatafileConfig {
     public static String defaultHost = "https://cdn.optimizely.com";
     public static String projectUrlSuffix = "/json/%s.json";
     public static String environmentUrlSuffix = "/datafiles/%s.json";
-    public static String delimitor = "::::";
+    public static String delimiter = "::::";
 
     private final String projectId;
     private final String sdkKey;
     private final String host;
-    private final String environmentUrl;
-    private final String projectIdUrl;
+    private final String datafileUrlString;
 
     /**
      * Constructor used to construct a DatafileConfig to get cache key, url,
      * for the appropriate environment.  One or the other can be null.  But, not both.
      * @param projectId project id string.
      * @param sdkKey the environment url.
+     * @param host used to override the DatafileConfig.defaultHost used for datafile synchronization.
      */
     public DatafileConfig(String projectId, String sdkKey, String host) {
         assert(projectId != null || sdkKey != null);
@@ -52,18 +52,11 @@ public class DatafileConfig {
         this.host = host;
 
         if (sdkKey != null) {
-            this.environmentUrl = String.format((this.host + environmentUrlSuffix), sdkKey);
+            this.datafileUrlString = String.format((this.host + environmentUrlSuffix), sdkKey);
         }
         else {
-            this.environmentUrl = null;
+            this.datafileUrlString = String.format((this.host + projectUrlSuffix), projectId);
         }
-        if (projectId != null) {
-            this.projectIdUrl = String.format((this.host + projectUrlSuffix), projectId);
-        }
-        else {
-            this.projectIdUrl = null;
-        }
-
     }
 
     /**
@@ -90,7 +83,7 @@ public class DatafileConfig {
      * @return url of current project configuration.
      */
     public String getUrl() {
-        return sdkKey == null ? projectIdUrl : environmentUrl;
+        return datafileUrlString;
     }
 
     public String toJSONString() {
@@ -131,7 +124,7 @@ public class DatafileConfig {
      */
     @Override
     public String toString() {
-        return projectId != null ? projectId : "null" + delimitor + (sdkKey != null? sdkKey : "null");
+        return projectId != null ? projectId : "null" + delimiter + (sdkKey != null? sdkKey : "null");
     }
 
     public boolean equals(Object o) {
