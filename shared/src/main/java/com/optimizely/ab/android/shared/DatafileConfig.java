@@ -28,11 +28,36 @@ import org.json.JSONObject;
  * if you change environments or projects and no longer want updates from the previous.
  */
 public class DatafileConfig {
-    public static String projectUrl = "https://cdn.optimizely.com/json/%s.json";
-    public static String delimitor = "::::";
+    public static String defaultHost = "https://cdn.optimizely.com";
+    public static String projectUrlSuffix = "/json/%s.json";
+    public static String environmentUrlSuffix = "/datafiles/%s.json";
+    public static String delimiter = "::::";
 
     private final String projectId;
     private final String sdkKey;
+    private final String host;
+    private final String datafileUrlString;
+
+    /**
+     * Constructor used to construct a DatafileConfig to get cache key, url,
+     * for the appropriate environment.  One or the other can be null.  But, not both.
+     * @param projectId project id string.
+     * @param sdkKey the environment url.
+     * @param host used to override the DatafileConfig.defaultHost used for datafile synchronization.
+     */
+    public DatafileConfig(String projectId, String sdkKey, String host) {
+        assert(projectId != null || sdkKey != null);
+        this.projectId = projectId;
+        this.sdkKey = sdkKey;
+        this.host = host;
+
+        if (sdkKey != null) {
+            this.datafileUrlString = String.format((this.host + environmentUrlSuffix), sdkKey);
+        }
+        else {
+            this.datafileUrlString = String.format((this.host + projectUrlSuffix), projectId);
+        }
+    }
 
     /**
      * Constructor used to construct a DatafileConfig to get cache key, url,
@@ -41,9 +66,7 @@ public class DatafileConfig {
      * @param sdkKey the environment url.
      */
     public DatafileConfig(String projectId, String sdkKey) {
-        assert(projectId != null || sdkKey != null);
-        this.projectId = projectId;
-        this.sdkKey = sdkKey;
+        this(projectId, sdkKey, defaultHost);
     }
 
     /**
@@ -60,7 +83,7 @@ public class DatafileConfig {
      * @return url of current project configuration.
      */
     public String getUrl() {
-        return String.format(projectUrl, getKey());
+        return datafileUrlString;
     }
 
     public String toJSONString() {
@@ -101,7 +124,7 @@ public class DatafileConfig {
      */
     @Override
     public String toString() {
-        return projectId != null ? projectId : "null" + delimitor + (sdkKey != null? sdkKey : "null");
+        return projectId != null ? projectId : "null" + delimiter + (sdkKey != null? sdkKey : "null");
     }
 
     public boolean equals(Object o) {

@@ -33,7 +33,6 @@ import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
-import com.optimizely.ab.android.sdk.test.R;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
@@ -72,7 +71,7 @@ import static org.mockito.Mockito.when;
 public class OptimizelyManagerTest {
 
     private String testProjectId = "7595190003";
-    private String testSdkKey = "123-2232323-343423423-435345345";
+    private String testSdkKey = "EQRZ12XAR22424";
     private ListeningExecutorService executor;
     private Logger logger;
     private OptimizelyManager optimizelyManager;
@@ -95,7 +94,7 @@ public class OptimizelyManagerTest {
         executor = MoreExecutors.newDirectExecutorService();
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
-        optimizelyManager = new OptimizelyManager(testProjectId, null,logger, 3600L, datafileHandler, null, 3600L,
+        optimizelyManager = new OptimizelyManager(testProjectId, null, null, logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
     }
 
@@ -146,7 +145,7 @@ public class OptimizelyManagerTest {
         Logger logger = mock(Logger.class);
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
-        OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey,logger, 3600L, datafileHandler, null, 3600L,
+        OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
         /*
          * Scenario#1: when datafile is not Empty
@@ -156,7 +155,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/123-2232323-343423423-435345345.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), String.format((DatafileConfig.defaultHost + DatafileConfig.environmentUrlSuffix), testSdkKey));
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -203,7 +202,7 @@ public class OptimizelyManagerTest {
         Logger logger = mock(Logger.class);
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
-        final OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey,logger, 3600L, datafileHandler, null, 3600L,
+        final OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
 
         /*
@@ -235,7 +234,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/123-2232323-343423423-435345345.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), String.format((DatafileConfig.defaultHost + DatafileConfig.environmentUrlSuffix), testSdkKey) );
 
 
     }
