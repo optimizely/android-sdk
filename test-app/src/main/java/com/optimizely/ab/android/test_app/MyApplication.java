@@ -20,11 +20,9 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 
 import com.optimizely.ab.android.sdk.OptimizelyManager;
-import com.optimizely.ab.android.shared.DatafileConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,9 +74,8 @@ public class MyApplication extends Application {
 
          OptimizelyManager.Builder builder = OptimizelyManager.builder();
          optimizelyManager =  builder.withEventDispatchInterval(60L * 10L)
-                .withDatafileDownloadInterval(60L * 10L)
-                 .withSDKKey("6hmwpgZcRFp36wH5QLK8Sb")
-                .build(getApplicationContext());
-
+            .withDatafileDownloadInterval(60L * 10L)
+            .withSDKKey("6hmwpgZcRFp36wH5QLK8Sb")
+            .build(getApplicationContext());
     }
 }
