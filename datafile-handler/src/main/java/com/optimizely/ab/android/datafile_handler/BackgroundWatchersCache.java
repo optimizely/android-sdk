@@ -127,7 +127,9 @@ class BackgroundWatchersCache {
                     final String projectKey = iterator.next();
                     if (backgroundWatchers.getBoolean(projectKey)) {
                         DatafileConfig datafileConfig = null;
-                        if (projectKey.contains("-")) {
+                        boolean sdkKey = projectKey.matches(".*[A-Za-z].*");
+                        //TODO: This should be changed to store a jsonized datafile config.
+                        if (sdkKey) {
                             datafileConfig = new DatafileConfig(null, projectKey);
                         }
                         else {
