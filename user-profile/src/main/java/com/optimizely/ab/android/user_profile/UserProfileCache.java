@@ -24,6 +24,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.android.shared.Cache;
+import com.optimizely.ab.bucketing.UserProfileService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,9 +36,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-import static com.optimizely.ab.bucketing.UserProfileService.experimentBucketMapKey;
-import static com.optimizely.ab.bucketing.UserProfileService.userIdKey;
-import static com.optimizely.ab.bucketing.UserProfileService.variationIdKey;
+import static com.optimizely.ab.bucketing.UserProfileService.Companion.experimentBucketMapKey;
+import static com.optimizely.ab.bucketing.UserProfileService.Companion.userIdKey;
+import static com.optimizely.ab.bucketing.UserProfileService.Companion.variationIdKey;
 
 /**
  * Stores a map of user IDs to {@link com.optimizely.ab.bucketing.UserProfile} with write-back to a file.

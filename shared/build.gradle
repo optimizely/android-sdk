@@ -50,11 +50,18 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
     buildToolsVersion '27.0.0'
+
+    repositories {
+        flatDir {
+            dirs '../libs'
+        }
+    }
+
 }
 
 dependencies {
     compile "com.noveogroup.android:android-logger:$android_logger_ver"
-    compile ("com.optimizely.ab:core-api:$java_core_ver") {
+    compile ("com.optimizely.ab:core-api:2.0.0-SNAPSHOT") {
         exclude group: 'com.google.code.findbugs'
     }
     compile "com.google.code.gson:gson:$gson_ver"

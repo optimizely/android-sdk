@@ -32,6 +32,13 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
     }
+
+    repositories {
+        flatDir {
+            dirs '../libs'
+        }
+    }
+
 }
 
 dependencies {

@@ -55,6 +55,13 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
+
+    repositories {
+        flatDir {
+            dirs '../libs'
+        }
+    }
+
 }
 
 dependencies {
@@ -62,9 +69,11 @@ dependencies {
     compile project(':datafile-handler')
     compile project(':event-handler')
     compile project(':user-profile')
-    compile ("com.optimizely.ab:core-api:$java_core_ver") {
+    compileOnly("com.optimizely.ab:core-api:2.0.0-SNAPSHOT") {
         exclude group: 'com.google.code.findbugs'
     }
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.51"
     compile "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"

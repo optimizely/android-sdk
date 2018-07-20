@@ -71,13 +71,13 @@ public class SplashScreenActivity extends AppCompatActivity {
          **/
         if (!INITIALIZE_ASYNCHRONOUSLY) {
                optimizelyManager.initialize(myApplication, R.raw.datafile);
-               optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, String> map,  Variation variation,  LogEvent logEvent) -> {
-                   System.out.println("got activation");
-               });
-               optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, String> map, Map<String, ?> map1, LogEvent logEvent) -> {
-
-                   System.out.println("got track");
-               });
+//               optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, String> map,  Variation variation,  LogEvent logEvent) -> {
+//                   System.out.println("got activation");
+//               });
+//               optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, String> map, Map<String, ?> map1, LogEvent logEvent) -> {
+//
+//                   System.out.println("got track");
+//               });
                startVariation();
         } else {
             // Initialize Optimizely asynchronously

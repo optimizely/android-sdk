@@ -550,7 +550,7 @@ public class OptimizelyClient {
      */
     public NotificationCenter getNotificationCenter() {
         if (isValid()) {
-            return optimizely.notificationCenter;
+            return optimizely.getNotificationCenter();
         } else {
             logger.warn("Optimizely is not initialized, could not get the notification listener");
         }

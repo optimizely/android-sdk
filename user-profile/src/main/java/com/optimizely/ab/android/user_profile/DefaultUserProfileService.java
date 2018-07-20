@@ -164,7 +164,8 @@ public class DefaultUserProfileService implements UserProfileService {
      * @see UserProfileService#save(Map)
      */
     @Override
-    public void save(Map<String, Object> userProfileMap) {
-        userProfileCache.save(userProfileMap);
+    public void save(Map<String, ?> userProfileMap) {
+
+        userProfileCache.save((Map<String, Object>) userProfileMap);
     }
 }

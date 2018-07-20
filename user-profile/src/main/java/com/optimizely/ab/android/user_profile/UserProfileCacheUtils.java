@@ -23,9 +23,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.optimizely.ab.bucketing.UserProfileService.experimentBucketMapKey;
-import static com.optimizely.ab.bucketing.UserProfileService.userIdKey;
-import static com.optimizely.ab.bucketing.UserProfileService.variationIdKey;
+import static com.optimizely.ab.bucketing.UserProfileService.Companion.experimentBucketMapKey;
+import static com.optimizely.ab.bucketing.UserProfileService.Companion.userIdKey;
+import static com.optimizely.ab.bucketing.UserProfileService.Companion.variationIdKey;
 
 /**
  * A Utils class to help transform a user profile JSONObject to a map and vice versa.

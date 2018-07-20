@@ -33,7 +33,7 @@ public class MyApplication extends Application {
     // Project ID owned by mobile-test@optimizely.com
     // if you'd like to configure your own experiment please check out https://developers.optimizely.com/x/solutions/sdks/getting-started/index.html?language=android&platform=mobile
     // to create your own project and experiment. Then just replace your project ID below.
-    public static final String PROJECT_ID = "10554895220";
+    public static final String PROJECT_ID = "9265890514";
     private OptimizelyManager optimizelyManager;
 
     public OptimizelyManager getOptimizelyManager() {
