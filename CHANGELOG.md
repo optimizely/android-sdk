@@ -1,5 +1,11 @@
 # Optimizely Android X SDK Changelog
 
+## 2.0.0-beta5
+July 23, 2018
+
+### Bug Fixes
+* Pull from the correct datafile location when using SDK Key. (#207)
+
 ## 2.0.0-beta4
 June 22, 2018
 
