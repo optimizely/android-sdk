@@ -58,7 +58,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        boolean INITIALIZE_ASYNCHRONOUSLY = false;
+        boolean INITIALIZE_ASYNCHRONOUSLY = true;
 
         // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
         // in the manifest.
@@ -81,7 +81,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                startVariation();
         } else {
             // Initialize Optimizely asynchronously
-            optimizelyManager.initialize(this,R.raw.datafile, new OptimizelyStartListener() {
+            optimizelyManager.initialize(this, new OptimizelyStartListener() {
 
                 @Override
                 public void onStart(OptimizelyClient optimizely) {
