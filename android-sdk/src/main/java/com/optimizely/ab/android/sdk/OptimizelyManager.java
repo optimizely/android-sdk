@@ -631,6 +631,9 @@ public class OptimizelyManager {
         @Nullable private DatafileConfig datafileConfig = null;
 
         @Deprecated
+        /**
+         * @deprecated use {@link #Builder()} instead and pass in an SDK Key with {@link #withSDKKey(String)}
+         */
         Builder(@Nullable String projectId) {
             this.projectId = projectId;
         }
