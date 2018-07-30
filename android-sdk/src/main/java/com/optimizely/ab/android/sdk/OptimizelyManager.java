@@ -297,13 +297,10 @@ public class OptimizelyManager {
     /**
      * Starts Optimizely asynchronously
      * <p>
-     * An {@link OptimizelyClient} instance will be delivered to
-     * {@link OptimizelyStartListener#onStart(OptimizelyClient)}. The callback will only be hit
-     * once.  If there is a cached datafile the returned instance will be built from it.  The cached
-     * datafile will be updated from network if it is different from the cache.  If there is no
-     * cached datafile the returned instance will always be built from the remote datafile.
+     * See {@link #initialize(Context, Integer, OptimizelyStartListener)}
      * @param context                 any type of context instance
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
+     * @deprecated Consider using {@link #initialize(Context, Integer, OptimizelyStartListener)}
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public void initialize(@NonNull final Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
@@ -313,12 +310,11 @@ public class OptimizelyManager {
     /**
      * Starts Optimizely asynchronously
      * <p>
-     * An {@link OptimizelyClient} instance will be delivered to
-     * {@link OptimizelyStartListener#onStart(OptimizelyClient)}. The callback will only be hit
-     * once.  If there is a cached datafile the returned instance will be built from it.  The cached
-     * datafile will be updated from network if it is different from the cache.  If there is no
-     * cached datafile the returned instance will always be built from the remote datafile.
-     * This method does the same thing except it can be used with a generic {@link Context}.
+     * * Attempts to fetch the most recent remote datafile and construct an {@link OptimizelyClient}.
+     * If the datafile has not changed since the SDK last fetched it or if there is an error
+     * fetching, the SDK will attempt to construct an {@link OptimizelyClient} using a cached datafile.
+     * If there is no cached datafile, then the SDK will return a dummy, uninitialized {@link OptimizelyClient}.
+     * Passing in a datafileRes will guarantee the SDK returns an initialized {@link OptimizelyClient}.
      * @param context                 any type of context instance
      * @param datafileRes             Null is allowed here if user don't want to put datafile in res. Null handling is done in {@link #getDatafile(Context,Integer)}
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
