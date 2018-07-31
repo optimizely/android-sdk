@@ -173,7 +173,7 @@ public class OptimizelyManager {
      * @param downloadToCache to check if datafile should get updated in cache after initialization.
      * @return an {@link OptimizelyClient} instance
      */
-    protected OptimizelyClient initialize(@NonNull Context context,@Nullable String datafile,boolean downloadToCache) {
+    protected OptimizelyClient initialize(@NonNull Context context, @Nullable String datafile, boolean downloadToCache) {
         if (!isAndroidVersionSupported()) {
             return optimizelyClient;
         }
@@ -277,31 +277,44 @@ public class OptimizelyManager {
      * @return datafile
      */
     public String getDatafile(Context context,@RawRes Integer datafileRes){
-     try {
-        if (isDatafileCached(context)) {
-            return datafileHandler.loadSavedDatafile(context, datafileConfig);
-        } else if (datafileRes!=null) {
-            return loadRawResource(context, datafileRes);
-        }else{
-            logger.error("Invalid datafile resource ID.");
-            return null;
+        try {
+            if (isDatafileCached(context)) {
+                return datafileHandler.loadSavedDatafile(context, datafileConfig);
+            } else if (datafileRes!=null) {
+                return loadRawResource(context, datafileRes);
+            }else{
+                logger.error("Invalid datafile resource ID.");
+                return null;
+            }
+        } catch (IOException e) {
+            logger.error("Unable to load compiled data file", e);
+        } catch (NullPointerException e){
+            logger.error("Unable to find compiled data file in raw resource",e);
         }
-    } catch (IOException e) {
-        logger.error("Unable to load compiled data file", e);
-    }catch (NullPointerException e){
-        logger.error("Unable to find compiled data file in raw resource",e);
+        return null;
     }
-    return null;
-    }
+
     /**
      * Starts Optimizely asynchronously
      * <p>
-     * An {@link OptimizelyClient} instance will be delivered to
-     * {@link OptimizelyStartListener#onStart(OptimizelyClient)}. The callback will only be hit
-     * once.  If there is a cached datafile the returned instance will be built from it.  The cached
-     * datafile will be updated from network if it is different from the cache.  If there is no
-     * cached datafile the returned instance will always be built from the remote datafile.
-     * This method does the same thing except it can be used with a generic {@link Context}.
+     * See {@link #initialize(Context, Integer, OptimizelyStartListener)}
+     * @param context                 any type of context instance
+     * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
+     * @deprecated Consider using {@link #initialize(Context, Integer, OptimizelyStartListener)}
+     */
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    public void initialize(@NonNull final Context context, @NonNull OptimizelyStartListener optimizelyStartListener) {
+        initialize(context, null, optimizelyStartListener);
+    }
+
+    /**
+     * Starts Optimizely asynchronously
+     * <p>
+     * * Attempts to fetch the most recent remote datafile and construct an {@link OptimizelyClient}.
+     * If the datafile has not changed since the SDK last fetched it or if there is an error
+     * fetching, the SDK will attempt to construct an {@link OptimizelyClient} using a cached datafile.
+     * If there is no cached datafile, then the SDK will return a dummy, uninitialized {@link OptimizelyClient}.
+     * Passing in a datafileRes will guarantee the SDK returns an initialized {@link OptimizelyClient}.
      * @param context                 any type of context instance
      * @param datafileRes             Null is allowed here if user don't want to put datafile in res. Null handling is done in {@link #getDatafile(Context,Integer)}
      * @param optimizelyStartListener callback that {@link OptimizelyClient} instances are sent to.
@@ -313,7 +326,7 @@ public class OptimizelyManager {
             return;
         }
         setOptimizelyStartListener(optimizelyStartListener);
-        datafileHandler.downloadDatafile(context, datafileConfig,getDatafileLoadedListener(context,datafileRes));
+        datafileHandler.downloadDatafile(context, datafileConfig, getDatafileLoadedListener(context,datafileRes));
     }
 
     DatafileLoadedListener getDatafileLoadedListener(final Context context, @RawRes final Integer datafileRes) {
@@ -614,6 +627,9 @@ public class OptimizelyManager {
         @Nullable private DatafileConfig datafileConfig = null;
 
         @Deprecated
+        /**
+         * @deprecated use {@link #Builder()} instead and pass in an SDK Key with {@link #withSDKKey(String)}
+         */
         Builder(@Nullable String projectId) {
             this.projectId = projectId;
         }

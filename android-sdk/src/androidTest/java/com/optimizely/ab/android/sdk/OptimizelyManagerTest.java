@@ -235,8 +235,6 @@ public class OptimizelyManagerTest {
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
         assertEquals(optimizelyManager.getDatafileUrl(), String.format((DatafileConfig.defaultHost + DatafileConfig.environmentUrlSuffix), testSdkKey) );
-
-
     }
 
     @Test
@@ -257,8 +255,6 @@ public class OptimizelyManagerTest {
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
 
         assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
-
-
     }
 
     @Test
@@ -298,6 +294,16 @@ public class OptimizelyManagerTest {
 
         optimizelyManager.initialize(context, emptyString);
         verify(logger).error(eq("Invalid datafile"));
+    }
+
+    @Test
+    public void initializeAsyncWithNullDatafile() {
+        optimizelyManager.initialize(InstrumentationRegistry.getContext(), new OptimizelyStartListener() {
+            @Override
+            public void onStart(OptimizelyClient optimizely) {
+                assertNotNull(optimizely);
+            }
+        });
     }
 
     @Test
