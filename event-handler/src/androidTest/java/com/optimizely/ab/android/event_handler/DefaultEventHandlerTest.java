@@ -25,6 +25,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.util.Pair;
 
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.event.internal.payload.EventBatch;
 
 import org.junit.After;
 import org.junit.Before;
@@ -54,7 +55,6 @@ public class DefaultEventHandlerTest {
 
     private DefaultEventHandler eventHandler;
     private String url = "http://www.foo.com";
-    private String requestBody = "key1=val1&key2=val2&key3=val3";
 
     @Before
     public void setupEventHandler() {
@@ -68,20 +68,20 @@ public class DefaultEventHandlerTest {
 
     @Test
     public void dispatchEventSuccess() throws MalformedURLException {
-        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), requestBody));
+        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), new EventBatch()));
         //verify(context).startService(any(Intent.class));
         verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }
 
     @Test
     public void dispatchEmptyUrlString() {
-        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, "", new HashMap<String, String>(), requestBody));
+        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, "", new HashMap<String, String>(), new EventBatch()));
         verify(logger).error("Event dispatcher received an empty url");
     }
 
     @Test
     public void dispatchEmptyParams() {
-        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), requestBody));
+        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), new EventBatch()));
         //verify(context).startService(any(Intent.class));
         verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }

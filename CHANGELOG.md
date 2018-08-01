@@ -1,5 +1,12 @@
 # Optimizely Android X SDK Changelog
 
+## 2.0.0-beta6
+August 1st, 2018
+
+### Bug Fixes
+* Bump to Java SDK (2.1.2)[https://github.com/optimizely/java-sdk/releases/tag/2.1.2] which improves performance of API calls from.
+* Bring back async init without the datafile. (#211)
+
 ## 2.0.0-beta5
 July 23, 2018
 
