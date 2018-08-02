@@ -10,7 +10,7 @@ The primary difference between the new Feature Variable APIs and the older, Vari
 To learn more about Feature Management, read our [knowledge base article introducing the feature](https://help.optimizely.com/Set_Up_Optimizely/Develop_a_product_or_feature_with_Feature_Management).
 
 ### New Features
-* Introduces the `isFeatureEnabled` API, a featue flag used to determine whether to show a feature to a user. The `isFeatureEnabled` should be used in place of the `activate` API to activate experiments running on features.  Specifically, calling this API causes the SDK to evaluate all [Feature Tests](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#activate-feature-tests) and [Rollouts](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#activate-feature-rollouts) associated with the provided feature key.
+* Introduces the `isFeatureEnabled` API, a featue flag used to determine whether to show a feature to a user. The `isFeatureEnabled` should be used in place of the `activate` API to activate experiments running on features. Specifically, calling this API causes the SDK to evaluate all [Feature Tests](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#activate-feature-tests) and [Rollouts](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#activate-feature-rollouts) associated with the provided feature key.
 ```
 Boolean enabled = optimizelyClient.isFeatureEnabled("my_feature_key", "user_1", userAttributes);
 ```
@@ -20,7 +20,7 @@ Boolean enabled = optimizelyClient.isFeatureEnabled("my_feature_key", "user_1", 
 ArrayList<String> enabledFeatures = optimizelyClient.getEnabledFeatures("user_1", userAttributes);
 ```
 
-* Introduces Feature Variables to configure or parameterize your feature. There are four variable types: `Integer`, `String`, `Double`, `Boolean`.  Note that unlike the Variable APIs, the Feature Variable APIs do not dispatch impression events.  Instead, first call `isFeatureEnabled` to activate your experiments, then retrieve your variables.
+* Introduces Feature Variables to configure or parameterize your feature. There are four variable types: `Integer`, `String`, `Double`, `Boolean`. Note that unlike the Variable APIs, the Feature Variable APIs do not dispatch impression events.  Instead, first call `isFeatureEnabled` to activate your experiments, then retrieve your variables.
 ```
 String stringVariable = optimizelyClient.getFeatureVariableString("my_feature_key", "string_variable_key", "user_1");
 Integer integerVariable = optimizelyClient.getFeatureVariableInteger("my_feature_key", "integer_variable_key", "user_1");
@@ -28,7 +28,7 @@ Double doubleVariable = optimizelyClient.getFeatureVariableDouble("my_feature_ke
 Boolean booleanVariable = optimizelyClient.getFeatureVariableBoolean("my_feature_key", "boolean_variable_key", "user_1");
 ```
 
-* Introduces SDK Keys, which allow you to use Environments with the Android SDK. Use an SDK Key to initialize your OptimizelyManager, and the SDK will retrieve the datafile for the environment associated with the SDK Key.  This replaces initialization with Project ID.
+* Introduces SDK Keys, which allow you to use Environments with the Android SDK. Use an SDK Key to initialize your OptimizelyManager, and the SDK will retrieve the datafile for the environment associated with the SDK Key. This replaces initialization with Project ID.
 ```
 OptimizelyManager optimizelyManager = OptimizelyManager.builder()
     .withSDKKey("SDK_KEY_HERE")
@@ -52,7 +52,7 @@ optimizelyManager.initialize(this, new OptimizelyStartListener() {
 
 ### Upgrading from 1.x
 
-In order to begin using Feature Management, you must discontinue use of 1.x variables in your experiments.  First, pause and archive all experiments that use variables.  Then, contact [Optimizely Support](https://optimizely.zendesk.com/hc/en-us/requests) in order to have your project converted from the 1.x SDK UI to the 2.x SDK UI.  In addition to allowing for access to the Feature Management UI, upgrading to the 2.x SDK UI grants you access to [Environments](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#environments) and other new features.
+In order to begin using Feature Management, you must discontinue use of 1.x variables in your experiments.  First, pause and archive all experiments that use variables. Then, contact [Optimizely Support](https://optimizely.zendesk.com/hc/en-us/requests) in order to have your project converted from the 1.x SDK UI to the 2.x SDK UI. In addition to allowing for access to the Feature Management UI, upgrading to the 2.x SDK UI grants you access to [Environments](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#environments) and other new features.
 * *Note*: All future feature development on the Android SDK will assume that your are using the 2.x SDK UI, so we encourage you to upgrade as soon as possible.
 
 
