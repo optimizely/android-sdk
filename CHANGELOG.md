@@ -41,7 +41,7 @@ optimizelyManager.initialize(this, new OptimizelyStartListener() {
 });
 ```
 
-### Deprecation
+### Deprecations
 * Version 2.1.0 deprecates the Variable APIs: `getVariableBoolean`, `getVariableFloat`, `getVariableInteger`, and `getVariableString` 
 
 * Replace use of the Variable APIs with Feature Mangement's Feature Variable APIs, described above
