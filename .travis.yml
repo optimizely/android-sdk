@@ -25,8 +25,6 @@ android:
     - google-gdk-license-.+
 jdk:
   - oraclejdk8
-before_install:
-#- yes | sdkmanager "platforms;android-27"
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
@@ -36,7 +34,6 @@ cache:
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
-#  - android list targets
   - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
