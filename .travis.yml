@@ -7,7 +7,7 @@ env:
  - ADB_INSTALL_TIMEOUT=5 # minutes
  matrix:
  - EMULATOR_API=21 ANDROID_API=26 ABI=--abi armeabi-v7a
- - EMULATOR_API=26 ANDROID_API=26 ABI=
+ - EMULATOR_API=26 ANDROID_API=26 ABI=--abi google_apis/x86
 android:
   components:
     - tools
@@ -37,6 +37,7 @@ cache:
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
+  - emulator -list-avds
   - echo no | android create avd --force -n test -t android-$EMULATOR_API $ABI
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
