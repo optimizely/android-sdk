@@ -7,9 +7,10 @@ env:
  - ADB_INSTALL_TIMEOUT=5 # minutes
  matrix:
  - EMULATOR_API=21 ANDROID_API=26
- - EMULATOR_API=27 ANDROID_API=27
+ - EMULATOR_API=26 ANDROID_API=27
 android:
   components:
+    - tools
     - tools
     - platform-tools
     - build-tools-$ANDROID_BUILD_TOOLS
