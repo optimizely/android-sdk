@@ -6,8 +6,8 @@ env:
  - ANDROID_BUILD_TOOLS=27.0.0
  - ADB_INSTALL_TIMEOUT=5 # minutes
  matrix:
- - EMULATOR_API=21 ANDROID_API=26 ABI=--abi armeabi-v7a
- - EMULATOR_API=26 ANDROID_API=26 ABI=--abi google_apis/x86
+ - EMULATOR_API=21 ANDROID_API=26 ABI="--abi armeabi-v7a"
+ - EMULATOR_API=26 ANDROID_API=26 ABI="--abi google_apis/x86"
 android:
   components:
     - tools
