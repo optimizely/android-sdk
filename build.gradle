@@ -61,7 +61,7 @@ ext {
     support_test_runner_ver = "0.5"
     dexmaker_ver = "1.2"
     espresso_ver = "2.2.2"
-    gson_ver = "2.6.2"
+    gson_ver = "2.8.5"
     group_id = "com.optimizely.ab"
 }
 
