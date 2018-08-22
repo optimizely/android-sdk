@@ -90,7 +90,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md).
 
 ### Credits
 
-First-party code is copyright Optimizely, Inc. and contributors, licensed under Apache 2.0.
+First-party code (under android-sdk/, datafile-handler/, event-handler/, shared/, user-profile/) is copyright Optimizely, Inc. and contributors, licensed under Apache 2.0
 
 ### Additional Code
 
