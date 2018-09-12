@@ -1,5 +1,84 @@
 # Optimizely Android X SDK Changelog
 
+## 2.1.0
+August 2nd, 2018
+
+This release is the 2.x general availability launch of the Android SDK, which includes a number of significant new features that are now stable and fully supported. [Feature Management](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#feature-introduction) is now generally available, which introduces  new APIs and which replaces the SDK's variable APIs (`getVariableBoolean`, etc.) with the feature variable APIs (`getFeatureVariableBoolean`, etc.).  
+
+The primary difference between the new Feature Variable APIs and the older, Variable APIs is that they allow you to link your variables to a Feature (a new type of entity defined in the Optimizely UI) and to a feature flag in your application. This in turn allows you to run Feature Tests and Rollouts on both your Features and Feature Variables. For complete details of the Feature Management APIs, see the "New Features" section below.
+
+To learn more about Feature Management, read our [knowledge base article introducing the feature](https://help.optimizely.com/Set_Up_Optimizely/Develop_a_product_or_feature_with_Feature_Management).
+
+### New Features
+* Introduces the `isFeatureEnabled` API, a featue flag used to determine whether to show a feature to a user. The `isFeatureEnabled` should be used in place of the `activate` API to activate experiments running on features. Specifically, calling this API causes the SDK to evaluate all [Feature Tests](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#activate-feature-tests) and [Rollouts](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#activate-feature-rollouts) associated with the provided feature key.
+```
+Boolean enabled = optimizelyClient.isFeatureEnabled("my_feature_key", "user_1", userAttributes);
+```
+
+* Get all enabled features for a user by calling the following method, which returns a list of strings representing the feature keys:
+```
+ArrayList<String> enabledFeatures = optimizelyClient.getEnabledFeatures("user_1", userAttributes);
+```
+
+* Introduces Feature Variables to configure or parameterize your feature. There are four variable types: `Integer`, `String`, `Double`, `Boolean`. Note that unlike the Variable APIs, the Feature Variable APIs do not dispatch impression events.  Instead, first call `isFeatureEnabled` to activate your experiments, then retrieve your variables.
+```
+String stringVariable = optimizelyClient.getFeatureVariableString("my_feature_key", "string_variable_key", "user_1");
+Integer integerVariable = optimizelyClient.getFeatureVariableInteger("my_feature_key", "integer_variable_key", "user_1");
+Double doubleVariable = optimizelyClient.getFeatureVariableDouble("my_feature_key", "double_variable_key", "user_1");
+Boolean booleanVariable = optimizelyClient.getFeatureVariableBoolean("my_feature_key", "boolean_variable_key", "user_1");
+```
+
+* Introduces SDK Keys, which allow you to use Environments with the Android SDK. Use an SDK Key to initialize your OptimizelyManager, and the SDK will retrieve the datafile for the environment associated with the SDK Key. This replaces initialization with Project ID.
+```
+OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+    .withSDKKey("SDK_KEY_HERE")
+    .build(getApplication());
+optimizelyManager.initialize(this, new OptimizelyStartListener() {
+    @Override
+    public void onStart(OptimizelyClient optimizely) {
+        //user optimizely client here
+    }
+});
+```
+
+### Deprecations
+* Version 2.1.0 deprecates the Variable APIs: `getVariableBoolean`, `getVariableFloat`, `getVariableInteger`, and `getVariableString` 
+
+* Replace use of the Variable APIs with Feature Mangement's Feature Variable APIs, described above
+
+* We will continue to support the Variable APIs until the 3.x release, but we encourage you to upgrade as soon as possible
+
+* You will see a deprecation warning if using a 2.x SDK with the deprecated Variable APIs, but the APIs will continue to behave as they did in 1.x versions of the SDK
+
+### Upgrading from 1.x
+
+In order to begin using Feature Management, you must discontinue use of 1.x variables in your experiments.  First, pause and archive all experiments that use variables. Then, contact [Optimizely Support](https://optimizely.zendesk.com/hc/en-us/requests) in order to have your project converted from the 1.x SDK UI to the 2.x SDK UI. In addition to allowing for access to the Feature Management UI, upgrading to the 2.x SDK UI grants you access to [Environments](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#environments) and other new features.
+* *Note*: All future feature development on the Android SDK will assume that your are using the 2.x SDK UI, so we encourage you to upgrade as soon as possible.
+
+
+### Breaking changes
+* The `track` API with revenue value as a stand-alone parameter has been removed. The revenue value should be passed in as an entry of the event tags map. The key for the revenue tag is `revenue` and will be treated by Optimizely as the key for analyzing revenue data in results.
+```
+Map<String, Object> eventTags = new HashMap<String, Object>();
+
+// reserved "revenue" tag
+eventTags.put("revenue", 6432);
+
+optimizelyClient.track("event_key", "user_id", userAttributes, eventTags);
+
+```
+
+* We have removed deprecated classes with the `NotificationBroadcaster` in favor of the new API with the `NotificationCenter`. We have streamlined the API so that it is easily usable with Java Lambdas in *Java 1.8+*. We have also added some convenience methods to add these listeners. Finally, some of the API names have changed slightly (e.g. `clearAllNotifications()` is now `clearAllNotificationListeners()`)
+
+
+
+## 2.0.0-beta6
+August 1st, 2018
+
+### Bug Fixes
+* Bump to Java SDK [2.1.2](https://github.com/optimizely/java-sdk/releases/tag/2.1.2) which improves performance of API calls from.
+* Bring back async init without the datafile. (#211)
+
 ## 2.0.0-beta5
 July 23, 2018
 

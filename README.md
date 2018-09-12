@@ -2,12 +2,6 @@
 Master<br/> 
 [![Master Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=master)](https://travis-ci.org/optimizely/android-sdk)
 <br/>
-Beta<br/>
-[![Beta Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=beta)](https://travis-ci.org/optimizely/android-sdk)
-<br/>
-Devel<br/> 
-[![Devel Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=devel)](https://travis-ci.org/optimizely/android-sdk)
-<br/>
 <br/>
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 ## Overview
@@ -93,4 +87,19 @@ For example, to release version 0.1.2 you need to pull devel, checkout master, p
 
 ## Contributing
 Please see [CONTRIBUTING](CONTRIBUTING.md).
+
+### Credits
+
+First-party code (under android-sdk/, datafile-handler/, event-handler/, shared/, user-profile/) is copyright Optimizely, Inc. and contributors, licensed under Apache 2.0
+
+### Additional Code
+
+This software incorporates code from the following open source projects:
+
+**Optimizely.ab:core-api** [https://github.com/optimizely/java-sdk](https://github.com/optimizely/java-sdk)
+License (Apache 2.0): [https://github.com/optimizely/java-sdk/blob/master/LICENSE](https://github.com/optimizely/java-sdk/blob/master/LICENSE)
+Additional credits from java-sdk:[https://github.com/optimizely/java-sdk/blob/master/README.md](https://github.com/optimizely/java-sdk/blob/master/README.md)
+
+**Android Logger** [https://github.com/noveogroup/android-logger](https://github.com/noveogroup/android-logger)
+License (Public Domain): [https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt](https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt)
 
