@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2016-2018, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -17,14 +17,12 @@
 package com.optimizely.ab.android.sdk;
 
 import com.optimizely.ab.Optimizely;
-import com.optimizely.ab.bucketing.DecisionService;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.notification.ActivateNotificationListener;
 import com.optimizely.ab.notification.NotificationCenter;
-import com.optimizely.ab.notification.NotificationListener;
 import com.optimizely.ab.notification.TrackNotificationListener;
 
 import org.junit.Before;
@@ -71,6 +69,8 @@ public class OptimizelyClientTest {
             modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 // Set new value
             field.set(optimizely, notificationCenter);
+
+            when(optimizely.isValid()).thenReturn(true);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -234,7 +234,7 @@ public class OptimizelyClientTest {
 
         ActivateNotificationListener listener = new ActivateNotificationListener() {
             @Override
-            public void onActivate(Experiment experiment,String userId, Map<String, String> attributes, Variation variation, LogEvent event) {
+            public void onActivate(Experiment experiment,String userId, Map<String, ?> attributes, Variation variation, LogEvent event) {
 
             }
         };
@@ -248,7 +248,7 @@ public class OptimizelyClientTest {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         ActivateNotificationListener listener = new ActivateNotificationListener() {
             @Override
-            public void onActivate(Experiment experiment, String userId, Map<String, String> attributes, Variation variation, LogEvent event) {
+            public void onActivate(Experiment experiment, String userId, Map<String, ?> attributes, Variation variation, LogEvent event) {
 
             }
         };
@@ -261,7 +261,7 @@ public class OptimizelyClientTest {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         TrackNotificationListener listener = new TrackNotificationListener() {
             @Override
-            public void onTrack( String eventKey, String userId, Map<String, String> attributes, Map<String, ?> eventTags, LogEvent event) {
+            public void onTrack( String eventKey, String userId, Map<String, ?> attributes, Map<String, ?> eventTags, LogEvent event) {
 
             }
         };

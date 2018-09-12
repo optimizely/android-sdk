@@ -53,7 +53,7 @@ public class OptimizelyClient {
     private final Logger logger;
 
     @Nullable private Optimizely optimizely;
-    @NonNull private Map<String, String> defaultAttributes = new HashMap<>();
+    @NonNull private Map<String, ?> defaultAttributes = new HashMap<>();
 
     OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
         this.optimizely = optimizely;
@@ -72,7 +72,7 @@ public class OptimizelyClient {
      * This is set by the Optimizely manager and includes things like os version and sdk version.
      * @param attrs a map of default attributes.
      */
-    protected void setDefaultAttributes(@NonNull Map<String, String> attrs) {
+    protected void setDefaultAttributes(@NonNull Map<String, ?> attrs) {
         this.defaultAttributes = attrs;
     }
 
@@ -80,7 +80,7 @@ public class OptimizelyClient {
      * Return the default attributes map
      * @return the map of default attributes
      */
-    public @NonNull Map<String, String> getDefaultAttributes() {
+    public @NonNull Map<String, ?> getDefaultAttributes() {
         return this.defaultAttributes;
     }
 
@@ -90,8 +90,8 @@ public class OptimizelyClient {
      * @param attrs attributes that will be combined with default attributes.
      * @return a new map of both the default attributes and attributes passed in.
      */
-    private Map<String, String> getAllAttributes(@NonNull Map<String, String> attrs) {
-        Map<String,String> combinedMap = new HashMap<>(defaultAttributes);
+    private Map<String, ?> getAllAttributes(@NonNull Map<String, ?> attrs) {
+        Map<String, Object> combinedMap = new HashMap<>(defaultAttributes);
 
         // this essentially overrides defaultAttributes if the attrs passed in have the same key.
         combinedMap.putAll(attrs);
@@ -128,7 +128,7 @@ public class OptimizelyClient {
     @SuppressWarnings("WeakerAccess")
     public @Nullable Variation activate(@NonNull String experimentKey,
                                         @NonNull String userId,
-                                        @NonNull Map<String, String> attributes) {
+                                        @NonNull Map<String, ?> attributes) {
         if (isValid()) {
             return optimizely.activate(experimentKey, userId, getAllAttributes(attributes));
         } else {
@@ -156,7 +156,10 @@ public class OptimizelyClient {
      * @return True if the OptimizelyClient instance was instantiated correctly
      */
     public boolean isValid() {
-        return optimizely != null;
+        if(optimizely != null)
+            return optimizely.isValid();
+        else
+            return false;
     }
 
     /**
@@ -185,7 +188,7 @@ public class OptimizelyClient {
      */
     public void track(@NonNull String eventName,
                       @NonNull String userId,
-                      @NonNull Map<String, String> attributes) throws UnknownEventTypeException {
+                      @NonNull Map<String, ?> attributes) throws UnknownEventTypeException {
         if (isValid()) {
             optimizely.track(eventName, userId, getAllAttributes(attributes));
 
@@ -204,7 +207,7 @@ public class OptimizelyClient {
      */
     public void track(@NonNull String eventName,
                       @NonNull String userId,
-                      @NonNull Map<String, String> attributes,
+                      @NonNull Map<String, ?> attributes,
                       @NonNull Map<String, ?> eventTags) throws UnknownEventTypeException {
         if (isValid()) {
             optimizely.track(eventName, userId, getAllAttributes(attributes), eventTags);
@@ -245,7 +248,7 @@ public class OptimizelyClient {
     @SuppressWarnings("WeakerAccess")
     public @Nullable Variation getVariation(@NonNull String experimentKey,
                                             @NonNull String userId,
-                                            @NonNull Map<String, String> attributes) {
+                                            @NonNull Map<String, ?> attributes) {
         if (isValid()) {
             return optimizely.getVariation(experimentKey, userId, getAllAttributes(attributes));
         } else {
@@ -310,7 +313,7 @@ public class OptimizelyClient {
      * @return List of the feature keys that are enabled for the user if the userId is empty it will
      * return Empty List.
      */
-    public List<String> getEnabledFeatures(@NonNull String userId, @NonNull Map<String, String> attributes) {
+    public List<String> getEnabledFeatures(@NonNull String userId, @NonNull Map<String, ?> attributes) {
         if (isValid()) {
             return optimizely.getEnabledFeatures(userId, attributes);
         } else {
@@ -355,7 +358,7 @@ public class OptimizelyClient {
      */
     public @NonNull Boolean isFeatureEnabled(@NonNull String featureKey,
                                              @NonNull String userId,
-                                             @NonNull Map<String, String> attributes) {
+                                             @NonNull Map<String, ?> attributes) {
         if (isValid()) {
             return optimizely.isFeatureEnabled(featureKey, userId, attributes);
         } else {
@@ -401,7 +404,7 @@ public class OptimizelyClient {
     Boolean getFeatureVariableBoolean(@NonNull String featureKey,
                                       @NonNull String variableKey,
                                       @NonNull String userId,
-                                      @NonNull Map<String, String> attributes) {
+                                      @NonNull Map<String, ?> attributes) {
         if (isValid()) {
             return optimizely.getFeatureVariableBoolean(featureKey, variableKey, userId, attributes);
         } else {
@@ -445,7 +448,7 @@ public class OptimizelyClient {
     Double getFeatureVariableDouble(@NonNull String featureKey,
                                     @NonNull String variableKey,
                                     @NonNull String userId,
-                                    @NonNull Map<String, String> attributes) {
+                                    @NonNull Map<String, ?> attributes) {
         if (isValid()) {
             return optimizely.getFeatureVariableDouble(featureKey, variableKey, userId, attributes);
         } else {
@@ -489,7 +492,7 @@ public class OptimizelyClient {
     Integer getFeatureVariableInteger(@NonNull String featureKey,
                                       @NonNull String variableKey,
                                       @NonNull String userId,
-                                      @NonNull Map<String, String> attributes) {
+                                      @NonNull Map<String, ?> attributes) {
         if (isValid()) {
             return optimizely.getFeatureVariableInteger(featureKey, variableKey, userId, attributes);
         } else {
@@ -533,7 +536,7 @@ public class OptimizelyClient {
     String getFeatureVariableString(@NonNull String featureKey,
                                     @NonNull String variableKey,
                                     @NonNull String userId,
-                                    @NonNull Map<String, String> attributes) {
+                                    @NonNull Map<String, ?> attributes) {
         if (isValid()) {
             return optimizely.getFeatureVariableString(featureKey, variableKey, userId, attributes);
         } else {
