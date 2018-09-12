@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017, Optimizely, Inc. and contributors                        *
+ * Copyright 2017-2018, Optimizely, Inc. and contributors                        *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -54,7 +54,6 @@ public class DefaultEventHandlerTest {
 
     private DefaultEventHandler eventHandler;
     private String url = "http://www.foo.com";
-    private String requestBody = "key1=val1&key2=val2&key3=val3";
 
     @Before
     public void setupEventHandler() {
@@ -68,20 +67,20 @@ public class DefaultEventHandlerTest {
 
     @Test
     public void dispatchEventSuccess() throws MalformedURLException {
-        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), requestBody));
+        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), null));
         //verify(context).startService(any(Intent.class));
         verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }
 
     @Test
     public void dispatchEmptyUrlString() {
-        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, "", new HashMap<String, String>(), requestBody));
+        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, "", new HashMap<String, String>(), null));
         verify(logger).error("Event dispatcher received an empty url");
     }
 
     @Test
     public void dispatchEmptyParams() {
-        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), requestBody));
+        eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), null));
         //verify(context).startService(any(Intent.class));
         verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }
