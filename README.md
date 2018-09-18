@@ -1,13 +1,13 @@
 # Optimizely Android SDK Tutorial
 
-This tutorial enables you to quickly get started in your development efforts to create an Android app with the Optimizely X Android SDK. This SDK package includes a `test-app` project that runs integration tests with the Android Espresso framework.
+This tutorial enables you to quickly get started in your development efforts to create an Android app with the Optimizely X Android SDK. This SDK package includes a Test App project that runs integration tests with the Android Espresso framework.
 
 ![test-app screens](./demo-app-flow.png)
 
-The `test-app` project works as follows:
+The Test App works as follows:
 * The splash screen initializes the Optimizely manager asynchronously which starts the datafile fetch.
 * Once the datafile is fetched and the Optimizely manager is started, the Optimizely client is obtained from the Optimizely manager and used to activate the experiment named `background_experiment`. This buckets the user and sends an impression event.
-* The bucketed variation is then used to determine which activity to show: `VariationAActivity` for **variation_a**, `VariationBActivity` for **variation_b**, or `ActivationErrorActivity` for the control.
+* The bucketed variation is then used to determine which Activity to display: `VariationAActivity` for **variation_a**, `VariationBActivity` for **variation_b**, or `ActivationErrorActivity` for the control.
 * Each of the variation activities includes a button entitled *Test Conversion* that invokes the respective variation test.
 * Clicking on that button invokes `optimizelyClient.track()` and sends a conversion event for the event named `sample_conversion`.
 * The application then navigates to the conversion page to provide feedback that a conversion event has been sent.
@@ -77,11 +77,12 @@ git clone git@github.com:optimizely/android-sdk.git
 ./gradlew user-profile:tasks
 ```
 
-## How the test-app was Created
-* todo - set up the modules
-* set permisisons
-* configure visual assets
-* design the ui
+## How the Test App was Created
+The following subsections provide information about key aspects of the Test App and how it was put together:
+* [Modules](#modules)
+* [Manifest Permisisons](#manifest-permissions)
+* [User Interface and Visual Assets](#user-interface-and-visual-assets)
+* [Variation Activity Design](#variation-activity-design)
 
 ### Modules
 This project has six modules: 
@@ -216,10 +217,10 @@ The activities for both variation screens consist of text indicating the variati
 
 ## Configure Resources
 To configure A/B tests:
-* create a manager instance
-* Initializing the manager
+* [Create the Manager Instance](#create-the-manager-instance)
+* [Initialize the Manager](#initialize-the-manager)
 
-### Creating the Manager Instance
+### Create the Manager Instance
 The code samples in this section are in **test-app/java/com.optimizely.ab.android.test.app/MyApplication.java**.
 
 The `OnCreate()` method in the main application class (`MyApplication`) obtains and uses a builder to create and store a reference to an `OptimizelyManager` object:
@@ -261,7 +262,7 @@ public class MyApplication extends Application {
 }
 ```
 
-### Initializing the manager
+### Initialize the Manager
 The code samples in this section are in **test-app/java/com.optimizely.ab.android.test.app/SplashScreenActivity.java**.
 
 The `onCreate()` method in the `SplashScreenActivity` class acquires a reference to the application and then invokes its `getOptimizelyManager` method to obtain a reference to the `OptimizelyManager` object:
@@ -331,10 +332,10 @@ public class SplashScreenActivity extends AppCompatActivity {
 The local boolean `INITIALIZE_ASYNCHRONOUSLY` is used to control whether initialization takes place asynchronously or synchronously. By default, `INITIALIZE_ASYNCHRONOUSLY` has been hard coded to false.
 
 ## Functionality
-* Starting an A/B Test
-* Tracking the Test
+* [Perform an A/B Test](#perform-an-a-b-test)
+* [Track the Experiment](#track-the-experiment)
 
-### Performing an A/B Test
+### Perform an A/B Test
 The `startVariation()` method in the `SplashScreenActivity` class generates a random user ID and then activates the `background_experiment` with that ID. When the Variation is returned, the code invokes Variation's `getKey()` method to determine if it's `variation_a` or `variation_b`. The code then stores the respective Variation Activity class in a new Intent and uses it to start the appropriate Variation Activity for display:
 
 ```
@@ -370,7 +371,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 ```
 
-### Tracking the Experiment
+### Track the Experiment
 The code samples in this section are in **test-app/java/com.optimizely.ab.android.test.app/ConversionFragment.java**.
 
 The `ConversionFragment` class is automatically created when `VariationAActivity` or `VariationBActivity` is created. During creation, the class's `onViewCreated()` method is invoked and sets up a listener for button click events:
