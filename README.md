@@ -340,7 +340,7 @@ In this section, you will see how to use the test app design to:
 * [Track an Experiment](#track-the-experiment)
 
 ### Perform an A/B Test
-The `startVariation()` method in the `SplashScreenActivity` class generates a random user ID and then activates the `background_experiment` with that ID. When the Variation is returned, the code invokes Variation's `getKey()` method to determine if it's `variation_a` or `variation_b`. The code then stores the respective Variation Activity class in a new Intent and uses it to start the appropriate Variation Activity for display:
+The `startVariation()` method in the `SplashScreenActivity` class generates a random user ID and activates the `background_experiment` with that ID. When the Variation is returned, the code invokes the Variation's `getKey()` method to determine if it is `variation_a` or `variation_b`. The code then stores the respective Variation Activity class in a new Intent and uses it to start the appropriate Variation Activity for display:
 
 ```java
 public class SplashScreenActivity extends AppCompatActivity {
@@ -375,7 +375,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 ```
 
 ### Track an Experiment
-The code samples in this section are in **test-app/java/com.optimizely.ab.android.test.app/ConversionFragment.java**. [ConversionFragment.java](./test-app/src/main/java/com/optimizely/ab/android/test_app/ConversionFragment.java)
+The code samples in this section are also located in [ConversionFragment.java](./test-app/src/main/java/com/optimizely/ab/android/test_app/ConversionFragment.java).
 
 The `ConversionFragment` class is automatically created when `VariationAActivity` or `VariationBActivity` is created. During creation, the class's `onViewCreated()` method is invoked and sets up a listener for button click events:
 
@@ -412,7 +412,7 @@ public class ConversionFragment extends Fragment {
 }
 ```
 
- When the button is clicked and the handler is invoked, the code uses a reference to the `OptimizelyManager` manager object from the application to obtain a reference to the `OptimizelyClient` object. The code then invokes the [Track](https://docs.developers.optimizely.com/full-stack/docs/track) method to track events across the experiment. At the end of the event handler, an `EventConfirmationActivity` is started to inform the user that the test has started.
+ When the button is clicked and the handler is invoked, the code uses a reference to the `OptimizelyManager` manager object to retrieve a reference to the `OptimizelyClient` object. The code then invokes the [Track](https://docs.developers.optimizely.com/full-stack/docs/track) method to track events across the experiment. At the end of the event handler, an `EventConfirmationActivity` informs the user that the test has started.
 
 
 
