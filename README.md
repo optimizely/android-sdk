@@ -5,12 +5,12 @@ This tutorial enables you to quickly get started in your development efforts to 
 ![test-app screens](./demo-app-flow.png)
 
 The Test App works as follows:
-* The splash screen initializes the Optimizely manager asynchronously which starts the datafile fetch.
-* Once the datafile is fetched and the Optimizely manager is started, the Optimizely client is obtained from the Optimizely manager and used to activate the experiment named `background_experiment`. This buckets the user and sends an impression event.
+* The splash screen initializes the Optimizely manager asynchronously, which starts the datafile download.
+* Once the datafile is downloaded and the Optimizely manager is started, the Optimizely client is retrieved from the Optimizely manager and used to activate the experiment named `background_experiment`. This buckets the user and sends an impression event.
 * The bucketed variation is then used to determine which Activity to display: `VariationAActivity` for **variation_a**, `VariationBActivity` for **variation_b**, or `ActivationErrorActivity` for the control.
-* Each of the variation activities includes a button entitled *Test Conversion* that invokes the respective variation test.
-* Clicking on that button invokes `optimizelyClient.track()` and sends a conversion event for the event named `sample_conversion`.
-* The application then navigates to the conversion page to provide feedback that a conversion event has been sent.
+* Each of the variation activities includes a button entitled *Test Conversion* that invokes the variation test.
+* Clicking that button invokes `optimizelyClient.track()` and sends a conversion event for the event named `sample_conversion`.
+* The application then navigates to the conversion page to provide confirmation that a conversion event has been sent.
 
 ## Prerequisites
 * Android Studio
@@ -35,8 +35,8 @@ OptimizelyManager.Builder builder = OptimizelyManager.builder();
 ```
 9. (Optional) Ensure an Android device is connected.
 10. Select **Run** > **Run 'test-app'**. Select your Android device or the emulator.
-11. Verify that the break point is hit.
-12. Resume program execution and verify that the demo app appears on the target Android device.
+11. Verify that execution reaches the break point.
+12. Resume program execution and verify that the test app appears on the target Android device.
 
 ### Command Line
 This section provides the steps to build the project and execute its various tests from the command line, and includes commands to discover additional tasks.
@@ -60,12 +60,12 @@ git clone git@github.com:optimizely/android-sdk.git
 ./gradlew testAllModules
 ```
 
-4. Install the test app onto all connected devices and emulators:
+4. Install the test app on all connected devices and emulators:
 ```shell
 ./gradlew test-app:installDebug
 ```
 
- **Note:** The test app depends on all of the other project modules. Changes in any modules source will be applied to the test app on the next build.
+ **Note:** The test app depends on all of the other project modules. Changes in any modules source will be applied to the test app in the next build.
 
 5. Discover more gradle tasks:
 ```shell
@@ -85,10 +85,10 @@ The following subsections provide information about key aspects of the Test App 
 * [Variation Activity Design](#variation-activity-design)
 
 ### Modules
-This project has six modules: 
+This project has the following modules: 
 
 1. **Android SDK**: contains the Optimizely X Android SDK with the following two primary responsibilities:
- * Handles downloading the Optimizely datafile and building Optimizely objects.
+ * Handles downloading of the Optimizely datafile and building Optimizely objects.
  * Delivers the compiled Optimizely object to listeners and caches it in memory.
 
  Developers who want to include all modules in their projects should declare a dependency on this module, as this module contains dependencies on all other modules in the project. 
@@ -97,13 +97,13 @@ This project has six modules:
 
 3. **Datafile Handler**: handles the downloading and caching of the configuration datafile. The Optimizely Android SDK core uses a default implementation provided in this module called `DefaultDatafileHandler`.
 
-4. **User Profile**: makes bucketing persistent allowing the SDK to know if a user has already been bucketed for an experiment. Once a user is bucketed in an variation they will remain in that variation. The Optimizely Android SDK core uses a default implementation provided in this module called `DefaultUserProfileService`.
+4. **User Profile**: makes bucketing persistent, allowing the SDK to determine if a user has already been bucketed for an experiment. Once a user is bucketed in a variation, they remain in that variation. The Optimizely Android SDK core uses a default implementation provided in this module called `DefaultUserProfileService`.
 
 5. **Shared**: contains common utility/helper code for use by all modules.
 
 6. **Test App**: contains a simple app showing how to use the Android Optimizely SDK that was built using all of the modules.
 
-Each module has source in **<module>/src/main/java** and test source in **<module>/src/androidTest**. The build is configured in the build.gradle for each module. The settings.gradle in the project root declares modules. The build.gradle in the project root has build config common for all modules.
+Each module has source in **&lt;module>/src/main/java** and test source in **&lt;module>/src/androidTest**. The build is configured in the `build.gradle` for each module. The `settings.gradle` in the project root declares modules. The `build.gradle` in the project root has build config common for all modules.
 
 For details about the APIs used to develop this sample, see the [documentation](https://docs.developers.optimizely.com/full-stack/docs).
 
