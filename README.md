@@ -108,7 +108,7 @@ Each module has source in **&lt;module>/src/main/java** and test source in **&lt
 For details about the APIs used to develop this sample, see the [documentation](https://docs.developers.optimizely.com/full-stack/docs).
 
 ### Manifest Permissions
-In the `AndroidManifest.xml file` for the **test-app** project, `uses-permissions` settings were added to disable the device's security keylock, add a wake lock to prevent the device from sleeping, receive the boot completed event so that events may be rescheduled on reboot, and to access the Wi-Fi connectivity state. The manifest also includes two receivers that are used to schedule services.
+In the `AndroidManifest.xml file` for the **test-app** project, `uses-permissions` settings are specified to disable the device's security keylock, add a wake lock to prevent the device from sleeping, receive the boot completed event so that events may be rescheduled on reboot, and access the Wi-Fi connectivity state. The manifest also includes two receivers that are used to schedule services.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -263,7 +263,7 @@ public class MyApplication extends Application {
 ```
 
 ### Initialize the Manager
-The code samples in this section are in **test-app/java/com.optimizely.ab.android.test.app/SplashScreenActivity.java**.
+The code samples in this section are also located in **test-app/java/com.optimizely.ab.android.test.app/SplashScreenActivity.java**. [SplashScreenActivity.java](./test-app/java/com.optimizely.ab.android.test.app/SplashScreenActivity.java)
 
 The `onCreate()` method in the `SplashScreenActivity` class acquires a reference to the application and then invokes its `getOptimizelyManager` method to obtain a reference to the `OptimizelyManager` object:
 
