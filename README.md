@@ -334,14 +334,15 @@ public class SplashScreenActivity extends AppCompatActivity {
 The local boolean `INITIALIZE_ASYNCHRONOUSLY` is used to control whether initialization takes place asynchronously or synchronously. By default, `INITIALIZE_ASYNCHRONOUSLY` has been set to `false`.
 
 ## Functionality
+
+In this section, you will see how to use the test app design to:
 * [Perform an A/B Test](#perform-an-a-b-test)
-* [Track the Experiment](#track-the-experiment)
+* [Track an Experiment](#track-the-experiment)
 
 ### Perform an A/B Test
 The `startVariation()` method in the `SplashScreenActivity` class generates a random user ID and then activates the `background_experiment` with that ID. When the Variation is returned, the code invokes Variation's `getKey()` method to determine if it's `variation_a` or `variation_b`. The code then stores the respective Variation Activity class in a new Intent and uses it to start the appropriate Variation Activity for display:
 
-```
-java
+```java
 public class SplashScreenActivity extends AppCompatActivity {
     ...
 
@@ -373,8 +374,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 ```
 
-### Track the Experiment
-The code samples in this section are in **test-app/java/com.optimizely.ab.android.test.app/ConversionFragment.java**.
+### Track an Experiment
+The code samples in this section are in **test-app/java/com.optimizely.ab.android.test.app/ConversionFragment.java**. [ConversionFragment.java](./test-app/src/main/java/com/optimizely/ab/android/test_app/ConversionFragment.java)
 
 The `ConversionFragment` class is automatically created when `VariationAActivity` or `VariationBActivity` is created. During creation, the class's `onViewCreated()` method is invoked and sets up a listener for button click events:
 
