@@ -1,105 +1,421 @@
-# Optimizely Android SDK
-Master<br/> 
-[![Master Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=master)](https://travis-ci.org/optimizely/android-sdk)
-<br/>
-<br/>
-[![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-## Overview
+# Optimizely Android SDK Tutorial
 
-This repository houses the Android SDK for Optimizely's Mobile product. To find out more check out the [documentation](https://developers.optimizely.com/x/solutions/sdks/introduction/index.html?language=android&platform=mobile).
+This tutorial enables you to quickly get started in your development efforts to create an Android app with the Optimizely X Android SDK. This SDK package includes a `test-app` project that runs integration tests with the Android Espresso framework.
 
-This repo depends on the [Optimizely Java SDK](https://github.com/optimizely/java-sdk).
+![test-app screens](./demo-app-flow.png)
 
-## Architecture
+The `test-app` project works as follows:
+* The splash screen initializes the Optimizely manager asynchronously which starts the datafile fetch.
+* Once the datafile is fetched and the Optimizely manager is started, the Optimizely client is obtained from the Optimizely manager and used to activate the experiment named `background_experiment`. This buckets the user and sends an impression event.
+* The bucketed variation is then used to determine which activity to show: `VariationAActivity` for **variation_a**, `VariationBActivity` for **variation_b**, or `ActivationErrorActivity` for the control.
+* Each of the variation activities includes a button entitled *Test Conversion* that invokes the respective variation test.
+* Clicking on that button invokes `optimizelyClient.track()` and sends a conversion event for the event named `sample_conversion`.
+* The application then navigates to the conversion page to provide feedback that a conversion event has been sent.
 
-This project has 5 modules. Each module has source in `<module>/src/main/java`
-and test source in `<module>src/main/androidTest`. The build is configured
-in the `build.gradle` for each module.  The `settings.gradle` in the project
-root declares modules.  The `build.gradle` in the project root has build
-config common for all modules.
+## Prerequisites
+* Android Studio
+* Github account configured with [SSH keys](https://help.github.com/articles/connecting-to-github-with-ssh/)
 
-1. Android SDK
-  - Users who want all modules should declare a dependency on this module
-  - This is the outer module that depends on all other modules
-  - Handles downloading the Optimizely datafile and building Optimizely objects
-  - Delivers the built Optimizely object to listeners and caches it in memory
-2. Event Handler
-  - Handles dispatching events to the Optimizely backend
-  - Uses a Service so events can be sent without the app being re-opened
-  - Persists events in a SQLite3 database
-  - Required to be implemented by the Optimizely Java core
-3. User Profile
-  - Optional implementation for Optimizely Java core
-  - Makes bucketing persistent
-    - Once a user is bucketed in an variation they will remain in that variation
-4. Shared
-  - Common utils for all modules
-5. Test App
-  - Built against the source of all modules
-  - Simple app showing how to use Android Optimizely
-
-## Developing
-
-### Command Line
-
-1. Clone the repo
-  * `git clone git@github.com:optimizely/android-sdk.git`
-3. Create, or use an existing, Optimizely Android project
-4. Build the project (from the project root)
-  * `./gradlew assemble`
-5. Run tests for all modules
-  * `./gradlew testAllModules`
-  * A device or emulator must be connected
-6. Install the test app onto all connected devices and emulators
-  * `./gradlew test-app:installDebug`
-  * The test app depends on all of the other project modules
-  * The modules are built from source
-  * Changes in any modules source will be applied to the test app on the next build
-7.  Discover more gradle tasks
-  * `./gradlew tasks`
-  * To see the task of an individual module
-    * `./gradlew user-profile:tasks`
+## Quick start
+This section shows you how to prepare, build, and run the sample application using both Android Studio and the command line.
 
 ### Android Studio
+This section provides the steps to open and build the project in Android Studio.
 
-Android Studio is an IDE that wraps gradle (and `adb`).  Everything you can do in Android Studio can be done from command line with gradle and the other android command line tools.  
+1. Clone or download the **android-sdk** project.
+2. Run Android Studio.
+3. Select **Open an existing Android Studio project** from Android Studio's splash screen.
+4. Navigate to the location where you downloaded the **android-sdk** project in Step 1 and click **Open**.
+5. Select **Build** > **Rebuild Project**.
+6. Expand the **test-app** sub project in the Project View.
+7. Open **test-app** > **java** > **com.optimizely > MyApplication**.
+8. Place a breakpoint on the following line within the **OnCreate** method:
+```java
+OptimizelyManager.Builder builder = OptimizelyManager.builder();
+```
+9. (Optional) Ensure an Android device is connected.
+10. Select **Run** > **Run 'test-app'**. Select your Android device or the emulator.
+11. Verify that the break point is hit.
+12. Resume program execution and verify that the demo app appears on the target Android device.
 
-You can import this project into Android Studio by opening Android Studio and selecting `Import Project` from the first dialog or from the `File` menu.  Simply select the project's root `build.gradle` file and Android Studio will do the rest.
+### Command Line
+This section provides the steps to build the project and execute its various tests from the command line, and includes commands to discover additional tasks.
 
-Tests can be run by right clicking the file in the project pane or by clicking the method name in source and selecting run.  You will be prompted to create an AVD or connect a device if one isn't connected.  
+1. Ensure an Android device or emulator is connected.
 
-## Releasing
+2. Open a terminal window.
 
-The default branch is devel.  Feature branch PRs are automatically made against it. When PRs are reviewed and pass checks they should be squashed and merged into devel.  Devel will be built and tested for each commit.
+2. Clone the repo:
+```shell
+git clone git@github.com:optimizely/android-sdk.git
+```
 
-Versions are managed via git tags.  Tags can be created from the command line or from the Github UI.
+2. Build the project (from the project root):
+```shell
+./gradlew assemble
+```
 
-Snapshot builds are made off of the beta branch.  Travis will test all commits to this branch.  When a commit is tagged and pushed, Travis will build, test, *and*, ship the build to Bintray.  The version name used
-is the name of the tag.  For snapshot builds the version should have `-SNAPSHOT` appended.  For example `0.1.2-SNAPSHOT`.  Multiple builds with the same version can be pushed to Bintray when using snapshot versions.
-This keeps the version number from increasing too quickly for beta builds.  Grade and maven ensure that users are on the latest snapshot via timestamps.
-There can be only one git tag per version name so snapshot tags may need to be moved.  For example `git tag -f -a 0.1.2` and `git push -f --tags`.  
+3. Run tests for all modules:
+```shell
+./gradlew testAllModules
+```
 
-Release builds are made off of the master branch.  Travis will test all commits to this branch.  Just like the beta branch, pushing a tag will trigger a build, tests, and release of the version of the tag to Bintray.
-For example, to release version 0.1.2 you need to pull devel, checkout master, pull master, fast-forward master to devel, push master, then release 0.1.2 on Github, which creates a tag.  You could also run 
-`git tag -a 0.1.2 -m 'Version 0.1.2`.  The argument to `-a` is the actual version name used on Bintray so it must be exact.  Then run `git push --tags` to trigger Travis.
+4. Install the test app onto all connected devices and emulators:
+```shell
+./gradlew test-app:installDebug
+```
 
-*Note:* only Optimizely employees can push to master, beta, and devel branches.
+ **Note:** The test app depends on all of the other project modules. Changes in any modules source will be applied to the test app on the next build.
 
-## Contributing
-Please see [CONTRIBUTING](CONTRIBUTING.md).
+5. Discover more gradle tasks:
+```shell
+./gradlew tasks
+```
 
-### Credits
+6. Use the following command to see the task of an individual module:
+```shell
+./gradlew user-profile:tasks
+```
 
-First-party code (under android-sdk/, datafile-handler/, event-handler/, shared/, user-profile/) is copyright Optimizely, Inc. and contributors, licensed under Apache 2.0
+## How the test-app was Created
+* todo - set up the modules
+* set permisisons
+* configure visual assets
+* design the ui
 
-### Additional Code
+### Modules
+This project has six modules: 
 
-This software incorporates code from the following open source projects:
+1. **Android SDK**: contains the Optimizely X Android SDK with the following two primary responsibilities:
+ * Handles downloading the Optimizely datafile and building Optimizely objects.
+ * Delivers the compiled Optimizely object to listeners and caches it in memory.
 
-**Optimizely.ab:core-api** [https://github.com/optimizely/java-sdk](https://github.com/optimizely/java-sdk)
-License (Apache 2.0): [https://github.com/optimizely/java-sdk/blob/master/LICENSE](https://github.com/optimizely/java-sdk/blob/master/LICENSE)
-Additional credits from java-sdk:[https://github.com/optimizely/java-sdk/blob/master/README.md](https://github.com/optimizely/java-sdk/blob/master/README.md)
+ Developers who want to include all modules in their projects should declare a dependency on this module, as this module contains dependencies on all other modules in the project. 
 
-**Android Logger** [https://github.com/noveogroup/android-logger](https://github.com/noveogroup/android-logger)
-License (Public Domain): [https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt](https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt)
+2. **Event Handler**: handles dispatching events to the Optimizely backend using a Service so that events can be sent without the app being re-opened. Events are persisted in a SQLite3 database. The Optimizely Android SDK core uses a default implementation provided in this module called `DefaultEventHandler`
+
+3. **Datafile Handler**: handles the downloading and caching of the configuration datafile. The Optimizely Android SDK core uses a default implementation provided in this module called `DefaultDatafileHandler`.
+
+4. **User Profile**: makes bucketing persistent allowing the SDK to know if a user has already been bucketed for an experiment. Once a user is bucketed in an variation they will remain in that variation. The Optimizely Android SDK core uses a default implementation provided in this module called `DefaultUserProfileService`.
+
+5. **Shared**: contains common utility/helper code for use by all modules.
+
+6. **Test App**: contains a simple app showing how to use the Android Optimizely SDK that was built using all of the modules.
+
+Each module has source in **<module>/src/main/java** and test source in **<module>/src/androidTest**. The build is configured in the build.gradle for each module. The settings.gradle in the project root declares modules. The build.gradle in the project root has build config common for all modules.
+
+For details about the APIs used to develop this sample, see the [documentation](https://docs.developers.optimizely.com/full-stack/docs).
+
+### Manifest Permissions
+In the `AndroidManifest.xml file` for the **test-app** project, `uses-permissions` settings were added to disable the device's security keylock, add a wake lock to prevent the device from sleeping, receive the boot completed event so that events may be rescheduled on reboot, and to access the Wi-Fi connectivity state. The manifest also includes two receivers that are used to schedule services.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.optimizely.ab.android.test_app">
+
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
+    <application
+        android:name=".MyApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <service
+            android:name=".NotificationService"
+            android:exported="false" />
+
+        <activity
+            android:name=".SplashScreenActivity"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".VariationAActivity" />
+        <activity android:name=".EventConfirmationActivity" />
+        <activity android:name=".ActivationErrorActivity" />
+        <activity android:name=".VariationBActivity"></activity>
+
+        <!--
+           Add these lines to your manifest if you want the datafile download background services to schedule themselves again after a boot
+           or package replace.
+        -->
+         <receiver
+             android:name="com.optimizely.ab.android.datafile_handler.DatafileRescheduler"
+             android:enabled="true"
+             android:exported="false"
+             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+             <intent-filter>
+                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+             </intent-filter>
+         </receiver>
+        <!--
+          Add these lines to your manifest if you want the event handler background services to schedule themselves again after a boot
+          or package replace.
+        -->
+        <receiver
+            android:name="com.optimizely.ab.android.event_handler.EventRescheduler"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>
+```
+
+### User Interface and Visual Assets
+The following activity layout files are in the **/res/layout** directory:
+|Asset                   |Description                                                                                        |
+|------------------------|---------------------------------------------------------------------------------------------------|
+|`activity_activation_error.xml`|Displayed when an error occurs.|
+|`activity_event_confirmation.xml`|Displayed when a test has been confirmed as sent by the app to Optimizely.|
+|`activity_splash_screen.xml`|Displays a splash screen during load.|
+|`activity_variation_a.xml`|Displays a screen for Variation A.|
+|`activity_variation_b.xml`|Displays a screen for Variation B.|
+|`fragment_conversion.xml`|Contains the **TEST CONVERSION** button embedded in the two variation activity screens.|
+
+
+The following vector art files in the **/res/drawable** directory are used as background images for the various activities:
+
+|Asset                   |Description                                                                                        |
+|------------------------|---------------------------------------------------------------------------------------------------|
+|`ic_background_confirmation.xml`|Contains the background image for the event confirmation screen.|
+|`ic_background_error.xml`|Contains the background image for the error screen.|
+|`ic_background_varia.xml`|Contains the background image for the Variation A activity.|
+|`ic_background_varib_marina.xml`|Contains the background image for the Variation B activity.|
+|`ic_optimizely_logo.xml`|Contains the Optimizely logo used on the splash screen activity.|
+
+### Variation Activity Design
+The activities for both variation screens consist of text indicating the variation and a button fragment to invoke the test as shown in this screen shot of the Variation A activity:
+
+![Variation A Activity](./VariationAActivity.png)
+
+|Component                        |Description                                                                                                                                 |
+|---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+|`tv_variation_a_text1`       |Contains the text identifying the variation.|
+|`tv_variation_a_text2`       |Contains the word "variation".|
+|`ConversionFragment`       |References the **TEST CONVERSION** button for inclusion on the screen.|
+
+## Configure Resources
+To configure A/B tests:
+* create a manager instance
+* Initializing the manager
+
+### Creating the Manager Instance
+The code samples in this section are in **test-app/java/com.optimizely.ab.android.test.app/MyApplication.java**.
+
+The `OnCreate()` method in the main application class (`MyApplication`) obtains and uses a builder to create and store a reference to an `OptimizelyManager` object:
+
+```java
+...
+import com.optimizely.ab.android.sdk.OptimizelyManager;
+...
+
+public class MyApplication extends Application {
+
+    ...
+    private OptimizelyManager optimizelyManager;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        OptimizelyManager.Builder builder = OptimizelyManager.builder();
+        optimizelyManager =  builder.withEventDispatchInterval(60L * 10L)
+            .withDatafileDownloadInterval(60L * 10L)
+            .withSDKKey("6hmwpgZcRFp36wH5QLK8Sb")
+            .build(getApplicationContext());
+    }
+    ...
+}
+```
+
+The class makes the reference to the `OptimizelyManager` available to other classes via its `getOptimizelyManager()` helper method:
+```java
+public class MyApplication extends Application {
+
+    ...
+
+    public OptimizelyManager getOptimizelyManager() {
+        return optimizelyManager;
+    }
+    ...
+}
+```
+
+### Initializing the manager
+The code samples in this section are in **test-app/java/com.optimizely.ab.android.test.app/SplashScreenActivity.java**.
+
+The `onCreate()` method in the `SplashScreenActivity` class acquires a reference to the application and then invokes its `getOptimizelyManager` method to obtain a reference to the `OptimizelyManager` object:
+
+```java
+public class SplashScreenActivity extends AppCompatActivity {
+
+    ...
+    private OptimizelyManager optimizelyManager;
+    private MyApplication myApplication;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash_screen);
+
+        // This could also be done via DI framework such as Dagger
+        myApplication = (MyApplication) getApplication();
+        optimizelyManager = myApplication.getOptimizelyManager();
+    }
+
+    ...
+}
+
+```
+
+The `onCreate()` method in the `SplashScreenActivity` class initializes the OptimizelyManager instance:
+public class SplashScreenActivity extends AppCompatActivity {
+    ...
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        boolean INITIALIZE_ASYNCHRONOUSLY = false;
+
+        ...
+
+        /** Example of using Cache datafile to initialize optimizely client, if file is not present
+         in Cache it will be initialized from Raw.datafile.
+         **/
+        if (!INITIALIZE_ASYNCHRONOUSLY) {
+               optimizelyManager.initialize(myApplication, R.raw.datafile);
+               optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, String> map,  Variation variation,  LogEvent logEvent) -> {
+                   System.out.println("got activation");
+               });
+               optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, String> map, Map<String, ?> map1, LogEvent logEvent) -> {
+
+                   System.out.println("got track");
+               });
+               startVariation();
+        } else {
+            // Initialize Optimizely asynchronously
+            optimizelyManager.initialize(this,R.raw.datafile, new OptimizelyStartListener() {
+
+                @Override
+                public void onStart(OptimizelyClient optimizely) {
+                    startVariation();
+                }
+            });
+        }
+
+    }
+    ...
+}
+
+
+The local boolean `INITIALIZE_ASYNCHRONOUSLY` is used to control whether initialization takes place asynchronously or synchronously. By default, `INITIALIZE_ASYNCHRONOUSLY` has been hard coded to false.
+
+## Functionality
+* Starting an A/B Test
+* Tracking the Test
+
+### Performing an A/B Test
+The `startVariation()` method in the `SplashScreenActivity` class generates a random user ID and then activates the `background_experiment` with that ID. When the Variation is returned, the code invokes Variation's `getKey()` method to determine if it's `variation_a` or `variation_b`. The code then stores the respective Variation Activity class in a new Intent and uses it to start the appropriate Variation Activity for display:
+
+```
+java
+public class SplashScreenActivity extends AppCompatActivity {
+    ...
+
+    private void startVariation(){
+        // this is the control variation, it will show if we are not able to determine which variation to bucket the user into
+        Intent intent = new Intent(myApplication.getBaseContext(), ActivationErrorActivity.class);
+
+        // Activate user and start activity based on the variation we get.
+        // You can pass in any string for the user ID. In this example we just use a convenience method to generate a random one.
+        String userId = myApplication.getAnonUserId();
+        Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId);
+
+        // Utility method for verifying event dispatches in our automated tests
+        CountingIdlingResourceManager.increment(); // increment for impression event
+
+        // variation is nullable so we should check for null values
+        if (backgroundVariation != null) {
+            // Show activity based on the variation the user got bucketed into
+            if (backgroundVariation.getKey().equals("variation_a")) {
+                intent = new Intent(myApplication.getBaseContext(), VariationAActivity.class);
+            } else if (backgroundVariation.getKey().equals("variation_b")) {
+                intent = new Intent(myApplication.getBaseContext(), VariationBActivity.class);
+            }
+        }
+        startActivity(intent);
+        ...
+    }
+}
+
+```
+
+### Tracking the Experiment
+The code samples in this section are in **test-app/java/com.optimizely.ab.android.test.app/ConversionFragment.java**.
+
+The `ConversionFragment` class is automatically created when `VariationAActivity` or `VariationBActivity` is created. During creation, the class's `onViewCreated()` method is invoked and sets up a listener for button click events:
+
+```java
+public class ConversionFragment extends Fragment {
+
+    Button conversionButton;
+    ...
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        conversionButton = (Button) view.findViewById(R.id.btn_variation_conversion);
+
+        final MyApplication myApplication = (MyApplication) getActivity().getApplication();
+        final OptimizelyManager optimizelyManager = myApplication.getOptimizelyManager();
+
+        conversionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String userId = myApplication.getAnonUserId();
+
+                // This tracks a conversion event for the event named `sample_conversion`
+                OptimizelyClient optimizely = optimizelyManager.getOptimizely();
+                optimizely.track("sample_conversion", userId);
+
+                // Utility method for verifying event dispatches in our automated tests
+                CountingIdlingResourceManager.increment(); // increment for conversion event
+
+                Intent intent = new Intent(myApplication.getBaseContext(), EventConfirmationActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+}
+```
+
+ When the button is clicked and the handler is invoked, the code uses a reference to the `OptimizelyManager` manager object from the application to obtain a reference to the `OptimizelyClient` object. The code then invokes the [Track](https://docs.developers.optimizely.com/full-stack/docs/track) method to track events across the experiment. At the end of the event handler, an `EventConfirmationActivity` is started to inform the user that the test has started.
+
+
+
+
+
+
+
+
+
+
 
