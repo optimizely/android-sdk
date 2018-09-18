@@ -263,7 +263,7 @@ public class MyApplication extends Application {
 ```
 
 ### Initialize the Manager
-The code samples in this section are also located in **test-app/java/com.optimizely.ab.android.test.app/SplashScreenActivity.java**. [SplashScreenActivity.java](./test-app/src/main/java/com/optimizely/ab/android/test_app/SplashScreenActivity.java)
+The code samples in this section are also located in [SplashScreenActivity.java](./test-app/src/main/java/com/optimizely/ab/android/test_app/SplashScreenActivity.java).
 
 The `onCreate()` method in the `SplashScreenActivity` class acquires a reference to the application and then invokes its `getOptimizelyManager` method to obtain a reference to the `OptimizelyManager` object:
 
@@ -289,8 +289,9 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 ```
 
-The `onCreate()` method in the `SplashScreenActivity` class initializes the OptimizelyManager instance:
-public class SplashScreenActivity extends AppCompatActivity {
+The `onCreate()` method in the `SplashScreenActivity` class initializes the `OptimizelyManager` instance:
+
+```javapublic class SplashScreenActivity extends AppCompatActivity {
     ...
     @Override
     protected void onStart() {
@@ -327,9 +328,9 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
     ...
 }
+```
 
-
-The local boolean `INITIALIZE_ASYNCHRONOUSLY` is used to control whether initialization takes place asynchronously or synchronously. By default, `INITIALIZE_ASYNCHRONOUSLY` has been hard coded to false.
+The local boolean `INITIALIZE_ASYNCHRONOUSLY` is used to control whether initialization takes place asynchronously or synchronously. By default, `INITIALIZE_ASYNCHRONOUSLY` has been set to `false`.
 
 ## Functionality
 * [Perform an A/B Test](#perform-an-a-b-test)
