@@ -263,7 +263,7 @@ public class MyApplication extends Application {
 ```
 
 ### Initialize the Manager
-The code samples in this section are also located in **test-app/java/com.optimizely.ab.android.test.app/SplashScreenActivity.java**. [SplashScreenActivity.java](./test-app/java/com.optimizely.ab.android.test.app/SplashScreenActivity.java)
+The code samples in this section are also located in **test-app/java/com.optimizely.ab.android.test.app/SplashScreenActivity.java**. [SplashScreenActivity.java](./test-app/src/main/java/com/optimizely/ab/android/test_app/SplashScreenActivity.java)
 
 The `onCreate()` method in the `SplashScreenActivity` class acquires a reference to the application and then invokes its `getOptimizelyManager` method to obtain a reference to the `OptimizelyManager` object:
 
