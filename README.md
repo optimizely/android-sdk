@@ -291,7 +291,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 The `onCreate()` method in the `SplashScreenActivity` class initializes the `OptimizelyManager` instance:
 
-```javapublic class SplashScreenActivity extends AppCompatActivity {
+```java
+public class SplashScreenActivity extends AppCompatActivity {
     ...
     @Override
     protected void onStart() {
