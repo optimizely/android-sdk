@@ -184,7 +184,7 @@ In the `AndroidManifest.xml file` for the **test-app** project, `uses-permission
 The following activity layout files are in the **/res/layout** directory:
 
 |Asset                   |Description                                                                                        |
-|------------------------|
+|------------------------|---------------------------------------------------------------------------------------------------|
 |`activity_activation_error.xml`|Displayed when an error occurs.|
 |`activity_event_confirmation.xml`|Displayed when a test has been confirmed as sent by the app to Optimizely.|
 |`activity_splash_screen.xml`|Displays a splash screen during load.|
