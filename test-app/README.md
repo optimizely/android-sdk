@@ -121,62 +121,7 @@ In the `AndroidManifest.xml file` for the **test-app** project, `uses-permission
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
-    <application
-        android:name=".MyApplication"
-        android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <service
-            android:name=".NotificationService"
-            android:exported="false" />
-
-        <activity
-            android:name=".SplashScreenActivity"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".VariationAActivity" />
-        <activity android:name=".EventConfirmationActivity" />
-        <activity android:name=".ActivationErrorActivity" />
-        <activity android:name=".VariationBActivity"></activity>
-
-        <!--
-           Add these lines to your manifest if you want the datafile download background services to schedule themselves again after a boot
-           or package replace.
-        -->
-         <receiver
-             android:name="com.optimizely.ab.android.datafile_handler.DatafileRescheduler"
-             android:enabled="true"
-             android:exported="false"
-             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
-             <intent-filter>
-                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-             </intent-filter>
-         </receiver>
-        <!--
-          Add these lines to your manifest if you want the event handler background services to schedule themselves again after a boot
-          or package replace.
-        -->
-        <receiver
-            android:name="com.optimizely.ab.android.event_handler.EventRescheduler"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
-            <intent-filter>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE" />
-            </intent-filter>
-        </receiver>
-
-    </application>
+    ...
 
 </manifest>
 ```
@@ -307,13 +252,7 @@ public class SplashScreenActivity extends AppCompatActivity {
          **/
         if (!INITIALIZE_ASYNCHRONOUSLY) {
                optimizelyManager.initialize(myApplication, R.raw.datafile);
-               optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, String> map,  Variation variation,  LogEvent logEvent) -> {
-                   System.out.println("got activation");
-               });
-               optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, String> map, Map<String, ?> map1, LogEvent logEvent) -> {
-
-                   System.out.println("got track");
-               });
+               ...
                startVariation();
         } else {
             // Initialize Optimizely asynchronously
@@ -387,10 +326,8 @@ public class ConversionFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        conversionButton = (Button) view.findViewById(R.id.btn_variation_conversion);
 
-        final MyApplication myApplication = (MyApplication) getActivity().getApplication();
-        final OptimizelyManager optimizelyManager = myApplication.getOptimizelyManager();
+        ...
 
         conversionButton.setOnClickListener(new View.OnClickListener() {
             @Override
