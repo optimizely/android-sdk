@@ -4,7 +4,7 @@ This guide enables you to quickly get started in your development efforts to con
 
 For additonal information see the Full Stack [documentation](https://docs.developers.optimizely.com/full-stack/docs).
 
-The following steps illustrate the main calls you will need to make to consume the API
+The following steps illustrate the main API calls you will generally need when using the SDK.
 
 ## 1. Get the Data File
 A [data file](https://docs.developers.optimizely.com/full-stack/docs/get-the-datafile) contains information about your experiments' configurations. The file is hosted by Optimizely and the URL is available from your Optimizely dashboard under **Settings** > **Environments**. The following example demonstrates how to obtain this file client code:
