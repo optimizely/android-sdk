@@ -1,6 +1,6 @@
 # Optimizely Android SDK Getting Started
 
-This guide enables you to quickly get started in your development efforts to consume the Optimizely SDK on Android. This package also includes a [test-app](./test-app/README.md) module and tutorial with a functional sample application demonstratig how to build and use the SDK on Android.
+This guide enables you to quickly get started in your development efforts to consume the Optimizely SDK on Android. This package also includes a [test-app](./test-app/README.md) module and tutorial with a functional sample application demonstrating how to build and use the SDK on Android.
 
 For additonal information see the Full Stack [documentation](https://docs.developers.optimizely.com/full-stack/docs).
 
