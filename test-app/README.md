@@ -1,4 +1,4 @@
-# Optimizely Android SDK Tutorial
+# Optimizely Android SDK Test App Tutorial
 
 This tutorial enables you to quickly get started in your development efforts to create an Android app with the Optimizely X Android SDK. This SDK package includes a Test App project that runs integration tests with the Android Espresso framework.
 
