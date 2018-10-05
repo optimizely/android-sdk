@@ -53,7 +53,7 @@ ext {
     build_tools_version = "27.0.0"
     min_sdk_version = 14
     target_sdk_version = 26
-    java_core_ver = "2.1.2"
+    java_core_ver = "2.1.3"
     android_logger_ver = "1.3.6"
     support_annotations_ver = "24.2.1"
     junit_ver = "4.12"
