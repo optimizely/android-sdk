@@ -94,7 +94,11 @@ public class OptimizelyClient {
         Map<String, Object> combinedMap = new HashMap<>(defaultAttributes);
 
         // this essentially overrides defaultAttributes if the attrs passed in have the same key.
-        combinedMap.putAll(attrs);
+        if (attrs != null) {
+            combinedMap.putAll(attrs);
+        } else if (combinedMap.isEmpty()) {
+            combinedMap = null;
+        }
 
         return combinedMap;
     }
