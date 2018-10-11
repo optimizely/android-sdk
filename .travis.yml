@@ -47,4 +47,6 @@ script:
   - ./gradlew cleanAllModules
   - ./gradlew testAllModulesTravis
   - if [[ -n $TRAVIS_TAG ]]; then ./gradlew ship; fi
+  - git clone https://github.com/juancarlostong/ci.git
+  - "SDK=android ci/trigger_build.sh optimizely%2Ffullstack-sdk-compatibility-suite"
 dist: precise
