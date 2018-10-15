@@ -115,7 +115,7 @@ public class OptimizelyClientTest {
                 when(bucketer.bucket(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY), GENERIC_USER_ID)).thenReturn(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY).getVariations().get(1));
             }
             spyOnConfig();
-        }catch (Exception configException){
+        } catch (Exception configException) {
             logger.error("Error in parsing config",configException);
         }
     }

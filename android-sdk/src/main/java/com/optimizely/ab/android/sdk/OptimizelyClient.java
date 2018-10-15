@@ -160,7 +160,7 @@ public class OptimizelyClient {
      * @return True if the OptimizelyClient instance was instantiated correctly
      */
     public boolean isValid() {
-        if(optimizely != null)
+        if (optimizely != null)
             return optimizely.isValid();
         else
             return false;
