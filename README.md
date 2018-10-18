@@ -4,32 +4,27 @@ This guide enables you to quickly get started in your development efforts to con
 
 For additonal information see the Full Stack [documentation](https://docs.developers.optimizely.com/full-stack/docs).
 
-The following steps illustrate the main API calls you will generally need when using the SDK.
+The following steps illustrate the main steps and API calls you will generally need when using the SDK.
 
-## 1. Get the Data File
-A [data file](https://docs.developers.optimizely.com/full-stack/docs/get-the-datafile) contains information about your experiments' configurations. The file is hosted by Optimizely and the URL is available from your Optimizely dashboard under **Settings** > **Environments**. The following example demonstrates how to obtain this file client code:
+## 1. Get the SDK Key
+An SDK key is needed to use the Optimizely SDK. The SDK key is available from your Optimizely dashboard under **Settings** > **Datafile**. 
 
-```java
-try {
-    String url = "https://cdn.optimizely.com/datafiles/QMVJcUKEJZFg8pQ2jhAybK.json";
-    CloseableHttpClient httpclient = HttpClients.createDefault();
-    HttpGet httpget = new HttpGet(url); 
-    String datafile = EntityUtils.toString(
-      httpclient.execute(httpget).getEntity());
-}
-catch (Exception e) {
-    System.out.print(e);
-    return;
-}
-```
+![images/sdk_key.jpg](images/sdk_key.jpg)
 
 ## 2. Instantiate a Client
-An Optimizely client object contains all of the methods to build and run experiments. It's constructed by invoking the `Optimizely.builder` method and passing in the data file read from the previous step:
-```java
-import com.optimizely.ab.Optimizely;
+An Optimizely client object contains all of the methods to build and run experiments. It's constructed by invoking the `Optimizely.builder` method and passing in the SDK key read from the previous step:
 
-// Instantiate an Optimizely client
-Optimizely optimizelyClient = Optimizely.builder(datafile, eventHandler).build();
+**Note:** Replace `SDK_KEY` with the key retrieved from the previous step.
+
+```java
+import com.optimizely.ab.android.sdk.OptimizelyManager;
+
+OptimizelyManager.Builder builder = OptimizelyManager.builder();
+
+OptimizelyManager optimizelyManager =  builder.withEventDispatchInterval(60L * 10L)
+            .withDatafileDownloadInterval(60L * 10L)
+            .withSDKKey("SDK_KEY")
+            .build(getApplicationContext());
 ```
 
 ## 3. Query Feature Flags
@@ -102,4 +97,3 @@ Additional credits from java-sdk:[https://github.com/optimizely/java-sdk/blob/ma
 
 **Android Logger** [https://github.com/noveogroup/android-logger](https://github.com/noveogroup/android-logger)
 License (Public Domain): [https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt](https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt)
-
