@@ -26,11 +26,13 @@ import com.optimizely.ab.bucketing.DecisionService;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.notification.ActivateNotificationListener;
 import com.optimizely.ab.notification.NotificationCenter;
+import com.optimizely.ab.notification.NotificationListener;
 import com.optimizely.ab.notification.TrackNotificationListener;
 
 import org.junit.Assert;
@@ -57,8 +59,6 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -115,7 +115,7 @@ public class OptimizelyClientTest {
                 when(bucketer.bucket(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY), GENERIC_USER_ID)).thenReturn(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY).getVariations().get(1));
             }
             spyOnConfig();
-        } catch (Exception configException) {
+        }catch (ConfigParseException configException){
             logger.error("Error in parsing config",configException);
         }
     }
@@ -192,7 +192,7 @@ public class OptimizelyClientTest {
         callbackCalled[0] = false;
         int notificationId = optimizelyClient.getNotificationCenter().addNotificationListener(NotificationCenter.NotificationType.Activate, new ActivateNotificationListener() {
             @Override
-            public void onActivate(@Nonnull Experiment experiment, @Nonnull String userId, @Nonnull Map<String, ?> attributes, @Nonnull Variation variation, @Nonnull LogEvent event) {
+            public void onActivate(@Nonnull Experiment experiment, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Variation variation, @Nonnull LogEvent event) {
               callbackCalled[0] = true;
               callbackVariation[0] = variation;
             }
@@ -224,7 +224,7 @@ public class OptimizelyClientTest {
         callbackCalled[0] = false;
         int notificationId = optimizelyClient.getNotificationCenter().addNotificationListener(NotificationCenter.NotificationType.Activate, new TrackNotificationListener() {
                     @Override
-                    public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, ?> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
+                    public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
                         callbackCalled[0] = true;
                     }
                 });
@@ -305,42 +305,6 @@ public class OptimizelyClientTest {
             Variation v = optimizelyClient.activate(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
             assertNotNull(v);
         }
-    }
-
-    private Map<String, ?> expectedAttributes;
-
-    @Test
-    public void testGoodActivationWithTypedAttribute() {
-        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
-        String attributeString = "house";
-        String attributeBoolean = "booleanKey";
-        String attributeInteger = "integerKey";
-        String attributeDouble = "doubleKey";
-
-        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
-                    logger);
-        final HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put(attributeString, "Gryffindor");
-        attributes.put(attributeBoolean, true);
-        attributes.put(attributeInteger, 3);
-        attributes.put(attributeDouble, 3.123);
-
-
-        int notificationId = optimizelyClient.getNotificationCenter().addNotificationListener(NotificationCenter.NotificationType.Activate, new ActivateNotificationListener() {
-            @Override
-            public void onActivate(@Nonnull Experiment experiment, @Nonnull String userId, @Nonnull Map<String, ?> attributes, @Nonnull Variation variation, @Nonnull LogEvent event) {
-                expectedAttributes = new HashMap<>(attributes);
-            }
-        });
-
-        Variation v = optimizelyClient.activate(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
-
-        assertThat((Map<String,? extends String>)expectedAttributes, hasEntry(attributeString, "Gryffindor"));
-        assertThat((Map<String,? extends Boolean>)expectedAttributes, hasEntry(attributeBoolean, true));
-        assertThat((Map<String,? extends Integer>)expectedAttributes, hasEntry(attributeInteger, 3));
-        assertThat((Map<String,? extends Double>)expectedAttributes, hasEntry(attributeDouble, 3.123));
-        assertNotNull(v);
-
     }
 
     @Test
@@ -445,7 +409,7 @@ public class OptimizelyClientTest {
         int notificationId = optimizelyClient.getNotificationCenter().addNotificationListener(NotificationCenter.NotificationType.Activate,
                 new TrackNotificationListener() {
                     @Override
-                    public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, ?> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
+                    public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
                         numberOfCalls[0] = true;
                     }
                 });
@@ -468,7 +432,7 @@ public class OptimizelyClientTest {
         int notificationId = optimizelyClient.getNotificationCenter().addNotificationListener(NotificationCenter.NotificationType.Track,
                 new TrackNotificationListener() {
                     @Override
-                    public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, ?> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
+                    public void onTrack(@Nonnull String eventKey, @Nonnull String userId, @Nonnull Map<String, String> attributes, @Nonnull Map<String, ?> eventTags, @Nonnull LogEvent event) {
                         numberOfCalls[0] = true;
                     }
                 });
@@ -1085,7 +1049,7 @@ public class OptimizelyClientTest {
         OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
         optimizelyClient.setDefaultAttributes(OptimizelyDefaultAttributes.buildDefaultAttributesMap(context, logger));
 
-        Map<String, ?> map = optimizelyClient.getDefaultAttributes();
+        Map<String, String> map = optimizelyClient.getDefaultAttributes();
         Assert.assertEquals(map.size(), 4);
     }
 

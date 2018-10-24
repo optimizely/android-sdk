@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2018, Optimizely, Inc. and contributors                        *
+ * Copyright 2017, Optimizely, Inc. and contributors                        *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -71,10 +71,10 @@ public class SplashScreenActivity extends AppCompatActivity {
          **/
         if (!INITIALIZE_ASYNCHRONOUSLY) {
                optimizelyManager.initialize(myApplication, R.raw.datafile);
-               optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, ?> map,  Variation variation,  LogEvent logEvent) -> {
+               optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, String> map,  Variation variation,  LogEvent logEvent) -> {
                    System.out.println("got activation");
                });
-               optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, ?> map, Map<String, ?> map1, LogEvent logEvent) -> {
+               optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, String> map, Map<String, ?> map1, LogEvent logEvent) -> {
 
                    System.out.println("got track");
                });
