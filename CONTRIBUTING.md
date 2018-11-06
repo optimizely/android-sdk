@@ -5,11 +5,12 @@ We welcome contributions and feedback! All contributors must sign our [Contribut
 ## Development process
 
 1. Create a branch off of `master`: `git checkout -b YOUR_NAME/branch_name`.
-2. Commit your changes. Make sure to add tests!
-3. `git push` your changes to GitHub.
-4. Make sure that all unit tests are passing and that there are no merge conflicts between your branch and `master`.
-5. Open a pull request from `YOUR_NAME/branch_name` to `master`.
-6. A repository maintainer will review your pull request and, if all goes well, squash and merge it!
+2. Commit your changes. We follow the [commit message guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines) from Angular. 
+3. Make sure to add tests!
+4. `git push` your changes to GitHub.
+5. Make sure that all unit tests are passing and that there are no merge conflicts between your branch and `master`.
+6. Open a pull request from `YOUR_NAME/branch_name` to `master`.
+7. A repository maintainer will review your pull request and, if all goes well, squash and merge it!
 
 All branches will be built and run against the entire test suite on Travis with every commit.
 
