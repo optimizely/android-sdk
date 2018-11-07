@@ -767,7 +767,8 @@ public class OptimizelyManager {
             }
 
             if (userProfileService == null) {
-                userProfileService = DefaultUserProfileService.newInstance(projectId, context);
+                DatafileConfig config = new DatafileConfig(projectId, sdkKey);
+                userProfileService = DefaultUserProfileService.newInstance(config.getKey(), context);
             }
 
             if (eventHandler == null) {
