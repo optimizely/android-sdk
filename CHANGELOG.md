@@ -1,5 +1,22 @@
 # Optimizely Android X SDK Changelog
 
+## 2.1.2
+November 8, 2018
+
+This is a patch release.
+This release basically replaces 2.1.1 which was only partially released.
+
+### Bug Fixes
+Filters out attributes with null values from the event payload (via upgrade to Optimizely Java SDK 2.1.3
+
+Fix Optimizely builder to user DatafileConfig instead of deprecated project id.
+
+Update packages for gson, Jackson, and slf4j.
+
+Update credits
+
+Fix job scheduler exception when scheduling a repeatable job in the background.
+
 ## 2.1.1
 October 3nd, 2018
 
