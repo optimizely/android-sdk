@@ -31,6 +31,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static android.app.job.JobScheduler.RESULT_SUCCESS;
 
@@ -137,7 +138,7 @@ public class ServiceScheduler {
                 }
             }
             catch (Exception e) {
-                logger.error("Problem scheduling job ", e);
+                logger.error(String.format("Problem scheduling job %s", intent.getComponent().toShortString()), e);
             }
         }
         else {
@@ -159,11 +160,7 @@ public class ServiceScheduler {
                 if (ServiceScheduler.isScheduled(context, id)) {
                     jobScheduler.cancel(id);
                 }
-            } catch (IllegalAccessException e) {
-                logger.error("Error in Cancel ", e);
-            } catch (NoSuchFieldException e) {
-                logger.error("Error in Cancel ", e);
-            } catch (ClassNotFoundException e) {
+            } catch (Exception e) {
                 logger.error("Error in Cancel ", e);
             }
         }
@@ -175,16 +172,14 @@ public class ServiceScheduler {
     }
 
     private int getJobId(Intent intent) {
-        String clazz = intent.getComponent().getClassName();
+        String clazz = "unknown";
         Integer id = null;
+
         try {
+            clazz = intent.getComponent().getClassName();
             id = (Integer) Class.forName(clazz).getDeclaredField("JOB_ID").get(null);
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
            logger.error("Error getting JOB_ID from " + clazz, e);
-        } catch (NoSuchFieldException e) {
-            logger.error("Error getting JOB_ID from " + clazz, e);
-        } catch (ClassNotFoundException e) {
-            logger.error("Error getting JOB_ID from " + clazz, e);
         }
 
         return id == null ? -1 : id;
@@ -201,7 +196,7 @@ public class ServiceScheduler {
             try {
                 PendingIntent pendingIntent = pendingIntentFactory.getPendingIntent(intent);
                 cancelRepeating(pendingIntent, intent);
-                logger.info("Unscheduled {}", intent.getComponent().toShortString());
+                logger.info("Unscheduled {}", intent.getComponent()!=null ? intent.getComponent().toShortString() : "intent");
             } catch (Exception e) {
                 logger.debug("Failed to unschedule service", e);
             }
@@ -278,7 +273,13 @@ public class ServiceScheduler {
                     .build();
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
-            jobScheduler.enqueue(jobInfo, new JobWorkItem(intent));
+            JobWorkItem jobWorkItem = new JobWorkItem(intent);
+            try {
+                jobScheduler.enqueue(jobInfo, jobWorkItem);
+            }
+            catch (Exception e) {
+                LoggerFactory.getLogger("ServiceScheduler").error("Problem enqueuing work item ", e);
+            }
 
         }
         else {
