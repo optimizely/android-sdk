@@ -553,9 +553,11 @@ public class OptimizelyClient {
     /**
      * Return the notification center {@link NotificationCenter} used to add notifications for events
      * such as Activate and track.
-     * @return
+     * @return The {@link NotificationCenter} or null if Optimizely is not initialized (or
+     * initialization failed)
      */
-    public NotificationCenter getNotificationCenter() {
+    public @Nullable
+    NotificationCenter getNotificationCenter() {
         if (isValid()) {
             return optimizely.notificationCenter;
         } else {
