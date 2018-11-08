@@ -131,10 +131,14 @@ public class ServiceScheduler {
 
             builder.setExtras(persistableBundle);
 
-            if (jobScheduler.schedule(builder.build()) != RESULT_SUCCESS) {
-                logger.error("ServiceScheduler", "Some error while scheduling the job");
+            try {
+                if (jobScheduler.schedule(builder.build()) != RESULT_SUCCESS) {
+                    logger.error("ServiceScheduler", "Some error while scheduling the job");
+                }
             }
-
+            catch (Exception e) {
+                logger.error("Problem scheduling job ", e);
+            }
         }
         else {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
