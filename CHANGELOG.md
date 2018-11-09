@@ -1,5 +1,13 @@
 # Optimizely Android X SDK Changelog
 
+## 2.1.2
+November 8, 2018
+
+This is a patch release.
+
+### Bug Fixes
+Fix job scheduler exception when scheduling a repeatable job in the background ([#236](https://github.com/optimizely/android-sdk/pull/236)).
+
 ## 2.1.1
 October 3nd, 2018
 
