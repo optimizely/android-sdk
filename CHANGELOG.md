@@ -1,5 +1,27 @@
 # Optimizely Android X SDK Changelog
 
+## 3.0.0-RC
+November 9, 2018
+
+This is a RC candidate for major release 3.0.0 with support of new audience match types.
+### New Features
+* Support for number-valued and boolean-valued attributes. ([#213](https://githu
+b.com/optimizely/java-sdk/pull/213))
+* Support for audiences with new match conditions for attribute values, including “substring” and “exists” matches for strings; “greater than”, “less than”, exact, and “exists” matches for numbers; and “exact”, and “exists” matches for booleans. 
+* Built-in datafile version compatibility checks so that SDKs will not initialize with a newer datafile it is not compatible with. ([#209](https://github.com/op
+timizely/java-sdk/pull/209))
+* Audience combinations within an experiment are unofficially supported in this 
+release.
+
+### Breaking Changes
+* Previously, notification listeners filtered non-string attribute values from t
+he data passed to registered listeners. To support our growing list of supported attribute values, we’ve changed this behavior. Notification listeners will now post any value type passed as an attribute. Therefore, the interface of the notification listeners has changed to accept a `Map<String, ?>`.
+* Update to use Java 1.7 ([#208](https://github.com/optimizely/java-sdk/pull/208))
+
+
+### Bug Fixes
+The attributes map is now copied to ensure there is no concurrency issues.
+
 ## 2.1.2
 November 8, 2018
 

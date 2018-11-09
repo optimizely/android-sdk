@@ -25,37 +25,37 @@
         {
           "id": "3468206643",
           "name": "BOOL",
-          "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"booleanKey\", \"type\": \"custom_attribute\", \"match\":\"exact\", \"value\":true}]]]"
+          "conditions": ["and", ["or", ["or", {"name": "booleanKey", "type": "custom_attribute", "match":"exact", "value":true}]]]
         },
         {
           "id": "3468206644",
           "name": "INT",
-          "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"integerKey\", \"type\": \"custom_attribute\", \"match\":\"gt\", \"value\":1.0}]]]"
+          "conditions": ["and", ["or", ["or", {"name": "integerKey", "type": "custom_attribute", "match":"gt", "value":1.0}]]]
         },
         {
           "id": "3468206645",
           "name": "DOUBLE",
-          "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"doubleKey\", \"type\": \"custom_attribute\", \"match\":\"lt\", \"value\":100.0}]]]"
+          "conditions": ["and", ["or", ["or", {"name": "doubleKey", "type": "custom_attribute", "match":"lt", "value":100.0}]]]
         },
         {
           "id": "3468206642",
           "name": "Gryffindors",
-          "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"house\", \"type\": \"custom_attribute\", \"match\":\"exact\", \"value\":\"Gryffindor\"}]]]"
+          "conditions": ["and", ["or", ["or", {"name": "house", "type": "custom_attribute", "match":"exact", "value":"Gryffindor"}]]]
         },
         {
           "id": "3988293898",
           "name": "Slytherins",
-          "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"house\", \"type\": \"custom_attribute\", \"match\":\"substring\", \"value\":\"Slytherin\"}]]]"
+          "conditions": ["and", ["or", ["or", {"name": "house", "type": "custom_attribute", "match":"substring", "value":"Slytherin"}]]]
         },
         {
           "id": "4194404272",
           "name": "english_citizens",
-          "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"nationality\", \"type\": \"custom_attribute\", \"match\":\"exact\", \"value\":\"English\"}]]]"
+          "conditions": ["and", ["or", ["or", {"name": "nationality", "type": "custom_attribute", "match":"exact", "value":"English"}]]]
         },
         {
           "id": "2196265320",
           "name": "audience_with_missing_value",
-          "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"nationality\", \"type\": \"custom_attribute\", \"value\": \"English\"}, {\"name\": \"nationality\", \"type\": \"custom_attribute\"}]]]"
+          "conditions": ["and", ["or", ["or", {"name": "nationality", "type": "custom_attribute", "value": "English"}, {"name": "nationality", "type": "custom_attribute"}]]]
         }
       ],
 	"attributes": [{
