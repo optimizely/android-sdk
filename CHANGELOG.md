@@ -1,5 +1,28 @@
 # Optimizely Android X SDK Changelog
 
+## 3.0.0-RC2
+
+November 20th, 2018
+
+This is the release candidate for the 3.0 SDK, which includes a number of improvements to audience targeting along with a few bug fixes.
+
+### New Features
+* Support for number-valued and boolean-valued attributes. ([#213](https://github.com/optimizely/java-sdk/pull/213))
+* Support for audiences with new match conditions for attribute values, including “substring” and “exists” matches for strings; “greater than”, “less than”, exact, and “exists” matches for numbers; and “exact”, and “exists” matches for booleans. 
+* Built-in datafile version compatibility checks so that SDKs will not initialize with a newer datafile it is not compatible with. ([#209](https://github.com/optimizely/java-sdk/pull/209))
+* Audience combinations within an experiment are unofficially supported in this release.
+
+### Breaking Changes
+* Previously, notification listeners filtered non-string attribute values from the data passed to registered listeners. To support our growing list of supported attribute values, we’ve changed this behavior. Notification listeners will now post any value type passed as an attribute. Therefore, the interface of the notification listeners has changed to accept a `Map<String, ?>`.
+* Update to use Java 1.7 ([#208](https://github.com/optimizely/java-sdk/pull/208))
+
+### Bug Fixes
+* refactor: Performance improvements for JacksonConfigParser ([#209](https://github.com/optimizely/java-sdk/pull/209))
+* refactor: typeAudience.combinations will not be string encoded like audience.combinations.  To handle this we created a new parsing type TypedAudience.
+* fix for exact match when dealing with integers and doubles.  Created a new Numeric match type.
+* make a copy of attributes passed in to avoid any concurrency problems. Addresses GitHub issue in Optimizely Andriod SDK.
+* allow single root node for audience.conditions, typedAudience.conditions, and Experiment.audienceCombinations.
+ 
 ## 3.0.0-RC
 November 9, 2018
 
