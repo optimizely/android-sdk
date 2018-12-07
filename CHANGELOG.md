@@ -1,5 +1,14 @@
 # Optimizely Android X SDK Changelog
 
+## 2.1.3
+December 6th, 2018
+
+This is a patch release.
+
+### Bug Fixes
+* upgrade to Optimizely Java SDK 2.1.4
+* fix/wrap in try catch for getting build version in static init which might crash ([#241](https://github.com/optimizely/java-sdk/pull/241))
+
 ## 2.1.2
 November 8, 2018
 
