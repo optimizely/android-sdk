@@ -109,16 +109,16 @@ public class OptimizelyClient {
     }
 
     /**
-     * Activates an A/B test for a user, deciding whether they qualify for the experiment, 
-     * bucketing them into a variation if they do, and sending an impression event to Optimizely.
+     * Activates an A/B test for a user, determines whether they qualify for the experiment, buckets a qualified
+     * user into a variation, and sends an impression event to Optimizely.
      *
      * For more information, see https://docs.developers.optimizely.com/full-stack/docs/activate.     
      *
-     * @param experimentKey The key of the experiment for which to activate the variation.
-     * @param userId        The ID of the user for whom to activate the variation.
+     * @param experimentKey The key of the variation's experiment to activate.
+     * @param userId        The user ID.
      *
-     * @return              The variation where the visitor will be bucketed, or `null` if the 
-     *                      user does not qualify for the experiment.
+     * @return              The key of the variation where the user is bucketed, or `null` if the 
+     *                      user doesn't qualify for the experiment.
      */    
     public @Nullable Variation activate(@NonNull String experimentKey,
                                         @NonNull String userId) {
@@ -132,20 +132,20 @@ public class OptimizelyClient {
     }
 
     /**
-     * Activates an A/B test for a user, deciding whether they qualify for the experiment, 
-     * bucketing them into a variation if they do, and sending an impression event to Optimizely.
+     * Activates an A/B test for a user, determines whether they qualify for the experiment, buckets a qualified
+     * user into a variation, and sends an impression event to Optimizely.
      *
      * This method takes into account the user `attributes` passed in, to determine if the user
      * is part of the audience that qualifies for the experiment.
      *
      * For more information, see https://docs.developers.optimizely.com/full-stack/docs/activate.     
      *
-     * @param experimentKey The key of the experiment for which to activate the variation.
-     * @param userId        The ID of the user for whom to activate the variation.
+     * @param experimentKey The key of the variation's experiment to activate.
+     * @param userId        The user ID.
      * @param attributes    A map of custom key-value string pairs specifying attributes for the user.
      *
-     * @return              The variation where the visitor will be bucketed, or `null` if the 
-     *                      user does not qualify for the experiment.
+     * @return              The key of the variation where the user is bucketed, or `null` if the 
+     *                      user doesn't qualify for the experiment.
      */    
     @SuppressWarnings("WeakerAccess")
     public @Nullable Variation activate(@NonNull String experimentKey,
@@ -265,22 +265,18 @@ public class OptimizelyClient {
     }
 
     /**
-     * Activates an A/B test for a user and returns information about an experiment variation.
-     *
-     * This method performs the same logic as `activate`, in that it activates an A/B test for a user,
-     * deciding whether they qualify for the experiment and bucketing them into a variation if they do.
-     * Unlike `activate`, this method does not send an impression network request.
-     *
-     * Use the `getVariation` method if `activate` has been called and the current variation assignment is needed
-     * for a given experiment and user.
+     * Buckets a qualified user into an A/B test. Takes the same arguments and returns the same values as `activate`, 
+     * but without sending an impression network request. The behavior of the two methods is identical otherwise. 
+     * Use `getVariation` if `activate` has been called and the current variation assignment is needed for a given
+     * experiment and user.
      *     
      * For more information, see https://docs.developers.optimizely.com/full-stack/docs/get-variation.
      *
      * @param experimentKey The key of the experiment for which to retrieve the forced variation.
      * @param userId        The ID of the user for whom to retrieve the forced variation.
      *
-     * @return              The variation where the visitor will be bucketed, or `null` if the 
-     *                      user does not qualify for the experiment.
+     * @return              The key of the variation where the user is bucketed, or `null` if the user
+     *                      doesn't qualify for the experiment.
      */    
     @SuppressWarnings("WeakerAccess")
     public @Nullable Variation getVariation(@NonNull String experimentKey,
@@ -295,26 +291,22 @@ public class OptimizelyClient {
     }
 
     /**
-     * Activates an A/B test for a user and returns information about an experiment variation.
-     *
-     * This method performs the same logic as `activate`, in that it activates an A/B test for a user,
-     * deciding whether they qualify for the experiment and bucketing them into a variation if they do.
-     * Unlike `activate`, this method does not send an impression network request.
+     * Buckets a qualified user into an A/B test. Takes the same arguments and returns the same values as `activate`, 
+     * but without sending an impression network request. The behavior of the two methods is identical otherwise. 
+     * Use `getVariation` if `activate` has been called and the current variation assignment is needed for a given
+     * experiment and user.
      *
      * This method takes into account the user `attributes` passed in, to determine if the user is part of the 
      * audience that qualifies for the experiment.
-     * 
-     * Use the `getVariation` method if `activate` has been called and the current variation assignment is needed
-     * for a given experiment and user.
      *
      * For more information, see https://docs.developers.optimizely.com/full-stack/docs/get-variation.
      *
-     * @param experimentKey The key of the experiment for which to retrieve the forced variation.
-     * @param userId        The ID of the user for whom to retrieve the forced variation.
+     * @param experimentKey The key of the experiment for which to retrieve the variation.
+     * @param userId        The ID of the user for whom to retrieve the variation.
      * @param attributes    A map of custom key-value string pairs specifying attributes for the user. 
      *
-     * @return              The variation where the visitor will be bucketed, or `null` if the 
-     *                      user does not qualify for the experiment.
+     * @return              The key of the variation where the user is bucketed, or `null` if the user
+     *                      doesn't qualify for the experiment.
      */    
     @SuppressWarnings("WeakerAccess")
     public @Nullable Variation getVariation(@NonNull String experimentKey,
@@ -331,18 +323,17 @@ public class OptimizelyClient {
 
     /**
      * Forces a user into a variation for a given experiment for the lifetime of the Optimizely client.
-     * The purpose of this method is to force a user into a specific variation or personalized experience for a given experiment.
-     * The forced variation value does not persist across application launches.
+     * The forced variation value doesn't persist across application launches.
      *
      * For more information, see https://docs.developers.optimizely.com/full-stack/docs/set-forced-variation.
      * 
-     * @param experimentKey  The key of the experiment for which to set the forced variation.
-     * @param userId         The ID of the user for whom to set the forced variation.
-     * @param variationKey   The ID of the variation to force the user into. 
-     *                       Set the value to null to clear the existing experiment-to-variation mapping.
+     * @param experimentKey  The key of the experiment to set with the forced variation.
+     * @param userId         The ID of the user to force into the variation.
+     * @param variationKey   The key of the forced variation. 
+     *                       Set the value to `null` to clear the existing experiment-to-variation mapping.
      *
      * @return boolean       `true` if the user was successfully forced into a variation, `false` if the `experimentKey`
-     *                       is not in the project file or the `variationKey` is not in the experiment.
+     *                       isn't in the project file or the `variationKey` isn't in the experiment.
      */    
     public boolean setForcedVariation(@NonNull String experimentKey,
                                       @NonNull String userId,
@@ -360,13 +351,12 @@ public class OptimizelyClient {
     /**
      * Returns the forced variation set by `setForcedVariation`, or `null` if no variation was forced.
      * A user can be forced into a variation for a given experiment for the lifetime of the Optimizely client.
-     * This method gets the variation that the user has been forced into. The forced variation value is runtime
-     * only and does not persist across application launches.
+     * The forced variation value is runtime only and doesn't persist across application launches.
      *
      * For more information, see https://docs.developers.optimizely.com/full-stack/docs/set-forced-variation.
      *
      * @param experimentKey   The key of the experiment for which to retrieve the forced variation.
-     * @param userId          The ID of the user for whom to retrieve the forced variation.
+     * @param userId          The ID of the user in the forced variation.
      *
      * @return                The variation the user was bucketed into, or `null` if `setForcedVariation` failed 
      *                        to force the user into the variation.
@@ -392,7 +382,7 @@ public class OptimizelyClient {
      * 
      * For more information, see https://docs.developers.optimizely.com/full-stack/docs/get-enabled-features.
      *
-     * @param userId      The ID of the participant in the experiment.
+     * @param userId      The ID of the user who may have features enabled in one or more experiments.
      * @param attributes  A map of custom key-value string pairs specifying attributes for the user. 
      *
      * @return            A list of keys corresponding to the features that are enabled for the user, or an empty list if no features could be found for the specified user.
@@ -413,10 +403,10 @@ public class OptimizelyClient {
      *
      * For more information, see https://docs.developers.optimizely.com/full-stack/docs/is-feature-enabled.
      *
-     * @param featureKey The key of the feature on which to perform the check. 
-     * @param userId     The ID of the user on which to perform the check.
+     * @param featureKey The key of the feature to check. 
+     * @param userId     The ID of the user to check.
      * 
-     * @return           `true` if the feature is enabled, or `false` if the feature is disabled or could not found.
+     * @return           `true` if the feature is enabled, or `false` if the feature is disabled or couldn't be found.
      */    
     public @NonNull
     Boolean isFeatureEnabled(@NonNull String featureKey,
@@ -443,7 +433,7 @@ public class OptimizelyClient {
      * @param userId       The ID of the user on which to perform the check.
      * @param attributes   A map of custom key-value string pairs specifying attributes for the user.
      *
-     * @return             `true` if the feature is enabled, or `false` if the feature is disabled or could not found.
+     * @return             `true` if the feature is enabled, or `false` if the feature is disabled or couldn't be found.
      */    
     public @NonNull Boolean isFeatureEnabled(@NonNull String featureKey,
                                              @NonNull String userId,
