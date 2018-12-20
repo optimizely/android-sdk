@@ -38,7 +38,6 @@ import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.Variation;
-import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 
 import org.junit.Before;
@@ -171,7 +170,6 @@ public class OptimizelyManagerTest {
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
         optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.emptydatafile);
-        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
         assertFalse(optimizelyManager.getOptimizely().isValid());
     }
     @Test
@@ -267,7 +265,7 @@ public class OptimizelyManagerTest {
         String emptyString = "";
 
         optimizelyManager.initialize(context, emptyString);
-        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
+        assertFalse(optimizelyManager.getOptimizely().isValid());
     }
 
     @Test
@@ -280,7 +278,7 @@ public class OptimizelyManagerTest {
         String emptyString = "malformed data";
 
         optimizelyManager.initialize(context, emptyString);
-        verify(logger).error(eq("Unable to parse compiled data file"), any(ConfigParseException.class));
+        assertFalse(optimizelyManager.getOptimizely().isValid());
     }
 
     @Test
@@ -444,9 +442,7 @@ public class OptimizelyManagerTest {
         } catch (InterruptedException e) {
             fail("Timed out");
         }
-
-        verify(logger).error(eq("Unable to build OptimizelyClient instance"), any(Exception.class));
-
+        assertFalse(optimizelyManager.getOptimizely().isValid());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
