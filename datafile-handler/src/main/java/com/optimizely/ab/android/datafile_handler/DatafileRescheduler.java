@@ -97,7 +97,7 @@ public class DatafileRescheduler extends BroadcastReceiver {
                 // so, we don't need to do anything.
                // if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                     intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, datafileConfig.toJSONString());
-                    ServiceScheduler.startService(context, DatafileService.JOB_ID, intent);
+                    ServiceScheduler.startService(context, DatafileService.JOB_ID, intent, false);
                     logger.info("Rescheduled data file watching for project {}", datafileConfig);
                 //}
             }

@@ -262,7 +262,7 @@ public class ServiceScheduler {
      * @param jobId - job id for the job to start if it is a job
      * @param intent - Intent you want to run.
      */
-    public static void startService(Context context, Integer jobId, Intent intent) {
+    public static void startService(Context context, Integer jobId, Intent intent, Boolean allowPendingJobs) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             JobInfo jobInfo = new JobInfo.Builder(jobId,
@@ -272,6 +272,11 @@ public class ServiceScheduler {
                     .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
                     .build();
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+            if (!allowPendingJobs && jobScheduler.getPendingJob(jobId) != null) {
+                LoggerFactory.getLogger("ServiceScheduler").debug("Jobs already pending.");
+                return;
+            }
 
             JobWorkItem jobWorkItem = new JobWorkItem(intent);
             try {
