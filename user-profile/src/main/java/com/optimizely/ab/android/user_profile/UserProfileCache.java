@@ -184,13 +184,15 @@ class UserProfileCache {
         for (String userId : memoryCache.keySet()) {
             Map<String, Object> maps = memoryCache.get(userId);
             Map<String, Map<String, String>> experimentBucketMap =
-                    (ConcurrentHashMap<String, Map<String, String>>) maps.get(experimentBucketMapKey);
+                    (Map<String, Map<String, String>>) maps.get(experimentBucketMapKey);
             if (experimentBucketMap != null && experimentBucketMap.keySet().size() > 100) {
+                experimentBucketMap = new ConcurrentHashMap<>(experimentBucketMap);
                 for (String experimentId : experimentBucketMap.keySet()) {
                     if (!validExperimentIds.contains(experimentId)) {
                         experimentBucketMap.remove(experimentId);
                     }
                 }
+                maps.put(experimentBucketMapKey, experimentBucketMap);
             }
 
         }
