@@ -259,10 +259,13 @@ public class ServiceScheduler {
      * For example, the BroadcastReceivers use this to handle all versions of the API.
      *
      * @param context - Application context
-     * @param jobId - job id for the job to start if it is a job
+     * @param jobId - job id for the job to start if it is a job. Jobs are used in Android O and later.
      * @param intent - Intent you want to run.
+     * @param allowPendingJobs - If true in versions greater than O, the jobs will be scheduled even if there are pending
+     *                         jobs with the same job id.  If false, then, the intent will not be started if there are already
+     *                         pending jobs with the same id.
      */
-    public static void startService(Context context, Integer jobId, Intent intent) {
+    public static void startService(Context context, Integer jobId, Intent intent, Boolean allowPendingJobs) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             JobInfo jobInfo = new JobInfo.Builder(jobId,
@@ -272,6 +275,11 @@ public class ServiceScheduler {
                     .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
                     .build();
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+            if (!allowPendingJobs && jobScheduler.getPendingJob(jobId) != null) {
+                LoggerFactory.getLogger("ServiceScheduler").debug("Jobs already pending.");
+                return;
+            }
 
             JobWorkItem jobWorkItem = new JobWorkItem(intent);
             try {
