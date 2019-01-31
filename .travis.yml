@@ -59,6 +59,7 @@ jobs:
       env:
         - SDK=android
         - BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
+        - NO_CONCURRENT_THREADS=2
       cache: false
       language: python
       before_install: skip
