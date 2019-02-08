@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2018, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2019, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -1773,77 +1773,5 @@ public class OptimizelyClientTest {
                 STRING_VARIABLE_KEY,
                 GENERIC_USER_ID
         );
-    }
-
-    @Test
-    public void testGoodGetVariableString() {
-        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V3.toString()));
-
-        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
-        String v = optimizelyClient.getVariableString("test_variable", "userId",
-                Collections.<String, String>emptyMap(), true);
-        assertEquals("true", v);
-    }
-
-    @Test
-    public void testBadGetVariableString() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.getVariableString("test_key", "userId",
-                Collections.<String, String>emptyMap(), true);
-        verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
-                "for user {}", "test_key", "userId");
-    }
-
-    @Test
-    public void testGoodGetVariableBoolean() {
-        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V3.toString()));
-
-        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
-        Boolean b = optimizelyClient.getVariableBoolean("test_variable", "userId",
-                Collections.<String, String>emptyMap(), true);
-        assertEquals(new Boolean(true),b);
-    }
-
-    @Test
-    public void testBadGetVariableBoolean() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.getVariableBoolean("test_key", "userId",
-                Collections.<String, String>emptyMap(), true);
-        verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
-                "for user {}", "test_key", "userId");
-    }
-
-    @Test
-    public void testGoodGetVariableInteger() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
-        Integer i = optimizelyClient.getVariableInteger("test_variable", "userId",
-                Collections.<String, String>emptyMap(), true);
-        assertNull(i);
-    }
-
-    @Test
-    public void testBadGetVariableInteger() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.getVariableInteger("test_key", "userId",
-                Collections.<String, String>emptyMap(), true);
-        verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
-                "for user {}", "test_key", "userId");
-    }
-
-    @Test
-    public void testGoodGetVariableDouble() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
-        Double v = optimizelyClient.getVariableDouble("test_variable", "userId",
-                Collections.<String, String>emptyMap(), true);
-        assertNull(v);
-    }
-
-    @Test
-    public void testBadGetVariableDouble() {
-        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
-        optimizelyClient.getVariableDouble("test_key", "userId",
-                Collections.<String, String>emptyMap(), true);
-        verify(logger).warn("Optimizely is not initialized, could not get live variable {} " +
-                "for user {}", "test_key", "userId");
     }
 }
