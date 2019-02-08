@@ -6,7 +6,7 @@ Feburary 8th, 2019
 This is a patch release.
 
 ### Bug Fixes
-* fix User Profile Service.  Don't trim the user profile service unless there are over 100 experiments in a users UPS. This will be configurable in the future.
+* Fix for User Profile Service.  Don't trim the user profile service unless there are over 100 experiments in a users UPS. This will be configurable in the future.
 
 ## 2.1.3
 December 6th, 2018
