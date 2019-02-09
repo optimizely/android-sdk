@@ -1,7 +1,7 @@
 # Optimizely Android X SDK Changelog
 
 ## 2.1.4
-Feburary 8th, 2019
+Februrary 8th, 2019
 
 This is a patch release.
 
