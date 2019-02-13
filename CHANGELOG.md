@@ -47,6 +47,12 @@ This is a patch release.
 ### Bug Fixes
 * fix User Profile Service.  Don't trim the user profile service unless there are over 100 experiments in a users UPS. This will be configurable in the future.
 
+## 2.1.3
+December 6th, 2018
+
+### Bug Fixes
+The attributes map is now copied to ensure there is no concurrency issues.
+
 ## 3.0.0-RC2
 
 November 20th, 2018
@@ -87,12 +93,6 @@ release.
 * Previously, notification listeners filtered non-string attribute values from t
 he data passed to registered listeners. To support our growing list of supported attribute values, we’ve changed this behavior. Notification listeners will now post any value type passed as an attribute. Therefore, the interface of the notification listeners has changed to accept a `Map<String, ?>`.
 * Update to use Java 1.7 ([#208](https://github.com/optimizely/java-sdk/pull/208))
-
-## 2.1.3
-December 6th, 2018
-
-### Bug Fixes
-The attributes map is now copied to ensure there is no concurrency issues.
 
 ## 2.1.2
 November 8, 2018
