@@ -48,8 +48,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     dexOptions {
@@ -65,6 +65,7 @@ dependencies {
     compile ("com.optimizely.ab:core-api:$java_core_ver") {
         exclude group: 'com.google.code.findbugs'
     }
+
     compile "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"
@@ -102,13 +103,14 @@ android.libraryVariants.all { variant ->
 
         title = "Optimizely X Android SDK"
 
-        options.links("http://docs.oracle.com/javase/7/docs/api/");
+        options.links("http://docs.oracle.com/javase/8/docs/api/");
         options.linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference");
 
-        // First add all of your dependencies to the classpath, then add the android jars
-        classpath += files(variant.javaCompile.classpath.files)
-        classpath += files(android.getBootClasspath())
-
+        doFirst {
+            // First add all of your dependencies to the classpath, then add the android jars
+            classpath += files(variant.javaCompile.classpath.files)
+            classpath += files(android.getBootClasspath())
+        }
         // We're excluding these generated files
         exclude '**/BuildConfig.java'
         exclude '**/R.java'

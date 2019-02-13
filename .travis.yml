@@ -2,9 +2,9 @@ language: android
 env:
  global:
 # These parameters should match the parameters for build tools and sdk versions in the gradle file
- - ANDROID_BUILD_TOOLS=27.0.0 # should match gradle
+ - ANDROID_BUILD_TOOLS=28.0.3 # should match gradle
  - ADB_INSTALL_TIMEOUT=5 # minutes
- - ANDROID_API=26 # api is same as gradle file
+ - ANDROID_API=28 # api is same as gradle file
  matrix:
  - EMULATOR_API=22
  - EMULATOR_API=21
@@ -34,6 +34,8 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+before_install:
+    - yes | sdkmanager "platforms;android-28"
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
