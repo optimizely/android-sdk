@@ -1,9 +1,10 @@
 # Optimizely Android X SDK Changelog
 
 ## 3.0.0
-February 11, 2019
+February 13, 2019
 
 The 3.0 release improves event tracking and supports additional audience targeting functionality.
+
 ### New Features:
 * Event tracking:
   * The Track method now dispatches its conversion event _unconditionally_, without first determining whether the user is targeted by a known experiment that uses the event. This may increase outbound network traffic.
@@ -13,29 +14,27 @@ The 3.0 release improves event tracking and supports additional audience targeti
   * Note that for results segmentation in Optimizely results, the user attribute values from one event are automatically applied to all other events in the same session, as long as the events in question were actually received by our backend. This behavior was already in place and is not affected by the 3.0 release.
 * Support for all types of attribute values, not just strings.
   * All values are passed through to notification listeners.
-  * Strings, booleans, and valid numbers are passed to the event dispatcher and can be used for Optimizely results segmentation. A valid number is a finite number in the inclusive range [-2⁵³, 2⁵³]. 
+  * Strings, booleans, and valid numbers are passed to the event dispatcher and can be used for Optimizely results segmentation. A valid number is a finite float, double, integer, or long in the inclusive range [-2⁵³, 2⁵³].
   * Strings, booleans, and valid numbers are relevant for audience conditions.
 * Support for additional matchers in audience conditions:
   * An `exists` matcher that passes if the user has a non-null value for the targeted user attribute and fails otherwise.
   * A `substring` matcher that resolves if the user has a string value for the targeted attribute.
-  * `gt` (greater than) and `lt` (less than) matchers that resolve if the user has a valid number value for the targeted attribute. A valid number is a finite number in the inclusive range [-2⁵³, 2⁵³].
+  * `gt` (greater than) and `lt` (less than) matchers that resolve if the user has a valid number value for the targeted attribute. A valid number is a finite float, double, integer, or long in the inclusive range [-2⁵³, 2⁵³].
   * The original (`exact`) matcher can now be used to target booleans and valid numbers, not just strings.
 * Support for A/B tests, feature tests, and feature rollouts whose audiences are combined using `"and"` and `"not"` operators, not just the `"or"` operator.
 * Datafile-version compatibility check: The SDK will remain uninitialized (i.e., will gracefully fail to activate experiments and features) if given a datafile version greater than 4.
 * Updated Pull Request template and commit message guidelines.
 * When given an invalid datafile, the Optimizely client object now instantiates into a no-op state instead of throwing a `ConfigParseException`. This matches the behavior of the other Optimizely SDKs.
-* Only remove old variation assignments from the user profile service when there are >= 100 persisted assignments.
 
 ### Breaking Changes:
 * Java 7 is no longer supported.
 * Previously, notification listeners were only given string-valued user attributes because only strings could be passed into various method calls. That is no longer the case. The `ActivateNotificationListener` and `TrackNotificationListener` interfaces now receive user attributes as `Map<String, ?>` instead of `Map<String, String>`.
 * The Localytics integration now relies on the user profile service to attribute events to the user's variations.
-* Drops support for the `getVariableBoolean`, `getVariableDouble`, `getVariableInteger`, and `getVariableString` APIs. Please migrate to the Feature Management APIs which are available in all 2.x releases.
+* Drops support for the `getVariableBoolean`, `getVariableDouble`, `getVariableInteger`, and `getVariableString` APIs. Please migrate to the Feature Management APIs which were introduced in the 2.x releases.
 
 ### Bug Fixes:
 * Experiments and features can no longer activate when a negatively targeted attribute has a missing, null, or malformed value.
   * Audience conditions (except for the new `exists` matcher) no longer resolve to `false` when they fail to find an legitimate value for the targeted user attribute. The result remains `null` (unknown). Therefore, an audience that negates such a condition (using the `"not"` operator) can no longer resolve to `true` unless there is an unrelated branch in the condition tree that itself resolves to `true`.
-* The existence of a feature test in an experimentation group no longer causes A/B tests in the same group to activate the same feature.
 * Support for empty user IDs.
 * Sourceclear flagged jackson-databind 2.9.4 fixed in 2.9.8
 
