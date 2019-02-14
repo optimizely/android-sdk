@@ -410,10 +410,7 @@ public class OptimizelyClientTest {
         // id of var_2
         // the new event backend accepts both camel case and snake case
         // https://logx.optimizely.com/v1/events
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
-                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
-
-        verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
+        assertTrue(logEvent.getBody().contains("\"enrich_decisions\":true"));
 
         Variation v = optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
         assertEquals(v.getKey(), "var_2");
@@ -479,7 +476,7 @@ public class OptimizelyClientTest {
             assertEquals(true, numberOfCalls[0]);
         }
         else {
-            assertEquals(false, numberOfCalls[0]);
+            assertEquals(true, numberOfCalls[0]);
         }
         verifyZeroInteractions(logger);
 
@@ -493,7 +490,6 @@ public class OptimizelyClientTest {
         Experiment experiment = optimizelyClient.getProjectConfig().getExperimentsForEventKey("test_event").get(0);
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         optimizelyClient.track("test_event", "userId", attributes);
-        verify(bucketer).bucket(experiment, bucketingId);
         verifyZeroInteractions(logger);
     }
 
@@ -553,10 +549,8 @@ public class OptimizelyClientTest {
         // the new event backend accepts both camel case and snake case
         // https://logx.optimizely.com/v1/events
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
+        assertTrue(logEvent.getBody().contains("\"enrich_decisions\":true") ||
                 logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
-
-        verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
         Variation v = optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
         assertEquals(v.getKey(), "var_2");
@@ -584,8 +578,6 @@ public class OptimizelyClientTest {
         optimizelyClient.track("test_event", GENERIC_USER_ID, attributes);
 
         verifyZeroInteractions(logger);
-
-        verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
         Variation v = optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
         assertEquals(v.getKey(), "var_2");
@@ -659,10 +651,7 @@ public class OptimizelyClientTest {
         // the new event backend accepts both camel case and snake case
         // https://logx.optimizely.com/v1/events
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
-                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
-
-        verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
+        assertTrue(logEvent.getBody().contains("\"enrich_decisions\":true"));
 
         Variation v = optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
         assertEquals(v.getKey(), "var_2");
@@ -761,10 +750,7 @@ public class OptimizelyClientTest {
         // the new event backend accepts both camel case and snake case
         // https://logx.optimizely.com/v1/events
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
-                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
-
-        verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
+        assertTrue(logEvent.getBody().contains("\"enrich_decisions\":true"));
 
         Variation v = optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
         assertEquals(v.getKey(), "var_2");
@@ -853,12 +839,9 @@ public class OptimizelyClientTest {
         // the new event backend accepts both camel case and snake case
         // https://logx.optimizely.com/v1/events
         // id of var_2
-        assertTrue(logEvent.getBody().contains("\"variationId\":\"8505434669\"") ||
-                logEvent.getBody().contains("\"variation_id\":\"8505434669\""));
+        assertTrue(logEvent.getBody().contains("\"enrich_decisions\":true"));
 
         verifyZeroInteractions(logger);
-
-        verify(config).getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
 
         Variation v = optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
         assertEquals(v.getKey(), "var_2");
