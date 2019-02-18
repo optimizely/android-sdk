@@ -43,8 +43,6 @@ dependencies {
 
     compileOnly "com.optimizely.ab:core-api:$java_core_ver"
 
-    compileOnly project(path: ':shared')
-    compileOnly project(path: ':event-handler')
 
     // implementation 'com.optimizely.ab:android-sdk:1.0.0'
     implementation 'com.android.support:appcompat-v7:28.0.0'

@@ -58,11 +58,11 @@ android {
 }
 
 dependencies {
-    implementation project(':shared')
-    implementation project(':datafile-handler')
-    implementation project(':event-handler')
-    implementation project(':user-profile')
-    implementation ("com.optimizely.ab:core-api:$java_core_ver") {
+    api project(':shared')
+    api project(':datafile-handler')
+    api project(':event-handler')
+    api project(':user-profile')
+    api ("com.optimizely.ab:core-api:$java_core_ver") {
         exclude group: 'com.google.code.findbugs'
     }
 
