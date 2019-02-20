@@ -53,13 +53,13 @@ android {
 }
 
 dependencies {
-    implementation "com.noveogroup.android:android-logger:$android_logger_ver"
+    compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
     api ("com.optimizely.ab:core-api:$java_core_ver") {
         exclude group: 'com.google.code.findbugs'
     }
     implementation "com.google.code.gson:gson:$gson_ver"
 
-    implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
+    compileOnly group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
 
     compileOnly  "com.android.support:support-annotations:$support_annotations_ver"
 
