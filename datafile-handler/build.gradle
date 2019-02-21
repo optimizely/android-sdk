@@ -74,8 +74,8 @@ dependencies {
 }
 
 uploadArchives {
-    dependsOn = [':datafile-handler:clean', ':datafile-handler:releaseJavadocJar', ':datafile-handler:releaseSourcesJar']
-    shouldRunAfter = [':shared:uploadArchives']
+    dependsOn = [':datafile-handler:releaseJavadocJar', ':datafile-handler:releaseSourcesJar']
+    shouldRunAfter = [':datafile-handler:clean', ':shared:uploadArchives']
     repositories {
         mavenDeployer {
             repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android-datafile-handler") {

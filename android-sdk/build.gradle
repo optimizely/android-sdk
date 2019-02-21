@@ -88,8 +88,8 @@ dependencies {
 }
 
 uploadArchives {
-    dependsOn = [':android-sdk:clean', ':android-sdk:releaseJavadocJar', ':android-sdk:releaseSourcesJar']
-    shouldRunAfter = [':datafile-handler:uploadArchives', ':event-handler:uploadArchives', ':user-profile:uploadArchives']
+    dependsOn = [':android-sdk:releaseJavadocJar', ':android-sdk:releaseSourcesJar']
+    shouldRunAfter = [':android-sdk:clean', ':datafile-handler:uploadArchives', ':event-handler:uploadArchives', ':user-profile:uploadArchives']
     repositories {
         mavenDeployer {
             repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android") {

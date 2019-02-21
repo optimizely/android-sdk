@@ -74,8 +74,8 @@ dependencies {
 }
 
 uploadArchives {
-    dependsOn = [':user-profile:clean', ':user-profile:releaseJavadocJar', ':user-profile:releaseSourcesJar']
-    shouldRunAfter = [':shared:uploadArchives']
+    dependsOn = [':user-profile:releaseJavadocJar', ':user-profile:releaseSourcesJar']
+    shouldRunAfter = [':user-profile:clean', ':shared:uploadArchives']
     repositories {
         mavenDeployer {
             repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android-user-profile") {

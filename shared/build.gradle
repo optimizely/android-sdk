@@ -80,7 +80,8 @@ dependencies {
 }
 
 uploadArchives {
-    dependsOn = [':shared:clean', ':shared:releaseJavadocJar', ':shared:releaseSourcesJar']
+    dependsOn = [':shared:releaseJavadocJar', ':shared:releaseSourcesJar']
+    shouldRunAfter = [':shared:clean']
     repositories {
         mavenDeployer {
             repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android-shared") {
