@@ -52,27 +52,30 @@ android {
 }
 
 dependencies {
-    compile project(':shared')
-    compile "com.android.support:support-annotations:$support_annotations_ver"
+    api project(':shared')
+    implementation "com.android.support:support-annotations:$support_annotations_ver"
 
-    testCompile "junit:junit:$junit_ver"
-    testCompile "org.mockito:mockito-core:$mockito_ver"
-    testCompile "com.noveogroup.android:android-logger:$android_logger_ver"
+    compileOnly group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
 
-    androidTestCompile "com.android.support.test:runner:$support_test_runner_ver"
+    testImplementation "junit:junit:$junit_ver"
+    testImplementation "org.mockito:mockito-core:$mockito_ver"
+    testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
+
+    androidTestImplementation "com.android.support.test:runner:$support_test_runner_ver"
     // Set this dependency to use JUnit 4 rules
-    androidTestCompile "com.android.support.test:rules:$support_test_runner_ver"
+    androidTestImplementation "com.android.support.test:rules:$support_test_runner_ver"
     // Set this dependency to build and run Espresso tests
-    androidTestCompile "com.android.support.test.espresso:espresso-core:$espresso_ver"
-    androidTestCompile "org.mockito:mockito-core:$mockito_ver"
-    androidTestCompile "com.google.dexmaker:dexmaker:$dexmaker_ver"
-    androidTestCompile "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
-    androidTestCompile "com.noveogroup.android:android-logger:$android_logger_ver"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_ver"
+    androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
+    androidTestImplementation "com.google.dexmaker:dexmaker:$dexmaker_ver"
+    androidTestImplementation "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
+    androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
+    androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
 }
 
 uploadArchives {
-    dependsOn = [':datafile-handler:clean', ':datafile-handler:releaseJavadocJar', ':datafile-handler:releaseSourcesJar']
-    shouldRunAfter = [':shared:uploadArchives']
+    dependsOn = [':datafile-handler:releaseJavadocJar', ':datafile-handler:releaseSourcesJar']
+    shouldRunAfter = [':datafile-handler:clean', ':shared:uploadArchives']
     repositories {
         mavenDeployer {
             repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android-datafile-handler") {
@@ -94,7 +97,7 @@ android.libraryVariants.all { variant ->
 
         // First add all of your dependencies to the classpath, then add the android jars
         doFirst {
-            classpath += files(variant.javaCompile.classpath.files)
+            classpath += files(variant.javaCompileProvider.classpath.files)
             classpath += files(android.getBootClasspath())
         }
         // We're excluding these generated files

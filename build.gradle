@@ -34,7 +34,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.3.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -75,18 +75,18 @@ task ship() {
             'datafile-handler:uploadArchives')
 }
 
-task cleanAllModules << {
+task cleanAllModules () {
     logger.info("Running clean for all modules")
 }
 
 cleanAllModules.dependsOn(':android-sdk:clean', ':event-handler:clean',
         ':user-profile:clean', ':shared:clean', ':datafile-handler:clean')
 
-task testAllModules << {
+task testAllModules () {
     logger.info("Running android tests for all modules")
 }
 
-task testAllModulesTravis << {
+task testAllModulesTravis () {
     logger.info("Running android tests for Travis")
 }
 
