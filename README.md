@@ -102,4 +102,3 @@ Additional credits from java-sdk:[https://github.com/optimizely/java-sdk/blob/ma
 
 **Android Logger** [https://github.com/noveogroup/android-logger](https://github.com/noveogroup/android-logger)
 License (Public Domain): [https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt](https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt)
-
