@@ -1,75 +1,71 @@
-# Optimizely Android SDK
-Master<br/> 
-[![Master Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=master)](https://travis-ci.org/optimizely/android-sdk)
-<br/>
-<br/>
-[![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-## Overview
+# Optimizely Android SDK Getting Started
 
-This repository houses the Android SDK for Optimizely's Mobile product. To find out more check out the [documentation](https://developers.optimizely.com/x/solutions/sdks/introduction/index.html?language=android&platform=mobile).
+This guide enables you to quickly get started in your development efforts to consume the Optimizely SDK on Android. This package also includes a [test-app](./test-app/README.md) module and tutorial with a functional sample application demonstrating how to build and use the SDK on Android.
 
-This repo depends on the [Optimizely Java SDK](https://github.com/optimizely/java-sdk).
+For additonal information see the Full Stack [documentation](https://docs.developers.optimizely.com/full-stack/docs).
 
-## Architecture
+The following steps illustrate the main steps and API calls you will generally need when using the SDK.
 
-This project has 5 modules. Each module has source in `<module>/src/main/java`
-and test source in `<module>src/main/androidTest`. The build is configured
-in the `build.gradle` for each module.  The `settings.gradle` in the project
-root declares modules.  The `build.gradle` in the project root has build
-config common for all modules.
+## 1. Get the SDK Key
+An SDK key is needed to use the Optimizely SDK. The SDK key is available from your Optimizely dashboard under **Settings** > **Datafile**. 
 
-1. Android SDK
-  - Users who want all modules should declare a dependency on this module
-  - This is the outer module that depends on all other modules
-  - Handles downloading the Optimizely datafile and building Optimizely objects
-  - Delivers the built Optimizely object to listeners and caches it in memory
-2. Event Handler
-  - Handles dispatching events to the Optimizely backend
-  - Uses a Service so events can be sent without the app being re-opened
-  - Persists events in a SQLite3 database
-  - Required to be implemented by the Optimizely Java core
-3. User Profile
-  - Optional implementation for Optimizely Java core
-  - Makes bucketing persistent
-    - Once a user is bucketed in an variation they will remain in that variation
-4. Shared
-  - Common utils for all modules
-5. Test App
-  - Built against the source of all modules
-  - Simple app showing how to use Android Optimizely
+![images/sdk_key.jpg](images/sdk_key.jpg)
 
-## Developing
+## 2. Instantiate a Client
+An Optimizely client object contains all of the methods to build and run experiments. It's constructed by invoking the `Optimizely.builder` method and passing in the SDK key read from the previous step:
 
-### Command Line
+**Note:** Replace `SDK_KEY` with the key retrieved from the previous step.
 
-1. Clone the repo
-  * `git clone git@github.com:optimizely/android-sdk.git`
-3. Create, or use an existing, Optimizely Android project
-4. Build the project (from the project root)
-  * `./gradlew assemble`
-5. Run tests for all modules
-  * `./gradlew testAllModules`
-  * A device or emulator must be connected
-6. Install the test app onto all connected devices and emulators
-  * `./gradlew test-app:installDebug`
-  * The test app depends on all of the other project modules
-  * The modules are built from source
-  * Changes in any modules source will be applied to the test app on the next build
-7.  Discover more gradle tasks
-  * `./gradlew tasks`
-  * To see the task of an individual module
-    * `./gradlew user-profile:tasks`
+```java
+import com.optimizely.ab.android.sdk.OptimizelyManager;
 
-### Android Studio
+OptimizelyManager.Builder builder = OptimizelyManager.builder();
 
-Android Studio is an IDE that wraps gradle (and `adb`).  Everything you can do in Android Studio can be done from command line with gradle and the other android command line tools.  
+OptimizelyManager optimizelyManager =  builder.withEventDispatchInterval(60L * 10L)
+            .withDatafileDownloadInterval(60L * 10L)
+            .withSDKKey("SDK_KEY")
+            .build(getApplicationContext());
+```
 
-You can import this project into Android Studio by opening Android Studio and selecting `Import Project` from the first dialog or from the `File` menu.  Simply select the project's root `build.gradle` file and Android Studio will do the rest.
+## 3. Query Feature Flags
+The Optimizely client object's methods are then used to gather information about experiments. The following example shows client code querying the Optimizely client to obtain the enabled status of a feature and a feature variable for a given user:
+```java
+import com.optimizely.ab.Optimizely;
 
-Tests can be run by right clicking the file in the project pane or by clicking the method name in source and selecting run.  You will be prompted to create an AVD or connect a device if one isn't connected.  
+// Evaluate a feature flag and a variable
+Boolean enabled = optimizelyClient.isFeatureEnabled("price_filter", userId);
+Integer minPrice = optimizelyClient.getFeatureVariableInteger("price_filter", "min_price", userId);
+```
+
+## 4. Run a Feature Test
+The Optimizely client's `activate` method is used to [activate](https://docs.developers.optimizely.com/full-stack/docs/activate) (start) a feature test for a given user and returns a `Variation` object that your client code can use to make decisions about what code to execute for a variation:
+```java
+import com.optimizely.ab.android.sdk.OptimizelyClient;
+import com.optimizely.ab.config.Variation;
+
+// Activate an A/B test
+Variation variation = optimizelyClient.activate("app_redesign", userId);
+if (variation != null) {
+  if (variation.is("control")) {
+    // Execute code for "control" variation
+  } else if (variation.is("treatment")) {
+    // Execute code for "treatment" variation
+  }
+} else {
+  // Execute code for users who don't qualify for the experiment
+}
+```
+
+## 5. Track an Event
+The final step is to [track](https://docs.developers.optimizely.com/full-stack/docs/track) events by invoking the `track` method. The tracked events can be viewed in your Optimizely dashboard. 
+
+The `track` method takes in an event key representing the event to track which was provided when the Optimizely app was created. It also takes in the ID of the user to track events on, and optional attributes consisting of key/value pairs to include as part of the tracked data:
+```java
+// Track a conversion event for the provided user with attributes
+optimizelyClient.track(eventKey, userId, attributes);
+```
 
 ## Releasing
-
 The default branch is devel.  Feature branch PRs are automatically made against it. When PRs are reviewed and pass checks they should be squashed and merged into devel.  Devel will be built and tested for each commit.
 
 Versions are managed via git tags.  Tags can be created from the command line or from the Github UI.
@@ -93,7 +89,6 @@ Please see [CONTRIBUTING](CONTRIBUTING.md).
 First-party code (under android-sdk/, datafile-handler/, event-handler/, shared/, user-profile/) is copyright Optimizely, Inc. and contributors, licensed under Apache 2.0
 
 ### Additional Code
-
 This software incorporates code from the following open source projects:
 
 **Optimizely.ab:core-api** [https://github.com/optimizely/java-sdk](https://github.com/optimizely/java-sdk)
@@ -102,4 +97,3 @@ Additional credits from java-sdk:[https://github.com/optimizely/java-sdk/blob/ma
 
 **Android Logger** [https://github.com/noveogroup/android-logger](https://github.com/noveogroup/android-logger)
 License (Public Domain): [https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt](https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt)
-
