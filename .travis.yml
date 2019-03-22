@@ -1,4 +1,4 @@
-language: android
+language: android 
 env:
  global:
 # These parameters should match the parameters for build tools and sdk versions in the gradle file
@@ -62,11 +62,12 @@ jobs:
         - SDK=android
         - BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
       cache: false
-      language: minimal
+      language: python
       before_install: skip
-      install: skip
+      install:
+        - "pip install awscli"
       before_script:
-        - mkdir $HOME/travisci-tools && pushd $HOME/travisci-tools && git init && git pull https://$CI_USER_TOKEN@github.com/optimizely/travisci-tools.git && popd
+        - "aws s3 cp s3://optimizely-travisci-artifacts/ci/trigger_fullstack-sdk-compat.sh ci/ && chmod u+x ci/trigger_fullstack-sdk-compat.sh"
       script:
-        - "$HOME/travisci-tools/fsc-trigger/trigger_fullstack-sdk-compat.sh"
+        - "ci/trigger_fullstack-sdk-compat.sh"
       after_success: travis_terminate 0
