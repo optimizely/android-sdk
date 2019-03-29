@@ -61,6 +61,7 @@ jobs:
       env:
         - SDK=android
         - BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
+        - TESTAPP_TAG=master
       cache: false
       language: python
       before_install: skip
