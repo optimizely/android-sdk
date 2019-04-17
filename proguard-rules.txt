@@ -46,6 +46,7 @@
 # Safely ignore warnings about other libraries since we are using Gson
 -dontwarn com.fasterxml.jackson.**
 -dontwarn org.json.**
+-dontwarn com.optimizely.ab.config.parser.JacksonConfigParser$ProjectConfigModule
 
 # Annotations
 -dontwarn javax.annotation.**
