@@ -101,8 +101,10 @@ public class EventRescheduler extends BroadcastReceiver {
                     // with wifi the service will be rescheduled on the interval.
                     // Wifi connection state changes all the time and starting services is expensive
                     // so it's important to only do this if we have stored events.
-                    ServiceScheduler.startService(context, EventIntentService.JOB_ID, eventServiceIntent);
-                    logger.info("Preemptively flushing events since wifi became available");
+                    if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                        ServiceScheduler.startService(context, EventIntentService.JOB_ID, eventServiceIntent);
+                        logger.info("Preemptively flushing events since wifi became available");
+                    }
                 }
         } else {
             logger.warn("Received unsupported broadcast action to event rescheduler");
