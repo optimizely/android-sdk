@@ -33,6 +33,8 @@ import android.support.annotation.RequiresApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.stream.Collectors;
+
 import static android.app.job.JobScheduler.RESULT_SUCCESS;
 
 /**
@@ -272,6 +274,12 @@ public class ServiceScheduler {
                     .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
                     .build();
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+            if (jobScheduler.getAllPendingJobs().stream().filter(job -> job.getId() == jobId && job.getExtras().equals(intent.getExtras())).count() > 0) {
+                // already pending job. don't run again
+                LoggerFactory.getLogger("ServiceScheduler").info("Job already pending");
+                return;
+            }
 
             JobWorkItem jobWorkItem = new JobWorkItem(intent);
             try {
