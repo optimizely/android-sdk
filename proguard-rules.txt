@@ -58,3 +58,9 @@
 
 # Android Logger
 -keep class com.noveogroup.android.log.** { *; }
+
+-optimizations !class/unboxing/enum
+
+-dontwarn com.google.gson.**
+-dontwarn com.optimizely.ab.config.parser.**
+

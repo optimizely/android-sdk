@@ -55,7 +55,7 @@ dependencies {
     api project(':shared')
     implementation "com.android.support:support-annotations:$support_annotations_ver"
 
-    compileOnly group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
+    compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
