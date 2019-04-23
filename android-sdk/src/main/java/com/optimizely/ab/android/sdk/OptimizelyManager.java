@@ -734,23 +734,13 @@ public class OptimizelyManager {
         public OptimizelyManager build(Context context) {
             if (logger == null) {
                 try {
-                    logger = LoggerFactory.getLogger(OptimizelyManager.class);
+                    logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
                 } catch (Exception e) {
-                    try {
-                        logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
-                    }
-                    catch (Exception e1) {
-                        logger = new OptimizelyLiteLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
-                    }
+                    logger = new OptimizelyLiteLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
                     logger.error("Unable to generate logger from class.", e);
                 } catch (Error e) {
-                    try {
-                        logger = LoggerFactory.getLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
-                        logger.error("Unable to generate logger from class.", e);
-                    }
-                    catch (Exception e1) {
-                        logger = new OptimizelyLiteLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
-                    }
+                    logger = new OptimizelyLiteLogger("com.optimizely.ab.android.sdk.OptimizelyManager");
+                    logger.error("Unable to generate logger from class.", e);
                 }
             }
 
