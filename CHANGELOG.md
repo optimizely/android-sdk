@@ -1,5 +1,16 @@
 # Optimizely Android X SDK Changelog
 
+## 3.0.1
+April 23, 2019
+
+This patch release fixes some git hub issues mentioned below.  
+
+### Bug Fixes
+* The Logger security exception is handled a little more cleanly for logging. ([#270](https://github.com/optimizely/android-sdk/pull/270)) 
+* There was the possibility to start too many intents for event handling. ([#268](https://github.com/optimizely/android-sdk/pull/268))
+* The proguard rules have been cleaned up and tested. ([#266](https://github.com/optimizely/android-sdk/pull/266))
+* This also includes using Optimizely Java SDK 3.0.1.  The Java SDK patch allows for using the Optimizely Android aar with older versions of org.json which are included in the android framework.
+
 ## 3.0.0
 February 14, 2019
 
