@@ -66,6 +66,7 @@ dependencies {
         exclude group: 'com.google.code.findbugs'
     }
 
+    provided "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
     compile "com.android.support:support-annotations:$support_annotations_ver"
 
     testCompile "junit:junit:$junit_ver"

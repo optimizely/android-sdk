@@ -56,6 +56,8 @@ dependencies {
     compile project(':shared')
     compile "com.android.support:support-annotations:$support_annotations_ver"
 
+    provided "com.noveogroup.android:android-logger:$android_logger_ver"
+
     testCompile "junit:junit:$junit_ver"
     testCompile "org.mockito:mockito-core:$mockito_ver"
     testCompile "com.noveogroup.android:android-logger:$android_logger_ver"

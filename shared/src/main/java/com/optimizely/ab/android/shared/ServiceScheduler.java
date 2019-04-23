@@ -157,11 +157,11 @@ public class ServiceScheduler {
             Integer id = null;
             try {
                 id = (Integer) Class.forName(clazz).getDeclaredField("JOB_ID").get(null);
-                pendingIntent.cancel();
                 // only cancel periodic services
                 if (ServiceScheduler.isScheduled(context, id)) {
                     jobScheduler.cancel(id);
                 }
+                pendingIntent.cancel();
             } catch (Exception e) {
                 logger.error("Error in Cancel ", e);
             }
