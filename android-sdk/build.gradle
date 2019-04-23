@@ -66,7 +66,6 @@ dependencies {
         exclude group: 'com.google.code.findbugs'
     }
 
-    compileOnly group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
     compileOnly "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
     implementation "com.android.support:support-annotations:$support_annotations_ver"
 
