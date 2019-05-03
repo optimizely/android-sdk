@@ -30,7 +30,11 @@ import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.internal.ReservedEventKey;
 import com.optimizely.ab.notification.ActivateNotificationListener;
+import com.optimizely.ab.notification.DecisionNotification;
 import com.optimizely.ab.notification.NotificationCenter;
+import com.optimizely.ab.notification.NotificationHandler;
+import com.optimizely.ab.notification.NotificationManager;
+import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.TrackNotificationListener;
 
 import org.junit.Assert;
@@ -58,6 +62,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.mock;
@@ -1756,5 +1761,81 @@ public class OptimizelyClientTest {
                 STRING_VARIABLE_KEY,
                 GENERIC_USER_ID
         );
+    }
+
+    @Test
+    public void testAddDecisionNotificationHandler() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+
+        int notificationId = optimizelyClient.addDecisionNotificationHandler(decisionNotification -> {});
+        assertTrue(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId));
+    }
+
+    @Test
+    public void testAddTrackNotificationHandler() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+        NotificationManager<TrackNotification> manager = optimizely.getNotificationCenter()
+                .getNotificationManager(TrackNotification.class);
+
+        int notificationId = optimizelyClient.addTrackNotificationHandler(trackNotification -> {});
+        assertTrue(manager.remove(notificationId));
+    }
+
+    @Test
+    public void testAddingTrackNotificationHandlerWithInvalidOptimizely() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                null,
+                logger
+        );
+        NotificationManager<TrackNotification> manager = optimizely.getNotificationCenter()
+                .getNotificationManager(TrackNotification.class);
+
+        int notificationId = optimizelyClient.addTrackNotificationHandler(trackNotification -> {});
+        assertEquals(-1, notificationId);
+        assertFalse(manager.remove(notificationId));
+    }
+
+    @Test
+    public void testAddingDecisionNotificationHandlerWithInvalidOptimizely() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                null,
+                logger
+        );
+        NotificationManager<DecisionNotification> manager = optimizely.getNotificationCenter()
+                .getNotificationManager(DecisionNotification.class);
+        int notificationId = optimizelyClient.addDecisionNotificationHandler(decisionNotification -> {});
+        assertEquals(-1, notificationId);
+        assertFalse(manager.remove(notificationId));
+    }
+
+    @Test
+    public void testAddingDecisionNotificationHandlerTwice() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+        NotificationHandler<DecisionNotification> decisionNotificationHandler = new NotificationHandler<DecisionNotification>() {
+            @Override
+            public void handle(DecisionNotification decisionNotification) {
+            }
+        };
+        int notificationId = optimizelyClient.addDecisionNotificationHandler(decisionNotificationHandler);
+        int notificationId2 = optimizelyClient.addDecisionNotificationHandler(decisionNotificationHandler);
+        assertNotEquals(-1, notificationId);
+        assertEquals(-1, notificationId2);
+        assertTrue(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId));
+        assertFalse(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId2));
     }
 }
