@@ -669,7 +669,7 @@ public class OptimizelyClient {
         if (isValid()) {
             return optimizely.addDecisionNotificationHandler(handler);
         } else {
-            logger.warn("Optimizely is not initialized, could not get the notification listener");
+            logger.warn("Optimizely is not initialized, could not add the notification listener");
         }
         return -1;
     }
@@ -682,7 +682,7 @@ public class OptimizelyClient {
         if (isValid()) {
             return optimizely.addTrackNotificationHandler(handler);
         } else {
-            logger.warn("Optimizely is not initialized, could not get the notification listener");
+            logger.warn("Optimizely is not initialized, could not add the notification listener");
         }
 
         return -1;
