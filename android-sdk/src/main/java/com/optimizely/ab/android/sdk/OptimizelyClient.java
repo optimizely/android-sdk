@@ -24,7 +24,10 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.UnknownEventTypeException;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.notification.DecisionNotification;
 import com.optimizely.ab.notification.NotificationCenter;
+import com.optimizely.ab.notification.NotificationHandler;
+import com.optimizely.ab.notification.TrackNotification;
 
 import org.slf4j.Logger;
 
@@ -653,6 +656,36 @@ public class OptimizelyClient {
                     featureKey, variableKey, userId);
             return null;
         }
+    }
+
+    //======== Notification APIs ========//
+
+    /**
+     * Convenience method for adding DecisionNotification Handlers
+     * @return notificationId or -1 if notification is not added
+     */
+    @Nullable
+    public int addDecisionNotificationHandler(NotificationHandler<DecisionNotification> handler) {
+        if (isValid()) {
+            return optimizely.addDecisionNotificationHandler(handler);
+        } else {
+            logger.warn("Optimizely is not initialized, could not add the notification listener");
+        }
+        return -1;
+    }
+
+    /**
+     * Convenience method for adding TrackNotification Handlers
+     * @return notificationId or -1 if notification is not added
+     */
+    public int addTrackNotificationHandler(NotificationHandler<TrackNotification> handler) {
+        if (isValid()) {
+            return optimizely.addTrackNotificationHandler(handler);
+        } else {
+            logger.warn("Optimizely is not initialized, could not add the notification listener");
+        }
+
+        return -1;
     }
 
     /**
