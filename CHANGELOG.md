@@ -1,5 +1,25 @@
 # Optimizely Android X SDK Changelog
 
+## 3.1.0
+May 13th, 2019
+
+This minor release updates the SDK to use the Optimizely Java SDK 3.1.0 which includes the following:
+
+### New Features:
+* Introduced Decision notification listener to be able to record:
+    * Variation assignments for users activated in an experiment.
+    * Feature access for users.
+    * Feature variable value for users.
+* Added APIs to be able to conveniently add Decision notification handler (`addDecisionNotificationHandler`) and Track notification handler (`addTrackNotificationHandler`).
+
+### Bug Fixes:
+* Feature variable APIs return default variable value when featureEnabled property is false. ([#274](https://github.com/optimizely/java-sdk/pull/274))
+
+### Deprecated
+* Activate notification listener is deprecated as of this release. Recommendation is to use the new Decision notification listener. Activate notification listener will be removed in the next major release.
+* `addActivateNotificationListener`, `addTrackNotificationListener` and `addNotificationListener` APIs on `NotificationCenter`.
+
+
 ## 3.0.1
 April 23, 2019
 

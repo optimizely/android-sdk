@@ -31,6 +31,8 @@ import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.notification.ActivateNotificationListener;
+import com.optimizely.ab.notification.DecisionNotification;
+import com.optimizely.ab.notification.NotificationHandler;
 import com.optimizely.ab.notification.TrackNotificationListenerInterface;
 
 import java.util.Map;
@@ -102,6 +104,15 @@ public class SplashScreenActivity extends AppCompatActivity {
         // Activate user and start activity based on the variation we get.
         // You can pass in any string for the user ID. In this example we just use a convenience method to generate a random one.
         String userId = myApplication.getAnonUserId();
+        optimizelyManager.getOptimizely().addDecisionNotificationHandler(message -> {
+            System.out.println("Got a decision!");
+            System.out.println(message.getDecisionInfo().get("experimentKey"));
+        });
+
+        optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((experiment, userId1, attributes, variation, event) -> {
+            System.out.println("Got an activate!");
+            System.out.println(experiment.getKey());
+        });
         Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId);
 
         // Utility method for verifying event dispatches in our automated tests
