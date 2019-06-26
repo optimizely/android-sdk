@@ -19,24 +19,45 @@ package com.optimizely.ab.android.datafile_handler;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.FileObserver;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
+import com.optimizely.ab.OptimizelyRuntimeException;
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.config.DatafileProjectConfig;
+import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.parser.ConfigParseException;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 
 /**
  * The default implementation of {@link DatafileHandler} and the main
  * interaction point to the datafile-handler module.
  */
 public class DefaultDatafileHandler implements DatafileHandler {
+    private Logger logger = LoggerFactory.getLogger("DefaultDatafileHandler");
+    private DatafileConfig datafileConfig;
+    private ProjectConfig currentProjectConfig;
     private DatafileServiceConnection datafileServiceConnection;
+    private FileObserver fileObserver;
+
+    public DefaultDatafileHandler(String sdkKey) {
+        this(new DatafileConfig(null, sdkKey));
+    }
+
+    public DefaultDatafileHandler(DatafileConfig datafileConfig) {
+        this.datafileConfig = datafileConfig;
+    }
+
     /**
      * Synchronous call to download the datafile.
      * Gets the file on the current thread from the Optimizely CDN.
@@ -122,6 +143,25 @@ public class DefaultDatafileHandler implements DatafileHandler {
         serviceScheduler.schedule(intent, updateInterval * 1000);
 
         storeInterval(context, updateInterval * 1000);
+
+        DatafileCache datafileCache = new DatafileCache(
+                datafileConfig.getKey(),
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(DatafileCache.class)
+        );
+
+        File filesFolder = context.getFilesDir();
+        fileObserver = new FileObserver(filesFolder.getPath()) {
+            @Override
+            public void onEvent(int event, @Nullable String path) {
+                if (event == MODIFY && path.equals(datafileCache.getFileName())) {
+                    JSONObject newConfig = datafileCache.load();
+                    String config = newConfig.toString();
+                    setDatafile(config);
+                }
+            }
+        };
+        fileObserver.startWatching();
     }
 
     private static void storeInterval(Context context, long interval) {
@@ -151,6 +191,11 @@ public class DefaultDatafileHandler implements DatafileHandler {
         clearBackgroundCache(context, datafileConfig);
 
         storeInterval(context, -1);
+
+        if (fileObserver != null) {
+            fileObserver.stopWatching();
+            fileObserver = null;
+        }
     }
 
     private void enableBackgroundCache(Context context, DatafileConfig datafileConfig) {
@@ -241,5 +286,22 @@ public class DefaultDatafileHandler implements DatafileHandler {
         if (datafileCache.exists()) {
             datafileCache.delete();
         }
+    }
+
+    public void setDatafile(String datafile) {
+        if (currentProjectConfig == null && datafile != null && !datafile.isEmpty()) {
+            try {
+                currentProjectConfig = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+                logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
+            } catch (ConfigParseException ex) {
+                logger.error("Unable to parse the datafile", ex);
+                logger.info("Datafile is invalid");
+            }
+        }
+
+    }
+    @Override
+    public ProjectConfig getConfig() {
+        return currentProjectConfig;
     }
 }

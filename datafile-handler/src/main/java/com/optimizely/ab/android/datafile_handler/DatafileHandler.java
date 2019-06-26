@@ -18,6 +18,7 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 
+import com.optimizely.ab.config.ProjectConfigManager;
 import com.optimizely.ab.android.shared.DatafileConfig;
 
 /**
@@ -25,7 +26,7 @@ import com.optimizely.ab.android.shared.DatafileConfig;
  * class that is used to interact with the datafile_handler module. This interface can be
  * overridden so that the sdk user can provide a override for the default DatafileHandler.
  */
-public interface DatafileHandler {
+public interface DatafileHandler extends ProjectConfigManager {
     /**
      * Synchronous call to download the datafile.
      *

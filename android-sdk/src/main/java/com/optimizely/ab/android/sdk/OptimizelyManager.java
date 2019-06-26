@@ -483,8 +483,9 @@ public class OptimizelyManager {
 
         EventBatch.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
-        Optimizely.Builder builder = Optimizely.builder(datafile, eventHandler)
+        Optimizely.Builder builder = Optimizely.builder()
                 .withClientEngine(clientEngine)
+
                 .withClientVersion(BuildConfig.CLIENT_VERSION);
         if (errorHandler != null) {
             builder.withErrorHandler(errorHandler);
@@ -496,6 +497,14 @@ public class OptimizelyManager {
             // the builder creates the default user profile service. So, this should never happen.
             userProfileService = DefaultUserProfileService.newInstance(datafileConfig.getKey(), context);
             builder.withUserProfileService(userProfileService);
+        }
+
+        if (datafileHandler != null) {
+            if (datafileHandler instanceof DefaultDatafileHandler) {
+                DefaultDatafileHandler handler = (DefaultDatafileHandler)datafileHandler;
+                handler.setDatafile(datafile);
+            }
+            builder.withConfigManager(datafileHandler);
         }
 
         Optimizely optimizely = builder.build();
@@ -752,8 +761,12 @@ public class OptimizelyManager {
                 }
             }
 
+            if (datafileConfig == null) {
+                datafileConfig = new DatafileConfig(projectId, sdkKey);
+            }
+
             if (datafileHandler == null) {
-                datafileHandler = new DefaultDatafileHandler();
+                datafileHandler = new DefaultDatafileHandler(datafileConfig);
             }
 
             if (userProfileService == null) {
