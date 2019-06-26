@@ -30,6 +30,7 @@ import android.support.annotation.RequiresApi;
 import android.support.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.android.datafile_handler.DatafileChangeListener;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
@@ -44,6 +45,7 @@ import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.internal.payload.EventBatch;
+import com.optimizely.ab.notification.UpdateConfigNotification;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,7 +188,11 @@ public class OptimizelyManager {
                 optimizelyClient = buildOptimizely(context, datafile);
 
                 if (datafileDownloadInterval > 0 && datafileHandler != null) {
-                    datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval);
+                    datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval, datafile1 -> {
+                        if (getOptimizely() != null && getOptimizely().getNotificationCenter() != null)
+                            getOptimizely().getNotificationCenter().send(new UpdateConfigNotification());
+
+                    });
                 }
 
             }
@@ -439,7 +445,11 @@ public class OptimizelyManager {
                           @NonNull final String datafile) {
 
         if (datafileDownloadInterval > 0 && datafileHandler != null) {
-            datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval);
+            datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval, datafile1 -> {
+                // fire
+                if (getOptimizely() != null && getOptimizely().getNotificationCenter() != null)
+                getOptimizely().getNotificationCenter().send(new UpdateConfigNotification());
+            });
         }
         try {
             optimizelyClient = buildOptimizely(context, datafile);

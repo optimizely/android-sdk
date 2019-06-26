@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.function.Function;
 
 /**
  * The default implementation of {@link DatafileHandler} and the main
@@ -125,7 +126,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * @param datafileConfig DatafileConfig for the datafile
      * @param updateInterval frequency of updates in seconds
      */
-    public void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval) {
+    public void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval, DatafileChangeListener listener) {
         // if already running, stop it
         stopBackgroundUpdates(context, datafileConfig);
 
@@ -158,6 +159,9 @@ public class DefaultDatafileHandler implements DatafileHandler {
                     JSONObject newConfig = datafileCache.load();
                     String config = newConfig.toString();
                     setDatafile(config);
+                    if (listener != null) {
+                        listener.onDatafileChange(config);
+                    }
                 }
             }
         };

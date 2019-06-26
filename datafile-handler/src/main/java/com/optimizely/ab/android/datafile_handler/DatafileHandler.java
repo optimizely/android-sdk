@@ -18,8 +18,11 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 
+import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.ProjectConfigManager;
 import com.optimizely.ab.android.shared.DatafileConfig;
+
+import java.util.function.Function;
 
 /**
  * DatafileHandler
@@ -51,8 +54,9 @@ public interface DatafileHandler extends ProjectConfigManager {
      * @param context application context for download
      * @param datafileConfig DatafileConfig for the datafile
      * @param updateInterval frequency of updates in seconds
+     * @param listener function to call when a new datafile has been detected.
      */
-    void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval);
+    void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval, DatafileChangeListener listener);
 
     /**
      * Stop the background updates.
