@@ -28,7 +28,7 @@ public class DefaultDatafileHandlerTest {
 
     @Before
     public void setup() {
-        datafileHandler = new DefaultDatafileHandler();
+        datafileHandler = new DefaultDatafileHandler(new DatafileConfig("1", null));
     }
 
     @Test
@@ -130,7 +130,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", null), 24 * 60 * 60L);
+        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", null), 24 * 60 * 60L, null);
 
         assertTrue(true);
 
@@ -144,7 +144,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", "2"), 24 * 60 * 60L);
+        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", "2"), 24 * 60 * 60L, null);
 
         assertTrue(true);
 

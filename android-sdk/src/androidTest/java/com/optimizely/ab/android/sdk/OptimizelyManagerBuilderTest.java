@@ -29,6 +29,7 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.OptimizelyRuntimeException;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
+import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
@@ -84,7 +85,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId).withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getTargetContext()))
                 .withDatafileDownloadInterval(30L)
                 .withEventDispatchInterval(30L)
-                .withDatafileHandler(new DefaultDatafileHandler())
+                .withDatafileHandler(new DefaultDatafileHandler(new DatafileConfig(testProjectId, null)))
                 .withErrorHandler(errorHandler)
                 .withEventHandler(DefaultEventHandler.getInstance(InstrumentationRegistry.getTargetContext()))
                 .withLogger(logger).build(InstrumentationRegistry.getTargetContext());

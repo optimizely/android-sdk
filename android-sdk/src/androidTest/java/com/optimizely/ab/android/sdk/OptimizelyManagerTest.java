@@ -28,6 +28,7 @@ import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningEx
 import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.optimizely.ab.android.datafile_handler.DatafileChangeListener;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
@@ -37,6 +38,8 @@ import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.config.DatafileProjectConfig;
+import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
 
@@ -95,11 +98,21 @@ public class OptimizelyManagerTest {
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         optimizelyManager = new OptimizelyManager(testProjectId, null, null, logger, 3600L, datafileHandler, null, 3600L,
                 eventHandler, null);
+        String datafile = optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+        ProjectConfig config = null;
+        try {
+            config = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+        }
+        catch (Exception e) {
+
+        }
+        when(datafileHandler.getConfig()).thenReturn(config);
     }
 
     @Test
     public void initializeIntUseForcedVariation() {
         optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+
 
         assertTrue(optimizelyManager.getOptimizely().setForcedVariation("android_experiment_key", "1", "var_1"));
         Variation variation = optimizelyManager.getOptimizely().getForcedVariation("android_experiment_key", "1");
@@ -116,7 +129,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
 
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(InstrumentationRegistry.getTargetContext()), eq(new DatafileConfig(testProjectId, null)), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(InstrumentationRegistry.getTargetContext()), eq(new DatafileConfig(testProjectId, null)), eq(3600L), any(DatafileChangeListener.class));
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
 
@@ -169,6 +182,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
+        when(optimizelyManager.getDatafileHandler().getConfig()).thenReturn(null);
         optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.emptydatafile);
         assertFalse(optimizelyManager.getOptimizely().isValid());
     }
@@ -227,7 +241,7 @@ public class OptimizelyManagerTest {
         };
         optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, listener);
 
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(any(Context.class), eq(new DatafileConfig(testProjectId, testSdkKey)), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(any(Context.class), eq(new DatafileConfig(testProjectId, testSdkKey)), eq(3600L), any(DatafileChangeListener.class));
 
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
@@ -261,6 +275,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
+        when(optimizelyManager.getDatafileHandler().getConfig()).thenReturn(null);
 
         String emptyString = "";
 
@@ -274,6 +289,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
+        when(optimizelyManager.getDatafileHandler().getConfig()).thenReturn(null);
 
         String emptyString = "malformed data";
 
@@ -347,7 +363,7 @@ public class OptimizelyManagerTest {
 
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(new DatafileConfig(testProjectId, null)), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(new DatafileConfig(testProjectId, null)), eq(3600L), any(DatafileChangeListener.class));
 
     }
 
@@ -366,7 +382,7 @@ public class OptimizelyManagerTest {
             fail("Timed out");
         }
 
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(new DatafileConfig(testProjectId, null)), eq(3600L));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(context), eq(new DatafileConfig(testProjectId, null)), eq(3600L), any(DatafileChangeListener.class));
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
     }
@@ -435,6 +451,7 @@ public class OptimizelyManagerTest {
         ArgumentCaptor<DefaultUserProfileService.StartCallback> callbackArgumentCaptor =
                 ArgumentCaptor.forClass(DefaultUserProfileService.StartCallback.class);
 
+        when(optimizelyManager.getDatafileHandler().getConfig()).thenReturn(null);
         optimizelyManager.setOptimizelyStartListener(null);
         optimizelyManager.injectOptimizely(context, userProfileService, "{}");
         try {
