@@ -11,7 +11,7 @@ env:
 android:
   components:
     - tools
-    - platform-tools
+    - platform-tools-$ANDROID_BUILD_TOOLS
     - build-tools-$ANDROID_BUILD_TOOLS
     - android-$ANDROID_API
     - android-$EMULATOR_API
@@ -34,7 +34,7 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 before_install:
-    - yes | sdkmanager "platforms;android-$ANDROID_API"
+    #- yes | sdkmanager "platforms;android-$ANDROID_API"
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
