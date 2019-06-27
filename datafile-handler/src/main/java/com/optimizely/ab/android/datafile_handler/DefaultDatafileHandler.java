@@ -293,7 +293,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
     }
 
     public void setDatafile(String datafile) {
-        if (currentProjectConfig == null && datafile != null && !datafile.isEmpty()) {
+        if (datafile != null && !datafile.isEmpty()) {
             try {
                 currentProjectConfig = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
                 logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
