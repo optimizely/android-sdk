@@ -6,8 +6,8 @@ env:
  - ADB_INSTALL_TIMEOUT=5 # minutes
  - ANDROID_API=29 # api is same as gradle file
  matrix:
- - EMULATOR_API=22
- - EMULATOR_API=21
+ - EMULATOR_API=24
+ - EMULATOR_API=28
 android:
   components:
     - tools
