@@ -356,7 +356,7 @@ public class OptimizelyClientTest {
         Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get(FEATURE_ANDROID_EXPERIMENT_KEY);
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.activate(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
-        verify(bucketer).bucket( experiment, bucketingId, optimizely.getProjectConfig());
+        verify(bucketer).bucket(experiment, bucketingId, optimizely.getProjectConfig());
     }
 
     @Test

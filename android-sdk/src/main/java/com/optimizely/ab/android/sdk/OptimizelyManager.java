@@ -186,15 +186,7 @@ public class OptimizelyManager {
                     defaultUserProfileService.start();
                 }
                 optimizelyClient = buildOptimizely(context, datafile);
-
-                if (datafileDownloadInterval > 0 && datafileHandler != null) {
-                    datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval, datafile1 -> {
-                        if (getOptimizely() != null && getOptimizely().getNotificationCenter() != null)
-                            getOptimizely().getNotificationCenter().send(new UpdateConfigNotification());
-
-                    });
-                }
-
+                startDatafileHandler(context);
             }
             else {
                 logger.error("Invalid datafile");
@@ -440,20 +432,27 @@ public class OptimizelyManager {
         return datafileHandler;
     }
 
+    private void startDatafileHandler(Context context) {
+        if (datafileDownloadInterval > 0) {
+            datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval, datafile1 -> {
+                // fire
+                if (getOptimizely().getNotificationCenter() != null) {
+                    getOptimizely().getNotificationCenter().send(new UpdateConfigNotification());
+                }
+            });
+        }
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void injectOptimizely(@NonNull final Context context, final @NonNull UserProfileService userProfileService,
                           @NonNull final String datafile) {
 
-        if (datafileDownloadInterval > 0 && datafileHandler != null) {
-            datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval, datafile1 -> {
-                // fire
-                if (getOptimizely() != null && getOptimizely().getNotificationCenter() != null)
-                getOptimizely().getNotificationCenter().send(new UpdateConfigNotification());
-            });
-        }
         try {
             optimizelyClient = buildOptimizely(context, datafile);
             optimizelyClient.setDefaultAttributes(OptimizelyDefaultAttributes.buildDefaultAttributesMap(context, logger));
+
+            startDatafileHandler(context);
 
             if (userProfileService instanceof DefaultUserProfileService) {
                 ((DefaultUserProfileService) userProfileService).startInBackground(new DefaultUserProfileService.StartCallback() {
@@ -500,22 +499,14 @@ public class OptimizelyManager {
         if (errorHandler != null) {
             builder.withErrorHandler(errorHandler);
         }
-        if (userProfileService != null) {
-            builder.withUserProfileService(userProfileService);
-        }
-        else {
-            // the builder creates the default user profile service. So, this should never happen.
-            userProfileService = DefaultUserProfileService.newInstance(datafileConfig.getKey(), context);
-            builder.withUserProfileService(userProfileService);
-        }
+        builder.withEventHandler(eventHandler);
+        builder.withUserProfileService(userProfileService);
 
-        if (datafileHandler != null) {
-            if (datafileHandler instanceof DefaultDatafileHandler) {
-                DefaultDatafileHandler handler = (DefaultDatafileHandler)datafileHandler;
-                handler.setDatafile(datafile);
-            }
-            builder.withConfigManager(datafileHandler);
+        if (datafileHandler instanceof DefaultDatafileHandler) {
+            DefaultDatafileHandler handler = (DefaultDatafileHandler)datafileHandler;
+            handler.setDatafile(datafile);
         }
+        builder.withConfigManager(datafileHandler);
 
         Optimizely optimizely = builder.build();
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));

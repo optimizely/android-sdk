@@ -82,8 +82,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                });
                optimizelyManager.getOptimizely().getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, new NotificationHandler<UpdateConfigNotification>() {
                    @Override
-                   public void handle(UpdateConfigNotification message) {
-                        System.out.println("got datafile change ");
+                   public void handle(UpdateConfigNotification notification) {
+                        System.out.println("got datafile change");
                    }
                });
                startVariation();

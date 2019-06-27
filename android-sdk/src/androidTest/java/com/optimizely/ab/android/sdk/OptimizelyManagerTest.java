@@ -91,7 +91,7 @@ public class OptimizelyManagerTest {
             "}";
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
@@ -100,12 +100,9 @@ public class OptimizelyManagerTest {
                 eventHandler, null);
         String datafile = optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
         ProjectConfig config = null;
-        try {
-            config = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
-        }
-        catch (Exception e) {
 
-        }
+        config = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+
         when(datafileHandler.getConfig()).thenReturn(config);
     }
 

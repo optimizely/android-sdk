@@ -23,7 +23,6 @@ import android.os.FileObserver;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
-import com.optimizely.ab.OptimizelyRuntimeException;
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
@@ -38,14 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.function.Function;
 
 /**
  * The default implementation of {@link DatafileHandler} and the main
  * interaction point to the datafile-handler module.
  */
 public class DefaultDatafileHandler implements DatafileHandler {
-    private Logger logger = LoggerFactory.getLogger("DefaultDatafileHandler");
+    private static final Logger logger = LoggerFactory.getLogger("DefaultDatafileHandler");
     private DatafileConfig datafileConfig;
     private ProjectConfig currentProjectConfig;
     private DatafileServiceConnection datafileServiceConnection;
@@ -296,10 +294,11 @@ public class DefaultDatafileHandler implements DatafileHandler {
         if (datafile != null && !datafile.isEmpty()) {
             try {
                 currentProjectConfig = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
-                logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
+
+                DefaultDatafileHandler.logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
             } catch (ConfigParseException ex) {
-                logger.error("Unable to parse the datafile", ex);
-                logger.info("Datafile is invalid");
+                DefaultDatafileHandler.logger.error("Unable to parse the datafile", ex);
+                DefaultDatafileHandler.logger.info("Datafile is invalid");
             }
         }
 
