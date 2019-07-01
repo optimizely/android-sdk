@@ -98,10 +98,6 @@ public class DefaultDatafileHandlerTest {
                 assertNull(dataFile);
             }
 
-            @Override
-            public void onStop(Context context) {
-
-            }
         });
 
     }
@@ -115,11 +111,6 @@ public class DefaultDatafileHandlerTest {
             @Override
             public void onDatafileLoaded(@Nullable String dataFile) {
                 assertNull(dataFile);
-            }
-
-            @Override
-            public void onStop(Context context) {
-
             }
         });
 

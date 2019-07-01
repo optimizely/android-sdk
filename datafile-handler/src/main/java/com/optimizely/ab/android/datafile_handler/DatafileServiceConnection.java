@@ -102,7 +102,6 @@ public class DatafileServiceConnection implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
         bound = false;
-       listener.onStop(context);
     }
 
     /**

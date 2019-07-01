@@ -137,7 +137,7 @@ public class DatafileLoader {
             if (datafileLoader.hasNotifiedListener) {
                 // we're done here. meaning, we have notified you of either the cache coming in or of a new file.
                 // so, we are notifying you that the data file service has stopped.
-                datafileLoadedListener.onStop(datafileService.getApplicationContext());
+                //datafileLoadedListener.onStop(datafileService.getApplicationContext());
             }
 
         }

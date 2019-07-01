@@ -104,14 +104,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
                             }
 
                         }
-
-                        @Override
-                        public void onStop(Context context) {
-                            if (listener != null) {
-                                listener.onStop(context);
-                            }
-                        }
-                    });
+             });
             context.getApplicationContext().bindService(intent, datafileServiceConnection, Context.BIND_AUTO_CREATE);
         }
     }
@@ -124,7 +117,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * @param datafileConfig DatafileConfig for the datafile
      * @param updateInterval frequency of updates in seconds
      */
-    public void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval, DatafileChangeListener listener) {
+    public void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval, DatafileLoadedListener listener) {
         // if already running, stop it
         stopBackgroundUpdates(context, datafileConfig);
 
@@ -158,7 +151,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
                     String config = newConfig.toString();
                     setDatafile(config);
                     if (listener != null) {
-                        listener.onDatafileChange(config);
+                        listener.onDatafileLoaded(config);
                     }
                 }
             }
