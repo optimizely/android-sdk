@@ -277,16 +277,18 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
 
     public void setDatafile(String datafile) {
         if (datafile != null && !datafile.isEmpty()) {
-            try {
-                currentProjectConfig = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
-
-                DefaultDatafileHandler.logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
-            } catch (ConfigParseException ex) {
-                DefaultDatafileHandler.logger.error("Unable to parse the datafile", ex);
-                DefaultDatafileHandler.logger.info("Datafile is invalid");
-            }
+            logger.info("datafile is empty, ignoring update");
+            return;
         }
 
+        try {
+            currentProjectConfig = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+
+            logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
+        } catch (ConfigParseException ex) {
+            logger.error("Unable to parse the datafile", ex);
+            logger.info("Datafile is invalid");
+        }
     }
     @Override
     public ProjectConfig getConfig() {
