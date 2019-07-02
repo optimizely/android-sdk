@@ -76,6 +76,7 @@ public class OptimizelyManagerTest {
     private ListeningExecutorService executor;
     private Logger logger;
     private OptimizelyManager optimizelyManager;
+    private DefaultDatafileHandler defaultDatafileHandler;
 
     private String minDatafile = "{\n" +
             "experiments: [ ],\n" +
@@ -93,16 +94,16 @@ public class OptimizelyManagerTest {
     public void setup() throws Exception {
         logger = mock(Logger.class);
         executor = MoreExecutors.newDirectExecutorService();
-        DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
+        defaultDatafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
-        optimizelyManager = new OptimizelyManager(testProjectId, null, null, logger, 3600L, datafileHandler, null, 3600L,
+        optimizelyManager = new OptimizelyManager(testProjectId, null, null, logger, 3600L, defaultDatafileHandler, null, 3600L,
                 eventHandler, null);
         String datafile = optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
         ProjectConfig config = null;
 
         config = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
 
-        when(datafileHandler.getConfig()).thenReturn(config);
+        when(defaultDatafileHandler.getConfig()).thenReturn(config);
     }
 
     @Test
@@ -178,7 +179,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
-        when(optimizelyManager.getDatafileHandler().getConfig()).thenReturn(null);
+        when(defaultDatafileHandler.getConfig()).thenReturn(null);
         optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.emptydatafile);
         assertFalse(optimizelyManager.getOptimizely().isValid());
     }
@@ -271,7 +272,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
-        when(optimizelyManager.getDatafileHandler().getConfig()).thenReturn(null);
+        when(defaultDatafileHandler.getConfig()).thenReturn(null);
 
         String emptyString = "";
 
@@ -285,7 +286,7 @@ public class OptimizelyManagerTest {
         Context appContext = mock(Context.class);
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
-        when(optimizelyManager.getDatafileHandler().getConfig()).thenReturn(null);
+        when(defaultDatafileHandler.getConfig()).thenReturn(null);
 
         String emptyString = "malformed data";
 
@@ -447,7 +448,7 @@ public class OptimizelyManagerTest {
         ArgumentCaptor<DefaultUserProfileService.StartCallback> callbackArgumentCaptor =
                 ArgumentCaptor.forClass(DefaultUserProfileService.StartCallback.class);
 
-        when(optimizelyManager.getDatafileHandler().getConfig()).thenReturn(null);
+        when(defaultDatafileHandler.getConfig()).thenReturn(null);
         optimizelyManager.setOptimizelyStartListener(null);
         optimizelyManager.injectOptimizely(context, userProfileService, "{}");
         try {

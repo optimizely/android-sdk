@@ -33,7 +33,7 @@ import java.util.function.Function;
  * overridden so that the sdk user can provide a override for the default DatafileHandler.
  */
 @Deprecated
-public interface DatafileHandler extends ProjectConfigManager {
+public interface DatafileHandler {
     /**
      * Synchronous call to download the datafile.
      *

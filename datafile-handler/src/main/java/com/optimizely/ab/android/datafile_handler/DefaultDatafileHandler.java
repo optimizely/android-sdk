@@ -30,6 +30,7 @@ import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.config.DatafileProjectConfig;
 import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.ProjectConfigManager;
 import com.optimizely.ab.config.parser.ConfigParseException;
 
 import org.json.JSONObject;
@@ -42,20 +43,11 @@ import java.io.File;
  * The default implementation of {@link DatafileHandler} and the main
  * interaction point to the datafile-handler module.
  */
-public class DefaultDatafileHandler implements DatafileHandler {
+public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigManager {
     private static final Logger logger = LoggerFactory.getLogger("DefaultDatafileHandler");
-    private DatafileConfig datafileConfig;
     private ProjectConfig currentProjectConfig;
     private DatafileServiceConnection datafileServiceConnection;
     private FileObserver fileObserver;
-
-    public DefaultDatafileHandler(String sdkKey) {
-        this(new DatafileConfig(null, sdkKey));
-    }
-
-    public DefaultDatafileHandler(DatafileConfig datafileConfig) {
-        this.datafileConfig = datafileConfig;
-    }
 
     /**
      * Synchronous call to download the datafile.

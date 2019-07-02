@@ -85,7 +85,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId).withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getTargetContext()))
                 .withDatafileDownloadInterval(30L)
                 .withEventDispatchInterval(30L)
-                .withDatafileHandler(new DefaultDatafileHandler(new DatafileConfig(testProjectId, null)))
+                .withDatafileHandler(new DefaultDatafileHandler())
                 .withErrorHandler(errorHandler)
                 .withEventHandler(DefaultEventHandler.getInstance(InstrumentationRegistry.getTargetContext()))
                 .withLogger(logger).build(InstrumentationRegistry.getTargetContext());

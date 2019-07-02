@@ -28,7 +28,7 @@ public class DefaultDatafileHandlerTest {
 
     @Before
     public void setup() {
-        datafileHandler = new DefaultDatafileHandler(new DatafileConfig("1", null));
+        datafileHandler = new DefaultDatafileHandler();
     }
 
     @Test

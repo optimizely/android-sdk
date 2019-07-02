@@ -488,21 +488,26 @@ public class OptimizelyManager {
 
         EventBatch.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
-        Optimizely.Builder builder = Optimizely.builder()
-                .withClientEngine(clientEngine)
-
-                .withClientVersion(BuildConfig.CLIENT_VERSION);
-        if (errorHandler != null) {
-            builder.withErrorHandler(errorHandler);
-        }
-        builder.withEventHandler(eventHandler);
-        builder.withUserProfileService(userProfileService);
+        Optimizely.Builder builder = Optimizely.builder();
 
         if (datafileHandler instanceof DefaultDatafileHandler) {
             DefaultDatafileHandler handler = (DefaultDatafileHandler)datafileHandler;
             handler.setDatafile(datafile);
+            builder.withConfigManager(handler);
+            builder.withEventHandler(eventHandler);
         }
-        builder.withConfigManager(datafileHandler);
+        else {
+            builder = Optimizely.builder(datafile, eventHandler);
+        }
+
+        builder.withClientEngine(clientEngine)
+                .withClientVersion(BuildConfig.CLIENT_VERSION);
+
+        if (errorHandler != null) {
+            builder.withErrorHandler(errorHandler);
+        }
+
+        builder.withUserProfileService(userProfileService);
 
         Optimizely optimizely = builder.build();
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
@@ -763,7 +768,7 @@ public class OptimizelyManager {
             }
 
             if (datafileHandler == null) {
-                datafileHandler = new DefaultDatafileHandler(datafileConfig);
+                datafileHandler = new DefaultDatafileHandler();
             }
 
             if (userProfileService == null) {
