@@ -80,21 +80,15 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                    System.out.println("got track");
                });
-               optimizelyManager.getOptimizely().getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, new NotificationHandler<UpdateConfigNotification>() {
-                   @Override
-                   public void handle(UpdateConfigNotification notification) {
+               optimizelyManager.getOptimizely().getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, (UpdateConfigNotification notification) -> {
                         System.out.println("got datafile change");
-                   }
                });
+
                startVariation();
         } else {
             // Initialize Optimizely asynchronously
-            optimizelyManager.initialize(this,R.raw.datafile, new OptimizelyStartListener() {
-
-                @Override
-                public void onStart(OptimizelyClient optimizely) {
-                    startVariation();
-                }
+            optimizelyManager.initialize(this,R.raw.datafile, (OptimizelyClient optimizely) -> {
+                startVariation();
             });
         }
 
