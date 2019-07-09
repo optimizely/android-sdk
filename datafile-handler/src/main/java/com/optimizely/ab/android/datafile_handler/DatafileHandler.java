@@ -28,7 +28,7 @@ import java.util.function.Function;
  * DatafileHandler
  * @deprecated
  * This interface will be replaced by the ProjectConfigManager.  If you are implementing this interface moving forward,
- * you will also need to implement the ProjectConfigManager.
+ * you will also need to implement the {@link ProjectConfigManager} .
  * class that is used to interact with the datafile_handler module. This interface can be
  * overridden so that the sdk user can provide a override for the default DatafileHandler.
  */

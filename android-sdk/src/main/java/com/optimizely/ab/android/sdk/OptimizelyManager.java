@@ -44,6 +44,7 @@ import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.internal.payload.EventBatch;
+import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 
 import org.slf4j.Logger;
@@ -429,15 +430,19 @@ public class OptimizelyManager {
     }
 
     private void startDatafileHandler(Context context) {
-        if (datafileDownloadInterval > 0) {
-            datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval, datafile1 -> {
-                // fire
-                if (getOptimizely().getNotificationCenter() != null) {
-                    getOptimizely().getNotificationCenter().send(new UpdateConfigNotification());
-                }
-            });
+        if (datafileDownloadInterval <= 0) {
+            logger.debug("Invalid download interval, ignoring background updates.");
+            return;
         }
 
+        datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval, datafile1 -> {
+            NotificationCenter notificationCenter = getOptimizely().getNotificationCenter();
+            if (notificationCenter == null) {
+                logger.debug("NotificationCenter null, not sending notification");
+                return;
+            }
+            notificationCenter.send(new UpdateConfigNotification());
+        });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

@@ -44,7 +44,7 @@ import java.io.File;
  * interaction point to the datafile-handler module.
  */
 public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigManager {
-    private static final Logger logger = LoggerFactory.getLogger("DefaultDatafileHandler");
+    private static final Logger logger = LoggerFactory.getLogger(DefaultDatafileHandler.class);
     private ProjectConfig currentProjectConfig;
     private DatafileServiceConnection datafileServiceConnection;
     private FileObserver fileObserver;

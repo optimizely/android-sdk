@@ -99,9 +99,7 @@ public class OptimizelyManagerTest {
         optimizelyManager = new OptimizelyManager(testProjectId, null, null, logger, 3600L, defaultDatafileHandler, null, 3600L,
                 eventHandler, null);
         String datafile = optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
-        ProjectConfig config = null;
-
-        config = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+        ProjectConfig config = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
 
         when(defaultDatafileHandler.getConfig()).thenReturn(config);
     }

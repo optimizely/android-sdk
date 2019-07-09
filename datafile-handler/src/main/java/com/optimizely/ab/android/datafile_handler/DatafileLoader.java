@@ -133,13 +133,6 @@ public class DatafileLoader {
             // if empty or null than it should be handled in datafileLoader listener to get from cache or Raw resource
             datafileLoader.notify(datafileLoadedListener, dataFile);
             datafileService.stop();
-
-            if (datafileLoader.hasNotifiedListener) {
-                // we're done here. meaning, we have notified you of either the cache coming in or of a new file.
-                // so, we are notifying you that the data file service has stopped.
-                //datafileLoadedListener.onStop(datafileService.getApplicationContext());
-            }
-
         }
     }
 }
