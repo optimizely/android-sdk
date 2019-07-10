@@ -24,6 +24,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.DatafileConfig;
+import com.optimizely.ab.android.shared.OptlyStorage;
 
 import org.slf4j.Logger;
 
@@ -110,6 +111,12 @@ public class DatafileLoader {
 
         @Override
         protected String doInBackground(Void... params) {
+
+            if (!datafileCache.exists() || (datafileCache.exists() && datafileCache.load() == null)) {
+                // there is a problem with the cached datafile.  set last modified to 1970
+                OptlyStorage storage = new OptlyStorage(this.datafileService.getApplicationContext());
+                storage.saveLong(datafileUrl, 1);
+            }
             String dataFile = datafileClient.request(datafileUrl);
             if (dataFile != null && !dataFile.isEmpty()) {
                 if (datafileCache.exists()) {
