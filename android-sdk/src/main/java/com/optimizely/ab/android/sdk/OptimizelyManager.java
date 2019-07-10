@@ -283,7 +283,7 @@ public class OptimizelyManager {
                 }
             }
 
-            if (datafileRes!=null) {
+            if (datafileRes != null) {
                 return loadRawResource(context, datafileRes);
             }else{
                 logger.error("Invalid datafile resource ID.");
