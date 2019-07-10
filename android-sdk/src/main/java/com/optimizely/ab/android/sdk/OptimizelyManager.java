@@ -279,8 +279,13 @@ public class OptimizelyManager {
     public String getDatafile(Context context,@RawRes Integer datafileRes){
         try {
             if (isDatafileCached(context)) {
-                return datafileHandler.loadSavedDatafile(context, datafileConfig);
-            } else if (datafileRes!=null) {
+                String datafile = datafileHandler.loadSavedDatafile(context, datafileConfig);
+                if (datafile != null) {
+                    return datafile;
+                }
+            }
+
+            if (datafileRes!=null) {
                 return loadRawResource(context, datafileRes);
             }else{
                 logger.error("Invalid datafile resource ID.");
