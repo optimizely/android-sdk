@@ -116,7 +116,7 @@ public class DatafileLoader {
             if (!datafileCache.exists() || (datafileCache.exists() && datafileCache.load() == null)) {
                 // create a wrapper for application context default storage.
                 OptlyStorage storage = new OptlyStorage(this.datafileService.getApplicationContext());
-                // set the last modified for this url to 1 millisecond passed Jan 1, 1970.
+                // set the last modified for this url to 1 millisecond past Jan 1, 1970.
                 storage.saveLong(datafileUrl, 1);
             }
             String dataFile = datafileClient.request(datafileUrl);
