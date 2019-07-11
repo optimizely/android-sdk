@@ -36,6 +36,7 @@ cache:
 before_install:
     #- yes | sdkmanager "platforms;android-$ANDROID_API"
 before_script:
+  - sdkmanager --list | head -15
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
   - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi armeabi-v7a
