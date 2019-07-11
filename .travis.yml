@@ -35,8 +35,9 @@ cache:
     - $HOME/.gradle/wrapper/
 before_install:
     #- yes | sdkmanager "platforms;android-$ANDROID_API"
-before_script:
+after_install:
   - sdkmanager --list | head -15
+before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
   - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi armeabi-v7a
