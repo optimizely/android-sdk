@@ -31,7 +31,9 @@ import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.notification.ActivateNotificationListener;
+import com.optimizely.ab.notification.NotificationHandler;
 import com.optimizely.ab.notification.TrackNotificationListenerInterface;
+import com.optimizely.ab.notification.UpdateConfigNotification;
 
 import java.util.Map;
 
@@ -78,15 +80,15 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                    System.out.println("got track");
                });
+               optimizelyManager.getOptimizely().getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, (UpdateConfigNotification notification) -> {
+                        System.out.println("got datafile change");
+               });
+
                startVariation();
         } else {
             // Initialize Optimizely asynchronously
-            optimizelyManager.initialize(this,R.raw.datafile, new OptimizelyStartListener() {
-
-                @Override
-                public void onStart(OptimizelyClient optimizely) {
-                    startVariation();
-                }
+            optimizelyManager.initialize(this,R.raw.datafile, (OptimizelyClient optimizely) -> {
+                startVariation();
             });
         }
 

@@ -74,7 +74,7 @@ public class MyApplication extends Application {
 
          OptimizelyManager.Builder builder = OptimizelyManager.builder();
          optimizelyManager =  builder.withEventDispatchInterval(60L * 10L)
-            .withDatafileDownloadInterval(60L * 10L)
+            .withDatafileDownloadInterval(30L)
             .withSDKKey("FCnSegiEkRry9rhVMroit4")
             .build(getApplicationContext());
     }

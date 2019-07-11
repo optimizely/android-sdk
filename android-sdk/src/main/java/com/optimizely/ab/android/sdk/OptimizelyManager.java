@@ -44,6 +44,8 @@ import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.internal.payload.EventBatch;
+import com.optimizely.ab.notification.NotificationCenter;
+import com.optimizely.ab.notification.UpdateConfigNotification;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,11 +186,7 @@ public class OptimizelyManager {
                     defaultUserProfileService.start();
                 }
                 optimizelyClient = buildOptimizely(context, datafile);
-
-                if (datafileDownloadInterval > 0 && datafileHandler != null) {
-                    datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval);
-                }
-
+                startDatafileHandler(context);
             }
             else {
                 logger.error("Invalid datafile");
@@ -343,9 +341,6 @@ public class OptimizelyManager {
                     injectOptimizely(context, userProfileService, getDatafile(context,datafileRes));
                 }
             }
-
-            @Override
-            public void onStop(Context context) {}
         };
     }
 
@@ -434,16 +429,31 @@ public class OptimizelyManager {
         return datafileHandler;
     }
 
+    private void startDatafileHandler(Context context) {
+        if (datafileDownloadInterval <= 0) {
+            logger.debug("Invalid download interval, ignoring background updates.");
+            return;
+        }
+
+        datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval, datafile1 -> {
+            NotificationCenter notificationCenter = getOptimizely().getNotificationCenter();
+            if (notificationCenter == null) {
+                logger.debug("NotificationCenter null, not sending notification");
+                return;
+            }
+            notificationCenter.send(new UpdateConfigNotification());
+        });
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void injectOptimizely(@NonNull final Context context, final @NonNull UserProfileService userProfileService,
                           @NonNull final String datafile) {
 
-        if (datafileDownloadInterval > 0 && datafileHandler != null) {
-            datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval);
-        }
         try {
             optimizelyClient = buildOptimizely(context, datafile);
             optimizelyClient.setDefaultAttributes(OptimizelyDefaultAttributes.buildDefaultAttributesMap(context, logger));
+
+            startDatafileHandler(context);
 
             if (userProfileService instanceof DefaultUserProfileService) {
                 ((DefaultUserProfileService) userProfileService).startInBackground(new DefaultUserProfileService.StartCallback() {
@@ -483,20 +493,26 @@ public class OptimizelyManager {
 
         EventBatch.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
-        Optimizely.Builder builder = Optimizely.builder(datafile, eventHandler)
-                .withClientEngine(clientEngine)
+        Optimizely.Builder builder = Optimizely.builder();
+
+        if (datafileHandler instanceof DefaultDatafileHandler) {
+            DefaultDatafileHandler handler = (DefaultDatafileHandler)datafileHandler;
+            handler.setDatafile(datafile);
+            builder.withConfigManager(handler);
+            builder.withEventHandler(eventHandler);
+        }
+        else {
+            builder = Optimizely.builder(datafile, eventHandler);
+        }
+
+        builder.withClientEngine(clientEngine)
                 .withClientVersion(BuildConfig.CLIENT_VERSION);
+
         if (errorHandler != null) {
             builder.withErrorHandler(errorHandler);
         }
-        if (userProfileService != null) {
-            builder.withUserProfileService(userProfileService);
-        }
-        else {
-            // the builder creates the default user profile service. So, this should never happen.
-            userProfileService = DefaultUserProfileService.newInstance(datafileConfig.getKey(), context);
-            builder.withUserProfileService(userProfileService);
-        }
+
+        builder.withUserProfileService(userProfileService);
 
         Optimizely optimizely = builder.build();
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
@@ -750,6 +766,10 @@ public class OptimizelyManager {
                     datafileDownloadInterval = 60;
                     logger.warn("Minimum datafile polling interval is 60 seconds. Defaulting to 60 seconds.");
                 }
+            }
+
+            if (datafileConfig == null) {
+                datafileConfig = new DatafileConfig(projectId, sdkKey);
             }
 
             if (datafileHandler == null) {

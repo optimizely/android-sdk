@@ -19,6 +19,7 @@ package com.optimizely.ab.android.datafile_handler;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.FileObserver;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
@@ -27,16 +28,27 @@ import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.config.DatafileProjectConfig;
+import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.ProjectConfigManager;
+import com.optimizely.ab.config.parser.ConfigParseException;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 
 /**
  * The default implementation of {@link DatafileHandler} and the main
  * interaction point to the datafile-handler module.
  */
-public class DefaultDatafileHandler implements DatafileHandler {
+public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigManager {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultDatafileHandler.class);
+    private ProjectConfig currentProjectConfig;
     private DatafileServiceConnection datafileServiceConnection;
+    private FileObserver fileObserver;
+
     /**
      * Synchronous call to download the datafile.
      * Gets the file on the current thread from the Optimizely CDN.
@@ -84,14 +96,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
                             }
 
                         }
-
-                        @Override
-                        public void onStop(Context context) {
-                            if (listener != null) {
-                                listener.onStop(context);
-                            }
-                        }
-                    });
+             });
             context.getApplicationContext().bindService(intent, datafileServiceConnection, Context.BIND_AUTO_CREATE);
         }
     }
@@ -104,7 +109,7 @@ public class DefaultDatafileHandler implements DatafileHandler {
      * @param datafileConfig DatafileConfig for the datafile
      * @param updateInterval frequency of updates in seconds
      */
-    public void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval) {
+    public void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval, DatafileLoadedListener listener) {
         // if already running, stop it
         stopBackgroundUpdates(context, datafileConfig);
 
@@ -122,6 +127,32 @@ public class DefaultDatafileHandler implements DatafileHandler {
         serviceScheduler.schedule(intent, updateInterval * 1000);
 
         storeInterval(context, updateInterval * 1000);
+
+        DatafileCache datafileCache = new DatafileCache(
+                datafileConfig.getKey(),
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(DatafileCache.class)
+        );
+
+        File filesFolder = context.getFilesDir();
+        fileObserver = new FileObserver(filesFolder.getPath()) {
+            @Override
+            public void onEvent(int event, @Nullable String path) {
+                if (event == MODIFY && path.equals(datafileCache.getFileName())) {
+                    JSONObject newConfig = datafileCache.load();
+                    if (newConfig == null) {
+                        logger.error("Cached datafile is empty or corrupt");
+                        return;
+                    }
+                    String config = newConfig.toString();
+                    setDatafile(config);
+                    if (listener != null) {
+                        listener.onDatafileLoaded(config);
+                    }
+                }
+            }
+        };
+        fileObserver.startWatching();
     }
 
     private static void storeInterval(Context context, long interval) {
@@ -151,6 +182,11 @@ public class DefaultDatafileHandler implements DatafileHandler {
         clearBackgroundCache(context, datafileConfig);
 
         storeInterval(context, -1);
+
+        if (fileObserver != null) {
+            fileObserver.stopWatching();
+            fileObserver = null;
+        }
     }
 
     private void enableBackgroundCache(Context context, DatafileConfig datafileConfig) {
@@ -241,5 +277,31 @@ public class DefaultDatafileHandler implements DatafileHandler {
         if (datafileCache.exists()) {
             datafileCache.delete();
         }
+    }
+
+    public void setDatafile(String datafile) {
+
+        if (datafile == null) {
+            logger.info("datafile is null, ignoring update");
+            return;
+        }
+
+        if (datafile.isEmpty()) {
+            logger.info("datafile is empty, ignoring update");
+            return;
+        }
+
+        try {
+            currentProjectConfig = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+
+            logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
+        } catch (ConfigParseException ex) {
+            logger.error("Unable to parse the datafile", ex);
+            logger.info("Datafile is invalid");
+        }
+    }
+    @Override
+    public ProjectConfig getConfig() {
+        return currentProjectConfig;
     }
 }

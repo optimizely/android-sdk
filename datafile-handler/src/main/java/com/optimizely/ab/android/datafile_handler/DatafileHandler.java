@@ -18,13 +18,21 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 
+import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.ProjectConfigManager;
 import com.optimizely.ab.android.shared.DatafileConfig;
+
+import java.util.function.Function;
 
 /**
  * DatafileHandler
+ * @deprecated
+ * This interface will be replaced by the ProjectConfigManager.  If you are implementing this interface moving forward,
+ * you will also need to implement the {@link ProjectConfigManager} .
  * class that is used to interact with the datafile_handler module. This interface can be
  * overridden so that the sdk user can provide a override for the default DatafileHandler.
  */
+@Deprecated
 public interface DatafileHandler {
     /**
      * Synchronous call to download the datafile.
@@ -50,8 +58,9 @@ public interface DatafileHandler {
      * @param context application context for download
      * @param datafileConfig DatafileConfig for the datafile
      * @param updateInterval frequency of updates in seconds
+     * @param listener function to call when a new datafile has been detected.
      */
-    void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval);
+    void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval, DatafileLoadedListener listener);
 
     /**
      * Stop the background updates.

@@ -98,10 +98,6 @@ public class DefaultDatafileHandlerTest {
                 assertNull(dataFile);
             }
 
-            @Override
-            public void onStop(Context context) {
-
-            }
         });
 
     }
@@ -116,11 +112,6 @@ public class DefaultDatafileHandlerTest {
             public void onDatafileLoaded(@Nullable String dataFile) {
                 assertNull(dataFile);
             }
-
-            @Override
-            public void onStop(Context context) {
-
-            }
         });
 
     }
@@ -130,7 +121,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", null), 24 * 60 * 60L);
+        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", null), 24 * 60 * 60L, null);
 
         assertTrue(true);
 
@@ -144,7 +135,7 @@ public class DefaultDatafileHandlerTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", "2"), 24 * 60 * 60L);
+        datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", "2"), 24 * 60 * 60L, null);
 
         assertTrue(true);
 

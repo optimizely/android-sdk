@@ -35,11 +35,4 @@ public interface DatafileLoadedListener {
      *
      */
      void onDatafileLoaded(@Nullable String dataFile);
-
-    /**
-     * The datafile download stopped for some reason.
-     *
-     * @param context application context
-     */
-     void onStop(Context context);
 }

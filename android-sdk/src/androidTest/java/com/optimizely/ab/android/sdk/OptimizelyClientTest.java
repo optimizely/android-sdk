@@ -115,9 +115,9 @@ public class OptimizelyClientTest {
             eventHandler = spy(DefaultEventHandler.getInstance(InstrumentationRegistry.getTargetContext()));
             optimizely = Optimizely.builder(datafile, eventHandler).build();
             if(datafileVersion==3) {
-                when(bucketer.bucket(optimizely.getProjectConfig().getExperiments().get(0), GENERIC_USER_ID)).thenReturn(optimizely.getProjectConfig().getExperiments().get(0).getVariations().get(0));
+                when(bucketer.bucket(optimizely.getProjectConfig().getExperiments().get(0), GENERIC_USER_ID, optimizely.getProjectConfig())).thenReturn(optimizely.getProjectConfig().getExperiments().get(0).getVariations().get(0));
             } else {
-                when(bucketer.bucket(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY), GENERIC_USER_ID)).thenReturn(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY).getVariations().get(1));
+                when(bucketer.bucket(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY), GENERIC_USER_ID, optimizely.getProjectConfig())).thenReturn(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY).getVariations().get(1));
             }
             spyOnConfig();
         } catch (Exception configException) {
@@ -356,7 +356,7 @@ public class OptimizelyClientTest {
         Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get(FEATURE_ANDROID_EXPERIMENT_KEY);
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.activate(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
-        verify(bucketer).bucket( experiment, bucketingId);
+        verify(bucketer).bucket(experiment, bucketingId, optimizely.getProjectConfig());
     }
 
     @Test
@@ -881,7 +881,7 @@ public class OptimizelyClientTest {
         Map<String, String> attributes = new HashMap<>();
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.getVariation("android_experiment_key", "userId", attributes);
-        verify(bucketer).bucket(experiment, bucketingId);
+        verify(bucketer).bucket(experiment, bucketingId, optimizely.getProjectConfig());
     }
 
     @Test
@@ -1027,9 +1027,9 @@ public class OptimizelyClientTest {
                 logger);
         ProjectConfig config = optimizelyClient.getProjectConfig();
         assertNotNull(config);
-        assertTrue(config.setForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, "var_1"));
-        assertEquals(config.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID), config.getExperimentKeyMapping().get(FEATURE_ANDROID_EXPERIMENT_KEY).getVariations().get(0));
-        assertTrue(config.setForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, null));
+        assertTrue(optimizelyClient.setForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, "var_1"));
+        assertEquals(optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID), config.getExperimentKeyMapping().get(FEATURE_ANDROID_EXPERIMENT_KEY).getVariations().get(0));
+        assertTrue(optimizelyClient.setForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, null));
     }
 
     @Test
