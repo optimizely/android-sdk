@@ -276,7 +276,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
     }
 
     public void setDatafile(String datafile) {
-        if (datafile != null && !datafile.isEmpty()) {
+        if (datafile != null && datafile.isEmpty()) {
             logger.info("datafile is empty, ignoring update");
             return;
         }
