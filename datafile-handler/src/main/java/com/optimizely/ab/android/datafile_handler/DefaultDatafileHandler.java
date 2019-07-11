@@ -140,6 +140,10 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
             public void onEvent(int event, @Nullable String path) {
                 if (event == MODIFY && path.equals(datafileCache.getFileName())) {
                     JSONObject newConfig = datafileCache.load();
+                    if (newConfig == null) {
+                        logger.error("Cached datafile is empty or corrupt");
+                        return;
+                    }
                     String config = newConfig.toString();
                     setDatafile(config);
                     if (listener != null) {
@@ -276,7 +280,13 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
     }
 
     public void setDatafile(String datafile) {
-        if (datafile != null && datafile.isEmpty()) {
+
+        if (datafile == null) {
+            logger.info("datafile is null, ignoring update");
+            return;
+        }
+
+        if (datafile.isEmpty()) {
             logger.info("datafile is empty, ignoring update");
             return;
         }
