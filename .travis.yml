@@ -1,5 +1,5 @@
 language: generic
-dist: xenial
+dist: trusty
 env:
  global:
 # These parameters should match the parameters for build tools and sdk versions in the gradle file
