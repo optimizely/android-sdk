@@ -8,7 +8,7 @@ env:
  - ANDROID_API=28 # api is same as gradle file
  - SDK_TOOLS=4333796 # 26.1.1
  - ANDROID_HOME=~/android-sdk
- - JAVA_HOME=/usr/local/lib/jvm/java-8-openjdk-amd64/bin
+ - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/bin
  matrix:
  - EMULATOR_API=21
  - EMULATOR_API=22
