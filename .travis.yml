@@ -1,5 +1,5 @@
 language: generic
-dist: trusty
+dist: xenial
 env:
  global:
 # These parameters should match the parameters for build tools and sdk versions in the gradle file
@@ -12,7 +12,7 @@ env:
  - EMULATOR_API=21
  - EMULATOR_API=22
 jdk:
-  - oraclejdk8
+  - openjdk8
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
@@ -44,12 +44,14 @@ script:
 
 # Integration tests need to run first to reset the PR build status to pending
 stages:
-  - 'Integration tests'
-  - 'Test'
+  - name: 'Integration tests'
+    if: type = pull_request
+  - name: 'Test'
 
 jobs:
   include:
     - stage: 'Integration tests'
+      name: 'Integration tests'
       env:
         - SDK=android
         - BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
