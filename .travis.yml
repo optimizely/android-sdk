@@ -18,7 +18,7 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 install:
-  - sudo apt-get -y install openjdk8
+  - sudo apt-get -y update && sudo apt-get -y install openjdk8
   - wget -q "https://dl.google.com/android/repository/sdk-tools-linux-$SDK_TOOLS.zip" -O android-sdk-tools.zip && unzip -q android-sdk-tools.zip -d "$ANDROID_HOME" && rm android-sdk-tools.zip && PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
   - mkdir -p ~/.android && touch ~/.android/repositories.cfg
   - yes | sdkmanager --licenses > /dev/null
@@ -44,7 +44,7 @@ script:
 # Integration tests need to run first to reset the PR build status to pending
 stages:
   - name: 'Integration tests'
-    if: type = pull_request
+    if: type = pull_requesta
   - name: 'Test'
 
 jobs:
