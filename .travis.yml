@@ -8,7 +8,7 @@ env:
  - ANDROID_API=28 # api is same as gradle file
  - SDK_TOOLS=4333796 # 26.1.1
  - ANDROID_HOME=~/android-sdk
- - JAVA_HOME=/usr/local/lib/jvm/java-8-openjdk-amd64
+ - JAVA_HOME=/usr/local/lib/jvm/java-1.8.0-openjdk-amd64
  matrix:
  - EMULATOR_API=21
  - EMULATOR_API=22
@@ -19,12 +19,9 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 install:
-  - sudo apt-get -y update && sudo apt-get -y install openjdk-8-jdk
-  - ls -al /usr/local/lib/jvm/
-  - env |grep JAVA
-  - jdk_switcher use openjdk8
-  - env |grep JAVA
-  - ls -al /usr/local/lib/jvm/
+  - sudo apt-get -y update && sudo apt-get -y install openjdk-8-jdk java-common
+  - sudo update-java-alternatives -s java-1.8.0-openjdk-amd64
+  - java -version
   - wget -q "https://dl.google.com/android/repository/sdk-tools-linux-$SDK_TOOLS.zip" -O android-sdk-tools.zip && unzip -q android-sdk-tools.zip -d "$ANDROID_HOME" && rm android-sdk-tools.zip && PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
   - mkdir -p ~/.android && touch ~/.android/repositories.cfg
   - yes | sdkmanager --licenses > /dev/null
