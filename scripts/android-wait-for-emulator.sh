@@ -24,4 +24,4 @@ until [[ "$bootanim" =~ "stopped" ]]; do
   sleep 1
 done
 
-echo "Emulator is ready"
+echo "Emulator is ready (took $failcounter seconds)"
