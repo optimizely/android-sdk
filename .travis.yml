@@ -20,7 +20,9 @@ cache:
     - $HOME/.gradle/wrapper/
 install:
   - ls -al /usr/local/lib/jvm
-  - sudo apt-get -y remove default-jdk default-jre default-jdk-headless && sudo rm -rf /usr/local/lib/jvm
+  - sudo apt-get -y remove default-jdk default-jre default-jdk-headless default-jre-headless
+    # remove java custom installed by travis
+  - sudo rm -rf /usr/local/lib/jvm
   - dpkg-query -f '${Package} ${Status}\n' -W "openjdk*" | grep 'ok installed' | awk '{print $1}' | xargs sudo apt-get -y remove
   - sudo apt-get -y update && sudo apt-get -y install openjdk-8-jdk java-common
   - which java
@@ -28,7 +30,7 @@ install:
   - java -version
   - wget -q "https://dl.google.com/android/repository/sdk-tools-linux-$SDK_TOOLS.zip" -O android-sdk-tools.zip && unzip -q android-sdk-tools.zip -d "$ANDROID_HOME" && rm android-sdk-tools.zip && PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
   - mkdir -p ~/.android && touch ~/.android/repositories.cfg
-  - yes | sdkmanager --licenses > /dev/null
+  - yes | sdkmanager --licenses
   - sdkmanager "emulator" "tools" "platform-tools" > /dev/null
   - sdkmanager --list | head -15
   - sdkmanager "build-tools;$ANDROID_BUILD_TOOLS" "platforms;android-$ANDROID_API" > /dev/null
