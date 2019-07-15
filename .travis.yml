@@ -8,7 +8,7 @@ env:
  - ANDROID_API=28 # api is same as gradle file
  - SDK_TOOLS=4333796 # 26.1.1
  - ANDROID_HOME=~/android-sdk
- - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/bin
+ - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
  matrix:
  - EMULATOR_API=21
  - EMULATOR_API=22
@@ -28,6 +28,7 @@ install:
   - which java
   - echo $PATH
   - java -version
+  - ls -al /usr/lib/jvm
   - wget -q "https://dl.google.com/android/repository/sdk-tools-linux-$SDK_TOOLS.zip" -O android-sdk-tools.zip && unzip -q android-sdk-tools.zip -d "$ANDROID_HOME" && rm android-sdk-tools.zip && PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
   - mkdir -p ~/.android && touch ~/.android/repositories.cfg
   - yes | sdkmanager --licenses
