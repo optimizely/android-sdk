@@ -24,6 +24,7 @@ function install_ {
   wget -O $WORKDIR/install-java.sh https://raw.githubusercontent.com/juancarlostong/install-java/master/install-java.sh
   chmod u+x $WORKDIR/install-java.sh
   # install
+  touch ~/.bashrc
   yes | sudo $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
   # set JAVA_HOME
   source ~/.bashrc

@@ -10,4 +10,5 @@ unzip "$WORKDIR/awscli-bundle.zip" -d "$WORKDIR"
 sudo "$WORKDIR/awscli-bundle/install" -i /usr/local/aws -b /usr/local/bin/aws
 rm -rf "$WORKDIR/awscli-bundle"
 rm "$WORKDIR/awscli-bundle.zip"
+aws --version
 echo "$0 finished execution"
