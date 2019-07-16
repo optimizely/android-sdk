@@ -19,6 +19,7 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 install:
+  - scripts/install_awscli.sh
   - scripts/install_java.sh
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
   - scripts/install_android.sh
