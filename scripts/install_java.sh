@@ -19,12 +19,12 @@ function install_ {
   WORKDIR=/tmp/workdir
   mkdir -p $WORKDIR
   # fetch manually downloaded tarbal of oracle's jdk 8
-  aws s3 cp "s3://optly-fs-travisci-artifacts/java/$TARBALL" "$WORKDIR/"
+  aws s3 cp --quiet "s3://optly-fs-travisci-artifacts/java/$TARBALL" "$WORKDIR/"
   # get java installer script
   wget -O $WORKDIR/install-java.sh https://raw.githubusercontent.com/juancarlostong/install-java/master/install-java.sh
   chmod u+x $WORKDIR/install-java.sh
   # install
-  yes | $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
+  yes | sudo $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
   # set JAVA_HOME
   source ~/.bashrc
 }
