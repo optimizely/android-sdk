@@ -23,10 +23,10 @@ function install_ {
   # get java installer script
   wget -O "$WORKDIR/install-java.sh" https://raw.githubusercontent.com/juancarlostong/install-java/master/install-java.sh
   chmod u+x "$WORKDIR/install-java.sh"
-  # fixes /home/travis/.bashrc: line 1: PS1: unbound variable
-  PS1=${PS1:-}
   # install
-  yes | sudo bash -eux $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
+  set +e # due to /home/travis/.bashrc: line 1: PS1: unbound variable
+  yes | sudo bash -ex $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
+  set -e
 }
 
 function verify_ {
