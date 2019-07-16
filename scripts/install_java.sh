@@ -17,14 +17,14 @@ function cleanup_ {
 function install_ {
   TARBALL=jdk-8u211-linux-x64.tar.gz
   WORKDIR=/tmp/workdir
-  mkdir -p $WORKDIR
+  mkdir -p "$WORKDIR"
   # fetch manually downloaded tarbal of oracle's jdk 8
   aws s3 cp --quiet "s3://optly-fs-travisci-artifacts/java/$TARBALL" "$WORKDIR/"
   # get java installer script
-  wget -O $WORKDIR/install-java.sh https://raw.githubusercontent.com/juancarlostong/install-java/master/install-java.sh
-  chmod u+x $WORKDIR/install-java.sh
+  wget -O "$WORKDIR/install-java.sh" https://raw.githubusercontent.com/juancarlostong/install-java/master/install-java.sh
+  chmod u+x "$WORKDIR/install-java.sh"
+  cat ~/.bashrc
   # install
-  touch "$HOME/.bashrc"
   yes | sudo bash -eux $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
 }
 
