@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+IFS=$'\n\t'
 
 # requires Python 2 version 2.6.5+ or Python 3 version 3.3+
 

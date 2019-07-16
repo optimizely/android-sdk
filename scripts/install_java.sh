@@ -25,14 +25,13 @@ function install_ {
   chmod u+x "$WORKDIR/install-java.sh"
   # install
   set +e # due to /home/travis/.bashrc: line 1: PS1: unbound variable
-  yes | sudo bash -ex $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
+  yes | sudo "$WORKDIR/install-java.sh" -f "$WORKDIR/$TARBALL"
   set -e
 }
 
 function verify_ {
   echo "set this in your .travis.yml global env:"
   echo "JAVA_HOME=$JAVA_HOME"
-  which java
   java -version
   echo "$0 finished execution"
 }
