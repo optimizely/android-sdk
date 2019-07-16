@@ -41,7 +41,7 @@ before_script:
   - echo $TRAVIS_TAG
   - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
-  - android-wait-for-emulator
+  - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
 addons:
   srcclr: true
