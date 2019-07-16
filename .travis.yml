@@ -19,26 +19,9 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 install:
-  # remove all java versions that come with worker image
-  - sudo apt-get -y remove default-jdk default-jre default-jdk-headless default-jre-headless ca-certificates-java openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre openjdk-8-jre-headless
-  # remove java custom installed by travis since $PATH looks for this first before /usr/lib/jvm
-  - sudo rm -rf /usr/local/lib/jvm
-  - sudo apt-get -y update && sudo apt-get -y install openjdk-8-jdk java-common
-  # verify java version
-  - java -version
-  - wget -q "https://dl.google.com/android/repository/sdk-tools-linux-$SDK_TOOLS.zip" -O android-sdk-tools.zip && unzip -q android-sdk-tools.zip -d "$ANDROID_HOME" && rm android-sdk-tools.zip && PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
-  - mkdir -p ~/.android && touch ~/.android/repositories.cfg
-  - yes | sdkmanager --licenses > /dev/null
-  - sdkmanager --list | head -15
-  - sdkmanager "emulator" "tools" "platform-tools" > /dev/null
-  - sdkmanager "build-tools;$ANDROID_BUILD_TOOLS" "platforms;android-$ANDROID_API" > /dev/null
-  - sdkmanager "system-images;android-$EMULATOR_API;google_apis;armeabi-v7a" > /dev/null
-  - sdkmanager "extras;google;m2repository" "extras;android;m2repository" "add-ons;addon-google_apis-google-19" > /dev/null
-  - sdkmanager --list | head -15
-  - echo no | avdmanager create avd -n test -k "system-images;android-$EMULATOR_API;google_apis;armeabi-v7a"
-  - $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window &
-  - scripts/android-wait-for-emulator.sh
-  - adb shell input keyevent 82
+  - scripts/install_java.sh
+  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
+  - scripts/install_android.sh
 
 addons:
   srcclr: true
