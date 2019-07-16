@@ -24,13 +24,12 @@ function install_ {
   wget -O $WORKDIR/install-java.sh https://raw.githubusercontent.com/juancarlostong/install-java/master/install-java.sh
   chmod u+x $WORKDIR/install-java.sh
   # install
-  touch ~/.bashrc
-  yes | sudo bash -x $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
-  # set JAVA_HOME
-  source ~/.bashrc
+  touch "$HOME/.bashrc"
+  yes | sudo bash -eux $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
 }
 
 function verify_ {
+  echo "set this in your .travis.yml global env:"
   echo "JAVA_HOME=$JAVA_HOME"
   which java
   java -version
