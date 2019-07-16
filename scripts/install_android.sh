@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
 IFS=$'\n\t'
 
-wget -q "https://dl.google.com/android/repository/sdk-tools-linux-$SDK_TOOLS.zip" -O android-sdk-tools.zip && unzip -q android-sdk-tools.zip -d "$ANDROID_HOME" && rm android-sdk-tools.zip
+WORKDIR=/tmp/workdir
+mkdir -p "$WORKDIR"
+wget -q "https://dl.google.com/android/repository/sdk-tools-linux-$SDK_TOOLS.zip" -O "$WORKDIR/android-sdk-tools.zip" && unzip -q "$WORKDIR/android-sdk-tools.zip" -d "$ANDROID_HOME" && rm "$WORKDIR/android-sdk-tools.zip"
 mkdir -p ~/.android && touch ~/.android/repositories.cfg
 yes | sdkmanager --licenses > /dev/null
 sdkmanager "emulator" "tools" "platform-tools" > /dev/null
