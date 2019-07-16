@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
 IFS=$'\n\t'
 
 # this script removes any existing java that comes with a travis worker and installs our own
