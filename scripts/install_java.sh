@@ -7,7 +7,7 @@ IFS=$'\n\t'
 
 function cleanup_ {
   # remove all java versions that come with worker image
-  sudo apt-get -y remove default-jdk default-jre default-jdk-headless default-jre-headless ca-certificates-java openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre openjdk-8-jre-headless
+  #sudo apt-get -y remove default-jdk default-jre default-jdk-headless default-jre-headless ca-certificates-java openjdk-8-jdk openjdk-8-jdk-headless openjdk-8-jre openjdk-8-jre-headless
   # just because we are paranoid, lets make sure we get them all
   dpkg-query -f '${Package} ${Status}\n' -W "openjdk*" | grep 'ok installed' | awk '{print $1}' | xargs sudo apt-get -y remove
   # remove java custom installed by travis since $PATH looks for this first before /usr/lib/jvm
