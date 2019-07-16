@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 IFS=$'\n\t'
 
 # this script removes any existing java that comes with a travis worker and installs our own
@@ -25,7 +25,7 @@ function install_ {
   chmod u+x $WORKDIR/install-java.sh
   # install
   touch ~/.bashrc
-  yes | sudo $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
+  yes | sudo bash -x $WORKDIR/install-java.sh -f $WORKDIR/$TARBALL
   # set JAVA_HOME
   source ~/.bashrc
 }
