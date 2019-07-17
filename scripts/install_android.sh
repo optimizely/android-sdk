@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 WORKDIR=/tmp/workdir
 mkdir -p "$WORKDIR"
