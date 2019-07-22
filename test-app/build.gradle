@@ -48,7 +48,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-android
     implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
     // EXAMPLE REPLACE gson json parsing with jackson-databind json parsing.
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonversion"
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
@@ -68,5 +68,5 @@ dependencies {
     // androidTestImplementation 'com.optimizely.ab:android-sdk:1.0.0'
     androidTestImplementation project(':android-sdk')
     androidTestImplementation project(path: ':shared')
-    androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
+    androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 }
