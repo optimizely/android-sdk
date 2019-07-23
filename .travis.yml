@@ -38,10 +38,6 @@ cache:
     - $HOME/.gradle/wrapper/
 before_install:
     - yes | sdkmanager "platforms;android-28"
-    # required by adb
-    - ldd --version
-    - sudo apt-get -y update && sudo apt-get -y install libc6
-    - ldd --version
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
