@@ -40,6 +40,7 @@ before_install:
     - ldd --version
     - sudo apt-get -y update && sudo apt-get -y install libc6
     - ldd --version
+    - cat /etc/apt/sources.list | grep -v ^#
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
