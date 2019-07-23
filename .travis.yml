@@ -1,4 +1,6 @@
 language: android
+# you MUST mention trusty https://docs.travis-ci.com/user/languages/android/
+dist: trusty
 env:
  global:
 # These parameters should match the parameters for build tools and sdk versions in the gradle file
@@ -36,8 +38,6 @@ cache:
     - $HOME/.gradle/wrapper/
 before_install:
     - yes | sdkmanager "platforms;android-28"
-    # sources.list in xenial android worker is wrong
-    - sudo cp scripts/sources.list /etc/apt/sources.list
     # required by adb
     - ldd --version
     - sudo apt-get -y update && sudo apt-get -y install libc6
