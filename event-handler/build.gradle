@@ -71,7 +71,7 @@ dependencies {
     androidTestImplementation "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestImplementation "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
-    androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
+    androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 }
 
 uploadArchives {

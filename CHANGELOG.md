@@ -1,5 +1,11 @@
 # Optimizely Android X SDK Changelog
 
+## 3.1.1
+July 23rd, 2019
+
+### Bug Fixes:
+* SourceClear flagged jackson-databind 2.9.8 fixed in 2.9.9.1
+
 ## 3.1.0
 May 13th, 2019
 
