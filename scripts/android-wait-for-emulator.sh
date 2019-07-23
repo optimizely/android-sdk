@@ -20,6 +20,9 @@ until [[ "$bootanim" =~ "stopped" ]]; do
       echo "Timeout ($timeout_in_sec seconds) reached; failed to start emulator"
       exit 1
     fi
+  else
+    echo "unexpected behavior from (adb -e shell getprop init.svc.bootanim):"
+    echo "$bootanim"
   fi
   sleep 5
 done
