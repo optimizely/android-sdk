@@ -36,14 +36,12 @@ cache:
     - $HOME/.gradle/wrapper/
 before_install:
     - yes | sdkmanager "platforms;android-28"
+    # sources.list in xenial android worker is wrong
+    - sudo cp scripts/sources.list /etc/apt/sources.list
     # required by adb
     - ldd --version
     - sudo apt-get -y update && sudo apt-get -y install libc6
     - ldd --version
-    - cat /etc/apt/sources.list | grep -v ^#
-    - apt-mark showhold
-    - cat /etc/apt/preferences
-    - cat /etc/apt-preferences.d/*
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
