@@ -49,7 +49,7 @@ addons:
   srcclr: true
 script:
   - ./gradlew cleanAllModules
-  - ./gradlew testAllModulesTravis
+  - ./gradlew testAllModules
   - if [[ -n $TRAVIS_TAG ]]; then ./gradlew ship; fi
 
 # Integration tests need to run first to reset the PR build status to pending
