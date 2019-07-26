@@ -45,7 +45,8 @@ before_script:
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
 addons:
-  srcclr: true
+  srcclr:
+    debug: true
 script:
   - ./gradlew cleanAllModules
   - ./gradlew testAllModulesTravis
