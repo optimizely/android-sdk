@@ -270,7 +270,8 @@ public class ServiceScheduler {
             JobInfo jobInfo = new JobInfo.Builder(jobId,
                     new ComponentName(context, JobWorkService.class))
                     // schedule it to run any time between 1 - 5 minutes
-                    .setMinimumLatency(JobWorkService.ONE_MINUTE)
+                    .setMinimumLatency(0)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                     .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
                     .build();
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
