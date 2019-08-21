@@ -1,5 +1,22 @@
 # Optimizely Android X SDK Changelog
 
+## 3.2.0
+August 21st 2019
+
+This minor release updates the SDK to use the Optimizely Java SDK 3.2.1 which includes the following:
+
+### New Features:
+* The default datafile manager now supports the Java SDK [#ProjectConfigManager](https://github.com/optimizely/java-sdk/blob/master/core-api/src/main/java/com/optimizely/ab/config/ProjectConfigManager.java)
+    * The default datafile manager with polling enabled will pickup new ProjectConfigs without needing to re-initialize.
+    * You can register for Datafile change notifications.
+
+### Bug Fixes:
+* Potential bug fix for ANRs where a service is started but there is a bad network connection. [#PR295](https://github.com/optimizely/android-sdk/pull/295)
+
+### Deprecated
+* DatafileHandler interface has been deprecated. In the future we will start using the ProjectConfigManager from the Java SDK mentioned above.
+
+
 ## 3.1.1
 July 23rd, 2019
 
