@@ -1,7 +1,7 @@
 # Optimizely Android X SDK Changelog
 
 ## 3.2.0
-August 20 2019
+August 21st 2019
 
 This minor release updates the SDK to use the Optimizely Java SDK 3.2.1 which includes the following:
 
