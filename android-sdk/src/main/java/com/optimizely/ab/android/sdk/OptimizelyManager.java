@@ -44,6 +44,7 @@ import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
+import com.optimizely.ab.event.ForwardingEventProcessor;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;

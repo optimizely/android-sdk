@@ -41,6 +41,7 @@ import com.optimizely.ab.config.DatafileProjectConfig;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.event.EventProcessor;
 
 import org.junit.Before;
 import org.junit.Test;
