@@ -43,6 +43,7 @@ import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.event.EventProcessor;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
@@ -66,6 +67,7 @@ public class OptimizelyManager {
     private final long datafileDownloadInterval;
     private final long eventDispatchInterval;
     @Nullable private EventHandler eventHandler = null;
+    @Nullable private EventProcessor eventProcessor = null;
     @Nullable private ErrorHandler errorHandler;
     @NonNull private Logger logger;
     @Nullable private final String projectId;
@@ -85,6 +87,7 @@ public class OptimizelyManager {
                       @Nullable ErrorHandler errorHandler,
                       long eventDispatchInterval,
                       @NonNull EventHandler eventHandler,
+                      @Nullable EventProcessor eventProcessor,
                       @NonNull UserProfileService userProfileService) {
 
         if (projectId == null && sdkKey == null) {
@@ -103,6 +106,7 @@ public class OptimizelyManager {
         this.datafileHandler = datafileHandler;
         this.eventDispatchInterval = eventDispatchInterval;
         this.eventHandler = eventHandler;
+        this.eventProcessor = eventProcessor;
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
     }
@@ -644,6 +648,8 @@ public class OptimizelyManager {
         @Nullable private Logger logger = null;
         @Nullable private EventHandler eventHandler = null;
         @Nullable private ErrorHandler errorHandler = null;
+        @Nullable private EventProcessor eventProcessor = null;
+        @Nullable private NotificationCenter notificationCenter = null;
         @Nullable private UserProfileService userProfileService = null;
         @Nullable private String sdkKey = null;
         @Nullable private DatafileConfig datafileConfig = null;
@@ -791,6 +797,14 @@ public class OptimizelyManager {
                 eventHandler = DefaultEventHandler.getInstance(context);
             }
 
+            if(notificationCenter == null) {
+                notificationCenter = new NotificationCenter();
+            }
+
+            if(eventProcessor == null) {
+                eventProcessor = new ForwardingEventProcessor(eventHandler, notificationCenter);
+            }
+
             if (projectId == null && sdkKey == null) {
                 logger.error("ProjectId and SDKKey cannot both be null");
                 return null;
@@ -804,6 +818,7 @@ public class OptimizelyManager {
                     errorHandler,
                     eventDispatchInterval,
                     eventHandler,
+                    eventProcessor,
                     userProfileService);
         }
     }

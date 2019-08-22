@@ -16,50 +16,19 @@
 
 package com.optimizely.ab.android.sdk;
 
-import android.app.UiModeManager;
-import android.content.Context;
-import android.content.res.Configuration;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
 import android.support.test.runner.AndroidJUnit4;
-
-import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.OptimizelyRuntimeException;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
-import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
-import com.optimizely.ab.config.Experiment;
-import com.optimizely.ab.config.ProjectConfig;
-import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.error.ErrorHandler;
-import com.optimizely.ab.event.internal.payload.Event;
-import com.optimizely.ab.notification.NotificationListener;
-
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.exceptions.verification.junit.ArgumentsAreDifferent;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class OptimizelyManagerBuilderTest {
