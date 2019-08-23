@@ -500,14 +500,15 @@ public class OptimizelyManager {
 
         Optimizely.Builder builder = Optimizely.builder();
 
+        builder.withEventHandler(eventHandler);
+
         if (datafileHandler instanceof DefaultDatafileHandler) {
             DefaultDatafileHandler handler = (DefaultDatafileHandler)datafileHandler;
             handler.setDatafile(datafile);
             builder.withConfigManager(handler);
-            builder.withEventHandler(eventHandler);
         }
         else {
-            builder = Optimizely.builder(datafile, eventHandler);
+            builder.withDatafile(datafile);
         }
 
         builder.withClientEngine(clientEngine)
