@@ -163,7 +163,7 @@ public class OptimizelyManager {
     }
 
     /**
-     * Initialize Optimizely Synchronously using the datafile passed in while downloading the latest datafile in the background from the CDN to cache.
+     * Initialize Optimizely Synchronously using the datafile passed in.
      * It should be noted that even though it initiates a download of the datafile to cache, this method does not use that cached datafile.
      * You can always test if a datafile exists in cache with {@link #isDatafileCached(Context)}.
      * <p>
@@ -175,7 +175,7 @@ public class OptimizelyManager {
      * @param downloadToCache to check if datafile should get updated in cache after initialization.
      * @return an {@link OptimizelyClient} instance
      */
-    protected OptimizelyClient initialize(@NonNull Context context, @Nullable String datafile, boolean downloadToCache) {
+    public OptimizelyClient initialize(@NonNull Context context, @Nullable String datafile, boolean downloadToCache) {
         if (!isAndroidVersionSupported()) {
             return optimizelyClient;
         }
