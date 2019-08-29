@@ -1,5 +1,13 @@
 # Optimizely Android X SDK Changelog
 
+## 3.2.1
+August 29th 2019
+
+This is a patch release which includes the following:
+
+### Bug Fixes:
+* Make the initialize method with a flag to download to cache public from protected. In the other initialize methods, we always download to cache. [#PR301](https://github.com/optimizely/android-sdk/pull/301)
+
 ## 3.2.0
 August 21st 2019
 
