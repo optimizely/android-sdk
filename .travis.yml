@@ -63,7 +63,8 @@ jobs:
       stage: 'Integration tests'
       env:
         - SDK=android
-        - BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
+        - BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.}
+        - SDK_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
       cache: false
       language: minimal
       before_install: skip
@@ -75,4 +76,4 @@ jobs:
       after_success: travis_terminate 0
     - <<: *integrationtest
       stage: 'Benchmarking tests'
-      env: SDK=android FULLSTACK_TEST_REPO=Benchmarking
+      env: SDK=android FULLSTACK_TEST_REPO=Benchmarking BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.} SDK_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
