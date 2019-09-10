@@ -36,4 +36,11 @@
         android:layout_centerHorizontal="true"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_optimizely_logo"/>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="InitializeOptimizely" />
 </RelativeLayout>

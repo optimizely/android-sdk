@@ -21,6 +21,8 @@ import android.net.wifi.WifiManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import com.optimizely.ab.android.event_handler.EventRescheduler;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
@@ -46,6 +48,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     private OptimizelyManager optimizelyManager;
     private MyApplication myApplication;
 
+    Button button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +64,12 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        setupButton();
+
+    }
+
+    protected void initializeOptimizely() {
+
         boolean INITIALIZE_ASYNCHRONOUSLY = false;
 
         // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
@@ -73,24 +83,41 @@ public class SplashScreenActivity extends AppCompatActivity {
          **/
         if (!INITIALIZE_ASYNCHRONOUSLY) {
                optimizelyManager.initialize(myApplication, R.raw.datafile);
-               optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, ?> map,  Variation variation,  LogEvent logEvent) -> {
-                   System.out.println("got activation");
-               });
-               optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, ?> map, Map<String, ?> map1, LogEvent logEvent) -> {
-
-                   System.out.println("got track");
-               });
-               optimizelyManager.getOptimizely().getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, (UpdateConfigNotification notification) -> {
-                        System.out.println("got datafile change");
-               });
-
+               setHandlers();
                startVariation();
         } else {
             // Initialize Optimizely asynchronously
             optimizelyManager.initialize(this,R.raw.datafile, (OptimizelyClient optimizely) -> {
+                setHandlers();
                 startVariation();
             });
         }
+
+    }
+
+    protected void setupButton() {
+        button = (Button) findViewById(R.id.button);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initializeOptimizely();
+            }
+        });
+
+    }
+
+    protected void setHandlers() {
+        optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, ?> map,  Variation variation,  LogEvent logEvent) -> {
+            System.out.println("got activation");
+        });
+        optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, ?> map, Map<String, ?> map1, LogEvent logEvent) -> {
+
+            System.out.println("got track");
+        });
+        optimizelyManager.getOptimizely().getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, (UpdateConfigNotification notification) -> {
+            System.out.println("got datafile change");
+        });
 
     }
 

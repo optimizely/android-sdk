@@ -40,7 +40,9 @@ import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.ProjectConfig;
+import com.optimizely.ab.config.ProjectConfigManager;
 import com.optimizely.ab.config.parser.ConfigParseException;
+import com.optimizely.ab.config.parser.DefaultConfigParser;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.internal.payload.EventBatch;
@@ -105,6 +107,10 @@ public class OptimizelyManager {
         this.eventHandler = eventHandler;
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
+
+        // prime the parser
+        // so it isn't included in initialization cost.
+        DefaultConfigParser.getInstance();
     }
 
     @VisibleForTesting
@@ -183,7 +189,12 @@ public class OptimizelyManager {
             if(datafile!=null) {
                 if (getUserProfileService() instanceof DefaultUserProfileService) {
                     DefaultUserProfileService defaultUserProfileService = (DefaultUserProfileService) getUserProfileService();
-                    defaultUserProfileService.start();
+                    defaultUserProfileService.startInBackground(new DefaultUserProfileService.StartCallback() {
+                        @Override
+                        public void onStartComplete(UserProfileService userProfileService) {
+
+                        }
+                    });
                 }
                 optimizelyClient = buildOptimizely(context, datafile);
                 startDatafileHandler(context);
@@ -247,15 +258,15 @@ public class OptimizelyManager {
             return;
         }
 
-        final ProjectConfig config = optimizelyClient.getProjectConfig();
-        if (config == null) {
-            return;
-        }
-
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    final ProjectConfig config = optimizelyClient.getProjectConfig();
+                    if (config == null) {
+                        return;
+                    }
+
                     Set<String> experimentIds = config.getExperimentIdMapping().keySet();
 
                     defaultUserProfileService.removeInvalidExperiments(experimentIds);

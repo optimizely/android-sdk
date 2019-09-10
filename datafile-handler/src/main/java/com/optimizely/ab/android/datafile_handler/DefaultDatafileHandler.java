@@ -18,6 +18,7 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.FileObserver;
 import android.support.annotation.Nullable;
@@ -48,6 +49,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
     private ProjectConfig currentProjectConfig;
     private DatafileServiceConnection datafileServiceConnection;
     private FileObserver fileObserver;
+    private Object projectConfigLock = new Object();
 
     /**
      * Synchronous call to download the datafile.
@@ -291,17 +293,38 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
             return;
         }
 
-        try {
-            currentProjectConfig = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                safeSetConfig(datafile);
+                return null;
+            }
+        };
 
-            logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
-        } catch (ConfigParseException ex) {
-            logger.error("Unable to parse the datafile", ex);
-            logger.info("Datafile is invalid");
+        task.execute();
+
+    }
+
+    private void safeSetConfig(String datafile) {
+        synchronized (projectConfigLock) {
+            try {
+                currentProjectConfig = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+
+                logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
+            } catch (ConfigParseException ex) {
+                logger.error("Unable to parse the datafile", ex);
+                logger.info("Datafile is invalid");
+            }
+        }
+    }
+
+    private ProjectConfig safeGetConfig() {
+        synchronized (projectConfigLock) {
+            return currentProjectConfig;
         }
     }
     @Override
     public ProjectConfig getConfig() {
-        return currentProjectConfig;
+        return safeGetConfig();
     }
 }
