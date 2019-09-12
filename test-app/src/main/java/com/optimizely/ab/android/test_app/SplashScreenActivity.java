@@ -70,7 +70,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     protected void initializeOptimizely() {
 
-        boolean INITIALIZE_ASYNCHRONOUSLY = false;
+        boolean INITIALIZE_ASYNCHRONOUSLY = true;
 
         // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
         // in the manifest.
@@ -108,6 +108,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     protected void setHandlers() {
+        if (optimizelyManager == null || optimizelyManager.getOptimizely() == null ||
+        optimizelyManager.getOptimizely().getNotificationCenter() == null) {
+            return;
+        }
         optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, ?> map,  Variation variation,  LogEvent logEvent) -> {
             System.out.println("got activation");
         });

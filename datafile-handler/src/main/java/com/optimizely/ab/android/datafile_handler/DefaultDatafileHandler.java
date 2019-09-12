@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.FileObserver;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
@@ -39,6 +40,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * The default implementation of {@link DatafileHandler} and the main
@@ -49,7 +55,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
     private ProjectConfig currentProjectConfig;
     private DatafileServiceConnection datafileServiceConnection;
     private FileObserver fileObserver;
-    private Object projectConfigLock = new Object();
+    private final Semaphore lock = new Semaphore(1);
 
     /**
      * Synchronous call to download the datafile.
@@ -293,38 +299,56 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
             return;
         }
 
-        AsyncTask task = new AsyncTask() {
+        try {
+            lock.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        AsyncTask<Void, Void, ProjectConfig> configAsyncTask = new AsyncTask<Void, Void, ProjectConfig>() {
             @Override
-            protected Object doInBackground(Object[] objects) {
-                safeSetConfig(datafile);
-                return null;
+            protected ProjectConfig doInBackground(Void[] params) {
+                try {
+                    currentProjectConfig = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+                    logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
+                } catch (Exception ex) {
+                    logger.error("Unable to parse the datafile", ex);
+                    logger.info("Datafile is invalid");
+                }
+                finally {
+                    lock.release();
+                }
+
+                return currentProjectConfig;
+            }
+
+            @Override
+            protected void onPostExecute(ProjectConfig config) {
+
             }
         };
 
-        task.execute();
-
-    }
-
-    private void safeSetConfig(String datafile) {
-        synchronized (projectConfigLock) {
-            try {
-                currentProjectConfig = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
-
-                logger.info("Datafile successfully loaded with revision: {}", currentProjectConfig.getRevision());
-            } catch (ConfigParseException ex) {
-                logger.error("Unable to parse the datafile", ex);
-                logger.info("Datafile is invalid");
-            }
+        try {
+            configAsyncTask.executeOnExecutor(Executors.newSingleThreadExecutor());
         }
+        catch (Exception e) {
+            logger.error("Error running config parser");
+        }
+
     }
 
-    private ProjectConfig safeGetConfig() {
-        synchronized (projectConfigLock) {
-            return currentProjectConfig;
-        }
-    }
     @Override
     public ProjectConfig getConfig() {
-        return safeGetConfig();
+        try {
+            lock.acquire();
+            return currentProjectConfig;
+        }
+        catch (Exception ex) {
+            logger.error("Problem setting current configuration ", ex);
+            return null;
+        }
+        finally {
+            lock.release();
+        }
     }
 }

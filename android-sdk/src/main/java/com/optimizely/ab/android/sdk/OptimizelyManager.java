@@ -108,9 +108,9 @@ public class OptimizelyManager {
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
 
-        // prime the parser
-        // so it isn't included in initialization cost.
+        // prime the config parser if it is lazy loaded.
         DefaultConfigParser.getInstance();
+
     }
 
     @VisibleForTesting

@@ -49,6 +49,8 @@ dependencies {
     implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
     // EXAMPLE REPLACE gson json parsing with jackson-databind json parsing.
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonversion"
+// https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+    //compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
