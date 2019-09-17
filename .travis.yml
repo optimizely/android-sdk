@@ -54,7 +54,6 @@ script:
 # Integration tests need to run first to reset the PR build status to pending
 stages:
   - 'Integration tests'
-  - 'Benchmarking tests'
   - 'Test'
 
 jobs:
