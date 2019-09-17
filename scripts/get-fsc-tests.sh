@@ -9,8 +9,5 @@ pushd $FSC_PATH && git init && git fetch --depth=1 https://$CI_USER_TOKEN@github
 ls ./
 cp -r ./$FSC_PATH/features/support/datafiles/*.json ./test-app/src/main/res/raw/
 mkdir -p ./test-app/src/androidTest/assets/features
-cp -r ./$FSC_PATH/features/ ./test-app/src/androidTest/assets/features/
-ls ./$FSC_PATH/features/
-ls ./test-app/src/main/res/raw/
-ls ./test-app/src/androidTest/assets/features
+cp -r ./$FSC_PATH/features/* ./test-app/src/androidTest/assets/features/
 echo "Ready for testing."
