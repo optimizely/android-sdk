@@ -8,10 +8,12 @@ mkdir -p $FSC_PATH
 pushd $FSC_PATH && git init && git fetch --depth=1 https://$CI_USER_TOKEN@github.com/optimizely/fullstack-sdk-compatibility-suite ${FSC_BRANCH:-master} && git checkout FETCH_HEAD && popd
 ls ./
 cp -r ./$FSC_PATH/features/support/datafiles/*.json ./test-app/src/main/res/raw/
-cp -r ./$FSC_PATH/features ./test-app/src/androidTest/assets/
+mkdir ./test-app/src/androidTest/assets/features
+cp -r ./$FSC_PATH/features/ ./test-app/src/androidTest/assets/features/
 ls $FSC_PATH
 ls ./$FSC_PATH
 ls ./$FSC_PATH/features/support/datafiles/*.json
+ls ./$FSC_PATH/features/
 ls ./test-app/src/main/res/raw/
 ls ./test-app/src/androidTest/assets/features
 echo "Ready for testing."
