@@ -1,6 +1,7 @@
 package com.optimizely.ab.android.test_app.test;
 
 import android.content.Context;
+import android.support.annotation.RawRes;
 
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
@@ -55,9 +56,12 @@ public class MainActivitySteps {
     @Given("^the datafile is \"(\\S+)*\"$")
     public void the_datafile_is(String datafileName) {
         this.datafileName = datafileName;
-
+        @RawRes Integer intRawResID = context.getResources().
+                getIdentifier(datafileName.split("\\.")[0],
+                        "raw",
+                        context.getPackageName());
         try {
-            optimizelyClient = optimizelyManager.initialize(context, loadRawResource(context, R.raw.feature_exp));
+            optimizelyClient = optimizelyManager.initialize(context, loadRawResource(context, intRawResID));
         } catch (IOException e) {
             e.printStackTrace();
         }

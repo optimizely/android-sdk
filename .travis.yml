@@ -59,21 +59,9 @@ stages:
 
 jobs:
   include:
-    - &integrationtest
-      stage: 'Integration tests'
-      env:
-        - SDK=android
-        - BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.}
-        - SDK_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
-      cache: false
-      language: minimal
-      before_install: skip
-      install: skip
-      before_script:
-        - mkdir $HOME/travisci-tools && pushd $HOME/travisci-tools && git init && git pull https://$CI_USER_TOKEN@github.com/optimizely/travisci-tools.git && popd
+    - stage: 'Integration tests'
       script:
-        - $HOME/travisci-tools/trigger-script-with-status-update.sh
+        - scripts/get-fsc-tests.sh
+        - ./gradlew testBDD -Pcucumber
       after_success: travis_terminate 0
-    - <<: *integrationtest
-      stage: 'Benchmarking tests'
-      env: SDK=android FULLSTACK_TEST_REPO=Benchmarking BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.} SDK_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
+    
