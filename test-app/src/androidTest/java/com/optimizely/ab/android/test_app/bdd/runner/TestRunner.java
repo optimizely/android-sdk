@@ -1,14 +1,18 @@
-package com.optimizely.ab.android.test_app.test;
+package com.optimizely.ab.android.test_app.bdd.runner;
 
 import android.os.Bundle;
 import android.support.test.runner.MonitoringInstrumentation;
+
+
+import com.optimizely.ab.android.test_app.BuildConfig;
+
 import cucumber.api.CucumberOptions;
 import cucumber.api.android.CucumberInstrumentationCore;
 
 @CucumberOptions(
         features = "features",
-        glue = "com.optimizely.ab.android.test_app.test")
-public class Instrumentation extends MonitoringInstrumentation {
+        glue = "com.optimizely.ab.android.test_app.bdd.support")
+public class TestRunner extends MonitoringInstrumentation {
 
     private final CucumberInstrumentationCore instrumentationCore = new CucumberInstrumentationCore(this);
 
@@ -20,7 +24,6 @@ public class Instrumentation extends MonitoringInstrumentation {
         if (!tags.isEmpty()) {
             arguments.putString("tags", tags.replaceAll(",", "--").replaceAll("\\s",""));
         }
-
         instrumentationCore.create(arguments);
         start();
     }

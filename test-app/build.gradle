@@ -11,8 +11,8 @@ android {
         targetSdkVersion target_sdk_version
         versionCode 1
         versionName "1.0"
-        testApplicationId "com.optimizely.ab.android.test_app.test"
-        testInstrumentationRunner "com.optimizely.ab.android.test_app.test.Instrumentation"
+        testApplicationId "com.optimizely.ab.android.test_app.bdd"
+        testInstrumentationRunner "com.optimizely.ab.android.test_app.bdd.runner.TestRunner"
         multiDexEnabled true
     }
 
