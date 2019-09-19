@@ -2,9 +2,6 @@ package com.optimizely.ab.android.test_app.bdd.support;
 
 import android.content.Context;
 
-import com.optimizely.ab.android.test_app.bdd.support.custom_event_dispatchers.ProxyEventDispatcher;
-import com.optimizely.ab.android.test_app.bdd.support.response.BaseResponse;
-
 import org.junit.Assert;
 import org.yaml.snakeyaml.Yaml;
 
@@ -17,7 +14,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static com.optimizely.ab.android.test_app.bdd.support.Utils.parseYAML;
 
 public class Steps {
 
@@ -69,6 +65,7 @@ public class Steps {
     public void then_response_should_match(String field, String args) {
         Assert.assertTrue(optimizelyWrapper.compareFields(field, args));
     }
+
     @Then("^dispatched events payloads include$")
     public void then_dispatched_event_payload_include(String args) {
         Yaml yaml = new Yaml();
@@ -77,7 +74,7 @@ public class Steps {
     }
 
     @Then("^there are no dispatched events$")
-    public void  then_no_dispatched_event() {
+    public void then_no_dispatched_event() {
         Assert.assertNotNull("");
     }
 

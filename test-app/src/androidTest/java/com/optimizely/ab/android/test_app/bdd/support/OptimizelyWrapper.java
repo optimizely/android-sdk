@@ -112,7 +112,7 @@ public class OptimizelyWrapper {
     }
 
     public void initializeOptimizely() {
-       optimizelyManager = OptimizelyManager.builder(OPTIMIZELY_PROJECT_ID)
+        optimizelyManager = OptimizelyManager.builder(OPTIMIZELY_PROJECT_ID)
                 .withEventDispatchInterval(60L * 10L)
                 .withEventHandler(eventHandler)
                 .withUserProfileService(userProfileService)
@@ -211,10 +211,6 @@ public class OptimizelyWrapper {
         return decisionInfoCopy;
     }
 
-    public void callApi(String api) {
-        callApi(api, null);
-    }
-
     public void callApi(String api, String args) {
         if (optimizelyManager == null) {
             initializeOptimizely();
@@ -229,9 +225,8 @@ public class OptimizelyWrapper {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return ;
     }
+
     public Boolean compareFields(String field, String args) {
         Object parsedArguments = parseYAML(args);
 
@@ -239,14 +234,15 @@ public class OptimizelyWrapper {
             case "listener_called":
                 ListenerMethodResponse listenerMethodResponse = null;
                 if (result instanceof ListenerMethodResponse)
-                     listenerMethodResponse = (ListenerMethodResponse) result;
+                    listenerMethodResponse = (ListenerMethodResponse) result;
                 else
                     return false;
                 try {
                     if (parsedArguments != null) {
                         return parsedArguments.equals(listenerMethodResponse.getListenerCalled());
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
 
                 return parsedArguments == listenerMethodResponse.getListenerCalled();
             default:

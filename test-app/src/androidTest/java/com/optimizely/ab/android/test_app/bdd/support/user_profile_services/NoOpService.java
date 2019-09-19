@@ -5,7 +5,7 @@ import com.optimizely.ab.bucketing.UserProfileService;
 import java.util.Collection;
 import java.util.Map;
 
-public class NoOpService implements UserProfileService, TestUserProfileService  {
+public class NoOpService implements UserProfileService, TestUserProfileService {
     @Override
     public Collection getUserProfiles() {
         return null;
