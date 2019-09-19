@@ -43,7 +43,7 @@ public class OptimizelyWrapper {
     private EventHandler eventHandler;
     private UserProfileService userProfileService;
     private String datafile;
-
+    private ArrayList<Map<String, Object>> dispatchedEvents = new ArrayList<>();
     private ArrayList<OptimizelyWrapper.ListenerResponse> listenerResponses = new ArrayList<>();
     private ArrayList<HashMap<String, Object>> withListener = new ArrayList<>();
     private ArrayList<HashMap> forceVariations = new ArrayList<>();
@@ -52,6 +52,14 @@ public class OptimizelyWrapper {
 
     public ArrayList<ListenerResponse> getListenerResponses() {
         return listenerResponses;
+    }
+
+    public void setDispatchedEvents(ArrayList<Map<String, Object>> dispatchedEvents) {
+        this.dispatchedEvents = dispatchedEvents;
+    }
+
+    public ArrayList<Map<String, Object>> getDispatchedEvents() {
+        return dispatchedEvents;
     }
 
     public void setForceVariations(ArrayList<HashMap> forceVariations) {
@@ -68,7 +76,7 @@ public class OptimizelyWrapper {
 
     public OptimizelyWrapper(Context context) {
         this.context = context;
-        this.eventHandler = new NoopEventHandler();
+        this.eventHandler = new ProxyEventDispatcher(dispatchedEvents);
         this.userProfileService = new NoOpService();
     }
 
@@ -83,7 +91,7 @@ public class OptimizelyWrapper {
         }
     }
 
-    public void setEventHandler(String customEventDispatcher, ArrayList<Map<String, Object>> dispatchedEvents) {
+    public void setEventHandler(String customEventDispatcher) {
         if (customEventDispatcher != null && customEventDispatcher.equals("ProxyEventDispatcher")) {
             eventHandler = new ProxyEventDispatcher(dispatchedEvents);
         } else {
@@ -112,6 +120,7 @@ public class OptimizelyWrapper {
     }
 
     public void initializeOptimizely() {
+
         optimizelyManager = OptimizelyManager.builder(OPTIMIZELY_PROJECT_ID)
                 .withEventDispatchInterval(60L * 10L)
                 .withEventHandler(eventHandler)
