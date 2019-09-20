@@ -3,6 +3,7 @@ package com.optimizely.ab.android.test_app.bdd.support;
 import android.content.Context;
 import android.support.annotation.RawRes;
 import android.support.test.espresso.core.deps.guava.base.CaseFormat;
+import android.support.test.espresso.core.deps.guava.collect.Maps;
 import android.support.test.espresso.core.deps.guava.reflect.TypeToken;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,12 +27,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import gherkin.deps.com.google.gson.Gson;
 
 import static com.optimizely.ab.android.sdk.OptimizelyManager.loadRawResource;
+import static com.optimizely.ab.android.test_app.bdd.support.Utils.mergeWithSideEffect;
 import static com.optimizely.ab.android.test_app.bdd.support.Utils.parseYAML;
 import static com.optimizely.ab.notification.DecisionNotification.FeatureVariableDecisionNotificationBuilder.SOURCE_INFO;
 
@@ -225,7 +228,7 @@ public class OptimizelyWrapper {
             initializeOptimizely();
         }
 
-        Object argumentsObj = parseYAML(args);
+        Object argumentsObj = parseYAML(args, optimizelyManager.getOptimizely().getProjectConfig());
         try {
             switch (api) {
                 case "is_feature_enabled":
@@ -237,7 +240,7 @@ public class OptimizelyWrapper {
     }
 
     public Boolean compareFields(String field, String args) {
-        Object parsedArguments = parseYAML(args);
+        Object parsedArguments = parseYAML(args, optimizelyManager.getOptimizely().getProjectConfig());
 
         switch (field) {
             case "listener_called":
@@ -252,11 +255,27 @@ public class OptimizelyWrapper {
                     }
                 } catch (Exception e) {
                 }
-
                 return parsedArguments == listenerMethodResponse.getListenerCalled();
-            default:
+
+            case "dispatch_event":
+                try {
+//                    HashMap actualParams = (HashMap) ProxyEventDispatcher.getDispatchedEvents().get(0).get("params");
+//                    HashMap expectedParams = (HashMap) ((ArrayList) parsedArguments).get(0);
+//                    Map temp = new HashMap(expectedParams);
+//                    temp.equals(expectedParams);
+//                    mergeWithSideEffect(expectedParams, actualParams);
+//                    // Add everything in map1 not in map2 to map2
+//                    mergeWithSideEffect(expectedParams, temp);
+//                    return actualParams.equals(expectedParams);
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+                default:
                 return false;
         }
     }
+
+
 
 }

@@ -3,7 +3,6 @@ package com.optimizely.ab.android.test_app.bdd.support;
 import android.content.Context;
 
 import org.junit.Assert;
-import org.yaml.snakeyaml.Yaml;
 
 import java.util.HashMap;
 
@@ -68,9 +67,7 @@ public class Steps {
 
     @Then("^dispatched events payloads include$")
     public void then_dispatched_event_payload_include(String args) {
-        Yaml yaml = new Yaml();
-        Object obj = yaml.load(args);
-        //Assert.assertTrue(ProxyEventDispatcher.getDispatchedEvents().equals(obj));
+        Assert.assertTrue(optimizelyWrapper.compareFields("dispatch_event", args));
     }
 
     @Then("^there are no dispatched events$")
