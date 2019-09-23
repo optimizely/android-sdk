@@ -1,11 +1,9 @@
-package com.optimizely.ab.android.test_app.bdd.support.user_profile_services;
-
-import com.optimizely.ab.bucketing.UserProfileService;
+package com.optimizely.ab.android.test_app.bdd.support.userprofileservices;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class NoOpService implements UserProfileService, TestUserProfileService {
+public class NoOpService implements TestUserProfileService {
     @Override
     public Collection getUserProfiles() {
         return null;

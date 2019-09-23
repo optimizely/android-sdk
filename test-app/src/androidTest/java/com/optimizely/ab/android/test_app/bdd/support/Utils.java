@@ -6,23 +6,17 @@ import com.optimizely.ab.config.Variation;
 
 import org.yaml.snakeyaml.Yaml;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-    private static String EXP_ID = "\\{\\{#expId\\}\\}(\\S+)*\\{\\{/expId\\}\\}";
-    private static String DATAFILE_PROJECT_ID = "\\{\\{datafile.projectId\\}\\}";
-    private static String EXP_CAMPAIGN_ID = "\\{\\{#expCampaignId\\}\\}(\\S+)*\\{\\{/expCampaignId\\}\\}";
-    private static String VAR_ID = "\\{\\{#varId\\}\\}(\\S+)*\\{\\{/varId\\}\\}";
+    private final static String EXP_ID = "\\{\\{#expId\\}\\}(\\S+)*\\{\\{/expId\\}\\}";
+    private final static String DATAFILE_PROJECT_ID = "\\{\\{datafile.projectId\\}\\}";
+    private final static String EXP_CAMPAIGN_ID = "\\{\\{#expCampaignId\\}\\}(\\S+)*\\{\\{/expCampaignId\\}\\}";
+    private final static String VAR_ID = "\\{\\{#varId\\}\\}(\\S+)*\\{\\{/varId\\}\\}";
 
-    public static Object parseYAML(String args, ProjectConfig projectConfig) {
+    static Object parseYAML(String args, ProjectConfig projectConfig) {
         if ("NULL".equals(args) || args.isEmpty()) {
             return null;
         }
@@ -31,7 +25,7 @@ public class Utils {
         return yaml.load(args);
     }
 
-    public static String findAndReplaceAllMustacheRegex(String yaml, ProjectConfig projectConfig) {
+    private static String findAndReplaceAllMustacheRegex(String yaml, ProjectConfig projectConfig) {
         Pattern expIdPattern = Pattern.compile(EXP_ID);
         Matcher expIdMatcher = expIdPattern.matcher(yaml);
         while (expIdMatcher.find()) {
@@ -71,39 +65,41 @@ public class Utils {
         return yaml;
     }
 
-    public static Map deepMerge(Map original, Map newMap) {
-        for (Object key : newMap.keySet()) {
-            if (newMap.get(key) instanceof Map && original.get(key) instanceof Map) {
-                Map originalChild = (Map) original.get(key);
-                Map newChild = (Map) newMap.get(key);
-                original.put(key, deepMerge(originalChild, newChild));
-            } else {
-                original.put(key, newMap.get(key));
-            }
-        }
-        return original;
-    }
-
-    public static void mergeWithSideEffect(final Map<String, Object> target, final Map<String, Object> source) {
-        source.forEach((key, sourceObj) -> {
-            Object targetObj = target.get(key);
-            if (sourceObj instanceof Map && targetObj instanceof Map) {
-                mergeWithSideEffect((Map) targetObj, (Map) sourceObj);
-            } else if (sourceObj instanceof List && targetObj instanceof List) {
-                final List<Object> temp = new ArrayList<Object>((List) targetObj);
-                mergeWithSideEffect(temp, (List) sourceObj);
-                targetObj = temp;
-            } else if (sourceObj instanceof Set && targetObj instanceof Set) {
-                final Set<Object> temp = new HashSet<>((Set) targetObj);
-                mergeWithSideEffect(temp, (Set) sourceObj);
-                targetObj = temp;
-            }
-            target.put(key, sourceObj);
-        });
-    }
-
-    private static void mergeWithSideEffect(final Collection target, final Collection source) {
-        source.stream()
-                .forEach(target::add);
-    }
+// TODO: Will use these methods for deep merging to hashmaps for comparision of missing keys
+//
+//    public static Map deepMerge(Map original, Map newMap) {
+//        for (Object key : newMap.keySet()) {
+//            if (newMap.get(key) instanceof Map && original.get(key) instanceof Map) {
+//                Map originalChild = (Map) original.get(key);
+//                Map newChild = (Map) newMap.get(key);
+//                original.put(key, deepMerge(originalChild, newChild));
+//            } else {
+//                original.put(key, newMap.get(key));
+//            }
+//        }
+//        return original;
+//    }
+//
+//    public static void mergeWithSideEffect(final Map<String, Object> target, final Map<String, Object> source) {
+//        source.forEach((key, sourceObj) -> {
+//            Object targetObj = target.get(key);
+//            if (sourceObj instanceof Map && targetObj instanceof Map) {
+//                mergeWithSideEffect((Map) targetObj, (Map) sourceObj);
+//            } else if (sourceObj instanceof List && targetObj instanceof List) {
+//                final List<Object> temp = new ArrayList<Object>((List) targetObj);
+//                mergeWithSideEffect(temp, (List) sourceObj);
+//                targetObj = temp;
+//            } else if (sourceObj instanceof Set && targetObj instanceof Set) {
+//                final Set<Object> temp = new HashSet<>((Set) targetObj);
+//                mergeWithSideEffect(temp, (Set) sourceObj);
+//                targetObj = temp;
+//            }
+//            target.put(key, sourceObj);
+//        });
+//    }
+//
+//    private static void mergeWithSideEffect(final Collection target, final Collection source) {
+//        source.stream()
+//                .forEach(target::add);
+//    }
 }

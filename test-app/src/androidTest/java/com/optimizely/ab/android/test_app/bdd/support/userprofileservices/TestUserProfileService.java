@@ -1,4 +1,4 @@
-package com.optimizely.ab.android.test_app.bdd.support.user_profile_services;
+package com.optimizely.ab.android.test_app.bdd.support.userprofileservices;
 
 import com.optimizely.ab.bucketing.UserProfileService;
 

@@ -1,8 +1,6 @@
-package com.optimizely.ab.android.test_app.bdd.support.response;
+package com.optimizely.ab.android.test_app.bdd.support.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.junit.Assert;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -38,13 +36,14 @@ public class ListenerMethodResponse<T> implements BaseResponse {
     @Override
     public Boolean compareResults(Object expectedResponse) {
         Object expectedVal = expectedResponse;
-        if (result.equals("NULL")) {
+        if (expectedVal.equals("NULL")) {
             expectedVal = null;
         } else if (expectedVal.equals("true") || expectedVal.equals("false")) {
             expectedVal = Boolean.parseBoolean((String) expectedVal);
+        } else if (result instanceof String) {
+            return result.equals(expectedVal);
         }
-        Assert.assertTrue(expectedVal == result);
-        return true;
+        return expectedVal == result;
     }
 
 }

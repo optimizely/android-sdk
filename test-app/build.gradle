@@ -93,5 +93,5 @@ dependencies {
 }
 
 def getTestTags() {
-    return project.hasProperty("tags") ? project.getProperties().get("tags") : ""
+    return project.hasProperty("tags") ? project.getProperties().get("tags") : "~@DYNAMIC_LANGUAGES"
 }

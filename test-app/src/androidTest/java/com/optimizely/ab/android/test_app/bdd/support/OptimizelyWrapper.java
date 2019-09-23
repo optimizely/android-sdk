@@ -7,18 +7,21 @@ import android.support.test.espresso.core.deps.guava.reflect.TypeToken;
 
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
-import com.optimizely.ab.android.test_app.bdd.support.custom_event_dispatchers.ProxyEventDispatcher;
+import com.optimizely.ab.android.test_app.bdd.support.customeventdispatcher.ProxyEventDispatcher;
 import com.optimizely.ab.android.test_app.bdd.support.listeners.ActivateListener;
-import com.optimizely.ab.android.test_app.bdd.support.listeners.TrackListener;
+import com.optimizely.ab.android.test_app.bdd.support.resources.ActivateResource;
+import com.optimizely.ab.android.test_app.bdd.support.resources.ForcedVariationResource;
 import com.optimizely.ab.android.test_app.bdd.support.resources.IsFeatureEnabledResource;
-import com.optimizely.ab.android.test_app.bdd.support.response.BaseResponse;
-import com.optimizely.ab.android.test_app.bdd.support.response.ListenerMethodResponse;
-import com.optimizely.ab.android.test_app.bdd.support.user_profile_services.NoOpService;
+import com.optimizely.ab.android.test_app.bdd.support.resources.TrackResource;
+import com.optimizely.ab.android.test_app.bdd.support.responses.BaseResponse;
+import com.optimizely.ab.android.test_app.bdd.support.responses.ListenerMethodResponse;
+import com.optimizely.ab.android.test_app.bdd.support.userprofileservices.NoOpService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.NoopEventHandler;
 import com.optimizely.ab.notification.DecisionNotification;
 import com.optimizely.ab.notification.NotificationCenter;
+import com.optimizely.ab.notification.TrackNotification;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -79,6 +82,7 @@ public class OptimizelyWrapper {
         this.userProfileService = new NoOpService();
     }
 
+    // TODO: use this method for setting userProfiles
     public void setUserProfileService(String userProfileServiceName) {
         if (userProfileServiceName != null) {
             try {
@@ -169,13 +173,22 @@ public class OptimizelyWrapper {
 
                 }
             } else if ("Track".equals(map.get("type"))) {
+
+                ArrayList<Map<String, Object>> trackListenerResponse = new ArrayList<>();
                 for (int i = 0; i < count; i++) {
-                    System.out.println("Adding track notification");
-                    TrackListener trackListener = new TrackListener();
-                    getOptimizelyManager().getOptimizely().getNotificationCenter().addNotificationListener(NotificationCenter.NotificationType.Track,
-                            trackListener);
-                    addListenerResponse(trackListener);
+                    getOptimizelyManager().getOptimizely().addTrackNotificationHandler((TrackNotification trackNotification) -> {
+                        Map<String, Object> trackMap = new HashMap<>();
+
+                        trackMap.put("event_key", trackNotification.getEventKey());
+                        trackMap.put("user_id", trackNotification.getUserId());
+                        trackMap.put("attributes", trackNotification.getAttributes());
+                        trackMap.put("event_tags", trackNotification.getEventTags());
+                        trackListenerResponse.add(trackMap);
+                    });
+
+                    addListenerResponse(() -> trackListenerResponse);
                 }
+
             } else if ("Decision".equals(map.get("type"))) {
                 ArrayList<Map<String, Object>> decisionListenerResponse = new ArrayList<>();
                 for (int i = 0; i < count; i++) {
@@ -227,8 +240,18 @@ public class OptimizelyWrapper {
         Object argumentsObj = parseYAML(args, optimizelyManager.getOptimizely().getProjectConfig());
         try {
             switch (api) {
+                case "activate":
+                    result = ActivateResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    break;
+                case "track":
+                    result = TrackResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    break;
                 case "is_feature_enabled":
                     result = IsFeatureEnabledResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    break;
+                case "set_forced_variation":
+                    result = ForcedVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
+                break;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -272,7 +295,5 @@ public class OptimizelyWrapper {
                 return false;
         }
     }
-
-
 
 }

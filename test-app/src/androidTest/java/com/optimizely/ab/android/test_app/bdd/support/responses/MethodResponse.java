@@ -1,9 +1,6 @@
-package com.optimizely.ab.android.test_app.bdd.support.response;
+package com.optimizely.ab.android.test_app.bdd.support.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class MethodResponse<T> {
 

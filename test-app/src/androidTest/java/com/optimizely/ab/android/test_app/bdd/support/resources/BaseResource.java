@@ -1,11 +1,13 @@
 package com.optimizely.ab.android.test_app.bdd.support.resources;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.test_app.bdd.support.OptimizelyWrapper;
-import com.optimizely.ab.android.test_app.bdd.support.response.ListenerMethodArrayResponse;
-import com.optimizely.ab.android.test_app.bdd.support.response.ListenerMethodResponse;
-import com.optimizely.ab.android.test_app.bdd.support.user_profile_services.TestUserProfileService;
+import com.optimizely.ab.android.test_app.bdd.support.responses.ListenerMethodArrayResponse;
+import com.optimizely.ab.android.test_app.bdd.support.responses.ListenerMethodResponse;
+import com.optimizely.ab.android.test_app.bdd.support.userprofileservices.TestUserProfileService;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
+import com.optimizely.ab.bucketing.UserProfileService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +15,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-class BaseResource<TResponse>  {
+public class BaseResource<TResponse> {
+
+    protected ObjectMapper mapper;
+
+    protected BaseResource() {
+        mapper = new ObjectMapper();
+    }
 
     ListenerMethodResponse sendResponse(TResponse result, OptimizelyWrapper optimizelyWrapper) {
         ArrayList<Map<String, Object>> responseCollection = setListenerResponseCollection(optimizelyWrapper);
@@ -26,17 +34,17 @@ class BaseResource<TResponse>  {
     }
 
     public static ArrayList<LinkedHashMap> getUserProfiles(OptimizelyManager optimizely) {
-        com.optimizely.ab.bucketing.UserProfileService service = optimizely.getUserProfileService();
+        UserProfileService service = optimizely.getUserProfileService();
         ArrayList<LinkedHashMap> userProfiles = new ArrayList<>();
         if (service.getClass() != DefaultUserProfileService.class) {
             TestUserProfileService testService = (TestUserProfileService) service;
-            if(testService.getUserProfiles() != null)
+            if (testService.getUserProfiles() != null)
                 userProfiles = new ArrayList<LinkedHashMap>(testService.getUserProfiles());
         }
         return userProfiles;
     }
 
-    public static ArrayList<Map<String, Object>> setListenerResponseCollection(OptimizelyWrapper optimizelyWrapper){
+    public static ArrayList<Map<String, Object>> setListenerResponseCollection(OptimizelyWrapper optimizelyWrapper) {
         ArrayList<Map<String, Object>> responseCollection = null;
 
         for (OptimizelyWrapper.ListenerResponse listenerResponse : optimizelyWrapper.getListenerResponses()) {
@@ -46,11 +54,11 @@ class BaseResource<TResponse>  {
             Map<String, Object> listenerMap;
             if (listenerResponse.getListenerObject() instanceof Map) {
                 listenerMap = (HashMap) listenerResponse.getListenerObject();
-                boolean allnull = true;
+                boolean allNull = true;
                 for (Object object : listenerMap.values()) {
-                    if (object != null) allnull = false;
+                    if (object != null) allNull = false;
                 }
-                if (allnull) {
+                if (allNull) {
                     continue;
                 }
                 responseCollection.add(listenerMap);

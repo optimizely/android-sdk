@@ -2,6 +2,8 @@ package com.optimizely.ab.android.test_app.bdd.support;
 
 import android.content.Context;
 
+import com.optimizely.ab.android.test_app.bdd.support.resources.BaseResource;
+
 import org.junit.Assert;
 
 import java.util.HashMap;
@@ -50,7 +52,7 @@ public class Steps {
         Assert.assertNotNull(api);
     }
 
-    @Then("^the result should be \"(\\S+)*\"$")
+    @Then("^the result should be \"([^\"]*)\"$")
     public void then_result_should_be(Object expectedValue) {
         Assert.assertTrue(optimizelyWrapper.getResult().compareResults(expectedValue));
     }
@@ -72,16 +74,26 @@ public class Steps {
 
     @Then("^there are no dispatched events$")
     public void then_no_dispatched_event() {
-        Assert.assertNotNull("");
+        Assert.assertTrue(optimizelyWrapper.getDispatchedEvents().isEmpty());
     }
 
     @Then("^in the response, the \"([^\"]*)\" listener was called (\\d+) times$")
     public void in_the_response_the_listener_was_called_times(String type, int count) {
+        // TODO: Write code here that turns the phrase above into concrete actions
+    }
 
+    @Then("^the User Profile Service state should be$")
+    public void the_User_Profile_Service_state_should_be(String arg1) throws Throwable {
+        // TODO: Write code here that turns the phrase above into concrete actions
+    }
+
+    @Then("^there is no user profile state$")
+    public void there_is_no_user_profile_state() throws Throwable {
+        Assert.assertTrue(BaseResource.getUserProfiles(optimizelyWrapper.getOptimizelyManager()).isEmpty());
     }
 
     @Then("^the number of dispatched events is (\\d+)$")
     public void the_number_of_dispatched_events_is(int count) throws Throwable {
-
+        // TODO: Write code here that turns the phrase above into concrete actions
     }
 }

@@ -1,4 +1,4 @@
-package com.optimizely.ab.android.test_app.bdd.support.custom_event_dispatchers;
+package com.optimizely.ab.android.test_app.bdd.support.customeventdispatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.optimizely.ab.event.EventHandler;
