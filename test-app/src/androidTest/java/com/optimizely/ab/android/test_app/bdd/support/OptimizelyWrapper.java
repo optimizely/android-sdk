@@ -3,10 +3,8 @@ package com.optimizely.ab.android.test_app.bdd.support;
 import android.content.Context;
 import android.support.annotation.RawRes;
 import android.support.test.espresso.core.deps.guava.base.CaseFormat;
-import android.support.test.espresso.core.deps.guava.collect.Maps;
 import android.support.test.espresso.core.deps.guava.reflect.TypeToken;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.test_app.bdd.support.custom_event_dispatchers.ProxyEventDispatcher;
@@ -27,14 +25,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import gherkin.deps.com.google.gson.Gson;
 
 import static com.optimizely.ab.android.sdk.OptimizelyManager.loadRawResource;
-import static com.optimizely.ab.android.test_app.bdd.support.Utils.mergeWithSideEffect;
 import static com.optimizely.ab.android.test_app.bdd.support.Utils.parseYAML;
 import static com.optimizely.ab.notification.DecisionNotification.FeatureVariableDecisionNotificationBuilder.SOURCE_INFO;
 
@@ -259,6 +255,7 @@ public class OptimizelyWrapper {
 
             case "dispatch_event":
                 try {
+                    //TODO - resolve this comparision:
 //                    HashMap actualParams = (HashMap) ProxyEventDispatcher.getDispatchedEvents().get(0).get("params");
 //                    HashMap expectedParams = (HashMap) ((ArrayList) parsedArguments).get(0);
 //                    Map temp = new HashMap(expectedParams);
