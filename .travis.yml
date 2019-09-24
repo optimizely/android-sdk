@@ -61,6 +61,6 @@ jobs:
     - stage: 'Integration tests'
       script:
         - scripts/get-fsc-tests.sh
-        - ./gradlew testBDD -Pcucumber
+        - ./gradlew testFSC -Pcucumber
       after_success: travis_terminate 0
     

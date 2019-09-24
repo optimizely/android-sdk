@@ -87,7 +87,7 @@ task testAllModules () {
     logger.info("Running android tests for all modules")
 }
 
-task testBDD () {
+task testFSC () {
     logger.info("Running all fullstack testcases.")
 }
 
@@ -100,8 +100,8 @@ testAllModulesTravis.dependsOn(':android-sdk:connectedAndroidTest', ':android-sd
         ':datafile-handler:connectedAndroidTest', ':datafile-handler:test',
         ':user-profile:connectedAndroidTest', ':shared:connectedAndroidTest')
 
-testAllModules.dependsOn('testAllModulesTravis')
+testAllModules.dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')
 
-testBDD.dependsOn(':test-app:connectedAndroidTest')
+testFSC.dependsOn(':fsc-app:connectedAndroidTest')
 
 
