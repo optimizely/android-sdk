@@ -63,4 +63,3 @@ jobs:
         - scripts/get-fsc-tests.sh
         - ./gradlew testFSC -Pcucumber
       after_success: travis_terminate 0
-    
