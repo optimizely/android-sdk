@@ -1,17 +1,24 @@
 package com.optimizely.ab.fsc_app.bdd.support;
 
+import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 
 import org.yaml.snakeyaml.Yaml;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class Utils {
     private final static String EXP_ID = "\\{\\{#expId\\}\\}(\\S+)*\\{\\{/expId\\}\\}";
+    private final static String EVENT_ID = "\\{\\{#eventId\\}\\}(\\S+)*\\{\\{/eventId\\}\\}";
     private final static String DATAFILE_PROJECT_ID = "\\{\\{datafile.projectId\\}\\}";
     private final static String EXP_CAMPAIGN_ID = "\\{\\{#expCampaignId\\}\\}(\\S+)*\\{\\{/expCampaignId\\}\\}";
     private final static String VAR_ID = "\\{\\{#varId\\}\\}(\\S+)*\\{\\{/varId\\}\\}";
@@ -44,6 +51,15 @@ public class Utils {
             }
         }
 
+        Pattern eventIdPattern = Pattern.compile(EVENT_ID);
+        Matcher eventIdMatcher = eventIdPattern.matcher(yaml);
+        while (eventIdMatcher.find()) {
+            EventType eventType = projectConfig.getEventNameMapping().get(eventIdMatcher.group(1));
+            if (eventType != null) {
+                yaml = yaml.replace(eventIdMatcher.group(0), eventType.getId());
+            }
+        }
+
         Pattern varIdPattern = Pattern.compile(VAR_ID);
         Matcher varIdMatcher = varIdPattern.matcher(yaml);
         while (varIdMatcher.find()) {
@@ -65,41 +81,53 @@ public class Utils {
         return yaml;
     }
 
-// TODO: Will use these methods for deep merging to hashmaps for comparision of missing keys
-//
-//    public static Map deepMerge(Map original, Map newMap) {
-//        for (Object key : newMap.keySet()) {
-//            if (newMap.get(key) instanceof Map && original.get(key) instanceof Map) {
-//                Map originalChild = (Map) original.get(key);
-//                Map newChild = (Map) newMap.get(key);
-//                original.put(key, deepMerge(originalChild, newChild));
-//            } else {
-//                original.put(key, newMap.get(key));
-//            }
-//        }
-//        return original;
-//    }
-//
-//    public static void mergeWithSideEffect(final Map<String, Object> target, final Map<String, Object> source) {
-//        source.forEach((key, sourceObj) -> {
-//            Object targetObj = target.get(key);
-//            if (sourceObj instanceof Map && targetObj instanceof Map) {
-//                mergeWithSideEffect((Map) targetObj, (Map) sourceObj);
-//            } else if (sourceObj instanceof List && targetObj instanceof List) {
-//                final List<Object> temp = new ArrayList<Object>((List) targetObj);
-//                mergeWithSideEffect(temp, (List) sourceObj);
-//                targetObj = temp;
-//            } else if (sourceObj instanceof Set && targetObj instanceof Set) {
-//                final Set<Object> temp = new HashSet<>((Set) targetObj);
-//                mergeWithSideEffect(temp, (Set) sourceObj);
-//                targetObj = temp;
-//            }
-//            target.put(key, sourceObj);
-//        });
-//    }
-//
-//    private static void mergeWithSideEffect(final Collection target, final Collection source) {
-//        source.stream()
-//                .forEach(target::add);
-//    }
+    /**
+     * @param subset Object which you want to make sure that actual Object contains all its keys and values
+     * @param actual Object which should contain all subset key value pairs.
+     * @return True if all key value pairs of subset map exist and matches in actual object else return False.
+     */
+    public static Boolean containsSubset(Map<String, Object> subset, Map<String, Object> actual) {
+        if (subset == null)
+            return subset == actual;
+
+        AtomicReference<Boolean> result = new AtomicReference<>(true);
+        subset.forEach((key, sourceObj) -> {
+            if (!actual.containsKey(key)) {
+                result.set(false);
+                return;
+            }
+            Object targetObj = actual.get(key);
+            if (sourceObj instanceof Map && targetObj instanceof Map) {
+                if (!containsSubset((Map) sourceObj, (Map) targetObj)) {
+                    result.set(false);
+                    return;
+                }
+            } else if (sourceObj instanceof List && targetObj instanceof List) {
+                final List<Object> temp = new ArrayList<Object>((List) targetObj);
+                if (!containsSubset((List) sourceObj, temp)) {
+                    result.set(false);
+                    return;
+                }
+            } else if (sourceObj instanceof String) {
+                if (!sourceObj.equals(targetObj)) {
+                    result.set(false);
+                }
+            } else if (sourceObj != targetObj)
+                result.set(false);
+
+        });
+        return result.get();
+    }
+
+    private static Boolean containsSubset(final List subset, final List actual) {
+        if (actual.size() != subset.size()) {
+            return false;
+        }
+        for (int i = 0; i < subset.size(); i++) {
+            if (!containsSubset((Map) subset.get(i), (Map) actual.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

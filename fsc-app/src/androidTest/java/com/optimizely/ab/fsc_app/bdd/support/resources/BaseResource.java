@@ -1,6 +1,7 @@
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -26,12 +27,12 @@ public class BaseResource<TResponse> {
     }
 
     ListenerMethodResponse sendResponse(TResponse result, OptimizelyE2EService optimizelyE2EService) {
-        ArrayList<Map<String, Object>> responseCollection = setListenerResponseCollection(optimizelyE2EService);
+        List<Map<String, Object>> responseCollection = setListenerResponseCollection(optimizelyE2EService);
         return new ListenerMethodResponse<TResponse>(result, responseCollection);
     }
 
     ListenerMethodArrayResponse sendArrayResponse(List<String> result, OptimizelyE2EService optimizelyE2EService) {
-        ArrayList<Map<String, Object>> responseCollection = setListenerResponseCollection(optimizelyE2EService);
+        List<Map<String, Object>> responseCollection = setListenerResponseCollection(optimizelyE2EService);
         return new ListenerMethodArrayResponse(result, responseCollection);
     }
 
@@ -46,34 +47,13 @@ public class BaseResource<TResponse> {
         return userProfiles;
     }
 
-    public static ArrayList<Map<String, Object>> setListenerResponseCollection(OptimizelyE2EService optimizelyE2EService) {
-        ArrayList<Map<String, Object>> responseCollection = null;
+    private List<Map<String, Object>> setListenerResponseCollection(OptimizelyE2EService optimizelyE2EService) {
+        List<Map<String, Object>> responseCollection = optimizelyE2EService.getNotifications();
 
-        for (ListenerResponse listenerResponse : optimizelyE2EService.getListenerResponses()) {
-            if (responseCollection == null) {
-                responseCollection = new ArrayList<>();
-            }
-            Map<String, Object> listenerMap;
-            if (listenerResponse.getListenerObject() instanceof Map) {
-                listenerMap = (HashMap) listenerResponse.getListenerObject();
-                boolean allNull = true;
-                for (Object object : listenerMap.values()) {
-                    if (object != null) allNull = false;
-                }
-                if (allNull) {
-                    continue;
-                }
-                responseCollection.add(listenerMap);
-            } else if (listenerResponse.getListenerObject() instanceof ArrayList) {
-                responseCollection.addAll((ArrayList) listenerResponse.getListenerObject());
-            }
-        }
+        // FCS expects empty arrays to be null :/
         if (responseCollection != null && responseCollection.size() == 0) {
             responseCollection = null;
         }
-        //TODO: remove if unnecessary
-//        if (optimizelyWrapper.getOptimizelyManager().getOptimizely().isValid())
-//            optimizelyWrapper.getOptimizelyManager().getOptimizely().getNotificationCenter().clearAllNotificationListeners();
 
         return responseCollection;
     }

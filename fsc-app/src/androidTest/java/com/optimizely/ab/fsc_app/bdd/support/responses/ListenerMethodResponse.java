@@ -2,7 +2,8 @@ package com.optimizely.ab.fsc_app.bdd.support.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
+
+import java.util.List;
 import java.util.Map;
 
 public class ListenerMethodResponse<T> implements BaseResponse {
@@ -10,18 +11,18 @@ public class ListenerMethodResponse<T> implements BaseResponse {
     private T result;
 
     @JsonProperty("listener_called")
-    private ArrayList<Map<String, Object>> listenerCalled;
+    private List<Map<String, Object>> listenerCalled;
 
-    public ListenerMethodResponse(T result, ArrayList<Map<String, Object>> listenerCalled) {
+    public ListenerMethodResponse(T result, List<Map<String, Object>> listenerCalled) {
         this.result = result;
         this.listenerCalled = listenerCalled;
     }
 
-    public void setListenerCalled(ArrayList<Map<String, Object>> listenerCalled) {
+    public void setListenerCalled(List<Map<String, Object>> listenerCalled) {
         this.listenerCalled = listenerCalled;
     }
 
-    public ArrayList<Map<String, Object>> getListenerCalled() {
+    public List<Map<String, Object>> getListenerCalled() {
         return listenerCalled;
     }
 

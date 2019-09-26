@@ -6,6 +6,7 @@ import android.support.annotation.RawRes;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.NoopEventHandler;
+import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.fsc_app.bdd.support.customeventdispatcher.ProxyEventDispatcher;
 import com.optimizely.ab.fsc_app.bdd.support.userprofileservices.NoOpService;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.optimizely.ab.android.sdk.OptimizelyManager.loadRawResource;
@@ -23,8 +25,8 @@ public class OptimizelyRequest {
     private EventHandler eventHandler;
     private UserProfileService userProfileService;
     private String datafile;
-    private ArrayList<Map<String, Object>> dispatchedEvents = new ArrayList<>();
-    private ArrayList<HashMap<String, Object>> withListener = new ArrayList<>();
+    private ArrayList<Map<String,Object>> dispatchedEvents = new ArrayList<>();
+    private ArrayList<Map<String, String>> withListener = new ArrayList<>();
     private ArrayList<HashMap> forceVariations = new ArrayList<>();
 
     private String api;
@@ -52,11 +54,11 @@ public class OptimizelyRequest {
         return arguments;
     }
 
-    public void setDispatchedEvents(ArrayList<Map<String, Object>> dispatchedEvents) {
+    public void setDispatchedEvents(ArrayList<Map<String,Object>>  dispatchedEvents) {
         this.dispatchedEvents = dispatchedEvents;
     }
 
-    public ArrayList<Map<String, Object>> getDispatchedEvents() {
+    public ArrayList<Map<String,Object>>  getDispatchedEvents() {
         return dispatchedEvents;
     }
 
@@ -68,7 +70,7 @@ public class OptimizelyRequest {
         return forceVariations;
     }
 
-    public ArrayList<HashMap<String, Object>> getWithListener() {
+    public List<Map<String, String>> getWithListener() {
         return withListener;
     }
 
@@ -120,8 +122,9 @@ public class OptimizelyRequest {
         }
     }
 
-    public void addWithListener(HashMap<String, Object> withListener) {
+    public void addWithListener(HashMap<String, String> withListener) {
         this.withListener.add(withListener);
     }
+
 
 }
