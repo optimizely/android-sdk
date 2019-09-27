@@ -3,6 +3,8 @@ package com.optimizely.ab.fsc_app.bdd.support;
 import android.content.Context;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.event.internal.payload.Snapshot;
 import com.optimizely.ab.event.internal.payload.Visitor;
@@ -41,12 +43,20 @@ public class Steps {
     @After
     public void tearDown() {
         optimizelyRequest = null;
+        Utils.projectConfig = null;
     }
 
     @Given("^the datafile is \"(\\S+)*\"$")
     public void the_datafile_is(String datafileName) {
         optimizelyRequest.setDatafile(datafileName);
+        Utils.initializeProjectConfig(optimizelyRequest.getDatafile());
         Assert.assertNotNull(datafileName);
+    }
+
+    @Given("^the User Profile Service is \"(\\S+)*\"$")
+    public void user_profile_service_is(String userProfile) {
+        optimizelyRequest.setUserProfileService(userProfile);
+        Assert.assertNotNull(userProfile);
     }
 
     @Given("^(\\d+) \"(\\S+)*\" listener is added$")
@@ -98,6 +108,14 @@ public class Steps {
     @Then("^the User Profile Service state should be$")
     public void the_User_Profile_Service_state_should_be(String arg1) throws Throwable {
         // TODO: Write code here that turns the phrase above into concrete actions
+    }
+
+    @Given("^user \"([^\"]*)\" has mapping \"([^\"]*)\": \"([^\"]*)\" in User Profile Service$")
+    public void user_has_mapping_in_User_Profile_Service(String userName, String experimentKey, String variationKey) throws Throwable {
+//        Experiment experiment = Utils.getExperimentByKey(experimentKey);
+//        Variation variation = Utils.getVariationByKey(experiment, variationKey);
+//        ArrayList<HashMap> userProfiles = optimizelyRequest.getUserProfiles();
+
     }
 
     @Then("^there is no user profile state$")

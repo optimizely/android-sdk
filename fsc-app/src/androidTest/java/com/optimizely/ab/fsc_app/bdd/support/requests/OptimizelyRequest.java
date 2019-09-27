@@ -28,7 +28,7 @@ public class OptimizelyRequest {
     private ArrayList<Map<String,Object>> dispatchedEvents = new ArrayList<>();
     private ArrayList<Map<String, String>> withListener = new ArrayList<>();
     private ArrayList<HashMap> forceVariations = new ArrayList<>();
-
+    private ArrayList<HashMap> userProfiles = new ArrayList<>();
     private String api;
     private String arguments;
 
@@ -36,6 +36,22 @@ public class OptimizelyRequest {
         this.context = context;
         this.eventHandler = new ProxyEventDispatcher(dispatchedEvents);
         this.userProfileService = new NoOpService();
+    }
+
+    public ArrayList<HashMap> getUserProfiles() {
+        return userProfiles;
+    }
+
+    public void addUserProfile(HashMap userProfile) {
+        userProfiles.add(userProfile);
+    }
+
+    public void setUserProfileService(UserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
+    }
+
+    public void setUserProfiles(ArrayList<HashMap> userProfiles) {
+        this.userProfiles = userProfiles;
     }
 
     public void setApi(String api) {
@@ -125,6 +141,4 @@ public class OptimizelyRequest {
     public void addWithListener(HashMap<String, String> withListener) {
         this.withListener.add(withListener);
     }
-
-
 }

@@ -4,13 +4,14 @@ import com.optimizely.ab.config.EventType;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.config.parser.ConfigParseException;
+import com.optimizely.ab.config.parser.DefaultConfigParser;
 
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,21 +23,25 @@ public class Utils {
     private final static String DATAFILE_PROJECT_ID = "\\{\\{datafile.projectId\\}\\}";
     private final static String EXP_CAMPAIGN_ID = "\\{\\{#expCampaignId\\}\\}(\\S+)*\\{\\{/expCampaignId\\}\\}";
     private final static String VAR_ID = "\\{\\{#varId\\}\\}(\\S+)*\\{\\{/varId\\}\\}";
+    public static ProjectConfig projectConfig;
 
-    public static Object parseYAML(String args, ProjectConfig projectConfig) {
+    public static Object parseYAML(String args) {
         if ("NULL".equals(args) || args.isEmpty()) {
             return null;
         }
-        args = findAndReplaceAllMustacheRegex(args, projectConfig);
+        args = findAndReplaceAllMustacheRegex(args);
         Yaml yaml = new Yaml();
         return yaml.load(args);
     }
 
-    private static String findAndReplaceAllMustacheRegex(String yaml, ProjectConfig projectConfig) {
+    private static String findAndReplaceAllMustacheRegex(String yaml) {
+        if (projectConfig == null)
+            return null;
+
         Pattern expIdPattern = Pattern.compile(EXP_ID);
         Matcher expIdMatcher = expIdPattern.matcher(yaml);
         while (expIdMatcher.find()) {
-            Experiment experiment = Objects.requireNonNull(projectConfig).getExperimentForKey(expIdMatcher.group(1), null);
+            Experiment experiment = getExperimentByKey(expIdMatcher.group(1));
             if (experiment != null) {
                 yaml = yaml.replace(expIdMatcher.group(0), experiment.getId());
             }
@@ -45,7 +50,7 @@ public class Utils {
         Pattern campaignIdPattern = Pattern.compile(EXP_CAMPAIGN_ID);
         Matcher campaignIdMatcher = campaignIdPattern.matcher(yaml);
         while (campaignIdMatcher.find()) {
-            Experiment experiment = projectConfig.getExperimentForKey(campaignIdMatcher.group(1), null);
+            Experiment experiment = getExperimentByKey(campaignIdMatcher.group(1));
             if (experiment != null) {
                 yaml = yaml.replace(campaignIdMatcher.group(0), experiment.getLayerId());
             }
@@ -54,7 +59,7 @@ public class Utils {
         Pattern eventIdPattern = Pattern.compile(EVENT_ID);
         Matcher eventIdMatcher = eventIdPattern.matcher(yaml);
         while (eventIdMatcher.find()) {
-            EventType eventType = projectConfig.getEventNameMapping().get(eventIdMatcher.group(1));
+            EventType eventType = getEventByKey(eventIdMatcher.group(1));
             if (eventType != null) {
                 yaml = yaml.replace(eventIdMatcher.group(0), eventType.getId());
             }
@@ -64,9 +69,9 @@ public class Utils {
         Matcher varIdMatcher = varIdPattern.matcher(yaml);
         while (varIdMatcher.find()) {
             String[] expVarKey = varIdMatcher.group(1).split("\\.");
-            Experiment experiment = projectConfig.getExperimentForKey(expVarKey[0], null);
+            Experiment experiment = getExperimentByKey(expVarKey[0]);
             if (experiment != null) {
-                Variation variation = experiment.getVariationKeyToVariationMap().get(expVarKey[1]);
+                Variation variation = getVariationByKey(experiment, expVarKey[1]);
                 if (variation != null)
                     yaml = yaml.replace(varIdMatcher.group(0), variation.getId());
             }
@@ -129,5 +134,40 @@ public class Utils {
             }
         }
         return true;
+    }
+
+    public static void initializeProjectConfig(String datafile) {
+        try {
+            projectConfig = DefaultConfigParser.getInstance().parseProjectConfig(datafile);
+        } catch (ConfigParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Experiment getExperimentByKey(String experimentKey) {
+        if (projectConfig == null)
+            return null;
+
+        Experiment experiment = projectConfig.getExperimentForKey(experimentKey, null);
+
+        return experiment;
+    }
+
+    public static Variation getVariationByKey(Experiment experiment, String variationKey) {
+        if (experiment == null)
+            return null;
+
+        Variation variation = experiment.getVariationKeyToVariationMap().get(variationKey);
+
+        return variation;
+    }
+
+    public static EventType getEventByKey(String eventKey) {
+        if (eventKey == null)
+            return null;
+
+        EventType eventType = projectConfig.getEventNameMapping().get(eventKey);
+
+        return eventType;
     }
 }

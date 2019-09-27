@@ -5,20 +5,27 @@ import android.support.test.espresso.core.deps.guava.reflect.TypeToken;
 
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
+import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.fsc_app.bdd.support.Utils;
 import com.optimizely.ab.fsc_app.bdd.support.customeventdispatcher.ProxyEventDispatcher;
 import com.optimizely.ab.fsc_app.bdd.support.requests.OptimizelyRequest;
 import com.optimizely.ab.fsc_app.bdd.support.resources.ActivateResource;
 import com.optimizely.ab.fsc_app.bdd.support.resources.ForcedVariationResource;
+import com.optimizely.ab.fsc_app.bdd.support.resources.GetFeatureVariableBooleanResource;
+import com.optimizely.ab.fsc_app.bdd.support.resources.GetFeatureVariableDoubleResource;
+import com.optimizely.ab.fsc_app.bdd.support.resources.GetFeatureVariableIntegerResource;
+import com.optimizely.ab.fsc_app.bdd.support.resources.GetFeatureVariableStringResource;
+import com.optimizely.ab.fsc_app.bdd.support.resources.GetVariationResource;
 import com.optimizely.ab.fsc_app.bdd.support.resources.IsFeatureEnabledResource;
 import com.optimizely.ab.fsc_app.bdd.support.resources.TrackResource;
 import com.optimizely.ab.fsc_app.bdd.support.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.support.responses.ListenerMethodResponse;
-import com.optimizely.ab.fsc_app.bdd.support.responses.ListenerResponse;
+import com.optimizely.ab.fsc_app.bdd.support.userprofileservices.NoOpService;
 import com.optimizely.ab.notification.ActivateNotification;
 import com.optimizely.ab.notification.DecisionNotification;
 import com.optimizely.ab.notification.TrackNotification;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,11 +58,24 @@ public class OptimizelyE2EService {
     }
 
     public void initializeOptimizely(OptimizelyRequest optimizelyRequest) {
+        UserProfileService userProfileService = null;
+        if (optimizelyRequest.getUserProfileService() != null) {
+            try {
+                Class<?> userProfileServiceClass = Class.forName("com.optimizely.ab.fsc_app.bdd.support.userprofileservices." + optimizelyRequest.getUserProfileService());
+                Constructor<?> serviceConstructor = userProfileServiceClass.getConstructor(ArrayList.class);
+                userProfileService = UserProfileService.class.cast(serviceConstructor.newInstance(optimizelyRequest.getUserProfiles()));
+            } catch (Exception e) { }
+        }
+        if (userProfileService == null) {
+            userProfileService = new NoOpService();
+        }
+
         optimizelyManager = OptimizelyManager.builder(OPTIMIZELY_PROJECT_ID)
                 .withEventDispatchInterval(60L * 10L)
                 .withEventHandler(optimizelyRequest.getEventHandler())
                 .withUserProfileService(optimizelyRequest.getUserProfileService())
                 .withDatafileDownloadInterval(60L * 10L)
+                .withUserProfileService(userProfileService)
                 .build(optimizelyRequest.getContext());
 
         optimizelyManager.initialize(optimizelyRequest.getContext(),
@@ -73,7 +93,7 @@ public class OptimizelyE2EService {
             initializeOptimizely(optimizelyRequest);
         }
 
-        Object argumentsObj = parseYAML(optimizelyRequest.getArguments(), optimizelyManager.getOptimizely().getProjectConfig());
+        Object argumentsObj = parseYAML(optimizelyRequest.getArguments());
         try {
             switch (optimizelyRequest.getApi()) {
                 case "activate":
@@ -85,6 +105,24 @@ public class OptimizelyE2EService {
                 case "is_feature_enabled":
                     result = IsFeatureEnabledResource.getInstance().convertToResourceCall(this, argumentsObj);
                     break;
+                case "get_variation":
+                    result = GetVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    break;
+                case "get_enabled_features":
+                    result = GetVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    break;
+                case "get_feature_variable_double":
+                    result = GetFeatureVariableDoubleResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    break;
+                case "get_feature_variable_boolean":
+                    result = GetFeatureVariableBooleanResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    break;
+                case "get_feature_variable_integer":
+                    result = GetFeatureVariableIntegerResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    break;
+                case "get_feature_variable_string":
+                    result = GetFeatureVariableStringResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    break;
                 case "set_forced_variation":
                     result = ForcedVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
                     break;
@@ -95,7 +133,7 @@ public class OptimizelyE2EService {
     }
 
     public Boolean compareFields(String field, int count, String args) {
-        Object parsedArguments = parseYAML(args, optimizelyManager.getOptimizely().getProjectConfig());
+        Object parsedArguments = parseYAML(args);
         switch (field) {
             case "listener_called":
                 return compareListenerCalled(count, parsedArguments);
