@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class LookupErrorService extends NormalService {
-    public LookupErrorService(ArrayList<LinkedHashMap> userProfileList) {
+    public LookupErrorService(ArrayList<Map> userProfileList) {
         super(userProfileList);
     }
 

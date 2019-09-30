@@ -3,15 +3,11 @@ package com.optimizely.ab.fsc_app.bdd.support.requests;
 import android.content.Context;
 import android.support.annotation.RawRes;
 
-import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.NoopEventHandler;
-import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.fsc_app.bdd.support.customeventdispatcher.ProxyEventDispatcher;
-import com.optimizely.ab.fsc_app.bdd.support.userprofileservices.NoOpService;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,34 +19,29 @@ import static com.optimizely.ab.android.sdk.OptimizelyManager.loadRawResource;
 public class OptimizelyRequest {
     private Context context;
     private EventHandler eventHandler;
-    private UserProfileService userProfileService;
+    private String userProfileService;
     private String datafile;
     private ArrayList<Map<String,Object>> dispatchedEvents = new ArrayList<>();
     private ArrayList<Map<String, String>> withListener = new ArrayList<>();
     private ArrayList<HashMap> forceVariations = new ArrayList<>();
-    private ArrayList<HashMap> userProfiles = new ArrayList<>();
+    private ArrayList<Map> userProfiles = new ArrayList<>();
     private String api;
     private String arguments;
 
     public OptimizelyRequest(Context context) {
         this.context = context;
         this.eventHandler = new ProxyEventDispatcher(dispatchedEvents);
-        this.userProfileService = new NoOpService();
     }
 
-    public ArrayList<HashMap> getUserProfiles() {
+    public ArrayList<Map> getUserProfiles() {
         return userProfiles;
     }
 
-    public void addUserProfile(HashMap userProfile) {
+    public void addUserProfile(Map userProfile) {
         userProfiles.add(userProfile);
     }
 
-    public void setUserProfileService(UserProfileService userProfileService) {
-        this.userProfileService = userProfileService;
-    }
-
-    public void setUserProfiles(ArrayList<HashMap> userProfiles) {
+    public void setUserProfiles(ArrayList<Map> userProfiles) {
         this.userProfiles = userProfiles;
     }
 
@@ -102,20 +93,12 @@ public class OptimizelyRequest {
         return datafile;
     }
 
-    public UserProfileService getUserProfileService() {
+    public String getUserProfileService() {
         return userProfileService;
     }
 
-    // TODO: use this method for setting userProfiles
-    public void setUserProfileService(String userProfileServiceName) {
-        if (userProfileServiceName != null) {
-            try {
-                Class<?> userProfileServiceClass = Class.forName("com.optimizely.ab.android.test_app.bdd.cucumber.support.user_profile_services." + userProfileServiceName);
-                Constructor<?> serviceConstructor = userProfileServiceClass.getConstructor(ArrayList.class);
-                userProfileService = UserProfileService.class.cast(serviceConstructor.newInstance(userProfileServiceName));
-            } catch (Exception e) {
-            }
-        }
+    public void setUserProfileService(String userProfileService) {
+        this.userProfileService = userProfileService;
     }
 
     public void setEventHandler(String customEventDispatcher) {

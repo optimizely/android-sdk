@@ -125,7 +125,7 @@ public class Utils {
     }
 
     private static Boolean containsSubset(final List subset, final List actual) {
-        if (actual.size() != subset.size()) {
+        if (subset.size() > actual.size()) {
             return false;
         }
         for (int i = 0; i < subset.size(); i++) {

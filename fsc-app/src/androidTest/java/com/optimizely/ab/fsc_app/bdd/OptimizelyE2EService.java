@@ -73,7 +73,6 @@ public class OptimizelyE2EService {
         optimizelyManager = OptimizelyManager.builder(OPTIMIZELY_PROJECT_ID)
                 .withEventDispatchInterval(60L * 10L)
                 .withEventHandler(optimizelyRequest.getEventHandler())
-                .withUserProfileService(optimizelyRequest.getUserProfileService())
                 .withDatafileDownloadInterval(60L * 10L)
                 .withUserProfileService(userProfileService)
                 .build(optimizelyRequest.getContext());

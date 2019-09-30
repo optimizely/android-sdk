@@ -112,10 +112,40 @@ public class Steps {
 
     @Given("^user \"([^\"]*)\" has mapping \"([^\"]*)\": \"([^\"]*)\" in User Profile Service$")
     public void user_has_mapping_in_User_Profile_Service(String userName, String experimentKey, String variationKey) throws Throwable {
-//        Experiment experiment = Utils.getExperimentByKey(experimentKey);
-//        Variation variation = Utils.getVariationByKey(experiment, variationKey);
-//        ArrayList<HashMap> userProfiles = optimizelyRequest.getUserProfiles();
+        Experiment experiment = Utils.getExperimentByKey(experimentKey);
+        String experimentId = "invalid_experiment";
+        if(experiment != null) {
+            experimentId = experiment.getId();
+        }
+        Variation variation = Utils.getVariationByKey(experiment, variationKey);
+        String variationId = "invalid_variation";
+        if(variation != null) {
+            variationId = variation.getId();
+        }
 
+        Map<String, Object> userProfile = new HashMap<>();
+        boolean foundMap = false;
+        for(Map userProfileMap: optimizelyRequest.getUserProfiles()) {
+            if(userProfileMap.containsValue(userName)) {
+                foundMap = true;
+                userProfile = userProfileMap;
+                optimizelyRequest.getUserProfiles().remove(userProfileMap);
+            }
+        }
+        Map<String, Object> expBucketMap = new HashMap<>();
+        Map<String, Object> varMap = new HashMap<>();
+        varMap.put("variation_id", variationId);
+        expBucketMap.put(experimentId, varMap);
+
+        if(!foundMap) {
+            userProfile.put("user_id", userName);
+        } else {
+            expBucketMap = (Map<String, Object>) userProfile.get("experiment_bucket_map");
+            expBucketMap.put(experimentId, varMap);
+        }
+        userProfile.put("experiment_bucket_map", expBucketMap);
+
+        optimizelyRequest.addUserProfile(userProfile);
     }
 
     @Then("^there is no user profile state$")

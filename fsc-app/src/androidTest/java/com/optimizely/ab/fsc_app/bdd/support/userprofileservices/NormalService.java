@@ -11,9 +11,9 @@ import java.util.Map;
 public class NormalService implements UserProfileService, TestUserProfileService {
     public Map<String, Map<String, Object>> userProfiles = new HashMap<>();
 
-    public NormalService(ArrayList<LinkedHashMap> userProfileList) {
+    public NormalService(ArrayList<Map> userProfileList) {
         if (userProfileList != null) {
-            for (LinkedHashMap userProfile : userProfileList) {
+            for (Map userProfile : userProfileList) {
                 String userId = userProfile.get("user_id").toString();
                 userProfiles.put(userId, userProfile);
             }

@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SaveErrorService extends NormalService {
-    public SaveErrorService(ArrayList<LinkedHashMap> userProfileList) {
+    public SaveErrorService(ArrayList<Map> userProfileList) {
         super(userProfileList);
     }
 
