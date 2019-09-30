@@ -117,7 +117,7 @@ public class Utils {
                 if (!sourceObj.equals(targetObj)) {
                     result.set(false);
                 }
-            } else if (sourceObj != targetObj)
+            } else if (!sourceObj.equals(targetObj))
                 result.set(false);
 
         });

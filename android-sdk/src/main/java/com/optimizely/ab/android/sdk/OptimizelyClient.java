@@ -32,6 +32,7 @@ import com.optimizely.ab.notification.TrackNotification;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -92,7 +93,7 @@ public class OptimizelyClient {
      * @return           A new map of both the default attributes and attributes passed in.
      */
     private Map<String, ?> getAllAttributes(@NonNull Map<String, ?> attrs) {
-        Map<String, Object> combinedMap = new HashMap<>(defaultAttributes);
+        Map<String, Object> combinedMap = new LinkedHashMap<>(defaultAttributes);
 
         // this essentially overrides defaultAttributes if the attrs passed in have the same key.
         if (attrs != null) {

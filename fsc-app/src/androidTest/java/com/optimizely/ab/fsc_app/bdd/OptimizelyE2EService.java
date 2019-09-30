@@ -202,6 +202,7 @@ public class OptimizelyE2EService {
 
     private void setupListeners(List<Map<String, String>> withListener) {
         if (withListener == null) return;
+        if (!getOptimizelyManager().getOptimizely().isValid()) return;
 
         for (Map<String, String> map : withListener) {
             Object obj = map.get("count");
