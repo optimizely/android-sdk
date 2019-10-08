@@ -98,8 +98,14 @@ public class OptimizelyManagerTest {
         defaultDatafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         EventProcessor eventProcessor = mock(EventProcessor.class);
-        optimizelyManager = new OptimizelyManager(testProjectId, null, null, logger, 3600L, defaultDatafileHandler, null, 3600L,
-                eventHandler, eventProcessor, null);
+        optimizelyManager = OptimizelyManager.builder(testProjectId)
+                .withLogger(logger)
+                .withDatafileDownloadInterval(3600L)
+                .withDatafileHandler(defaultDatafileHandler)
+                .withEventDispatchInterval(3600L)
+                .withEventHandler(eventHandler)
+                .withEventProcessor(eventProcessor)
+                .build(InstrumentationRegistry.getTargetContext());
         String datafile = optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
         ProjectConfig config = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
 

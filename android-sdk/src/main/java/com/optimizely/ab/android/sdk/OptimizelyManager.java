@@ -755,6 +755,16 @@ public class OptimizelyManager {
             return this;
         }
 
+        public Builder withEventProcessor(EventProcessor eventProcessor) {
+            this.eventProcessor = eventProcessor;
+            return this;
+        }
+
+        public Builder withNotificationCenter(NotificationCenter notificationCenter) {
+            this.notificationCenter = notificationCenter;
+            return this;
+        }
+
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          * @param  context the application context used to create default service if not provided.
