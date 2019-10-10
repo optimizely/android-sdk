@@ -69,6 +69,7 @@ public class OptimizelyManager {
     private final long eventDispatchInterval;
     @Nullable private EventHandler eventHandler = null;
     @Nullable private EventProcessor eventProcessor = null;
+    @Nullable private NotificationCenter notificationCenter = null;
     @Nullable private ErrorHandler errorHandler;
     @NonNull private Logger logger;
     @Nullable private final String projectId;
@@ -89,7 +90,8 @@ public class OptimizelyManager {
                       long eventDispatchInterval,
                       @NonNull EventHandler eventHandler,
                       @Nullable EventProcessor eventProcessor,
-                      @NonNull UserProfileService userProfileService) {
+                      @NonNull UserProfileService userProfileService,
+                      @NonNull NotificationCenter notificationCenter) {
 
         if (projectId == null && sdkKey == null) {
             logger.error("projectId and sdkKey are both null!");
@@ -110,6 +112,7 @@ public class OptimizelyManager {
         this.eventProcessor = eventProcessor;
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
+        this.notificationCenter = notificationCenter;
     }
 
     @VisibleForTesting
@@ -524,7 +527,7 @@ public class OptimizelyManager {
         }
 
         builder.withUserProfileService(userProfileService);
-
+        builder.withNotificationCenter(notificationCenter);
         Optimizely optimizely = builder.build();
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
     }
@@ -830,7 +833,8 @@ public class OptimizelyManager {
                     eventDispatchInterval,
                     eventHandler,
                     eventProcessor,
-                    userProfileService);
+                    userProfileService,
+                    notificationCenter);
         }
     }
 }
