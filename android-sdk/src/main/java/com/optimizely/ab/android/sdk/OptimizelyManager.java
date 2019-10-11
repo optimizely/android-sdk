@@ -509,6 +509,7 @@ public class OptimizelyManager {
         Optimizely.Builder builder = Optimizely.builder();
 
         builder.withEventHandler(eventHandler);
+        builder.withEventProcessor(eventProcessor);
 
         if (datafileHandler instanceof DefaultDatafileHandler) {
             DefaultDatafileHandler handler = (DefaultDatafileHandler)datafileHandler;
