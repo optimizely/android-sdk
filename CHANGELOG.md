@@ -1,5 +1,10 @@
 # Optimizely Android X SDK Changelog
 
+## 3.3.0
+October 15th 2019
+
+This is a that includes the new concept of event processor from java sdk 3.3.1.
+
 ## 3.2.1
 August 29th 2019
 
