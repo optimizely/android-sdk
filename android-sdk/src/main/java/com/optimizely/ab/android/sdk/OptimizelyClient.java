@@ -24,6 +24,7 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.UnknownEventTypeException;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.notification.DecisionNotification;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationHandler;
@@ -31,6 +32,7 @@ import com.optimizely.ab.notification.TrackNotification;
 
 import org.slf4j.Logger;
 
+import java.io.Closeable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,6 +170,16 @@ public class OptimizelyClient {
             logger.warn("Optimizely is not initialized, could not get project config");
             return null;
         }
+    }
+
+    /**
+     * Checks if eventHandler {@link EventHandler}
+     * are Closeable {@link Closeable} and calls close on them.
+     *
+     * <b>NOTE:</b> There is a chance that this could be long running if the implementations of close are long running.
+     */
+    public void close() {
+        optimizely.close();
     }
 
     /**

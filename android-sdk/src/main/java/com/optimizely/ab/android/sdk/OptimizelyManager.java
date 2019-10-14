@@ -43,6 +43,8 @@ import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.event.EventProcessor;
+import com.optimizely.ab.event.ForwardingEventProcessor;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
@@ -66,6 +68,8 @@ public class OptimizelyManager {
     private final long datafileDownloadInterval;
     private final long eventDispatchInterval;
     @Nullable private EventHandler eventHandler = null;
+    @Nullable private EventProcessor eventProcessor = null;
+    @Nullable private NotificationCenter notificationCenter = null;
     @Nullable private ErrorHandler errorHandler;
     @NonNull private Logger logger;
     @Nullable private final String projectId;
@@ -85,7 +89,9 @@ public class OptimizelyManager {
                       @Nullable ErrorHandler errorHandler,
                       long eventDispatchInterval,
                       @NonNull EventHandler eventHandler,
-                      @NonNull UserProfileService userProfileService) {
+                      @Nullable EventProcessor eventProcessor,
+                      @NonNull UserProfileService userProfileService,
+                      @NonNull NotificationCenter notificationCenter) {
 
         if (projectId == null && sdkKey == null) {
             logger.error("projectId and sdkKey are both null!");
@@ -103,8 +109,10 @@ public class OptimizelyManager {
         this.datafileHandler = datafileHandler;
         this.eventDispatchInterval = eventDispatchInterval;
         this.eventHandler = eventHandler;
+        this.eventProcessor = eventProcessor;
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
+        this.notificationCenter = notificationCenter;
     }
 
     @VisibleForTesting
@@ -501,6 +509,7 @@ public class OptimizelyManager {
         Optimizely.Builder builder = Optimizely.builder();
 
         builder.withEventHandler(eventHandler);
+        builder.withEventProcessor(eventProcessor);
 
         if (datafileHandler instanceof DefaultDatafileHandler) {
             DefaultDatafileHandler handler = (DefaultDatafileHandler)datafileHandler;
@@ -519,7 +528,7 @@ public class OptimizelyManager {
         }
 
         builder.withUserProfileService(userProfileService);
-
+        builder.withNotificationCenter(notificationCenter);
         Optimizely optimizely = builder.build();
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
     }
@@ -644,6 +653,8 @@ public class OptimizelyManager {
         @Nullable private Logger logger = null;
         @Nullable private EventHandler eventHandler = null;
         @Nullable private ErrorHandler errorHandler = null;
+        @Nullable private EventProcessor eventProcessor = null;
+        @Nullable private NotificationCenter notificationCenter = null;
         @Nullable private UserProfileService userProfileService = null;
         @Nullable private String sdkKey = null;
         @Nullable private DatafileConfig datafileConfig = null;
@@ -748,6 +759,16 @@ public class OptimizelyManager {
             return this;
         }
 
+        public Builder withEventProcessor(EventProcessor eventProcessor) {
+            this.eventProcessor = eventProcessor;
+            return this;
+        }
+
+        public Builder withNotificationCenter(NotificationCenter notificationCenter) {
+            this.notificationCenter = notificationCenter;
+            return this;
+        }
+
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          * @param  context the application context used to create default service if not provided.
@@ -791,6 +812,14 @@ public class OptimizelyManager {
                 eventHandler = DefaultEventHandler.getInstance(context);
             }
 
+            if(notificationCenter == null) {
+                notificationCenter = new NotificationCenter();
+            }
+
+            if(eventProcessor == null) {
+                eventProcessor = new ForwardingEventProcessor(eventHandler, notificationCenter);
+            }
+
             if (projectId == null && sdkKey == null) {
                 logger.error("ProjectId and SDKKey cannot both be null");
                 return null;
@@ -804,7 +833,9 @@ public class OptimizelyManager {
                     errorHandler,
                     eventDispatchInterval,
                     eventHandler,
-                    userProfileService);
+                    eventProcessor,
+                    userProfileService,
+                    notificationCenter);
         }
     }
 }
