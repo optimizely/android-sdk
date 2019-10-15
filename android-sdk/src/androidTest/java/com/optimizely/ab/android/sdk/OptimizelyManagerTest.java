@@ -41,6 +41,7 @@ import com.optimizely.ab.config.DatafileProjectConfig;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.event.EventProcessor;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -96,8 +97,15 @@ public class OptimizelyManagerTest {
         executor = MoreExecutors.newDirectExecutorService();
         defaultDatafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
-        optimizelyManager = new OptimizelyManager(testProjectId, null, null, logger, 3600L, defaultDatafileHandler, null, 3600L,
-                eventHandler, null);
+        EventProcessor eventProcessor = mock(EventProcessor.class);
+        optimizelyManager = OptimizelyManager.builder(testProjectId)
+                .withLogger(logger)
+                .withDatafileDownloadInterval(3600L)
+                .withDatafileHandler(defaultDatafileHandler)
+                .withEventDispatchInterval(3600L)
+                .withEventHandler(eventHandler)
+                .withEventProcessor(eventProcessor)
+                .build(InstrumentationRegistry.getTargetContext());
         String datafile = optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
         ProjectConfig config = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
 
@@ -152,8 +160,9 @@ public class OptimizelyManagerTest {
         Logger logger = mock(Logger.class);
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
+        EventProcessor eventProcessor = mock(EventProcessor.class);
         OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, 3600L, datafileHandler, null, 3600L,
-                eventHandler, null);
+                eventHandler, eventProcessor, null, null);
         /*
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
@@ -209,8 +218,9 @@ public class OptimizelyManagerTest {
         Logger logger = mock(Logger.class);
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
+        EventProcessor eventProcessor = mock(EventProcessor.class);
         final OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, 3600L, datafileHandler, null, 3600L,
-                eventHandler, null);
+                eventHandler, eventProcessor, null, null);
 
         /*
          * Scenario#1: when datafile is not Empty
