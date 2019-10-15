@@ -8,10 +8,9 @@ import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.event.internal.payload.Snapshot;
 import com.optimizely.ab.event.internal.payload.Visitor;
-import com.optimizely.ab.fsc_app.bdd.OptimizelyE2EService;
-import com.optimizely.ab.fsc_app.bdd.support.customeventdispatcher.ProxyEventDispatcher;
-import com.optimizely.ab.fsc_app.bdd.support.requests.OptimizelyRequest;
-import com.optimizely.ab.fsc_app.bdd.support.resources.BaseResource;
+import com.optimizely.ab.fsc_app.bdd.optlyplugins.ProxyEventDispatcher;
+import com.optimizely.ab.fsc_app.bdd.optlyplugins.TestCompositeService;
+import com.optimizely.ab.fsc_app.bdd.models.requests.OptimizelyRequest;
 
 import org.junit.Assert;
 
@@ -26,6 +25,8 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static com.optimizely.ab.fsc_app.bdd.models.Constants.DISPATCHED_EVENTS;
+import static com.optimizely.ab.fsc_app.bdd.models.Constants.USER_PROFILES;
 import static junit.framework.TestCase.fail;
 
 public class Steps {
@@ -43,13 +44,13 @@ public class Steps {
     @After
     public void tearDown() {
         optimizelyRequest = null;
-        Utils.projectConfig = null;
+        OptlyDataHelper.projectConfig = null;
     }
 
     @Given("^the datafile is \"(\\S+)*\"$")
     public void the_datafile_is(String datafileName) {
         optimizelyRequest.setDatafile(datafileName);
-        Utils.initializeProjectConfig(optimizelyRequest.getDatafile());
+        OptlyDataHelper.initializeProjectConfig(optimizelyRequest.getDatafile());
         Assert.assertNotNull(datafileName);
     }
 
@@ -92,7 +93,7 @@ public class Steps {
 
     @Then("^dispatched events payloads include$")
     public void then_dispatched_event_payload_include(String args) {
-        Assert.assertTrue(optimizelyE2EService.compareFields("dispatched_event", 1, args));
+        Assert.assertTrue(optimizelyE2EService.compareFields(DISPATCHED_EVENTS, 1, args));
     }
 
     @Then("^there are no dispatched events$")
@@ -106,27 +107,27 @@ public class Steps {
     }
 
     @Then("^the User Profile Service state should be$")
-    public void the_User_Profile_Service_state_should_be(String arg1) throws Throwable {
-        // TODO: Write code here that turns the phrase above into concrete actions
+    public void the_User_Profile_Service_state_should_be(String arg) throws Throwable {
+        Assert.assertTrue(optimizelyE2EService.compareFields(USER_PROFILES, 1, arg));
     }
 
     @Given("^user \"([^\"]*)\" has mapping \"([^\"]*)\": \"([^\"]*)\" in User Profile Service$")
     public void user_has_mapping_in_User_Profile_Service(String userName, String experimentKey, String variationKey) throws Throwable {
-        Experiment experiment = Utils.getExperimentByKey(experimentKey);
+        Experiment experiment = OptlyDataHelper.getExperimentByKey(experimentKey);
         String experimentId = "invalid_experiment";
-        if(experiment != null) {
+        if (experiment != null) {
             experimentId = experiment.getId();
         }
-        Variation variation = Utils.getVariationByKey(experiment, variationKey);
+        Variation variation = OptlyDataHelper.getVariationByKey(experiment, variationKey);
         String variationId = "invalid_variation";
-        if(variation != null) {
+        if (variation != null) {
             variationId = variation.getId();
         }
 
         Map<String, Object> userProfile = new HashMap<>();
         boolean foundMap = false;
-        for(Map userProfileMap: optimizelyRequest.getUserProfiles()) {
-            if(userProfileMap.containsValue(userName)) {
+        for (Map userProfileMap : optimizelyRequest.getUserProfiles()) {
+            if (userProfileMap.containsValue(userName)) {
                 foundMap = true;
                 userProfile = userProfileMap;
                 optimizelyRequest.getUserProfiles().remove(userProfileMap);
@@ -137,7 +138,7 @@ public class Steps {
         varMap.put("variation_id", variationId);
         expBucketMap.put(experimentId, varMap);
 
-        if(!foundMap) {
+        if (!foundMap) {
             userProfile.put("user_id", userName);
         } else {
             expBucketMap = (Map<String, Object>) userProfile.get("experiment_bucket_map");
@@ -150,7 +151,7 @@ public class Steps {
 
     @Then("^there is no user profile state$")
     public void there_is_no_user_profile_state() throws Throwable {
-        Assert.assertTrue(BaseResource.getUserProfiles(optimizelyE2EService.getOptimizelyManager()).isEmpty());
+        Assert.assertTrue(TestCompositeService.getUserProfiles(optimizelyE2EService.getOptimizelyManager()).isEmpty());
     }
 
     @Then("^the number of dispatched events is (\\d+)$")

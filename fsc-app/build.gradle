@@ -72,5 +72,5 @@ dependencies {
 }
 
 def getTestTags() {
-    return project.hasProperty("tags") ? project.getProperties().get("tags") : "~@DYNAMIC_LANGUAGES"
+    return project.hasProperty("tags") ? project.getProperties().get("tags") : "~@DYNAMIC_LANGUAGES, ~@DATAFILE_MANAGER , ~@NO_EASY_EVENT_TRACKING, ~@OASIS-3654, ~@GET_FEATURE_VAR, ~@OASIS-3582, ~@EVENT_FLUSH"
 }

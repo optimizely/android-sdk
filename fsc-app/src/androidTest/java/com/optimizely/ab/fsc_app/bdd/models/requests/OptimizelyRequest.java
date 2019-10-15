@@ -1,11 +1,11 @@
-package com.optimizely.ab.fsc_app.bdd.support.requests;
+package com.optimizely.ab.fsc_app.bdd.models.requests;
 
 import android.content.Context;
 import android.support.annotation.RawRes;
 
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.NoopEventHandler;
-import com.optimizely.ab.fsc_app.bdd.support.customeventdispatcher.ProxyEventDispatcher;
+import com.optimizely.ab.fsc_app.bdd.optlyplugins.ProxyEventDispatcher;
 
 import java.io.IOException;
 import java.util.ArrayList;

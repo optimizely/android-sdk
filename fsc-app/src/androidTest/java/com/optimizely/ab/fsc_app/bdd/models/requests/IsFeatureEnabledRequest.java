@@ -1,4 +1,4 @@
-package com.optimizely.ab.fsc_app.bdd.support.requests;
+package com.optimizely.ab.fsc_app.bdd.models.requests;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TrackRequest {
+public class IsFeatureEnabledRequest {
 
-    @JsonProperty("event_key")
-    private String eventKey;
+    @JsonProperty("feature_flag_key")
+    private String featureFlagKey;
 
     @JsonProperty("user_id")
     private String userId;
@@ -18,11 +18,8 @@ public class TrackRequest {
     @JsonProperty("attributes")
     private Map<String, ?> attributes;
 
-    @JsonProperty("event_tags")
-    private Map<String, ?> eventTags;
-
-    public String getEventKey() {
-        return eventKey;
+    public String getFeatureFlagKey() {
+        return featureFlagKey;
     }
 
     public String getUserId() {
@@ -33,12 +30,8 @@ public class TrackRequest {
         return attributes;
     }
 
-    public Map<String, ?> getEventTags() {
-        return eventTags;
-    }
-
-    public void setEventKey(String eventKey) {
-        this.eventKey = eventKey;
+    public void setFeatureFlagKey(String featureFlagKey) {
+        this.featureFlagKey = featureFlagKey;
     }
 
     public void setUserId(String userId) {
@@ -49,7 +42,4 @@ public class TrackRequest {
         this.attributes = attributes;
     }
 
-    public void setEventTags(Map<String, ?> eventTags) {
-        this.eventTags = eventTags;
-    }
 }

@@ -1,5 +1,4 @@
-package com.optimizely.ab.fsc_app.bdd.support.requests;
-
+package com.optimizely.ab.fsc_app.bdd.models.requests;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,26 +6,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GetFeatureVariableStringRequest {
+public class GetFeatureVariableBooleanRequest {
     @JsonProperty("feature_flag_key")
     private String featureFlagKey;
-
     @JsonProperty("variable_key")
     private String variableKey;
-
     @JsonProperty("user_id")
     private String userId;
-
     @JsonProperty("attributes")
     private Map<String, ?> attributes;
 
-    public GetFeatureVariableStringRequest() {
+    public GetFeatureVariableBooleanRequest() {
     }
 
-    public GetFeatureVariableStringRequest(String featureFlagKey,
-                                           String variableKey,
-                                           String userId,
-                                           Map<String, ?> attributes) {
+    public GetFeatureVariableBooleanRequest(String featureFlagKey,
+                                            String variableKey,
+                                            String userId,
+                                            Map<String, ?> attributes) {
         this.featureFlagKey = featureFlagKey;
         this.variableKey = variableKey;
         this.userId = userId;

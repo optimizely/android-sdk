@@ -1,10 +1,10 @@
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
 import com.optimizely.ab.config.Variation;
-import com.optimizely.ab.fsc_app.bdd.OptimizelyE2EService;
-import com.optimizely.ab.fsc_app.bdd.support.requests.ActivateRequest;
-import com.optimizely.ab.fsc_app.bdd.support.responses.BaseResponse;
-import com.optimizely.ab.fsc_app.bdd.support.responses.ListenerMethodResponse;
+import com.optimizely.ab.fsc_app.bdd.support.OptimizelyE2EService;
+import com.optimizely.ab.fsc_app.bdd.models.requests.ActivateRequest;
+import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
+import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
 
 public class ActivateResource extends BaseResource<String> {
     private static ActivateResource instance;

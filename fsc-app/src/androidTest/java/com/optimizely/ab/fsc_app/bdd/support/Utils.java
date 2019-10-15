@@ -16,6 +16,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper.getEventByKey;
+import static com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper.getExperimentByKey;
+import static com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper.getVariationByKey;
+import static com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper.projectConfig;
+
 
 public class Utils {
     private final static String EXP_ID = "\\{\\{#expId\\}\\}(\\S+)*\\{\\{/expId\\}\\}";
@@ -23,7 +28,6 @@ public class Utils {
     private final static String DATAFILE_PROJECT_ID = "\\{\\{datafile.projectId\\}\\}";
     private final static String EXP_CAMPAIGN_ID = "\\{\\{#expCampaignId\\}\\}(\\S+)*\\{\\{/expCampaignId\\}\\}";
     private final static String VAR_ID = "\\{\\{#varId\\}\\}(\\S+)*\\{\\{/varId\\}\\}";
-    public static ProjectConfig projectConfig;
 
     public static Object parseYAML(String args) {
         if ("NULL".equals(args) || args.isEmpty()) {
@@ -124,7 +128,7 @@ public class Utils {
         return result.get();
     }
 
-    private static Boolean containsSubset(final List subset, final List actual) {
+    public static Boolean containsSubset(final List subset, final List actual) {
         if (subset.size() > actual.size()) {
             return false;
         }
@@ -136,38 +140,17 @@ public class Utils {
         return true;
     }
 
-    public static void initializeProjectConfig(String datafile) {
-        try {
-            projectConfig = DefaultConfigParser.getInstance().parseProjectConfig(datafile);
-        } catch (ConfigParseException e) {
-            e.printStackTrace();
+    public static Object copyResponse(int count, Object args) {
+        if (args instanceof List) {
+            List argsObject = (List) args;
+            List cloneArgs = new ArrayList<>();
+            if (argsObject.size() > 0) {
+                for (int i = 0; i < count; i++) {
+                    cloneArgs.add((argsObject).get(0));
+                }
+                return cloneArgs;
+            }
         }
-    }
-
-    public static Experiment getExperimentByKey(String experimentKey) {
-        if (projectConfig == null)
-            return null;
-
-        Experiment experiment = projectConfig.getExperimentForKey(experimentKey, null);
-
-        return experiment;
-    }
-
-    public static Variation getVariationByKey(Experiment experiment, String variationKey) {
-        if (experiment == null)
-            return null;
-
-        Variation variation = experiment.getVariationKeyToVariationMap().get(variationKey);
-
-        return variation;
-    }
-
-    public static EventType getEventByKey(String eventKey) {
-        if (eventKey == null)
-            return null;
-
-        EventType eventType = projectConfig.getEventNameMapping().get(eventKey);
-
-        return eventType;
+        return args;
     }
 }

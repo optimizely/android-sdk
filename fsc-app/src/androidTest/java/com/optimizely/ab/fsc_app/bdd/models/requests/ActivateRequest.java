@@ -1,4 +1,4 @@
-package com.optimizely.ab.fsc_app.bdd.support.requests;
+package com.optimizely.ab.fsc_app.bdd.models.requests;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

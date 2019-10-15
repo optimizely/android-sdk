@@ -1,10 +1,9 @@
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
-import com.optimizely.ab.fsc_app.bdd.OptimizelyE2EService;
-import com.optimizely.ab.fsc_app.bdd.support.requests.GetFeatureVariableDoubleRequest;
-import com.optimizely.ab.fsc_app.bdd.support.requests.GetFeatureVariableStringRequest;
-import com.optimizely.ab.fsc_app.bdd.support.responses.BaseResponse;
-import com.optimizely.ab.fsc_app.bdd.support.responses.ListenerMethodResponse;
+import com.optimizely.ab.fsc_app.bdd.support.OptimizelyE2EService;
+import com.optimizely.ab.fsc_app.bdd.models.requests.GetFeatureVariableStringRequest;
+import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
+import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
 
 public class GetFeatureVariableStringResource extends BaseResource<String> {
 

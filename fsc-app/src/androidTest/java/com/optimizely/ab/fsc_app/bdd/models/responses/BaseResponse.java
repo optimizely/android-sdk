@@ -1,4 +1,4 @@
-package com.optimizely.ab.fsc_app.bdd.support.responses;
+package com.optimizely.ab.fsc_app.bdd.models.responses;
 
 
 public interface BaseResponse {

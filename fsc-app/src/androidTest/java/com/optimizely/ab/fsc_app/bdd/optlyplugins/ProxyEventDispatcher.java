@@ -1,4 +1,4 @@
-package com.optimizely.ab.fsc_app.bdd.support.customeventdispatcher;
+package com.optimizely.ab.fsc_app.bdd.optlyplugins;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.optimizely.ab.event.EventHandler;

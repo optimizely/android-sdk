@@ -1,4 +1,4 @@
-package com.optimizely.ab.fsc_app.bdd.support.userprofileservices;
+package com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices;
 
 import com.optimizely.ab.bucketing.UserProfileService;
 

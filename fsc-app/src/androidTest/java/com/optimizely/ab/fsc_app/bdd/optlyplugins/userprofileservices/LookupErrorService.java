@@ -1,7 +1,6 @@
-package com.optimizely.ab.fsc_app.bdd.support.userprofileservices;
+package com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class LookupErrorService extends NormalService {

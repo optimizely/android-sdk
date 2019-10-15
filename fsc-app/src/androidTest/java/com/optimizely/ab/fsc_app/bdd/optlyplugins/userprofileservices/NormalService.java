@@ -1,11 +1,10 @@
-package com.optimizely.ab.fsc_app.bdd.support.userprofileservices;
+package com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices;
 
 import com.optimizely.ab.bucketing.UserProfileService;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class NormalService implements UserProfileService, TestUserProfileService {
