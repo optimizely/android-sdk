@@ -42,6 +42,7 @@ import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
+import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
 import com.optimizely.ab.event.ForwardingEventProcessor;
@@ -817,7 +818,11 @@ public class OptimizelyManager {
             }
 
             if(eventProcessor == null) {
-                eventProcessor = new ForwardingEventProcessor(eventHandler, notificationCenter);
+                eventProcessor = BatchEventProcessor.builder()
+                    .withNotificationCenter(notificationCenter)
+                    .withEventHandler(eventHandler)
+                    .build();
+
             }
 
             if (projectId == null && sdkKey == null) {
