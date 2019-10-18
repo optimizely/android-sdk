@@ -39,16 +39,15 @@ public class ListenerMethodResponse<T> implements BaseResponse {
         Object expectedVal = expectedResponse;
         if (expectedVal.equals("NULL")) {
             expectedVal = null;
+            return expectedVal == result;
         } else if (expectedVal.equals("true") || expectedVal.equals("false")) {
             expectedVal = Boolean.parseBoolean((String) expectedVal);
         } else if (result instanceof Number) {
             try {
                 expectedVal = Double.parseDouble((String) expectedVal);
             } catch (Exception e) {}
-        } else if (result instanceof String) {
-            return result.equals(expectedVal);
         }
-        return expectedVal == result;
+        return expectedVal.equals(result);
     }
 
 }

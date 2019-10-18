@@ -121,6 +121,7 @@ public class Utils {
                 if (!sourceObj.equals(targetObj)) {
                     result.set(false);
                 }
+            } else if(sourceObj == null && targetObj == null) {
             } else if (!sourceObj.equals(targetObj))
                 result.set(false);
 

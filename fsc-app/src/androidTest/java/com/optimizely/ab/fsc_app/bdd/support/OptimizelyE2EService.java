@@ -102,6 +102,9 @@ public class OptimizelyE2EService {
                 case "get_feature_variable_string":
                     result = GetFeatureVariableStringResource.getInstance().convertToResourceCall(this, argumentsObj);
                     break;
+                case "get_forced_variation":
+                    result = GetForcedVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    break;
                 case "set_forced_variation":
                     result = ForcedVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
                     break;
@@ -143,9 +146,16 @@ public class OptimizelyE2EService {
             listenerMethodResponse = (ListenerMethodResponse) result;
         else
             return false;
+
+        if (parsedArguments == listenerMethodResponse.getListenerCalled()) {
+            return true;
+        }
+
         try {
             Object expectedListenersCalled = copyResponse(count, parsedArguments);
-            return expectedListenersCalled.equals(listenerMethodResponse.getListenerCalled());
+            List actualListenersCalled = new ArrayList(listenerMethodResponse.getListenerCalled());
+            listenerMethodResponse.getListenerCalled().clear();
+            return Utils.containsSubset((List) expectedListenersCalled, actualListenersCalled);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

@@ -1,12 +1,13 @@
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
 
+import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.fsc_app.bdd.support.OptimizelyE2EService;
 import com.optimizely.ab.fsc_app.bdd.models.requests.ForcedVariationRequest;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
 
-public class ForcedVariationResource extends BaseResource<Boolean> {
+public class ForcedVariationResource extends BaseResource<Object> {
     private static ForcedVariationResource instance;
 
     private ForcedVariationResource() {
@@ -22,18 +23,29 @@ public class ForcedVariationResource extends BaseResource<Boolean> {
 
     public BaseResponse convertToResourceCall(OptimizelyE2EService optimizelyE2EService, Object desreailizeObject) {
         ForcedVariationRequest forcedVariationRequest = mapper.convertValue(desreailizeObject, ForcedVariationRequest.class);
-        ListenerMethodResponse<Boolean> listenerMethodResponse = setForcedVariation(optimizelyE2EService, forcedVariationRequest);
+        ListenerMethodResponse<Object> listenerMethodResponse = setForcedVariation(optimizelyE2EService, forcedVariationRequest);
         return listenerMethodResponse;
     }
 
-    ListenerMethodResponse<Boolean> setForcedVariation(OptimizelyE2EService optimizelyE2EService, ForcedVariationRequest forcedVariationRequest) {
+    ListenerMethodResponse<Object> setForcedVariation(OptimizelyE2EService optimizelyE2EService, ForcedVariationRequest forcedVariationRequest) {
 
-        Boolean forcedVariation =  optimizelyE2EService.getOptimizelyManager().getOptimizely().setForcedVariation(
+        Boolean forcedVariation = optimizelyE2EService.getOptimizelyManager().getOptimizely().setForcedVariation(
                 forcedVariationRequest.getExperimentKey(),
                 forcedVariationRequest.getUserId(),
                 forcedVariationRequest.getForcedVariationKey()
         );
 
-        return sendResponse(forcedVariation, optimizelyE2EService);
+        if (!forcedVariation) {
+            return sendResponse(forcedVariation, optimizelyE2EService);
+        }
+
+        Variation variation = optimizelyE2EService.getOptimizelyManager().getOptimizely().getForcedVariation(
+                forcedVariationRequest.getExperimentKey(),
+                forcedVariationRequest.getUserId());
+        String variationKey = null;
+        if(variation != null)
+            variationKey = variation.getKey();
+
+        return sendResponse(variationKey, optimizelyE2EService);
     }
 }

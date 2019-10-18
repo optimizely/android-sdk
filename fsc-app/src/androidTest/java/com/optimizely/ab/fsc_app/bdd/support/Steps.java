@@ -76,9 +76,25 @@ public class Steps {
         Assert.assertNotNull(api);
     }
 
-    @Then("^the result should be \"([^\"]*)\"$")
-    public void then_result_should_be(Object expectedValue) {
+    @Then("^the result should be (\\d+)$")
+    public void then_result_should_be_int(Integer expectedValue) {
         Assert.assertTrue(optimizelyE2EService.getResult().compareResults(expectedValue));
+    }
+
+    @Then("^the result should be (\\d+\\.\\d+)$")
+    public void then_result_should_be_double(Double expectedValue) {
+        Assert.assertTrue(optimizelyE2EService.getResult().compareResults(expectedValue));
+    }
+
+    @Then("^the result should be \"([^\"]*)\"$")
+    public void then_result_should_be_quoted_string(Object expectedValue) {
+        Assert.assertTrue(optimizelyE2EService.getResult().compareResults(expectedValue));
+    }
+
+    @Then("^the result should be boolean \"(\\S+)*\"$")
+    public void then_result_type_should_be_boolean(final Object expectedValue) {
+        Object expectedResult = Boolean.parseBoolean(expectedValue.toString().toLowerCase());
+        Assert.assertTrue(optimizelyE2EService.getResult().compareResults(expectedResult));
     }
 
     @Then("^in the response, \"(\\S+)*\" should be \"(\\S+)*\"$")
