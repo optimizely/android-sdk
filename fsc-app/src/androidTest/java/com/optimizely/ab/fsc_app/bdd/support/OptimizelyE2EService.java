@@ -1,7 +1,25 @@
+/****************************************************************************
+ * Copyright 2019, Optimizely, Inc. and contributors                        *
+ *                                                                          *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ *                                                                          *
+ *    http://www.apache.org/licenses/LICENSE-2.0                            *
+ *                                                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ ***************************************************************************/
+
 package com.optimizely.ab.fsc_app.bdd.support;
 
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.fsc_app.bdd.models.responses.BaseListenerMethodResponse;
+import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodArrayResponse;
 import com.optimizely.ab.fsc_app.bdd.optlyplugins.ProxyEventDispatcher;
 import com.optimizely.ab.fsc_app.bdd.models.requests.OptimizelyRequest;
 import com.optimizely.ab.fsc_app.bdd.support.resources.*;
@@ -88,7 +106,7 @@ public class OptimizelyE2EService {
                     result = GetVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
                     break;
                 case "get_enabled_features":
-                    result = GetVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
+                    result = GetEnabledFeaturesResource.getInstance().convertToResourceCall(this, argumentsObj);
                     break;
                 case "get_feature_variable_double":
                     result = GetFeatureVariableDoubleResource.getInstance().convertToResourceCall(this, argumentsObj);
@@ -141,24 +159,24 @@ public class OptimizelyE2EService {
     }
 
     private Boolean compareListenerCalled(int count, Object parsedArguments) {
-        ListenerMethodResponse listenerMethodResponse;
-        if (result instanceof ListenerMethodResponse)
-            listenerMethodResponse = (ListenerMethodResponse) result;
+        BaseListenerMethodResponse baseListenerMethodResponse;
+        if (result instanceof BaseListenerMethodResponse)
+            baseListenerMethodResponse = (BaseListenerMethodResponse) result;
         else
             return false;
 
-        if (parsedArguments == listenerMethodResponse.getListenerCalled()) {
+        if (parsedArguments == baseListenerMethodResponse.getListenerCalled()) {
             return true;
         }
 
         try {
             Object expectedListenersCalled = copyResponse(count, parsedArguments);
-            List actualListenersCalled = new ArrayList(listenerMethodResponse.getListenerCalled());
-            listenerMethodResponse.getListenerCalled().clear();
+            List actualListenersCalled = new ArrayList(baseListenerMethodResponse.getListenerCalled());
+            baseListenerMethodResponse.getListenerCalled().clear();
             return Utils.containsSubset((List) expectedListenersCalled, actualListenersCalled);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return parsedArguments == listenerMethodResponse.getListenerCalled();
+        return parsedArguments == baseListenerMethodResponse.getListenerCalled();
     }
 }

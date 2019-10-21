@@ -21,17 +21,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Map;
 
-public class ListenerMethodArrayResponse extends BaseListenerMethodResponse implements BaseResponse {
-    @JsonProperty("result")
-    public List<String> result;
+public class BaseListenerMethodResponse {
+    @JsonProperty("listener_called")
+    public List<Map<String, Object>> listenerCalled = null;
 
-    public ListenerMethodArrayResponse(List<String> result, List<Map<String, Object>> listenerCalled) {
-        this.result = result;
+    public void setListenerCalled(List<Map<String, Object>> listenerCalled) {
         this.listenerCalled = listenerCalled;
     }
 
-    @Override
-    public Boolean compareResults(Object expectedResponse) {
-        return result.equals(expectedResponse);
+    public List<Map<String, Object>> getListenerCalled() {
+        return listenerCalled;
     }
 }
