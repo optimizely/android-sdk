@@ -17,8 +17,8 @@
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
 import com.optimizely.ab.config.Variation;
-import com.optimizely.ab.fsc_app.bdd.support.OptimizelyE2EService;
-import com.optimizely.ab.fsc_app.bdd.models.requests.ActivateRequest;
+import com.optimizely.ab.fsc_app.bdd.support.OptimizelyWrapper;
+import com.optimizely.ab.fsc_app.bdd.models.apiparams.ActivateParams;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
 
@@ -36,22 +36,22 @@ public class ActivateResource extends BaseResource<String> {
         return instance;
     }
 
-    public BaseResponse convertToResourceCall(OptimizelyE2EService optimizelyE2EService, Object desreailizeObject) {
-        ActivateRequest activateRequest = mapper.convertValue(desreailizeObject, ActivateRequest.class);
-        ListenerMethodResponse<Boolean> listenerMethodResponse = activate(optimizelyE2EService, activateRequest);
-        return listenerMethodResponse;
+    @Override
+    public BaseResponse parseToCallApi(OptimizelyWrapper optimizelyWrapper, Object desreailizeObject) {
+        ActivateParams activateParams = mapper.convertValue(desreailizeObject, ActivateParams.class);
+        return activate(optimizelyWrapper, activateParams);
     }
 
-    ListenerMethodResponse<Boolean> activate(OptimizelyE2EService optimizelyE2EService, ActivateRequest activateRequest) {
+    private ListenerMethodResponse<Boolean> activate(OptimizelyWrapper optimizelyWrapper, ActivateParams activateParams) {
 
-        Variation variation = optimizelyE2EService.getOptimizelyManager().getOptimizely().activate(
-                activateRequest.getExperimentKey(),
-                activateRequest.getUserId(),
-                activateRequest.getAttributes()
+        Variation variation = optimizelyWrapper.getOptimizelyManager().getOptimizely().activate(
+                activateParams.getExperimentKey(),
+                activateParams.getUserId(),
+                activateParams.getAttributes()
         );
         String variationKey = variation != null ? variation.getKey() : null;
 
-        return sendResponse(variationKey, optimizelyE2EService);
+        return sendResponse(variationKey, optimizelyWrapper);
     }
 
 }

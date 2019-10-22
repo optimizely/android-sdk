@@ -16,8 +16,8 @@
 
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
-import com.optimizely.ab.fsc_app.bdd.support.OptimizelyE2EService;
-import com.optimizely.ab.fsc_app.bdd.models.requests.GetFeatureVariableBooleanRequest;
+import com.optimizely.ab.fsc_app.bdd.models.apiparams.GetFeatureVariableParams;
+import com.optimizely.ab.fsc_app.bdd.support.OptimizelyWrapper;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
 
@@ -36,22 +36,22 @@ public class GetFeatureVariableBooleanResource extends BaseResource<Boolean> {
         return instance;
     }
 
-    public BaseResponse convertToResourceCall(OptimizelyE2EService optimizelyE2EService, Object desreailizeObject) {
-        GetFeatureVariableBooleanRequest getFeatureVariableBooleanRequest = mapper.convertValue(desreailizeObject, GetFeatureVariableBooleanRequest.class);
-        ListenerMethodResponse<Boolean> listenerMethodResponse = getFeatureVariableBoolean(optimizelyE2EService, getFeatureVariableBooleanRequest);
-        return listenerMethodResponse;
+    @Override
+    public BaseResponse parseToCallApi(OptimizelyWrapper optimizelyWrapper, Object desreailizeObject) {
+        GetFeatureVariableParams getFeatureVariableParams = mapper.convertValue(desreailizeObject, GetFeatureVariableParams.class);
+        return getFeatureVariableBoolean(optimizelyWrapper, getFeatureVariableParams);
     }
 
-    ListenerMethodResponse<Boolean> getFeatureVariableBoolean(OptimizelyE2EService optimizelyE2EService, GetFeatureVariableBooleanRequest getFeatureVariableBooleanRequest) {
+    private ListenerMethodResponse<Boolean> getFeatureVariableBoolean(OptimizelyWrapper optimizelyWrapper, GetFeatureVariableParams getFeatureVariableParams) {
 
-        Boolean variableValue = optimizelyE2EService.getOptimizelyManager().getOptimizely().getFeatureVariableBoolean(
-                getFeatureVariableBooleanRequest.getFeatureFlagKey(),
-                getFeatureVariableBooleanRequest.getVariableKey(),
-                getFeatureVariableBooleanRequest.getUserId(),
-                getFeatureVariableBooleanRequest.getAttributes()
+        Boolean variableValue = optimizelyWrapper.getOptimizelyManager().getOptimizely().getFeatureVariableBoolean(
+                getFeatureVariableParams.getFeatureFlagKey(),
+                getFeatureVariableParams.getVariableKey(),
+                getFeatureVariableParams.getUserId(),
+                getFeatureVariableParams.getAttributes()
                 );
 
-        return sendResponse(variableValue, optimizelyE2EService);
+        return sendResponse(variableValue, optimizelyWrapper);
     }
 
 }

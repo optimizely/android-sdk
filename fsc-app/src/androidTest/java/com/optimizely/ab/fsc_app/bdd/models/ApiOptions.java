@@ -14,14 +14,17 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.fsc_app.bdd.models.requests;
+package com.optimizely.ab.fsc_app.bdd.models;
 
 import android.content.Context;
 import android.support.annotation.RawRes;
 
+import com.optimizely.ab.config.Experiment;
+import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.NoopEventHandler;
 import com.optimizely.ab.fsc_app.bdd.optlyplugins.ProxyEventDispatcher;
+import com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +35,7 @@ import java.util.Map;
 import static com.optimizely.ab.android.sdk.OptimizelyManager.loadRawResource;
 
 
-public class OptimizelyRequest {
+public class ApiOptions {
     private Context context;
     private EventHandler eventHandler;
     private String userProfileService;
@@ -44,7 +47,7 @@ public class OptimizelyRequest {
     private String api;
     private String arguments;
 
-    public OptimizelyRequest(Context context) {
+    public ApiOptions(Context context) {
         this.context = context;
         this.eventHandler = new ProxyEventDispatcher(dispatchedEvents);
     }
@@ -53,7 +56,46 @@ public class OptimizelyRequest {
         return userProfiles;
     }
 
-    public void addUserProfile(Map userProfile) {
+    /**
+     * This function build a map of userProfile and add it in apiOptions.userProfiles
+     * @param userName
+     * @param experimentKey To get experimentId from given datafile
+     * @param variationKey To get variationId from given datafile
+     */
+    public void addUserProfile(String userName, String experimentKey, String variationKey) {
+        Experiment experiment = OptlyDataHelper.getExperimentByKey(experimentKey);
+        String experimentId = "invalid_experiment";
+        if (experiment != null) {
+            experimentId = experiment.getId();
+        }
+        Variation variation = OptlyDataHelper.getVariationByKey(experiment, variationKey);
+        String variationId = "invalid_variation";
+        if (variation != null) {
+            variationId = variation.getId();
+        }
+
+        Map<String, Object> userProfile = new HashMap<>();
+        boolean foundMap = false;
+        for (Map userProfileMap : getUserProfiles()) {
+            if (userProfileMap.containsValue(userName)) {
+                foundMap = true;
+                userProfile = userProfileMap;
+                getUserProfiles().remove(userProfileMap);
+            }
+        }
+        Map<String, Object> expBucketMap = new HashMap<>();
+        Map<String, Object> varMap = new HashMap<>();
+        varMap.put("variation_id", variationId);
+        expBucketMap.put(experimentId, varMap);
+
+        if (!foundMap) {
+            userProfile.put("user_id", userName);
+        } else {
+            expBucketMap = (Map<String, Object>) userProfile.get("experiment_bucket_map");
+            expBucketMap.put(experimentId, varMap);
+        }
+        userProfile.put("experiment_bucket_map", expBucketMap);
+
         userProfiles.add(userProfile);
     }
 

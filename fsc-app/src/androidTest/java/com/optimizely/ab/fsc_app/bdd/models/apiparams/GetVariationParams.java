@@ -14,48 +14,29 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.fsc_app.bdd.models.requests;
-
+package com.optimizely.ab.fsc_app.bdd.models.apiparams;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Map;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class IsFeatureEnabledRequest {
+public class GetVariationParams extends BaseParams {
 
-    @JsonProperty("feature_flag_key")
-    private String featureFlagKey;
+    @JsonProperty("experiment_key")
+    private String experimentKey;
 
-    @JsonProperty("user_id")
-    private String userId;
-
-    @JsonProperty("attributes")
-    private Map<String, ?> attributes;
-
-    public String getFeatureFlagKey() {
-        return featureFlagKey;
+    public GetVariationParams() {
     }
 
-    public String getUserId() {
-        return userId;
+    public GetVariationParams(String experimentKey) {
+        this.experimentKey = experimentKey;
     }
 
-    public Map<String, ?> getAttributes() {
-        return attributes;
+    public String getExperimentKey() {
+        return experimentKey;
     }
 
-    public void setFeatureFlagKey(String featureFlagKey) {
-        this.featureFlagKey = featureFlagKey;
+    public void setExperimentKey(String experimentKey) {
+        this.experimentKey = experimentKey;
     }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setAttributes(Map<String, ?> attributes) {
-        this.attributes = attributes;
-    }
-
 }

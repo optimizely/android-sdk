@@ -17,8 +17,8 @@
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
 import com.optimizely.ab.config.Variation;
-import com.optimizely.ab.fsc_app.bdd.support.OptimizelyE2EService;
-import com.optimizely.ab.fsc_app.bdd.models.requests.GetVariationRequest;
+import com.optimizely.ab.fsc_app.bdd.support.OptimizelyWrapper;
+import com.optimizely.ab.fsc_app.bdd.models.apiparams.GetVariationParams;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
 
@@ -37,21 +37,21 @@ public class GetVariationResource extends BaseResource<String> {
         return instance;
     }
 
-    public BaseResponse convertToResourceCall(OptimizelyE2EService optimizelyE2EService, Object desreailizeObject) {
-        GetVariationRequest getVariationRequest = mapper.convertValue(desreailizeObject, GetVariationRequest.class);
-        ListenerMethodResponse<String> listenerMethodResponse = getVariation(optimizelyE2EService, getVariationRequest);
-        return listenerMethodResponse;
+    @Override
+    public BaseResponse parseToCallApi(OptimizelyWrapper optimizelyWrapper, Object desreailizeObject) {
+        GetVariationParams getVariationParams = mapper.convertValue(desreailizeObject, GetVariationParams.class);
+        return getVariation(optimizelyWrapper, getVariationParams);
     }
 
-    ListenerMethodResponse<String> getVariation(OptimizelyE2EService optimizelyE2EService, GetVariationRequest getVariationRequest) {
+    private ListenerMethodResponse<String> getVariation(OptimizelyWrapper optimizelyWrapper, GetVariationParams getVariationParams) {
 
-        Variation variation = optimizelyE2EService.getOptimizelyManager().getOptimizely().getVariation(
-                getVariationRequest.getExperimentKey(),
-                getVariationRequest.getUserId(),
-                getVariationRequest.getAttributes());
+        Variation variation = optimizelyWrapper.getOptimizelyManager().getOptimizely().getVariation(
+                getVariationParams.getExperimentKey(),
+                getVariationParams.getUserId(),
+                getVariationParams.getAttributes());
        String variationKey = variation != null ? variation.getKey() : null;
 
-        return sendResponse(variationKey, optimizelyE2EService);
+        return sendResponse(variationKey, optimizelyWrapper);
     }
 
 }

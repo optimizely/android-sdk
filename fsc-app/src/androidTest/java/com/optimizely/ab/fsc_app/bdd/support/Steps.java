@@ -24,9 +24,10 @@ import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.event.internal.payload.Snapshot;
 import com.optimizely.ab.event.internal.payload.Visitor;
+import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.optlyplugins.ProxyEventDispatcher;
 import com.optimizely.ab.fsc_app.bdd.optlyplugins.TestCompositeService;
-import com.optimizely.ab.fsc_app.bdd.models.requests.OptimizelyRequest;
+import com.optimizely.ab.fsc_app.bdd.models.ApiOptions;
 
 import org.junit.Assert;
 
@@ -45,36 +46,40 @@ import cucumber.api.java.en.When;
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.optimizely.ab.fsc_app.bdd.models.Constants.DISPATCHED_EVENTS;
 import static com.optimizely.ab.fsc_app.bdd.models.Constants.USER_PROFILES;
+import static com.optimizely.ab.fsc_app.bdd.support.Utils.parseYAML;
 import static junit.framework.TestCase.fail;
 
 public class Steps {
 
     private Context context = getInstrumentation().getTargetContext();
-    private OptimizelyRequest optimizelyRequest;
-    private OptimizelyE2EService optimizelyE2EService;
+    private ApiOptions apiOptions;
+    private OptimizelyWrapper optimizelyWrapper;
+    private BaseResponse result;
+
 
     @Before
     public void setup() {
-        optimizelyRequest = new OptimizelyRequest(context);
-        optimizelyE2EService = new OptimizelyE2EService();
+        apiOptions = new ApiOptions(context);
+        optimizelyWrapper = new OptimizelyWrapper();
+        result = null;
     }
 
     @After
     public void tearDown() {
-        optimizelyRequest = null;
+        apiOptions = null;
         OptlyDataHelper.projectConfig = null;
     }
 
     @Given("^the datafile is \"(\\S+)*\"$")
     public void the_datafile_is(String datafileName) {
-        optimizelyRequest.setDatafile(datafileName);
-        OptlyDataHelper.initializeProjectConfig(optimizelyRequest.getDatafile());
+        apiOptions.setDatafile(datafileName);
+        OptlyDataHelper.initializeProjectConfig(apiOptions.getDatafile());
         Assert.assertNotNull(datafileName);
     }
 
     @Given("^the User Profile Service is \"(\\S+)*\"$")
     public void user_profile_service_is(String userProfile) {
-        optimizelyRequest.setUserProfileService(userProfile);
+        apiOptions.setUserProfileService(userProfile);
         Assert.assertNotNull(userProfile);
     }
 
@@ -83,67 +88,66 @@ public class Steps {
         HashMap map = new HashMap<String, Object>();
         map.put("count", count);
         map.put("type", listenerType);
-        optimizelyRequest.addWithListener(map);
+        apiOptions.addWithListener(map);
     }
 
     @When("^(\\S+) is called with arguments$")
     public void is_called_with_arguments(String api, String args) {
-        optimizelyRequest.setApi(api);
-        optimizelyRequest.setArguments(args);
-        optimizelyE2EService.callApi(optimizelyRequest);
+        apiOptions.setApi(api);
+        apiOptions.setArguments(args);
+        result = optimizelyWrapper.callApi(apiOptions);
         Assert.assertNotNull(api);
     }
 
     @Then("^the result should be (\\d+)$")
     public void then_result_should_be_int(Integer expectedValue) {
-        Assert.assertTrue(optimizelyE2EService.getResult().compareResults(expectedValue));
+        Assert.assertTrue(result.compareResults(expectedValue));
     }
 
     @Then("^the result should be (\\d+\\.\\d+)$")
     public void then_result_should_be_double(Double expectedValue) {
-        Assert.assertTrue(optimizelyE2EService.getResult().compareResults(expectedValue));
+        Assert.assertTrue(result.compareResults(expectedValue));
     }
 
     @Then("^the result should be \"([^\"]*)\"$")
     public void then_result_should_be_quoted_string(Object expectedValue) {
-        Assert.assertTrue(optimizelyE2EService.getResult().compareResults(expectedValue));
+        Assert.assertTrue(result.compareResults(expectedValue));
     }
 
     @Then("^the result should match list \"([^\"]*)\"$")
-    public void the_result_should_match_list(String result) throws Throwable {
+    public void the_result_should_match_list(String response) throws Throwable {
         List<String> resultsArray = new ArrayList<>();
-        if (result.equals("[]")) {
-            Assert.assertTrue(optimizelyE2EService.getResult().compareResults(resultsArray));
+        if (response.equals("[]")) {
+            Assert.assertTrue(result.compareResults(resultsArray));
         } else {
-            resultsArray = Arrays.asList(result.split(","));
-            Assert.assertTrue(optimizelyE2EService.getResult().compareResults(resultsArray));
+            resultsArray = Arrays.asList(response.split(","));
+            Assert.assertTrue(result.compareResults(resultsArray));
         }
     }
 
     @Then("^in the response, \"([^\"]*)\" should have each one of these$")
     public void in_the_response_should_have_each_one_of_these(String type, String args) throws Throwable {
-        Assert.assertTrue(optimizelyE2EService.compareFields(type, 1, args));
+        Assert.assertTrue(optimizelyWrapper.compareFields(type, 1, parseYAML(args), result));
     }
 
     @Then("^the result should be boolean \"(\\S+)*\"$")
     public void then_result_type_should_be_boolean(final Object expectedValue) {
-        Object expectedResult = Boolean.parseBoolean(expectedValue.toString().toLowerCase());
-        Assert.assertTrue(optimizelyE2EService.getResult().compareResults(expectedResult));
+        Assert.assertTrue(result.compareResults(Boolean.parseBoolean(expectedValue.toString().toLowerCase())));
     }
 
     @Then("^in the response, \"(\\S+)*\" should be \"(\\S+)*\"$")
     public void then_in_the_response(String field, String args) {
-        Assert.assertTrue(optimizelyE2EService.compareFields(field, 1, args));
+        Assert.assertTrue(optimizelyWrapper.compareFields(field, 1, parseYAML(args), result));
     }
 
     @Then("^in the response, \"(\\S+)*\" should match$")
     public void then_response_should_match(String field, String args) {
-        Assert.assertTrue(optimizelyE2EService.compareFields(field, 1, args));
+        Assert.assertTrue(optimizelyWrapper.compareFields(field, 1, parseYAML(args), result));
     }
 
     @Then("^dispatched events payloads include$")
     public void then_dispatched_event_payload_include(String args) {
-        Assert.assertTrue(optimizelyE2EService.compareFields(DISPATCHED_EVENTS, 1, args));
+        Assert.assertTrue(optimizelyWrapper.compareFields(DISPATCHED_EVENTS, 1, parseYAML(args), result));
     }
 
     @Then("^there are no dispatched events$")
@@ -153,55 +157,22 @@ public class Steps {
 
     @Then("^in the response, the \"([^\"]*)\" listener was called (\\d+) times$")
     public void in_the_response_the_listener_was_called_times(String type, int count, String args) {
-        Assert.assertTrue(optimizelyE2EService.compareFields(type, count, args));
+        Assert.assertTrue(optimizelyWrapper.compareFields(type, count, parseYAML(args), result));
     }
 
     @Then("^the User Profile Service state should be$")
-    public void the_User_Profile_Service_state_should_be(String arg) throws Throwable {
-        Assert.assertTrue(optimizelyE2EService.compareFields(USER_PROFILES, 1, arg));
+    public void the_User_Profile_Service_state_should_be(String args) throws Throwable {
+        Assert.assertTrue(optimizelyWrapper.compareFields(USER_PROFILES, 1, parseYAML(args), result));
     }
 
     @Given("^user \"([^\"]*)\" has mapping \"([^\"]*)\": \"([^\"]*)\" in User Profile Service$")
     public void user_has_mapping_in_User_Profile_Service(String userName, String experimentKey, String variationKey) throws Throwable {
-        Experiment experiment = OptlyDataHelper.getExperimentByKey(experimentKey);
-        String experimentId = "invalid_experiment";
-        if (experiment != null) {
-            experimentId = experiment.getId();
-        }
-        Variation variation = OptlyDataHelper.getVariationByKey(experiment, variationKey);
-        String variationId = "invalid_variation";
-        if (variation != null) {
-            variationId = variation.getId();
-        }
-
-        Map<String, Object> userProfile = new HashMap<>();
-        boolean foundMap = false;
-        for (Map userProfileMap : optimizelyRequest.getUserProfiles()) {
-            if (userProfileMap.containsValue(userName)) {
-                foundMap = true;
-                userProfile = userProfileMap;
-                optimizelyRequest.getUserProfiles().remove(userProfileMap);
-            }
-        }
-        Map<String, Object> expBucketMap = new HashMap<>();
-        Map<String, Object> varMap = new HashMap<>();
-        varMap.put("variation_id", variationId);
-        expBucketMap.put(experimentId, varMap);
-
-        if (!foundMap) {
-            userProfile.put("user_id", userName);
-        } else {
-            expBucketMap = (Map<String, Object>) userProfile.get("experiment_bucket_map");
-            expBucketMap.put(experimentId, varMap);
-        }
-        userProfile.put("experiment_bucket_map", expBucketMap);
-
-        optimizelyRequest.addUserProfile(userProfile);
+        apiOptions.addUserProfile(userName, experimentKey, variationKey);
     }
 
     @Then("^there is no user profile state$")
     public void there_is_no_user_profile_state() throws Throwable {
-        Assert.assertTrue(TestCompositeService.getUserProfiles(optimizelyE2EService.getOptimizelyManager()).isEmpty());
+        Assert.assertTrue(TestCompositeService.getUserProfiles(optimizelyWrapper.getOptimizelyManager()).isEmpty());
     }
 
     @Then("^the number of dispatched events is (\\d+)$")
@@ -211,10 +182,20 @@ public class Steps {
 
     @Then("^payloads of dispatched events don't include decisions$")
     public void payloads_of_dispatched_events_dont_include_decisions() throws Throwable {
+        Assert.assertTrue(checkNoDecision());
+    }
+
+    @Then("^in the response, \"([^\"]*)\" should have this exactly (\\d+) times$")
+    public void in_the_response_should_have_this_exactly_times(String field, int count, String args) throws Throwable {
+        Assert.assertTrue(optimizelyWrapper.compareFields(field, count, parseYAML(args), result));
+    }
+
+    private Boolean checkNoDecision() {
         ObjectMapper mapper = new ObjectMapper();
         ArrayList<Map<String, Object>> dispatchEvent = ProxyEventDispatcher.getDispatchedEvents();
         if (dispatchEvent == null || dispatchEvent.size() == 0) {
             fail("No events returned");
+            return false;
         }
 
         for (Map<String, Object> objMap : dispatchEvent) {
@@ -222,14 +203,11 @@ public class Steps {
             EventBatch batch = mapper.convertValue(objMap.get("params"), EventBatch.class);
             for (Visitor visitor : batch.getVisitors()) {
                 for (Snapshot snapshot : visitor.getSnapshots()) {
-                    Assert.assertNull(snapshot.getDecisions());
+                    if (snapshot.getDecisions() == null)
+                        return true;
                 }
             }
         }
-    }
-
-    @Then("^in the response, \"([^\"]*)\" should have this exactly (\\d+) times$")
-    public void in_the_response_should_have_this_exactly_times(String field, int count, String args) throws Throwable {
-        Assert.assertTrue(optimizelyE2EService.compareFields(field, count, args));
+        return false;
     }
 }

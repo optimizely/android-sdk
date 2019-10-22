@@ -16,8 +16,8 @@
 
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
-import com.optimizely.ab.fsc_app.bdd.support.OptimizelyE2EService;
-import com.optimizely.ab.fsc_app.bdd.models.requests.IsFeatureEnabledRequest;
+import com.optimizely.ab.fsc_app.bdd.support.OptimizelyWrapper;
+import com.optimizely.ab.fsc_app.bdd.models.apiparams.IsFeatureEnabledParams;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
 
@@ -36,21 +36,21 @@ public class IsFeatureEnabledResource extends BaseResource<Boolean> {
         return instance;
     }
 
-    public BaseResponse convertToResourceCall(OptimizelyE2EService optimizelyE2EService, Object desreailizeObject) {
-        IsFeatureEnabledRequest isFeatureEnabledRequest = mapper.convertValue(desreailizeObject, IsFeatureEnabledRequest.class);
-        ListenerMethodResponse<Boolean> listenerMethodResponse = isFeatureEnabled(optimizelyE2EService, isFeatureEnabledRequest);
-        return listenerMethodResponse;
+    @Override
+    public BaseResponse parseToCallApi(OptimizelyWrapper optimizelyWrapper, Object desreailizeObject) {
+        IsFeatureEnabledParams isFeatureEnabledParams = mapper.convertValue(desreailizeObject, IsFeatureEnabledParams.class);
+        return isFeatureEnabled(optimizelyWrapper, isFeatureEnabledParams);
     }
 
-    ListenerMethodResponse<Boolean> isFeatureEnabled(OptimizelyE2EService optimizelyE2EService, IsFeatureEnabledRequest isFeatureEnabledRequest) {
+    private ListenerMethodResponse<Boolean> isFeatureEnabled(OptimizelyWrapper optimizelyWrapper, IsFeatureEnabledParams isFeatureEnabledParams) {
 
-        Boolean isFeatureEnabled =  optimizelyE2EService.getOptimizelyManager().getOptimizely().isFeatureEnabled(
-                isFeatureEnabledRequest.getFeatureFlagKey(),
-                isFeatureEnabledRequest.getUserId(),
-                isFeatureEnabledRequest.getAttributes()
+        Boolean isFeatureEnabled =  optimizelyWrapper.getOptimizelyManager().getOptimizely().isFeatureEnabled(
+                isFeatureEnabledParams.getFeatureFlagKey(),
+                isFeatureEnabledParams.getUserId(),
+                isFeatureEnabledParams.getAttributes()
         );
 
-        return sendResponse(isFeatureEnabled, optimizelyE2EService);
+        return sendResponse(isFeatureEnabled, optimizelyWrapper);
     }
 
 }

@@ -16,6 +16,10 @@
 
 package com.optimizely.ab.fsc_app.bdd.models;
 
+/**
+ * Payloads are expected to contain these keys.
+ * These keys will be used for comparision of payloads accordingly.
+ */
 public class Constants {
     public static final String LISTENER_CALLED = "listener_called";
     public static final String DISPATCHED_EVENTS = "dispatched_event";

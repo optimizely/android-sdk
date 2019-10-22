@@ -18,27 +18,27 @@ package com.optimizely.ab.fsc_app.bdd.support;
 
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.fsc_app.bdd.models.ApiOptions;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseListenerMethodResponse;
-import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodArrayResponse;
 import com.optimizely.ab.fsc_app.bdd.optlyplugins.ProxyEventDispatcher;
-import com.optimizely.ab.fsc_app.bdd.models.requests.OptimizelyRequest;
 import com.optimizely.ab.fsc_app.bdd.support.resources.*;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
-import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
 import com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices.NoOpService;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-import static com.optimizely.ab.fsc_app.bdd.models.Constants.*;
+import static com.optimizely.ab.fsc_app.bdd.models.Constants.DISPATCHED_EVENTS;
+import static com.optimizely.ab.fsc_app.bdd.models.Constants.LISTENER_CALLED;
+import static com.optimizely.ab.fsc_app.bdd.models.Constants.USER_PROFILES;
 import static com.optimizely.ab.fsc_app.bdd.optlyplugins.TestCompositeService.setupListeners;
 import static com.optimizely.ab.fsc_app.bdd.support.Utils.copyResponse;
 import static com.optimizely.ab.fsc_app.bdd.support.Utils.parseYAML;
 
-public class OptimizelyE2EService {
+public class OptimizelyWrapper {
     private final static String OPTIMIZELY_PROJECT_ID = "123123";
-    private BaseResponse result;
     private OptimizelyManager optimizelyManager;
+
     private List<Map<String, Object>> notifications = new ArrayList<>();
 
     public void addNotification(Map<String, Object> notificationMap) {
@@ -53,13 +53,13 @@ public class OptimizelyE2EService {
         return optimizelyManager;
     }
 
-    public void initializeOptimizely(OptimizelyRequest optimizelyRequest) {
+    public void initializeOptimizely(ApiOptions apiOptions) {
         UserProfileService userProfileService = null;
-        if (optimizelyRequest.getUserProfileService() != null) {
+        if (apiOptions.getUserProfileService() != null) {
             try {
-                Class<?> userProfileServiceClass = Class.forName("com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices." + optimizelyRequest.getUserProfileService());
+                Class<?> userProfileServiceClass = Class.forName("com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices." + apiOptions.getUserProfileService());
                 Constructor<?> serviceConstructor = userProfileServiceClass.getConstructor(ArrayList.class);
-                userProfileService = UserProfileService.class.cast(serviceConstructor.newInstance(optimizelyRequest.getUserProfiles()));
+                userProfileService = UserProfileService.class.cast(serviceConstructor.newInstance(apiOptions.getUserProfiles()));
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -69,74 +69,58 @@ public class OptimizelyE2EService {
         }
 
         optimizelyManager = OptimizelyManager.builder(OPTIMIZELY_PROJECT_ID)
-                .withEventDispatchInterval(60L * 10L)
-                .withEventHandler(optimizelyRequest.getEventHandler())
-                .withDatafileDownloadInterval(60L * 10L)
+                .withEventHandler(apiOptions.getEventHandler())
                 .withUserProfileService(userProfileService)
-                .build(optimizelyRequest.getContext());
+                .build(apiOptions.getContext());
 
-        optimizelyManager.initialize(optimizelyRequest.getContext(),
-                optimizelyRequest.getDatafile()
+        optimizelyManager.initialize(apiOptions.getContext(),
+                apiOptions.getDatafile()
         );
-        setupListeners(optimizelyRequest.getWithListener(), this);
+        setupListeners(apiOptions.getWithListener(), this);
     }
 
-    public BaseResponse getResult() {
-        return result;
-    }
-
-    public void callApi(OptimizelyRequest optimizelyRequest) {
+    public BaseResponse callApi(ApiOptions apiOptions) {
         if (optimizelyManager == null) {
-            initializeOptimizely(optimizelyRequest);
+            initializeOptimizely(apiOptions);
         }
 
-        Object argumentsObj = parseYAML(optimizelyRequest.getArguments());
+        Object argumentsObj = parseYAML(apiOptions.getArguments());
         try {
-            switch (optimizelyRequest.getApi()) {
+            switch (apiOptions.getApi()) {
                 case "activate":
-                    result = ActivateResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return ActivateResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "track":
-                    result = TrackResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return TrackResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "is_feature_enabled":
-                    result = IsFeatureEnabledResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return IsFeatureEnabledResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "get_variation":
-                    result = GetVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return GetVariationResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "get_enabled_features":
-                    result = GetEnabledFeaturesResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return GetEnabledFeaturesResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "get_feature_variable_double":
-                    result = GetFeatureVariableDoubleResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return GetFeatureVariableDoubleResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "get_feature_variable_boolean":
-                    result = GetFeatureVariableBooleanResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return GetFeatureVariableBooleanResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "get_feature_variable_integer":
-                    result = GetFeatureVariableIntegerResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return GetFeatureVariableIntegerResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "get_feature_variable_string":
-                    result = GetFeatureVariableStringResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return GetFeatureVariableStringResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "get_forced_variation":
-                    result = GetForcedVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return GetForcedVariationResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "set_forced_variation":
-                    result = ForcedVariationResource.getInstance().convertToResourceCall(this, argumentsObj);
-                    break;
+                    return ForcedVariationResource.getInstance().parseToCallApi(this, argumentsObj);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    public Boolean compareFields(String field, int count, String args) {
-        Object parsedArguments = parseYAML(args);
+    // TODO: need to revise this method and place it in a separate file
+    public Boolean compareFields(String field, int count, Object parsedArguments, BaseResponse result) {
         switch (field) {
             case LISTENER_CALLED:
-                return compareListenerCalled(count, parsedArguments);
+                return compareListenerCalled(count, parsedArguments, result);
             case DISPATCHED_EVENTS:
                 try {
                     HashMap actualParams = (HashMap) ProxyEventDispatcher.getDispatchedEvents().get(0).get("params");
@@ -158,7 +142,7 @@ public class OptimizelyE2EService {
         }
     }
 
-    private Boolean compareListenerCalled(int count, Object parsedArguments) {
+    private Boolean compareListenerCalled(int count, Object parsedArguments, BaseResponse result) {
         BaseListenerMethodResponse baseListenerMethodResponse;
         if (result instanceof BaseListenerMethodResponse)
             baseListenerMethodResponse = (BaseListenerMethodResponse) result;

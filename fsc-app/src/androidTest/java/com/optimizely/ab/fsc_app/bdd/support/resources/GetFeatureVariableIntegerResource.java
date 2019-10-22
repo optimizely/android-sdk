@@ -16,8 +16,8 @@
 
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
-import com.optimizely.ab.fsc_app.bdd.support.OptimizelyE2EService;
-import com.optimizely.ab.fsc_app.bdd.models.requests.GetFeatureVariableIntegerRequest;
+import com.optimizely.ab.fsc_app.bdd.models.apiparams.GetFeatureVariableParams;
+import com.optimizely.ab.fsc_app.bdd.support.OptimizelyWrapper;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
 
@@ -36,22 +36,22 @@ public class GetFeatureVariableIntegerResource extends BaseResource<Integer> {
         return instance;
     }
 
-    public BaseResponse convertToResourceCall(OptimizelyE2EService optimizelyE2EService, Object desreailizeObject) {
-        GetFeatureVariableIntegerRequest getFeatureVariableIntegerRequest = mapper.convertValue(desreailizeObject, GetFeatureVariableIntegerRequest.class);
-        ListenerMethodResponse<Integer> listenerMethodResponse = getFeatureVariableInteger(optimizelyE2EService, getFeatureVariableIntegerRequest);
-        return listenerMethodResponse;
+    @Override
+    public BaseResponse parseToCallApi(OptimizelyWrapper optimizelyWrapper, Object desreailizeObject) {
+        GetFeatureVariableParams getFeatureVariableParams = mapper.convertValue(desreailizeObject, GetFeatureVariableParams.class);
+        return getFeatureVariableInteger(optimizelyWrapper, getFeatureVariableParams);
     }
 
-    ListenerMethodResponse<Integer> getFeatureVariableInteger(OptimizelyE2EService optimizelyE2EService, GetFeatureVariableIntegerRequest getFeatureVariableIntegerRequest) {
+    private ListenerMethodResponse<Integer> getFeatureVariableInteger(OptimizelyWrapper optimizelyWrapper, GetFeatureVariableParams getFeatureVariableParams) {
 
-        Integer variableValue = optimizelyE2EService.getOptimizelyManager().getOptimizely().getFeatureVariableInteger(
-                getFeatureVariableIntegerRequest.getFeatureFlagKey(),
-                getFeatureVariableIntegerRequest.getVariableKey(),
-                getFeatureVariableIntegerRequest.getUserId(),
-                getFeatureVariableIntegerRequest.getAttributes()
+        Integer variableValue = optimizelyWrapper.getOptimizelyManager().getOptimizely().getFeatureVariableInteger(
+                getFeatureVariableParams.getFeatureFlagKey(),
+                getFeatureVariableParams.getVariableKey(),
+                getFeatureVariableParams.getUserId(),
+                getFeatureVariableParams.getAttributes()
                 );
 
-        return sendResponse(variableValue, optimizelyE2EService);
+        return sendResponse(variableValue, optimizelyWrapper);
     }
 
 }

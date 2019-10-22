@@ -14,46 +14,24 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.fsc_app.bdd.models.requests;
+package com.optimizely.ab.fsc_app.bdd.models.apiparams;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Map;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ActivateRequest {
+public class ForcedVariationParams extends BaseParams{
 
     @JsonProperty("experiment_key")
     private String experimentKey;
+    @JsonProperty("forced_variation_key")
+    private String forcedVariationKey;
 
-    @JsonProperty("user_id")
-    private String userId;
+    public String getExperimentKey() { return experimentKey; }
 
-    @JsonProperty("attributes")
-    private Map<String, Object> attributes;
+    public String getForcedVariationKey() { return forcedVariationKey; }
 
-    public String getExperimentKey() {
-        return experimentKey;
-    }
+    public void setExperimentKey(String experimentKey) { this.experimentKey = experimentKey; }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setExperimentKey(String experimentKey) {
-        this.experimentKey = experimentKey;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setAttributes(Map<String, Object> attributes) {
-        this.attributes = attributes;
-    }
-
-    public Map<String, ?> getAttributes() {
-        return attributes;
-    }
+    public void setForcedVariationKey(String forcedVariationKey) { this.forcedVariationKey = forcedVariationKey; }
 }

@@ -14,70 +14,33 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.fsc_app.bdd.models.requests;
+package com.optimizely.ab.fsc_app.bdd.models.apiparams;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class GetFeatureVariableDoubleRequest {
-
-    @JsonProperty("feature_flag_key")
-    private String featureFlagKey;
-
-    @JsonProperty("variable_key")
-    private String variableKey;
+public class BaseParams {
 
     @JsonProperty("user_id")
     private String userId;
 
     @JsonProperty("attributes")
-    private Map<String, ?> attributes;
+    private Map<String, Object> attributes;
 
-    public GetFeatureVariableDoubleRequest() {
-    }
-
-    public GetFeatureVariableDoubleRequest(String featureFlagKey,
-                                           String variableKey,
-                                           String userId,
-                                           Map<String, ?> attributes) {
-        this.featureFlagKey = featureFlagKey;
-        this.variableKey = variableKey;
-        this.userId = userId;
+    public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
-    public String getFeatureFlagKey() {
-        return featureFlagKey;
-    }
-
-    public void setFeatureFlagKey(String featureFlagKey) {
-        this.featureFlagKey = featureFlagKey;
-    }
-
-    public String getVariableKey() {
-        return variableKey;
-    }
-
-    public void setVariableKey(String variableKey) {
-        this.variableKey = variableKey;
-    }
-
-    public String getUserId() {
-        return userId;
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public Map<String, ?> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Map<String, ?> attributes) {
-        this.attributes = attributes;
+    public String getUserId() {
+        return userId;
     }
 }

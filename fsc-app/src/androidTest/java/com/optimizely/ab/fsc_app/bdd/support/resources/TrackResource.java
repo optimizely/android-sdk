@@ -16,8 +16,8 @@
 
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
-import com.optimizely.ab.fsc_app.bdd.support.OptimizelyE2EService;
-import com.optimizely.ab.fsc_app.bdd.models.requests.TrackRequest;
+import com.optimizely.ab.fsc_app.bdd.support.OptimizelyWrapper;
+import com.optimizely.ab.fsc_app.bdd.models.apiparams.TrackParams;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
 
@@ -35,22 +35,22 @@ public class TrackResource extends BaseResource {
         return instance;
     }
 
-    public BaseResponse convertToResourceCall(OptimizelyE2EService optimizelyE2EService, Object desreailizeObject) {
-        TrackRequest trackRequest = mapper.convertValue(desreailizeObject, TrackRequest.class);
-        ListenerMethodResponse<Boolean> listenerMethodResponse = track(optimizelyE2EService, trackRequest);
-        return listenerMethodResponse;
+    @Override
+    public BaseResponse parseToCallApi(OptimizelyWrapper optimizelyWrapper, Object desreailizeObject) {
+        TrackParams trackParams = mapper.convertValue(desreailizeObject, TrackParams.class);
+        return track(optimizelyWrapper, trackParams);
     }
 
-    ListenerMethodResponse<Boolean> track(OptimizelyE2EService optimizelyE2EService, TrackRequest trackRequest) {
+    private ListenerMethodResponse<Boolean> track(OptimizelyWrapper optimizelyWrapper, TrackParams trackParams) {
 
-        optimizelyE2EService.getOptimizelyManager().getOptimizely().track(
-                trackRequest.getEventKey(),
-                trackRequest.getUserId(),
-                trackRequest.getAttributes(),
-                trackRequest.getEventTags()
+        optimizelyWrapper.getOptimizelyManager().getOptimizely().track(
+                trackParams.getEventKey(),
+                trackParams.getUserId(),
+                trackParams.getAttributes(),
+                trackParams.getEventTags()
         );
 
-        return sendResponse(null, optimizelyE2EService);
+        return sendResponse(null, optimizelyWrapper);
     }
 
 }

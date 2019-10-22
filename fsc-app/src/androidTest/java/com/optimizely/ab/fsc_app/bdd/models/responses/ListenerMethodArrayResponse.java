@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Map;
 
-public class ListenerMethodArrayResponse extends BaseListenerMethodResponse implements BaseResponse {
+public class ListenerMethodArrayResponse extends BaseListenerMethodResponse {
     @JsonProperty("result")
     public List<String> result;
 

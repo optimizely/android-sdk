@@ -16,8 +16,8 @@
 
 package com.optimizely.ab.fsc_app.bdd.support.resources;
 
-import com.optimizely.ab.fsc_app.bdd.support.OptimizelyE2EService;
-import com.optimizely.ab.fsc_app.bdd.models.requests.GetEnabledFeaturesRequest;
+import com.optimizely.ab.fsc_app.bdd.models.apiparams.BaseParams;
+import com.optimizely.ab.fsc_app.bdd.support.OptimizelyWrapper;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodArrayResponse;
 
@@ -38,20 +38,20 @@ public class GetEnabledFeaturesResource extends BaseResource<String> {
         return instance;
     }
 
-    public BaseResponse convertToResourceCall(OptimizelyE2EService optimizelyE2EService, Object desreailizeObject) {
-        GetEnabledFeaturesRequest getEnabledFeaturesRequest = mapper.convertValue(desreailizeObject, GetEnabledFeaturesRequest.class);
-        ListenerMethodArrayResponse listenerMethodArrayResponse = getEnabledFeatures(optimizelyE2EService, getEnabledFeaturesRequest);
-        return listenerMethodArrayResponse;
+    @Override
+    public BaseResponse parseToCallApi(OptimizelyWrapper optimizelyWrapper, Object desreailizeObject) {
+        BaseParams getEnabledFeaturesParams = mapper.convertValue(desreailizeObject, BaseParams.class);
+        return getEnabledFeatures(optimizelyWrapper, getEnabledFeaturesParams);
     }
 
-    ListenerMethodArrayResponse getEnabledFeatures(OptimizelyE2EService optimizelyE2EService, GetEnabledFeaturesRequest getEnabledFeaturesRequest) {
+    private ListenerMethodArrayResponse getEnabledFeatures(OptimizelyWrapper optimizelyWrapper, BaseParams getEnabledFeaturesParams) {
 
-        List<String> enabledFeatures = optimizelyE2EService.getOptimizelyManager().getOptimizely().getEnabledFeatures(
-                    getEnabledFeaturesRequest.getUserId(),
-                    getEnabledFeaturesRequest.getAttributes()
+        List<String> enabledFeatures = optimizelyWrapper.getOptimizelyManager().getOptimizely().getEnabledFeatures(
+                    getEnabledFeaturesParams.getUserId(),
+                    getEnabledFeaturesParams.getAttributes()
                 );
 
-        return sendArrayResponse(enabledFeatures, optimizelyE2EService);
+        return sendArrayResponse(enabledFeatures, optimizelyWrapper);
     }
 
 }

@@ -14,58 +14,22 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.fsc_app.bdd.models.requests;
-
+package com.optimizely.ab.fsc_app.bdd.models.apiparams;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Map;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TrackRequest {
+public class ActivateParams extends BaseParams{
 
-    @JsonProperty("event_key")
-    private String eventKey;
+    @JsonProperty("experiment_key")
+    private String experimentKey;
 
-    @JsonProperty("user_id")
-    private String userId;
-
-    @JsonProperty("attributes")
-    private Map<String, ?> attributes;
-
-    @JsonProperty("event_tags")
-    private Map<String, ?> eventTags;
-
-    public String getEventKey() {
-        return eventKey;
+    public String getExperimentKey() {
+        return experimentKey;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public Map<String, ?> getAttributes() {
-        return attributes;
-    }
-
-    public Map<String, ?> getEventTags() {
-        return eventTags;
-    }
-
-    public void setEventKey(String eventKey) {
-        this.eventKey = eventKey;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setAttributes(Map<String, ?> attributes) {
-        this.attributes = attributes;
-    }
-
-    public void setEventTags(Map<String, ?> eventTags) {
-        this.eventTags = eventTags;
+    public void setExperimentKey(String experimentKey) {
+        this.experimentKey = experimentKey;
     }
 }
