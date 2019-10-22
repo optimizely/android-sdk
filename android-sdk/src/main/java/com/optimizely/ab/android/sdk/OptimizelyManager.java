@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 
+
 /**
  * Handles loading the Optimizely data file
  */
@@ -543,7 +544,7 @@ public class OptimizelyManager {
     protected EventHandler getEventHandler(Context context) {
         if (eventHandler == null) {
             DefaultEventHandler eventHandler = DefaultEventHandler.getInstance(context);
-            eventHandler.setDispatchInterval(eventDispatchInterval);
+            eventHandler.setDispatchInterval(eventDispatchInterval == 0  ? 60 * 1000 : eventDispatchInterval);
             this.eventHandler = eventHandler;
         }
 
@@ -820,6 +821,7 @@ public class OptimizelyManager {
                 eventProcessor = BatchEventProcessor.builder()
                     .withNotificationCenter(notificationCenter)
                     .withEventHandler(eventHandler)
+                    .withFlushInterval(eventDispatchInterval)
                     .build();
 
             }
