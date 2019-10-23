@@ -19,8 +19,6 @@ package com.optimizely.ab.fsc_app.bdd.support;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.fsc_app.bdd.models.ApiOptions;
-import com.optimizely.ab.fsc_app.bdd.models.responses.BaseListenerMethodResponse;
-import com.optimizely.ab.fsc_app.bdd.optlyplugins.ProxyEventDispatcher;
 import com.optimizely.ab.fsc_app.bdd.support.resources.*;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices.NoOpService;
@@ -28,11 +26,7 @@ import com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices.NoOpServic
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-import static com.optimizely.ab.fsc_app.bdd.models.Constants.DISPATCHED_EVENTS;
-import static com.optimizely.ab.fsc_app.bdd.models.Constants.LISTENER_CALLED;
-import static com.optimizely.ab.fsc_app.bdd.models.Constants.USER_PROFILES;
 import static com.optimizely.ab.fsc_app.bdd.optlyplugins.TestCompositeService.setupListeners;
-import static com.optimizely.ab.fsc_app.bdd.support.Utils.copyResponse;
 import static com.optimizely.ab.fsc_app.bdd.support.Utils.parseYAML;
 
 public class OptimizelyWrapper {
@@ -114,53 +108,5 @@ public class OptimizelyWrapper {
             e.printStackTrace();
         }
         return null;
-    }
-
-    // TODO: need to revise this method and place it in a separate file
-    public Boolean compareFields(String field, int count, Object parsedArguments, BaseResponse result) {
-        switch (field) {
-            case LISTENER_CALLED:
-                return compareListenerCalled(count, parsedArguments, result);
-            case DISPATCHED_EVENTS:
-                try {
-                    HashMap actualParams = (HashMap) ProxyEventDispatcher.getDispatchedEvents().get(0).get("params");
-                    HashMap expectedParams = (HashMap) ((ArrayList) parsedArguments).get(0);
-                    return Utils.containsSubset(expectedParams, actualParams);
-                } catch (Exception e) {
-                    return false;
-                }
-            case USER_PROFILES:
-                try {
-                    ArrayList<LinkedHashMap> actualParams = OptlyDataHelper.getUserProfiles(optimizelyManager);
-                    ArrayList<LinkedHashMap> expectedParams = (ArrayList) parsedArguments;
-                    return Utils.containsSubset(expectedParams, actualParams);
-                } catch (Exception e) {
-                    return false;
-                }
-            default:
-                return false;
-        }
-    }
-
-    private Boolean compareListenerCalled(int count, Object parsedArguments, BaseResponse result) {
-        BaseListenerMethodResponse baseListenerMethodResponse;
-        if (result instanceof BaseListenerMethodResponse)
-            baseListenerMethodResponse = (BaseListenerMethodResponse) result;
-        else
-            return false;
-
-        if (parsedArguments == baseListenerMethodResponse.getListenerCalled()) {
-            return true;
-        }
-
-        try {
-            Object expectedListenersCalled = copyResponse(count, parsedArguments);
-            List actualListenersCalled = new ArrayList(baseListenerMethodResponse.getListenerCalled());
-            baseListenerMethodResponse.getListenerCalled().clear();
-            return Utils.containsSubset((List) expectedListenersCalled, actualListenersCalled);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return parsedArguments == baseListenerMethodResponse.getListenerCalled();
     }
 }

@@ -19,8 +19,6 @@ package com.optimizely.ab.fsc_app.bdd.support;
 import android.content.Context;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.optimizely.ab.config.Experiment;
-import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.event.internal.payload.Snapshot;
 import com.optimizely.ab.event.internal.payload.Visitor;
@@ -46,6 +44,8 @@ import cucumber.api.java.en.When;
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.optimizely.ab.fsc_app.bdd.models.Constants.DISPATCHED_EVENTS;
 import static com.optimizely.ab.fsc_app.bdd.models.Constants.USER_PROFILES;
+import static com.optimizely.ab.fsc_app.bdd.support.ResponseComparator.compareResults;
+import static com.optimizely.ab.fsc_app.bdd.support.Utils.copyResponse;
 import static com.optimizely.ab.fsc_app.bdd.support.Utils.parseYAML;
 import static junit.framework.TestCase.fail;
 
@@ -55,7 +55,6 @@ public class Steps {
     private ApiOptions apiOptions;
     private OptimizelyWrapper optimizelyWrapper;
     private BaseResponse result;
-
 
     @Before
     public void setup() {
@@ -115,7 +114,7 @@ public class Steps {
     }
 
     @Then("^the result should match list \"([^\"]*)\"$")
-    public void the_result_should_match_list(String response) throws Throwable {
+    public void the_result_should_match_list(String response) {
         List<String> resultsArray = new ArrayList<>();
         if (response.equals("[]")) {
             Assert.assertTrue(result.compareResults(resultsArray));
@@ -126,8 +125,10 @@ public class Steps {
     }
 
     @Then("^in the response, \"([^\"]*)\" should have each one of these$")
-    public void in_the_response_should_have_each_one_of_these(String type, String args) throws Throwable {
-        Assert.assertTrue(optimizelyWrapper.compareFields(type, 1, parseYAML(args), result));
+    public void in_the_response_should_have_each_one_of_these(String type, String args) {
+        Assert.assertTrue(compareResults(type,
+                parseYAML(args),
+                result));
     }
 
     @Then("^the result should be boolean \"(\\S+)*\"$")
@@ -137,17 +138,23 @@ public class Steps {
 
     @Then("^in the response, \"(\\S+)*\" should be \"(\\S+)*\"$")
     public void then_in_the_response(String field, String args) {
-        Assert.assertTrue(optimizelyWrapper.compareFields(field, 1, parseYAML(args), result));
+        Assert.assertTrue(compareResults(field,
+                parseYAML(args),
+                result));
     }
 
     @Then("^in the response, \"(\\S+)*\" should match$")
     public void then_response_should_match(String field, String args) {
-        Assert.assertTrue(optimizelyWrapper.compareFields(field, 1, parseYAML(args), result));
+        Assert.assertTrue(compareResults(field,
+                parseYAML(args),
+                result));
     }
 
     @Then("^dispatched events payloads include$")
     public void then_dispatched_event_payload_include(String args) {
-        Assert.assertTrue(optimizelyWrapper.compareFields(DISPATCHED_EVENTS, 1, parseYAML(args), result));
+        Assert.assertTrue(compareResults(DISPATCHED_EVENTS,
+                parseYAML(args),
+                ProxyEventDispatcher.getDispatchedEvents()));
     }
 
     @Then("^there are no dispatched events$")
@@ -157,37 +164,43 @@ public class Steps {
 
     @Then("^in the response, the \"([^\"]*)\" listener was called (\\d+) times$")
     public void in_the_response_the_listener_was_called_times(String type, int count, String args) {
-        Assert.assertTrue(optimizelyWrapper.compareFields(type, count, parseYAML(args), result));
+        Assert.assertTrue(compareResults(type,
+                copyResponse(count, parseYAML(args)),
+                result));
     }
 
     @Then("^the User Profile Service state should be$")
-    public void the_User_Profile_Service_state_should_be(String args) throws Throwable {
-        Assert.assertTrue(optimizelyWrapper.compareFields(USER_PROFILES, 1, parseYAML(args), result));
+    public void the_User_Profile_Service_state_should_be(String args) {
+        Assert.assertTrue(compareResults(USER_PROFILES,
+                parseYAML(args),
+                OptlyDataHelper.getUserProfiles(optimizelyWrapper.getOptimizelyManager())));
     }
 
     @Given("^user \"([^\"]*)\" has mapping \"([^\"]*)\": \"([^\"]*)\" in User Profile Service$")
-    public void user_has_mapping_in_User_Profile_Service(String userName, String experimentKey, String variationKey) throws Throwable {
+    public void user_has_mapping_in_User_Profile_Service(String userName, String experimentKey, String variationKey) {
         apiOptions.addUserProfile(userName, experimentKey, variationKey);
     }
 
     @Then("^there is no user profile state$")
-    public void there_is_no_user_profile_state() throws Throwable {
+    public void there_is_no_user_profile_state() {
         Assert.assertTrue(TestCompositeService.getUserProfiles(optimizelyWrapper.getOptimizelyManager()).isEmpty());
     }
 
     @Then("^the number of dispatched events is (\\d+)$")
-    public void the_number_of_dispatched_events_is(int count) throws Throwable {
+    public void the_number_of_dispatched_events_is(int count) {
         Assert.assertSame(count, ProxyEventDispatcher.getDispatchedEvents().size());
     }
 
     @Then("^payloads of dispatched events don't include decisions$")
-    public void payloads_of_dispatched_events_dont_include_decisions() throws Throwable {
+    public void payloads_of_dispatched_events_dont_include_decisions() {
         Assert.assertTrue(checkNoDecision());
     }
 
     @Then("^in the response, \"([^\"]*)\" should have this exactly (\\d+) times$")
-    public void in_the_response_should_have_this_exactly_times(String field, int count, String args) throws Throwable {
-        Assert.assertTrue(optimizelyWrapper.compareFields(field, count, parseYAML(args), result));
+    public void in_the_response_should_have_this_exactly_times(String field, int count, String args) {
+        Assert.assertTrue(compareResults(field,
+                copyResponse(count, parseYAML(args)),
+                result));
     }
 
     private Boolean checkNoDecision() {
