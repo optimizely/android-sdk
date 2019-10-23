@@ -81,4 +81,5 @@ jobs:
     - stage: 'Integration as unit tests'
       script:
         - scripts/get-fsc-tests.sh
+        - ls ./fsc-app/src/androidTest/assets/features
         - ./gradlew testFSC -Pcucumber
