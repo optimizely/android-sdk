@@ -544,7 +544,7 @@ public class OptimizelyManager {
     protected EventHandler getEventHandler(Context context) {
         if (eventHandler == null) {
             DefaultEventHandler eventHandler = DefaultEventHandler.getInstance(context);
-            eventHandler.setDispatchInterval(eventDispatchInterval == 0  ? 60 * 1000 : eventDispatchInterval);
+            eventHandler.setDispatchInterval(eventDispatchInterval);
             this.eventHandler = eventHandler;
         }
 
