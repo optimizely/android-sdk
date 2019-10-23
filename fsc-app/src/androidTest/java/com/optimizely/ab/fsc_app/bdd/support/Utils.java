@@ -113,32 +113,38 @@ public class Utils {
             return subset == actual;
 
         AtomicReference<Boolean> result = new AtomicReference<>(true);
-        subset.forEach((key, sourceObj) -> {
+        for(Map.Entry<String, Object> entry : subset.entrySet()) {
+            String key = entry.getKey();
+            Object sourceObj = entry.getValue();
+
             if (!actual.containsKey(key)) {
                 result.set(false);
-                return;
+                break;
             }
             Object targetObj = actual.get(key);
             if (sourceObj instanceof Map && targetObj instanceof Map) {
                 if (!containsSubset((Map) sourceObj, (Map) targetObj)) {
                     result.set(false);
-                    return;
+                    break;
                 }
             } else if (sourceObj instanceof List && targetObj instanceof List) {
                 final List<Object> temp = new ArrayList<Object>((List) targetObj);
                 if (!containsSubset((List) sourceObj, temp)) {
                     result.set(false);
-                    return;
+                    break;
                 }
             } else if (sourceObj instanceof String) {
                 if (!sourceObj.equals(targetObj)) {
                     result.set(false);
+                    break;
                 }
             } else if(sourceObj == null && targetObj == null) {
-            } else if (!sourceObj.equals(targetObj))
+            } else if (!sourceObj.equals(targetObj)) {
                 result.set(false);
+                break;
+            }
 
-        });
+        }
         return result.get();
     }
 
