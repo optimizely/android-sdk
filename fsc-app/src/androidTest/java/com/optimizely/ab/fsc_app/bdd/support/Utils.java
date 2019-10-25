@@ -29,21 +29,23 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper.getAttributeByKey;
 import static com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper.getEventByKey;
 import static com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper.getExperimentByKey;
 import static com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper.getVariationByKey;
 import static com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper.projectConfig;
 
 
-public class Utils {
+class Utils {
     private final static String EXP_ID = "\\{\\{#expId\\}\\}(\\S+)*\\{\\{/expId\\}\\}";
     private final static String EVENT_ID = "\\{\\{#eventId\\}\\}(\\S+)*\\{\\{/eventId\\}\\}";
     private final static String DATAFILE_PROJECT_ID = "\\{\\{datafile.projectId\\}\\}";
     private final static String EXP_CAMPAIGN_ID = "\\{\\{#expCampaignId\\}\\}(\\S+)*\\{\\{/expCampaignId\\}\\}";
     private final static String VAR_ID = "\\{\\{#varId\\}\\}(\\S+)*\\{\\{/varId\\}\\}";
+    private final static String ATTRIBUTE_ID = "\\{\\{#attributeId\\}\\}(\\S+)*\\{\\{/attributeId\\}\\}";
 
-    public static Object parseYAML(String args) {
-        if ("NULL".equals(args) || args.isEmpty()) {
+    static Object parseYAML(String args) {
+        if (args == null || "NULL".equals(args) || args.isEmpty()) {
             return null;
         }
         args = findAndReplaceAllMustacheRegex(args);
@@ -82,6 +84,15 @@ public class Utils {
             }
         }
 
+        Pattern attrIdPattern = Pattern.compile(ATTRIBUTE_ID);
+        Matcher attrIdMatcher = attrIdPattern.matcher(yaml);
+        while (attrIdMatcher.find()) {
+            String attributeId = getAttributeByKey(attrIdMatcher.group(1));
+            if (attributeId != null) {
+                yaml = yaml.replace(attrIdMatcher.group(0), attributeId);
+            }
+        }
+
         Pattern varIdPattern = Pattern.compile(VAR_ID);
         Matcher varIdMatcher = varIdPattern.matcher(yaml);
         while (varIdMatcher.find()) {
@@ -108,7 +119,7 @@ public class Utils {
      * @param actual Object which should contain all subset key value pairs.
      * @return True if all key value pairs of subset map exist and matches in actual object else return False.
      */
-    public static Boolean containsSubset(Map<String, Object> subset, Map<String, Object> actual) {
+    static Boolean containsSubset(Map<String, Object> subset, Map<String, Object> actual) {
         if (subset == null)
             return subset == actual;
 
@@ -148,7 +159,7 @@ public class Utils {
         return result.get();
     }
 
-    public static Boolean containsSubset(final List subset, final List actual) {
+    static Boolean containsSubset(final List subset, final List actual) {
         if (subset.size() > actual.size()) {
             return false;
         }
@@ -160,7 +171,7 @@ public class Utils {
         return true;
     }
 
-    public static Object copyResponse(int count, Object args) {
+    static Object copyResponse(int count, Object args) {
         if (args instanceof List) {
             List argsObject = (List) args;
             List cloneArgs = new ArrayList<>();

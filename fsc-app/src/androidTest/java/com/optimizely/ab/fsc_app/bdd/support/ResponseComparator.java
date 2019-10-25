@@ -14,7 +14,7 @@ import static com.optimizely.ab.fsc_app.bdd.models.Constants.LISTENER_CALLED;
 import static com.optimizely.ab.fsc_app.bdd.models.Constants.USER_PROFILES;
 
 public class ResponseComparator {
-    static Logger logger = LoggerFactory.getLogger(ResponseComparator.class);
+    private static Logger logger = LoggerFactory.getLogger(ResponseComparator.class);
 
     public static Boolean compareResults(String field, Object expectedResult, Object actualResult) {
         switch (field) {

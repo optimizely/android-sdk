@@ -48,18 +48,21 @@ public class OptlyDataHelper {
         if (experiment == null)
             return null;
 
-        Variation variation = experiment.getVariationKeyToVariationMap().get(variationKey);
+        return experiment.getVariationKeyToVariationMap().get(variationKey);
+    }
 
-        return variation;
+    public static String getAttributeByKey(String attributeKey) {
+        if (attributeKey == null)
+            return null;
+
+        return projectConfig.getAttributeId(projectConfig, attributeKey);
     }
 
     public static EventType getEventByKey(String eventKey) {
         if (eventKey == null)
             return null;
 
-        EventType eventType = projectConfig.getEventNameMapping().get(eventKey);
-
-        return eventType;
+        return projectConfig.getEventNameMapping().get(eventKey);
     }
 
     public static void initializeProjectConfig(String datafile) {
@@ -74,9 +77,7 @@ public class OptlyDataHelper {
         if (projectConfig == null)
             return null;
 
-        Experiment experiment = projectConfig.getExperimentForKey(experimentKey, null);
-
-        return experiment;
+        return projectConfig.getExperimentForKey(experimentKey, null);
     }
 }
 

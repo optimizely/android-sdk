@@ -18,12 +18,12 @@ package com.optimizely.ab.fsc_app.bdd.support;
 
 import android.content.Context;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.event.internal.payload.Snapshot;
 import com.optimizely.ab.event.internal.payload.Visitor;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
-import com.optimizely.ab.fsc_app.bdd.optlyplugins.ProxyEventDispatcher;
 import com.optimizely.ab.fsc_app.bdd.optlyplugins.TestCompositeService;
 import com.optimizely.ab.fsc_app.bdd.models.ApiOptions;
 
@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -55,6 +56,7 @@ public class Steps {
     private ApiOptions apiOptions;
     private OptimizelyWrapper optimizelyWrapper;
     private BaseResponse result;
+    private List<BaseResponse> resultsList;
 
     @Before
     public void setup() {
@@ -90,12 +92,43 @@ public class Steps {
         apiOptions.addWithListener(map);
     }
 
+    @Given("^the event processor configuration is$")
+    public void theEventProcessorConfigurationIs(String args) {
+        apiOptions.setEventOptions((Map<String, Object>) parseYAML(args));
+    }
+
+    @Given("^the response is delayed by (\\d+\\.\\d+) times the event_options (\\S+)$")
+    public void response_delayed_by_times(Double responseDelay, String fieldName) {
+        apiOptions.setResponseDelay((int) (Double.parseDouble(apiOptions.getEventOptions().get(fieldName).toString()) * responseDelay));
+    }
+
+    @Given("^requests are made in the same session$")
+    public void requestsAreMadeInTheSameSession() {
+        apiOptions.setSessionId(UUID.randomUUID().toString());
+    }
+
     @When("^(\\S+) is called with arguments$")
     public void is_called_with_arguments(String api, String args) {
         apiOptions.setApi(api);
         apiOptions.setArguments(args);
         result = optimizelyWrapper.callApi(apiOptions);
-        Assert.assertNotNull(api);
+    }
+
+    @When("^the following calls are made$")
+    public void theFollowingCallsAreMade(String args) {
+        resultsList = new ArrayList<>();
+        ArrayList<Map<String, String>> calls = (ArrayList<Map<String, String>>) parseYAML(args);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            for (Map<String, String> call : calls) {
+                apiOptions.setApi(call.get("method"));
+                apiOptions.setArguments(mapper.writeValueAsString(call.get("args")));
+                result = optimizelyWrapper.callApi(apiOptions);
+                resultsList.add(result);
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Then("^the result should be (\\d+)$")
@@ -150,16 +183,24 @@ public class Steps {
                 result));
     }
 
+    @Then("^the result should be the array$")
+    public void theResultShouldBeTheArray(String args) {
+        List<String> responseList = (List<String>) parseYAML(args);
+        for (int i = 0; i < responseList.size(); i++) {
+            Assert.assertTrue(resultsList.get(i).compareResults(responseList.get(i)));
+        }
+    }
+
     @Then("^dispatched events payloads include$")
     public void then_dispatched_event_payload_include(String args) {
         Assert.assertTrue(compareResults(DISPATCHED_EVENTS,
                 parseYAML(args),
-                ProxyEventDispatcher.getDispatchedEvents()));
+                apiOptions.getDispatchedEvents()));
     }
 
     @Then("^there are no dispatched events$")
     public void then_no_dispatched_event() {
-        Assert.assertTrue(ProxyEventDispatcher.getDispatchedEvents().isEmpty());
+        Assert.assertTrue(apiOptions.getDispatchedEvents().isEmpty());
     }
 
     @Then("^in the response, the \"([^\"]*)\" listener was called (\\d+) times$")
@@ -187,8 +228,21 @@ public class Steps {
     }
 
     @Then("^the number of dispatched events is (\\d+)$")
-    public void the_number_of_dispatched_events_is(int count) {
-        Assert.assertSame(count, ProxyEventDispatcher.getDispatchedEvents().size());
+    public void the_number_of_dispatched_events_is(int expectedCount) {
+        try {
+            // BatchEventProcessor in android-sdk sleeps for 50ms if there are no events to process but in order to handle multiple async responses we have to wait 1500 ms
+            // That time is taken into account here in order for the new events in the queue to be recognized before sending the response
+            if (apiOptions.getEventOptions() != null) {
+                Thread.sleep(500);
+            }
+            if (apiOptions.getResponseDelay() != null) {
+                Thread.sleep(apiOptions.getResponseDelay());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            Assert.assertEquals(expectedCount, apiOptions.getDispatchedEvents().size());
+        }
     }
 
     @Then("^payloads of dispatched events don't include decisions$")
@@ -205,7 +259,7 @@ public class Steps {
 
     private Boolean checkNoDecision() {
         ObjectMapper mapper = new ObjectMapper();
-        ArrayList<Map<String, Object>> dispatchEvent = ProxyEventDispatcher.getDispatchedEvents();
+        List<Map<String, Object>> dispatchEvent = apiOptions.getDispatchedEvents();
         if (dispatchEvent == null || dispatchEvent.size() == 0) {
             fail("No events returned");
             return false;
@@ -222,5 +276,13 @@ public class Steps {
             }
         }
         return false;
+    }
+
+    @Then("^dispatched event at index (\\d+) visitors payload includes$")
+    public void dispatchedEventAtIndex(int index, String payload) {
+        Assert.assertTrue((apiOptions.getDispatchedEvents().size() - 1) >= index);
+        List visitorsExpected = (List) parseYAML(payload);
+        List visitorsActual = (List) ((Map) apiOptions.getDispatchedEvents().get(index).get("params")).get("visitors");
+        Assert.assertTrue(Utils.containsSubset(visitorsExpected, visitorsActual));
     }
 }

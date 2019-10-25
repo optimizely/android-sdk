@@ -2,13 +2,20 @@ package com.optimizely.ab.fsc_app.bdd.optlyplugins;
 
 import android.support.test.espresso.core.deps.guava.base.CaseFormat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.event.BatchEventProcessor;
+import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.event.EventProcessor;
+import com.optimizely.ab.event.ForwardingEventProcessor;
+import com.optimizely.ab.fsc_app.bdd.models.ApiOptions;
 import com.optimizely.ab.fsc_app.bdd.support.OptimizelyWrapper;
 import com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices.TestUserProfileService;
 import com.optimizely.ab.notification.ActivateNotification;
 import com.optimizely.ab.notification.DecisionNotification;
+import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.TrackNotification;
 
 import java.util.ArrayList;
@@ -21,9 +28,10 @@ import static com.optimizely.ab.notification.DecisionNotification.FeatureVariabl
 
 public class TestCompositeService {
 
-    public static void setupListeners(List<Map<String, String>> withListener, OptimizelyWrapper optimizelyWrapper) {
-        if (withListener == null) return;
-        if (!optimizelyWrapper.getOptimizelyManager().getOptimizely().isValid()) return;
+    public static NotificationCenter getNotificationCenter(List<Map<String, String>> withListener, OptimizelyWrapper optimizelyWrapper) {
+        NotificationCenter notificationCenter = new NotificationCenter();
+
+        if (withListener == null) return notificationCenter;
 
         for (Map<String, String> map : withListener) {
             Object obj = map.get("count");
@@ -32,47 +40,73 @@ public class TestCompositeService {
             switch (map.get("type")) {
                 case "Activate":
                     for (int i = 0; i < count; i++) {
-                        optimizelyWrapper.getOptimizelyManager().getOptimizely().getNotificationCenter().addNotificationHandler(ActivateNotification.class, activateNotification -> {
+                        notificationCenter.addNotificationHandler(ActivateNotification.class, activateNotification -> {
                             Map<String, Object> notificationMap = new HashMap<>();
                             notificationMap.put("experiment_key", activateNotification.getExperiment().getKey());
                             notificationMap.put("user_id", activateNotification.getUserId());
                             notificationMap.put("attributes", activateNotification.getAttributes());
                             notificationMap.put("variation_key", activateNotification.getVariation().getKey());
-
                             optimizelyWrapper.addNotification(notificationMap);
                         });
                     }
                     break;
                 case "Track":
                     for (int i = 0; i < count; i++) {
-                        optimizelyWrapper.getOptimizelyManager().getOptimizely().getNotificationCenter().addNotificationHandler(TrackNotification.class, trackNotification -> {
+                        notificationCenter.addNotificationHandler(TrackNotification.class, trackNotification -> {
                             Map<String, Object> notificationMap = new HashMap<>();
                             notificationMap.put("event_key", trackNotification.getEventKey());
                             notificationMap.put("user_id", trackNotification.getUserId());
                             notificationMap.put("attributes", trackNotification.getAttributes());
                             notificationMap.put("event_tags", trackNotification.getEventTags());
-
                             optimizelyWrapper.addNotification(notificationMap);
                         });
                     }
                     break;
                 case "Decision":
                     for (int i = 0; i < count; i++) {
-                        optimizelyWrapper.getOptimizelyManager().getOptimizely().getNotificationCenter().addNotificationHandler(DecisionNotification.class, decisionNotification -> {
+                        notificationCenter.addNotificationHandler(DecisionNotification.class, decisionNotification -> {
                             Map<String, Object> notificationMap = new HashMap<>();
                             notificationMap.put("type", decisionNotification.getType());
                             notificationMap.put("user_id", decisionNotification.getUserId());
                             notificationMap.put("attributes", decisionNotification.getAttributes());
                             notificationMap.put("decision_info", convertKeysCamelCaseToSnakeCase(decisionNotification.getDecisionInfo()));
-
                             optimizelyWrapper.addNotification(notificationMap);
                         });
                     }
                     break;
-                default:
-                    // do nothing
             }
         }
+
+        return notificationCenter;
+    }
+
+    public static EventProcessor getEventProcessor(ApiOptions apiOptions, EventHandler eventHandler, NotificationCenter notificationCenter) {
+
+        if (apiOptions.getEventOptions() != null) {
+            Map<String, Object> eventOptions = apiOptions.getEventOptions();
+
+            BatchEventProcessor.Builder eventProcessorBuilder = BatchEventProcessor.builder()
+                    .withEventHandler(eventHandler)
+                    .withNotificationCenter(notificationCenter);
+
+            if (eventOptions.get("batch_size") != null) {
+                eventProcessorBuilder.withBatchSize((Integer) eventOptions.get("batch_size"));
+            }
+            if (eventOptions.get("flush_interval") != null) {
+                if (eventOptions.get("flush_interval") instanceof Long) {
+                    eventProcessorBuilder.withFlushInterval((long) eventOptions.get("flush_interval"));
+                } else if (eventOptions.get("flush_interval") instanceof Integer) {
+                    if (((Integer) eventOptions.get("flush_interval")) == -1) {
+                        eventProcessorBuilder.withFlushInterval((long) 500000);
+                    } else {
+                        eventProcessorBuilder.withFlushInterval((long) ((Integer) eventOptions.get("flush_interval")));
+                    }
+                }
+            }
+
+            return eventProcessorBuilder.build();
+        }
+        return new ForwardingEventProcessor(eventHandler, notificationCenter);
     }
 
     public static ArrayList<LinkedHashMap> getUserProfiles(OptimizelyManager optimizely) {

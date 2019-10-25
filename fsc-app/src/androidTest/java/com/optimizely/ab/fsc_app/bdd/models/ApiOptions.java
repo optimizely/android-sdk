@@ -21,9 +21,6 @@ import android.support.annotation.RawRes;
 
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
-import com.optimizely.ab.event.EventHandler;
-import com.optimizely.ab.event.NoopEventHandler;
-import com.optimizely.ab.fsc_app.bdd.optlyplugins.ProxyEventDispatcher;
 import com.optimizely.ab.fsc_app.bdd.support.OptlyDataHelper;
 
 import java.io.IOException;
@@ -37,19 +34,19 @@ import static com.optimizely.ab.android.sdk.OptimizelyManager.loadRawResource;
 
 public class ApiOptions {
     private Context context;
-    private EventHandler eventHandler;
+    private String sessionId;
+    private Integer responseDelay;
+    private Map<String, Object> eventOptions;
     private String userProfileService;
     private String datafile;
-    private ArrayList<Map<String,Object>> dispatchedEvents = new ArrayList<>();
+    private List<Map<String, Object>> dispatchedEvents = new ArrayList<>();
     private ArrayList<Map<String, String>> withListener = new ArrayList<>();
-    private ArrayList<HashMap> forceVariations = new ArrayList<>();
     private ArrayList<Map> userProfiles = new ArrayList<>();
     private String api;
     private String arguments;
 
     public ApiOptions(Context context) {
         this.context = context;
-        this.eventHandler = new ProxyEventDispatcher(dispatchedEvents);
     }
 
     public ArrayList<Map> getUserProfiles() {
@@ -58,9 +55,10 @@ public class ApiOptions {
 
     /**
      * This function build a map of userProfile and add it in apiOptions.userProfiles
+     *
      * @param userName
      * @param experimentKey To get experimentId from given datafile
-     * @param variationKey To get variationId from given datafile
+     * @param variationKey  To get variationId from given datafile
      */
     public void addUserProfile(String userName, String experimentKey, String variationKey) {
         Experiment experiment = OptlyDataHelper.getExperimentByKey(experimentKey);
@@ -99,8 +97,28 @@ public class ApiOptions {
         userProfiles.add(userProfile);
     }
 
-    public void setUserProfiles(ArrayList<Map> userProfiles) {
-        this.userProfiles = userProfiles;
+    public void setResponseDelay(Integer responseDelay) {
+        this.responseDelay = responseDelay;
+    }
+
+    public Integer getResponseDelay() {
+        return responseDelay;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public void setEventOptions(Map<String, Object> eventOptions) {
+        this.eventOptions = eventOptions;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public Map<String, Object> getEventOptions() {
+        return eventOptions;
     }
 
     public void setApi(String api) {
@@ -119,20 +137,12 @@ public class ApiOptions {
         return arguments;
     }
 
-    public void setDispatchedEvents(ArrayList<Map<String,Object>>  dispatchedEvents) {
+    public void setDispatchedEvents(List<Map<String, Object>> dispatchedEvents) {
         this.dispatchedEvents = dispatchedEvents;
     }
 
-    public ArrayList<Map<String,Object>>  getDispatchedEvents() {
+    public List<Map<String, Object>> getDispatchedEvents() {
         return dispatchedEvents;
-    }
-
-    public void setForceVariations(ArrayList<HashMap> forceVariations) {
-        this.forceVariations = forceVariations;
-    }
-
-    public ArrayList<HashMap> getForceVariations() {
-        return forceVariations;
     }
 
     public List<Map<String, String>> getWithListener() {
@@ -141,10 +151,6 @@ public class ApiOptions {
 
     public Context getContext() {
         return context;
-    }
-
-    public EventHandler getEventHandler() {
-        return eventHandler;
     }
 
     public String getDatafile() {
@@ -157,14 +163,6 @@ public class ApiOptions {
 
     public void setUserProfileService(String userProfileService) {
         this.userProfileService = userProfileService;
-    }
-
-    public void setEventHandler(String customEventDispatcher) {
-        if (customEventDispatcher != null && customEventDispatcher.equals("ProxyEventDispatcher")) {
-            eventHandler = new ProxyEventDispatcher(dispatchedEvents);
-        } else {
-            eventHandler = new NoopEventHandler();
-        }
     }
 
     public void setDatafile(String datafileName) {

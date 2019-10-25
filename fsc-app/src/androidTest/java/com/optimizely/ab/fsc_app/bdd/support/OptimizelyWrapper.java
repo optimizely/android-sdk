@@ -18,25 +18,36 @@ package com.optimizely.ab.fsc_app.bdd.support;
 
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.event.EventProcessor;
 import com.optimizely.ab.fsc_app.bdd.models.ApiOptions;
+import com.optimizely.ab.fsc_app.bdd.optlyplugins.ProxyEventDispatcher;
 import com.optimizely.ab.fsc_app.bdd.support.resources.*;
 import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
 import com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices.NoOpService;
+import com.optimizely.ab.notification.NotificationCenter;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-import static com.optimizely.ab.fsc_app.bdd.optlyplugins.TestCompositeService.setupListeners;
+import static com.optimizely.ab.fsc_app.bdd.optlyplugins.TestCompositeService.getEventProcessor;
+import static com.optimizely.ab.fsc_app.bdd.optlyplugins.TestCompositeService.getNotificationCenter;
 import static com.optimizely.ab.fsc_app.bdd.support.Utils.parseYAML;
 
 public class OptimizelyWrapper {
     private final static String OPTIMIZELY_PROJECT_ID = "123123";
     private OptimizelyManager optimizelyManager;
+    private static final Map<String, OptimizelyManager> optimizelyInstanceMap = new HashMap<>();
+    private static final Map<String, ProxyEventDispatcher> eventHandlerInstanceMap = new HashMap<>();
+    private static final Map<String, List<Map<String, Object>>> notificationsInstanceMap = new HashMap<>();
 
     private List<Map<String, Object>> notifications = new ArrayList<>();
 
     public void addNotification(Map<String, Object> notificationMap) {
         notifications.add(notificationMap);
+    }
+
+    private void setNotifications(List<Map<String, Object>> notifications) {
+        this.notifications = notifications;
     }
 
     public List<Map<String, Object>> getNotifications() {
@@ -48,29 +59,51 @@ public class OptimizelyWrapper {
     }
 
     public void initializeOptimizely(ApiOptions apiOptions) {
-        UserProfileService userProfileService = null;
-        if (apiOptions.getUserProfileService() != null) {
-            try {
-                Class<?> userProfileServiceClass = Class.forName("com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices." + apiOptions.getUserProfileService());
-                Constructor<?> serviceConstructor = userProfileServiceClass.getConstructor(ArrayList.class);
-                userProfileService = UserProfileService.class.cast(serviceConstructor.newInstance(apiOptions.getUserProfiles()));
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+        String sessionId = apiOptions.getSessionId();
+        if (sessionId != null && !sessionId.isEmpty() && optimizelyInstanceMap.containsKey(sessionId)) {
+            // Use cached instance / eventHandler
+            optimizelyManager = optimizelyInstanceMap.get(sessionId);
+            if (eventHandlerInstanceMap.containsKey(apiOptions.getSessionId()))
+                apiOptions.setDispatchedEvents(eventHandlerInstanceMap.get(apiOptions.getSessionId()).getDispatchedEvents());
+
+            if (notificationsInstanceMap.containsKey(sessionId)) {
+                setNotifications(notificationsInstanceMap.get(sessionId));
+            }
+        } else {
+            UserProfileService userProfileService = null;
+            if (apiOptions.getUserProfileService() != null) {
+                try {
+                    Class<?> userProfileServiceClass = Class.forName("com.optimizely.ab.fsc_app.bdd.optlyplugins.userprofileservices." + apiOptions.getUserProfileService());
+                    Constructor<?> serviceConstructor = userProfileServiceClass.getConstructor(ArrayList.class);
+                    userProfileService = UserProfileService.class.cast(serviceConstructor.newInstance(apiOptions.getUserProfiles()));
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            if (userProfileService == null) {
+                userProfileService = new NoOpService();
+            }
+            NotificationCenter notificationCenter = getNotificationCenter(apiOptions.getWithListener(), this);
+            ProxyEventDispatcher eventHandler = new ProxyEventDispatcher(apiOptions.getDispatchedEvents());
+
+            EventProcessor eventProcessor = getEventProcessor(apiOptions, eventHandler, notificationCenter);
+
+            optimizelyManager = OptimizelyManager.builder(OPTIMIZELY_PROJECT_ID)
+                    .withEventHandler(eventHandler)
+                    .withNotificationCenter(notificationCenter)
+                    .withEventProcessor(eventProcessor)
+                    .withUserProfileService(userProfileService)
+                    .build(apiOptions.getContext());
+
+            optimizelyManager.initialize(apiOptions.getContext(),
+                    apiOptions.getDatafile()
+            );
+            if (sessionId != null && !sessionId.isEmpty()) {
+                optimizelyInstanceMap.put(sessionId, optimizelyManager);
+                eventHandlerInstanceMap.put(sessionId, eventHandler);
+                notificationsInstanceMap.put(sessionId, getNotifications());
             }
         }
-        if (userProfileService == null) {
-            userProfileService = new NoOpService();
-        }
-
-        optimizelyManager = OptimizelyManager.builder(OPTIMIZELY_PROJECT_ID)
-                .withEventHandler(apiOptions.getEventHandler())
-                .withUserProfileService(userProfileService)
-                .build(apiOptions.getContext());
-
-        optimizelyManager.initialize(apiOptions.getContext(),
-                apiOptions.getDatafile()
-        );
-        setupListeners(apiOptions.getWithListener(), this);
     }
 
     public BaseResponse callApi(ApiOptions apiOptions) {
@@ -103,6 +136,8 @@ public class OptimizelyWrapper {
                     return GetForcedVariationResource.getInstance().parseToCallApi(this, argumentsObj);
                 case "set_forced_variation":
                     return ForcedVariationResource.getInstance().parseToCallApi(this, argumentsObj);
+                case "close":
+                    return CloseResource.getInstance().parseToCallApi(this, argumentsObj);
             }
         } catch (Exception e) {
             e.printStackTrace();

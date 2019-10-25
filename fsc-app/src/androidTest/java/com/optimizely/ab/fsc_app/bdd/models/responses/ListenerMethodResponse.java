@@ -40,8 +40,10 @@ public class ListenerMethodResponse<T>  extends BaseListenerMethodResponse {
     }
 
     @Override
-    public Boolean compareResults(Object expectedResponse) {
-        Object expectedVal = expectedResponse;
+    public Boolean compareResults(Object expectedVal) {
+        if (expectedVal == result) {
+            return true;
+        }
         if (expectedVal.equals("NULL")) {
             expectedVal = null;
             return expectedVal == result;

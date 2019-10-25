@@ -14,22 +14,42 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.fsc_app.bdd.models.apiparams;
+package com.optimizely.ab.fsc_app.bdd.support.resources;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.optimizely.ab.fsc_app.bdd.models.responses.BaseResponse;
+import com.optimizely.ab.fsc_app.bdd.models.responses.ListenerMethodResponse;
+import com.optimizely.ab.fsc_app.bdd.support.OptimizelyWrapper;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class ActivateParams extends BaseParams {
+public class CloseResource extends BaseResource<Boolean> {
+    private static CloseResource instance;
 
-    @JsonProperty("experiment_key")
-    private String experimentKey;
-
-    public String getExperimentKey() {
-        return experimentKey;
+    private CloseResource() {
+        super();
     }
 
-    public void setExperimentKey(String experimentKey) {
-        this.experimentKey = experimentKey;
+    public static CloseResource getInstance() {
+        if (instance == null) {
+            instance = new CloseResource();
+        }
+        return instance;
     }
+
+    @Override
+    public BaseResponse parseToCallApi(OptimizelyWrapper optimizelyWrapper, Object desreailizeObject) {
+        return close(optimizelyWrapper);
+    }
+
+    private ListenerMethodResponse<Boolean> close(OptimizelyWrapper optimizelyWrapper) {
+
+        boolean success = true;
+        try {
+            optimizelyWrapper.getOptimizelyManager().getOptimizely().close();
+        } catch (Exception e) {
+            success = false;
+            System.out.println(e.getMessage());
+        } finally {
+            return sendResponse(success, optimizelyWrapper);
+        }
+    }
+
 }

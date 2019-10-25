@@ -72,5 +72,5 @@ dependencies {
 
 def getTestTags() {
     // TODO: remove default tags and pick only using env variables of tags
-    return project.hasProperty("tags") ? project.getProperties().get("tags") : "~@DYNAMIC_LANGUAGES, ~@DATAFILE_MANAGER , ~@NO_EASY_EVENT_TRACKING, ~@OASIS-3654, ~@GET_FEATURE_VAR, ~@OASIS-3582, ~@EVENT_BATCHING"
+    return project.hasProperty("tags") ? project.getProperties().get("tags") : "~@DYNAMIC_LANGUAGES, ~@DATAFILE_MANAGER , ~@NO_EASY_EVENT_TRACKING, ~@OASIS-3654, ~@GET_FEATURE_VAR, ~@OASIS-3582, ~@EVENT_FLUSH"
 }

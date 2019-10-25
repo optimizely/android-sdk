@@ -24,27 +24,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 public class ProxyEventDispatcher implements EventHandler {
 
     private static Logger logger = LoggerFactory.getLogger(ProxyEventDispatcher.class);
-    private static ArrayList<Map<String,Object>> dispatchedEvents = new ArrayList<>();
+    private List<Map<String, Object>> dispatchedEvents;
 
-    public ProxyEventDispatcher(ArrayList<Map<String,Object>> dispatchedEvents){
-        if(dispatchedEvents != null)
+    public ProxyEventDispatcher(List<Map<String, Object>> dispatchedEvents) {
+        if (dispatchedEvents != null)
             this.dispatchedEvents = dispatchedEvents;
         else
-            this.dispatchedEvents = new ArrayList<>();
+            this.dispatchedEvents = Collections.synchronizedList(new ArrayList<>());
     }
 
     @Override
     public void dispatchEvent(LogEvent logEvent) throws Exception {
-
         ObjectMapper mapper = new ObjectMapper();
-        Map<String,Object> eventParams = mapper.readValue(logEvent.getBody(), Map.class);
+        Map<String, Object> eventParams = mapper.readValue(logEvent.getBody(), Map.class);
         Map<String, Object> map = new HashMap<>();
         map.put("url", logEvent.getEndpointUrl());
         map.put("http_verb", logEvent.getRequestMethod());
@@ -55,7 +56,7 @@ public class ProxyEventDispatcher implements EventHandler {
                 logEvent.getRequestParams());
     }
 
-    public static ArrayList<Map<String, Object>> getDispatchedEvents() {
+    public List<Map<String, Object>> getDispatchedEvents() {
         return dispatchedEvents;
     }
 
