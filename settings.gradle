@@ -1,1 +1,1 @@
-include ':event-handler', ':android-sdk', ':shared', ':test-app', ':user-profile', ':datafile-handler', ':fsc-app'
+include ':event-handler', ':android-sdk', ':shared', ':test-app', ':user-profile', ':datafile-handler', ':integration-test'

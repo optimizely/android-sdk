@@ -87,8 +87,8 @@ task testAllModules () {
     logger.info("Running android tests for all modules")
 }
 
-task testFSC () {
-    logger.info("Running all fullstack testcases.")
+task testIntegration () {
+    logger.info("Running all Full Stack Compatibility Suite test cases.")
 }
 
 task testAllModulesTravis () {
@@ -102,6 +102,6 @@ testAllModulesTravis.dependsOn(':android-sdk:connectedAndroidTest', ':android-sd
 
 testAllModules.dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')
 
-testFSC.dependsOn(':fsc-app:connectedAndroidTest')
+testIntegration.dependsOn(':integration-test:connectedAndroidTest')
 
 
