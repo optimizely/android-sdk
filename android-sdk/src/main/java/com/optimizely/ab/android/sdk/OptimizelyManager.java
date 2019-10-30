@@ -42,9 +42,9 @@ import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
+import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
-import com.optimizely.ab.event.ForwardingEventProcessor;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
+
 
 /**
  * Handles loading the Optimizely data file
@@ -817,7 +818,12 @@ public class OptimizelyManager {
             }
 
             if(eventProcessor == null) {
-                eventProcessor = new ForwardingEventProcessor(eventHandler, notificationCenter);
+                eventProcessor = BatchEventProcessor.builder()
+                    .withNotificationCenter(notificationCenter)
+                    .withEventHandler(eventHandler)
+                    .withFlushInterval(eventDispatchInterval)
+                    .build();
+
             }
 
             if (projectId == null && sdkKey == null) {
