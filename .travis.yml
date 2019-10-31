@@ -80,7 +80,7 @@ jobs:
       stage: 'Benchmarking tests'
       env: SDK=android FULLSTACK_TEST_REPO=Benchmarking BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.} SDK_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
     - stage: 'Integration as unit tests'
-      env: FSC_PATH="./tmp/fsc-repo"
+      env: FSC_PATH="./tmp/fsc-repo" TAGS="~@DYNAMIC_LANGUAGES, ~@DATAFILE_MANAGER, ~@NO_EASY_EVENT_TRACKING, ~@OASIS-3654, ~@GET_FEATURE_VAR, ~@OASIS-3582, ~@EVENT_FLUSH"
       before_script:
         - mkdir -p $FSC_PATH
         - pushd $FSC_PATH && git init && git fetch --depth=1 https://$CI_USER_TOKEN@github.com/optimizely/fullstack-sdk-compatibility-suite ${FSC_BRANCH:-master} && git checkout FETCH_HEAD && popd        
