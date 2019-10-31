@@ -1,5 +1,18 @@
 # Optimizely Android X SDK Changelog
 
+## 3.3.0
+October 31st, 2019
+
+This minor release includes event processing with batching.  It uses the Optimizely java sdk version 3.3.2.
+
+### New Features:
+- Introduced `EventProcessor` interface with `BatchEventProcessor` implementation.
+- Introduced `LogEvent` notification.
+- Added `BatchEventProcessor` as the default implementation within the `OptimizelyFactory` class.
+
+### Deprecated
+- `LogEvent` was deprecated from `TrackNotification` and `ActivateNotification` notifications in favor of explicit `LogEvent` notification.
+
 ## 3.2.1
 August 29th 2019
 
