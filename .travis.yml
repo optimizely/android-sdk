@@ -66,7 +66,7 @@ jobs:
         - SDK=android
         - BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.}
         - SDK_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
-        - TESTAPP_BRANCH=mnoman/epBatchingSupport
+        - TESTAPP_BRANCH=master
       cache: false
       language: minimal
       before_install: skip
