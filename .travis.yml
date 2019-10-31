@@ -80,7 +80,10 @@ jobs:
       stage: 'Benchmarking tests'
       env: SDK=android FULLSTACK_TEST_REPO=Benchmarking BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.} SDK_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
     - stage: 'Integration as unit tests'
+      env: FSC_PATH="./tmp/fsc-repo"
+      before_script:
+        - mkdir -p $FSC_PATH
+        - pushd $FSC_PATH && git init && git fetch --depth=1 https://$CI_USER_TOKEN@github.com/optimizely/fullstack-sdk-compatibility-suite ${FSC_BRANCH:-master} && git checkout FETCH_HEAD && popd        
       script:
-        - scripts/get-fsc-tests.sh
-        - ls ./fsc-app/src/androidTest/assets/features
-        - ./gradlew testFSC -Pcucumber
+        - ./scripts/get-fsc-tests.sh -f "./integration-test/src/androidTest/assets/features" -d "./integration-test/src/main/res/raw/"
+        - ./gradlew testIntegration -Ptags="${TAGS}"   
