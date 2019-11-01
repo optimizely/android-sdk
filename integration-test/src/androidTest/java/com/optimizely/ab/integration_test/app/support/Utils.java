@@ -124,7 +124,7 @@ class Utils {
             return subset == actual;
 
         AtomicReference<Boolean> result = new AtomicReference<>(true);
-        for(Map.Entry<String, Object> entry : subset.entrySet()) {
+        for (Map.Entry<String, Object> entry : subset.entrySet()) {
             String key = entry.getKey();
             Object sourceObj = entry.getValue();
 
@@ -149,7 +149,7 @@ class Utils {
                     result.set(false);
                     break;
                 }
-            } else if(sourceObj == null && targetObj == null) {
+            } else if (sourceObj == null && targetObj == null) {
             } else if (!sourceObj.equals(targetObj)) {
                 result.set(false);
                 break;
@@ -164,7 +164,14 @@ class Utils {
             return false;
         }
         for (int i = 0; i < subset.size(); i++) {
-            if (!containsSubset((Map) subset.get(i), (Map) actual.get(i))) {
+            boolean found = false;
+            for (int j = 0; j < actual.size(); j++) {
+                if (containsSubset((Map) subset.get(i), (Map) actual.get(j))) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
                 return false;
             }
         }
