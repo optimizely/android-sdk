@@ -26,6 +26,7 @@ import cucumber.api.android.CucumberInstrumentationCore;
 
 @CucumberOptions(
         features = "features",
+        monochrome = true,
         glue = "com.optimizely.ab.integration_test.app.support")
 public class TestRunner extends MonitoringInstrumentation {
 
