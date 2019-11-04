@@ -82,7 +82,7 @@ jobs:
     - stage: 'Integration as unit tests' 
       script:
         - export FSC_PATH="./tmp/fsc-repo"
-        - export TAGS="~@DYNAMIC_LANGUAGES, ~@DATAFILE_MANAGER, ~@NO_EASY_EVENT_TRACKING, ~@OASIS-3654, ~@GET_FEATURE_VAR, ~@OASIS-3582, ~@EVENT_FLUSH"
+        - export TAGS="~@DYNAMIC_LANGUAGES, ~@DATAFILE_MANAGER, ~@NO_EASY_EVENT_TRACKING, ~@OASIS-3654, ~@GET_FEATURE_VAR, ~@OASIS-3582, ~@EVENT_BATCHING"
         - mkdir -p $FSC_PATH
         - pushd $FSC_PATH && git init && git fetch --depth=1 https://$CI_USER_TOKEN@github.com/optimizely/fullstack-sdk-compatibility-suite ${FSC_BRANCH:-master} && git checkout FETCH_HEAD && popd
         - ./scripts/get-fsc-tests.sh -f "./integration-test/src/androidTest/assets/features" -d "./integration-test/src/main/res/raw/"
