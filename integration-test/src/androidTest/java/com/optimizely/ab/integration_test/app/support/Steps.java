@@ -20,9 +20,11 @@ import android.content.Context;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.event.internal.payload.Snapshot;
 import com.optimizely.ab.event.internal.payload.Visitor;
+import com.optimizely.ab.integration_test.app.models.responses.BaseListenerMethodResponse;
 import com.optimizely.ab.integration_test.app.models.responses.BaseResponse;
 import com.optimizely.ab.integration_test.app.optlyplugins.OptimizelyUtils;
 import com.optimizely.ab.integration_test.app.models.ApiOptions;
@@ -44,6 +46,7 @@ import cucumber.api.java.en.When;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.optimizely.ab.integration_test.app.models.Constants.DISPATCHED_EVENTS;
+import static com.optimizely.ab.integration_test.app.models.Constants.LISTENER_CALLED;
 import static com.optimizely.ab.integration_test.app.models.Constants.USER_PROFILES;
 import static com.optimizely.ab.integration_test.app.support.ResponseComparator.compareResults;
 import static com.optimizely.ab.integration_test.app.support.Utils.copyResponse;
@@ -61,6 +64,7 @@ public class Steps {
     @Before
     public void setup() {
         apiOptions = new ApiOptions(context);
+        apiOptions.setRequestId(UUID.randomUUID().toString());
         optimizelyWrapper = new OptimizelyWrapper();
         result = null;
     }
@@ -68,6 +72,7 @@ public class Steps {
     @After
     public void tearDown() {
         apiOptions = null;
+        optimizelyWrapper.getOptimizelyManager().getDatafileHandler().removeSavedDatafile(context, optimizelyWrapper.getOptimizelyManager().getDatafileConfig());
         OptlyDataHelper.projectConfig = null;
     }
 
@@ -106,6 +111,12 @@ public class Steps {
     public void requestsAreMadeInTheSameSession() {
         apiOptions.setSessionId(UUID.randomUUID().toString());
     }
+
+    @Given("^a datafile manager with the configuration$")
+    public void a_datafile_manager_with_the_configuration(String arg1) throws Throwable {
+        apiOptions.setDatafileOptions((Map) parseYAML(arg1));
+    }
+
 
     @When("^(\\S+) is called with arguments$")
     public void is_called_with_arguments(String api, String args) {
@@ -204,10 +215,13 @@ public class Steps {
     }
 
     @Then("^in the response, the \"([^\"]*)\" listener was called (\\d+) times$")
-    public void in_the_response_the_listener_was_called_times(String type, int count, String args) {
-        Assert.assertTrue(compareResults(type,
-                copyResponse(count, parseYAML(args)),
-                result));
+    public void in_the_response_the_listener_was_called_only_times(String type, int count) {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Assert.assertTrue(((BaseListenerMethodResponse) result).listenerCalled.size() == count);
     }
 
     @Then("^the User Profile Service state should be$")

@@ -17,6 +17,7 @@
 package com.optimizely.ab.integration_test.app.support;
 
 import com.optimizely.ab.android.sdk.OptimizelyManager;
+import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.event.EventProcessor;
 import com.optimizely.ab.integration_test.app.models.ApiOptions;
@@ -29,12 +30,14 @@ import com.optimizely.ab.notification.NotificationCenter;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
+import static com.optimizely.ab.integration_test.app.optlyplugins.OptimizelyUtils.getDatafileConfigManager;
 import static com.optimizely.ab.integration_test.app.optlyplugins.OptimizelyUtils.getEventProcessor;
 import static com.optimizely.ab.integration_test.app.optlyplugins.OptimizelyUtils.getNotificationCenter;
 import static com.optimizely.ab.integration_test.app.support.Utils.parseYAML;
 
 public class OptimizelyWrapper {
-    private final static String OPTIMIZELY_PROJECT_ID = "123123";
+    public final static String OPTIMIZELY_PROJECT_ID = "123123";
+    private final static long DEFAULT_DATAFILE_DOWNLOAD_INTERVAL = 100L;
     private OptimizelyManager optimizelyManager;
     private static final Map<String, OptimizelyManager> optimizelyInstanceMap = new HashMap<>();
     private static final Map<String, ProxyEventDispatcher> eventHandlerInstanceMap = new HashMap<>();
@@ -85,14 +88,20 @@ public class OptimizelyWrapper {
             }
             NotificationCenter notificationCenter = getNotificationCenter(apiOptions.getWithListener(), this);
             ProxyEventDispatcher eventHandler = new ProxyEventDispatcher(apiOptions.getDispatchedEvents());
+            DatafileConfig datafileConfig = getDatafileConfigManager(apiOptions, notificationCenter);
 
             EventProcessor eventProcessor = getEventProcessor(apiOptions, eventHandler, notificationCenter);
-
+            Integer updateInterval = null;
+            if (apiOptions.getDatafileOptions() != null) {
+                updateInterval = (Integer) apiOptions.getDatafileOptions().get("update_interval");
+            }
             optimizelyManager = OptimizelyManager.builder(OPTIMIZELY_PROJECT_ID)
                     .withEventHandler(eventHandler)
                     .withNotificationCenter(notificationCenter)
                     .withEventProcessor(eventProcessor)
                     .withUserProfileService(userProfileService)
+                    .withDatafileConfig(datafileConfig)
+                    .withDatafileDownloadInterval(updateInterval == null ? DEFAULT_DATAFILE_DOWNLOAD_INTERVAL : updateInterval.longValue())
                     .build(apiOptions.getContext());
 
             optimizelyManager.initialize(apiOptions.getContext(),

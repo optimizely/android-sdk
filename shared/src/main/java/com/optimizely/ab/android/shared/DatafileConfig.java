@@ -52,7 +52,7 @@ public class DatafileConfig {
         this.host = host;
 
         if (sdkKey != null) {
-            this.datafileUrlString = String.format((this.host + environmentUrlSuffix), sdkKey);
+            this.datafileUrlString = String.format((this.host), sdkKey);
         }
         else {
             this.datafileUrlString = String.format((this.host + projectUrlSuffix), projectId);

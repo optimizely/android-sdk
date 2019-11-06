@@ -16,6 +16,7 @@
 
 package com.optimizely.ab.integration_test.app.support;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.config.EventType;
@@ -24,8 +25,13 @@ import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.config.parser.DefaultConfigParser;
+import com.optimizely.ab.integration_test.BuildConfig;
 import com.optimizely.ab.integration_test.app.optlyplugins.userprofileservices.TestUserProfileService;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 

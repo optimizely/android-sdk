@@ -35,10 +35,12 @@ import static com.optimizely.ab.android.sdk.OptimizelyManager.loadRawResource;
 public class ApiOptions {
     private Context context;
     private String sessionId;
+    private String requestId;
     private Integer responseDelay;
     private Map<String, Object> eventOptions;
     private String userProfileService;
     private String datafile;
+    private Map<String, ?> datafileOptions;
     private List<Map<String, Object>> dispatchedEvents = new ArrayList<>();
     private ArrayList<Map<String, String>> withListener = new ArrayList<>();
     private ArrayList<Map> userProfiles = new ArrayList<>();
@@ -51,6 +53,14 @@ public class ApiOptions {
 
     public ArrayList<Map> getUserProfiles() {
         return userProfiles;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     /**
@@ -111,6 +121,14 @@ public class ApiOptions {
 
     public void setEventOptions(Map<String, Object> eventOptions) {
         this.eventOptions = eventOptions;
+    }
+
+    public void setDatafileOptions(Map<String, ?> datafileOptions) {
+        this.datafileOptions = datafileOptions;
+    }
+
+    public Map<String, ?> getDatafileOptions() {
+        return datafileOptions;
     }
 
     public String getSessionId() {

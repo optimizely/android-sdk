@@ -55,7 +55,7 @@ class Utils {
 
     private static String findAndReplaceAllMustacheRegex(String yaml) {
         if (projectConfig == null)
-            return null;
+            return yaml;
 
         Pattern expIdPattern = Pattern.compile(EXP_ID);
         Matcher expIdMatcher = expIdPattern.matcher(yaml);
