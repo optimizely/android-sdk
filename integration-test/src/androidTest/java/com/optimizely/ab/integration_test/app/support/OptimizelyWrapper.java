@@ -26,9 +26,15 @@ import com.optimizely.ab.integration_test.app.support.apis.*;
 import com.optimizely.ab.integration_test.app.models.responses.BaseResponse;
 import com.optimizely.ab.integration_test.app.optlyplugins.userprofileservices.NoOpService;
 import com.optimizely.ab.notification.NotificationCenter;
+import com.optimizely.ab.notification.UpdateConfigNotification;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static com.optimizely.ab.integration_test.app.optlyplugins.OptimizelyUtils.getDatafileConfigManager;
 import static com.optimizely.ab.integration_test.app.optlyplugins.OptimizelyUtils.getEventProcessor;
@@ -36,8 +42,12 @@ import static com.optimizely.ab.integration_test.app.optlyplugins.OptimizelyUtil
 import static com.optimizely.ab.integration_test.app.support.Utils.parseYAML;
 
 public class OptimizelyWrapper {
+    Logger logger = LoggerFactory.getLogger(OptimizelyWrapper.class);
+    private static final long DEFAULT_BLOCKING_TIMEOUT = 10000;
+    private static final long DEFAULT_AWAIT_TIMEOUT = 5000;
     public final static String OPTIMIZELY_PROJECT_ID = "123123";
-    private final static long DEFAULT_DATAFILE_DOWNLOAD_INTERVAL = 100L;
+    private final static long DEFAULT_DATAFILE_DOWNLOAD_INTERVAL = 5000L;
+
     private OptimizelyManager optimizelyManager;
     private static final Map<String, OptimizelyManager> optimizelyInstanceMap = new HashMap<>();
     private static final Map<String, ProxyEventDispatcher> eventHandlerInstanceMap = new HashMap<>();
@@ -86,10 +96,15 @@ public class OptimizelyWrapper {
             if (userProfileService == null) {
                 userProfileService = new NoOpService();
             }
+            if (apiOptions.getDatafile() == null) {
+                if (apiOptions.getDatafileName() == null)
+                    apiOptions.setDatafileName("datafile.json");
+                apiOptions.setDatafile(apiOptions.getDatafileName());
+            }
+
             NotificationCenter notificationCenter = getNotificationCenter(apiOptions.getWithListener(), this);
             ProxyEventDispatcher eventHandler = new ProxyEventDispatcher(apiOptions.getDispatchedEvents());
-            DatafileConfig datafileConfig = getDatafileConfigManager(apiOptions, notificationCenter);
-
+            DatafileConfig datafileConfig = getDatafileConfigManager(apiOptions);
             EventProcessor eventProcessor = getEventProcessor(apiOptions, eventHandler, notificationCenter);
             Integer updateInterval = null;
             if (apiOptions.getDatafileOptions() != null) {
@@ -107,6 +122,44 @@ public class OptimizelyWrapper {
             optimizelyManager.initialize(apiOptions.getContext(),
                     apiOptions.getDatafile()
             );
+            if (apiOptions.getDatafileOptions() != null) {
+
+                String mode = (String) apiOptions.getDatafileOptions().get("mode");
+                Integer timeout = (Integer) apiOptions.getDatafileOptions().get("timeout");
+                Integer revision = (Integer) apiOptions.getDatafileOptions().get("revision");
+                revision = revision == null ? 1 : revision;
+                revision += apiOptions.getDatafile() == null ? 0 : 1;
+
+                long blockingTimeout = DEFAULT_BLOCKING_TIMEOUT;
+                long awaitTimeout = DEFAULT_AWAIT_TIMEOUT;
+                CountDownLatch countDownLatch = new CountDownLatch(revision);
+                notificationCenter.addNotificationHandler(UpdateConfigNotification.class, x -> {
+                    System.out.println("Making request for id: " + apiOptions.getRequestId());
+                    countDownLatch.countDown();
+                });
+
+                switch (mode == null ? "null" : mode) {
+                    case "wait_for_on_ready":
+                        blockingTimeout = timeout == null ? blockingTimeout : timeout.longValue();
+                        try {
+                            countDownLatch.await(blockingTimeout, TimeUnit.MILLISECONDS);
+                        } catch (InterruptedException e) {
+                            logger.warn("Timeout expired waiting for update config to be triggered. CountDownLatch: {}", countDownLatch);
+                        }
+                        break;
+                    case "wait_for_config_update":
+                        awaitTimeout = timeout == null ? awaitTimeout : timeout.longValue();
+                        try {
+                            countDownLatch.await(awaitTimeout, TimeUnit.MILLISECONDS);
+                        } catch (InterruptedException e) {
+                            logger.warn("Timeout expired waiting for update config to be triggered. CountDownLatch: {}", countDownLatch);
+                        }
+                        break;
+                    default:
+                        countDownLatch.countDown();
+                }
+                OptlyDataHelper.initializeProjectConfig(optimizelyManager.getOptimizely().getProjectConfig());
+            }
             if (sessionId != null && !sessionId.isEmpty()) {
                 optimizelyInstanceMap.put(sessionId, optimizelyManager);
                 eventHandlerInstanceMap.put(sessionId, eventHandler);

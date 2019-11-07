@@ -71,6 +71,10 @@ public class OptlyDataHelper {
         return projectConfig.getEventNameMapping().get(eventKey);
     }
 
+    public static void initializeProjectConfig(ProjectConfig projectConf) {
+        projectConfig = projectConf;
+    }
+
     public static void initializeProjectConfig(String datafile) {
         try {
             projectConfig = DefaultConfigParser.getInstance().parseProjectConfig(datafile);

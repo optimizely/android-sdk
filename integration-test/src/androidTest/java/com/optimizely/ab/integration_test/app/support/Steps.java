@@ -78,6 +78,7 @@ public class Steps {
 
     @Given("^the datafile is \"(\\S+)*\"$")
     public void the_datafile_is(String datafileName) {
+        apiOptions.setDatafileName(datafileName);
         apiOptions.setDatafile(datafileName);
         OptlyDataHelper.initializeProjectConfig(apiOptions.getDatafile());
         Assert.assertNotNull(datafileName);

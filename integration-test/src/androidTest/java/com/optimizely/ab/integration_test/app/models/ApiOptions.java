@@ -40,6 +40,7 @@ public class ApiOptions {
     private Map<String, Object> eventOptions;
     private String userProfileService;
     private String datafile;
+    private String datafileName;
     private Map<String, ?> datafileOptions;
     private List<Map<String, Object>> dispatchedEvents = new ArrayList<>();
     private ArrayList<Map<String, String>> withListener = new ArrayList<>();
@@ -183,14 +184,22 @@ public class ApiOptions {
         this.userProfileService = userProfileService;
     }
 
+    public void setDatafileName(String datafileName) {
+        this.datafileName = datafileName;
+    }
+
+    public String getDatafileName() {
+        return datafileName;
+    }
+
     public void setDatafile(String datafileName) {
-        @RawRes Integer intRawResID = context.getResources().
+        try {
+            @RawRes Integer intRawResID = context.getResources().
                 getIdentifier(datafileName.split("\\.")[0],
                         "raw",
                         context.getPackageName());
-        try {
             datafile = loadRawResource(context, intRawResID);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
