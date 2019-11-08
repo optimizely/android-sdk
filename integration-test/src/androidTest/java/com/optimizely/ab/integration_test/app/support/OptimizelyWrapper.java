@@ -44,7 +44,7 @@ import static com.optimizely.ab.integration_test.app.support.Utils.parseYAML;
 public class OptimizelyWrapper {
     Logger logger = LoggerFactory.getLogger(OptimizelyWrapper.class);
     private static final long DEFAULT_BLOCKING_TIMEOUT = 10000;
-    private static final long DEFAULT_AWAIT_TIMEOUT = 5000;
+    private static final long DEFAULT_AWAIT_TIMEOUT = 190000;
     public final static String OPTIMIZELY_PROJECT_ID = "123123";
     private final static long DEFAULT_DATAFILE_DOWNLOAD_INTERVAL = 5000L;
 
@@ -116,7 +116,7 @@ public class OptimizelyWrapper {
                     .withEventProcessor(eventProcessor)
                     .withUserProfileService(userProfileService)
                     .withDatafileConfig(datafileConfig)
-                    .withDatafileDownloadInterval(updateInterval == null ? DEFAULT_DATAFILE_DOWNLOAD_INTERVAL : updateInterval.longValue())
+                    .withDatafileDownloadInterval(updateInterval == null ? DEFAULT_DATAFILE_DOWNLOAD_INTERVAL : updateInterval.longValue()/1000)
                     .build(apiOptions.getContext());
 
             optimizelyManager.initialize(apiOptions.getContext(),

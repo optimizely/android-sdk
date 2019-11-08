@@ -170,7 +170,7 @@ public class OptimizelyUtils {
         String sdkKey = (String) apiOptions.getDatafileOptions().get("sdk_key");
 
         if (apiOptions.getDatafileOptions().get("datafile_condition") != null) {
-            sdkKey += apiOptions.getDatafileOptions().get("datafile_condition");
+            sdkKey += "_"+apiOptions.getDatafileOptions().get("datafile_condition");
         }
         String datafileHost = BuildConfig.DATAFILE_HOST;
 
