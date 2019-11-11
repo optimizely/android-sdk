@@ -38,7 +38,7 @@ public class TestRunner extends MonitoringInstrumentation {
 
         String tags = BuildConfig.TEST_TAGS;
         if (!tags.isEmpty()) {
-            arguments.putString("tags", tags.replaceAll(",", "--").replaceAll("\\s",""));
+            arguments.putString("tags", tags.replaceAll("not ", "~").replaceAll(" and ", "--").replaceAll("\\s", ""));
         }
         instrumentationCore.create(arguments);
         start();
