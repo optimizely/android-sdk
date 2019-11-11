@@ -82,10 +82,9 @@ jobs:
     - stage: 'Integration as unit tests' 
       script:
         - export FSC_PATH="./tmp/fsc-repo"
-        - export TAGS="not @DATAFILE_MANAGER and not @NO_EASY_EVENT_TRACKING and not @DYNAMIC_LANGUAGES and not @OASIS-3654 and not @GET_FEATURE_VAR and not @OASIS-3582 and not @EVENT_FLUSH"
-        - npm install @optimizely/optimizely-sdk 
-        - export TAGS=$(SDK=${SDK} UPSTREAM_REPO=${UPSTREAM_REPO} FEATURE_DATAFILE_SDK_KEY=${FEATURE_DATAFILE_SDK_KEY} node scripts/get_tags.js)
         - mkdir -p $FSC_PATH
         - pushd $FSC_PATH && git init && git fetch --depth=1 https://$CI_USER_TOKEN@github.com/optimizely/fullstack-sdk-compatibility-suite ${FSC_BRANCH:-master} && git checkout FETCH_HEAD && popd
+        - npm install @optimizely/optimizely-sdk 
+        - export TAGS=$(SDK=${SDK} UPSTREAM_REPO=${UPSTREAM_REPO} FEATURE_DATAFILE_SDK_KEY=${FEATURE_DATAFILE_SDK_KEY} node $FSC_PATH/scripts/get_tags.js)
         - ./scripts/get-fsc-tests.sh -f "./integration-test/src/androidTest/assets/features" -d "./integration-test/src/main/res/raw/"
         - ./gradlew testIntegration -Ptags="${TAGS}"   
