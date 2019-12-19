@@ -65,6 +65,7 @@ jobs:
       rvm: 2.4.1
       os: linux
       install: gem install awesome_bot
+      before_script: skip
       script:
         - find . -type f -name '*.md' -exec awesome_bot {} \;
       notifications:
