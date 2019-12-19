@@ -44,8 +44,6 @@ before_script:
   - emulator -avd test -no-audio -no-window &
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
-addons:
-  srcclr: true
 script:
   - ./gradlew cleanAllModules
   - ./gradlew testAllModulesTravis
@@ -73,6 +71,8 @@ jobs:
 
     - &integrationtest
       stage: 'Integration tests'
+      addons:
+        srcclr: true
       env:
         - SDK=android
         - BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.}
