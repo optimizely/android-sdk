@@ -1,5 +1,11 @@
 # Optimizely Android X SDK Changelog
 
+## 3.1.2
+January 7th, 2020
+
+### Bug Fixes:
+* Add keep for log4j to proguard rules.
+
 ## 3.1.1
 July 23rd, 2019
 
