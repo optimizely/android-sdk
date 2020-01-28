@@ -40,7 +40,7 @@
 
 # slf4j
 #-dontwarn org.slf4j.**
--keep class org.slf4j.** {*;}
+#-keep class org.slf4j.** {*;}
 
 # Android Logger
 #-keep class com.noveogroup.android.log.** { *; }

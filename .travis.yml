@@ -44,8 +44,6 @@ before_script:
   - emulator -avd test -no-audio -no-window &
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
-addons:
-  srcclr: true
 script:
   - ./gradlew cleanAllModules
   - ./gradlew testAllModulesTravis
@@ -53,14 +51,28 @@ script:
 
 # Integration tests need to run first to reset the PR build status to pending
 stages:
+  - 'Lint markdown files'
   - 'Integration tests'
   - 'Benchmarking tests'
   - 'Test'
 
 jobs:
   include:
+    - stage: 'Lint markdown files'
+      language: ruby
+      rvm: 2.4.1
+      os: linux
+      install: gem install awesome_bot
+      before_script: skip
+      script:
+        - find . -type f -name '*.md' -exec awesome_bot {} \;
+      notifications:
+        email: false
+
     - &integrationtest
       stage: 'Integration tests'
+      addons:
+        srcclr: true
       env:
         - SDK=android
         - BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.}

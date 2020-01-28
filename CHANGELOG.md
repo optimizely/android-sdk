@@ -37,6 +37,11 @@ This minor release updates the SDK to use the Optimizely Java SDK 3.2.1 which in
 ### Deprecated
 * DatafileHandler interface has been deprecated. In the future we will start using the ProjectConfigManager from the Java SDK mentioned above.
 
+## 3.1.2
+January 7th, 2020
+
+### Bug Fixes:
+* Add keep for log4j to proguard rules.
 
 ## 3.1.1
 July 23rd, 2019
