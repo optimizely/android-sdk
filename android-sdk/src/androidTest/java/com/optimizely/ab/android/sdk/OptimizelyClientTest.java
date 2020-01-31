@@ -36,6 +36,7 @@ import com.optimizely.ab.notification.NotificationHandler;
 import com.optimizely.ab.notification.NotificationManager;
 import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.TrackNotificationListener;
+import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -1762,6 +1763,27 @@ public class OptimizelyClientTest {
                 GENERIC_USER_ID
         );
     }
+
+    @Test
+    public void testGetOptimizelyConfig() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
+                logger);
+        OptimizelyConfig optimizelyConfig = optimizelyClient.getOptimizelyConfig();
+        assertNotNull(optimizelyConfig.getExperimentsMap());
+        assertNotNull(optimizelyConfig.getFeaturesMap());
+        assertNotNull(optimizelyConfig.getRevision());
+    }
+
+    @Test
+    public void testGetOptimizelyConfigReturnNullWhenConfigIsNull() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null,
+                logger);
+        OptimizelyConfig optimizelyConfig = optimizelyClient.getOptimizelyConfig();
+        assertNull(optimizelyConfig);
+    }
+
 
     @Test
     public void testAddDecisionNotificationHandler() {

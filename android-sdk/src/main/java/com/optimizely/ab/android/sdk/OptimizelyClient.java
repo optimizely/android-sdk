@@ -29,6 +29,7 @@ import com.optimizely.ab.notification.DecisionNotification;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationHandler;
 import com.optimizely.ab.notification.TrackNotification;
+import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 
 import org.slf4j.Logger;
 
@@ -666,6 +667,20 @@ public class OptimizelyClient {
         } else {
             logger.warn("Optimizely is not initialized, could not get feature {} variable {} string for user {} with attributes",
                     featureKey, variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get {@link OptimizelyConfig} containing experiments and features map
+     *
+     * @return {@link OptimizelyConfig}
+     */
+    public OptimizelyConfig getOptimizelyConfig() {
+        if (isValid()) {
+            return optimizely.getOptimizelyConfig();
+        } else {
+            logger.error("Optimizely instance is not valid, failing getOptimizelyConfig call.");
             return null;
         }
     }
