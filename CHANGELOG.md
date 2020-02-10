@@ -218,7 +218,7 @@ The primary difference between the new Feature Variable APIs and the older, Vari
 To learn more about Feature Management, read our [knowledge base article introducing the feature](https://help.optimizely.com/Set_Up_Optimizely/Develop_a_product_or_feature_with_Feature_Management).
 
 ### New Features
-* Introduces the `isFeatureEnabled` API, a featue flag used to determine whether to show a feature to a user. The `isFeatureEnabled` should be used in place of the `activate` API to activate experiments running on features. Specifically, calling this API causes the SDK to evaluate all [Feature Tests](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#activate-feature-tests) and [Rollouts](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#activate-feature-rollouts) associated with the provided feature key.
+* Introduces the `isFeatureEnabled` API, a feature flag used to determine whether to show a feature to a user. The `isFeatureEnabled` should be used in place of the `activate` API to activate experiments running on features. Specifically, calling this API causes the SDK to evaluate all [Feature Tests](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#activate-feature-tests) and [Rollouts](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#activate-feature-rollouts) associated with the provided feature key.
 ```
 Boolean enabled = optimizelyClient.isFeatureEnabled("my_feature_key", "user_1", userAttributes);
 ```
@@ -252,7 +252,7 @@ optimizelyManager.initialize(this, new OptimizelyStartListener() {
 ### Deprecations
 * Version 2.1.0 deprecates the Variable APIs: `getVariableBoolean`, `getVariableFloat`, `getVariableInteger`, and `getVariableString` 
 
-* Replace use of the Variable APIs with Feature Mangement's Feature Variable APIs, described above
+* Replace use of the Variable APIs with Feature Management's Feature Variable APIs, described above
 
 * We will continue to support the Variable APIs until the 3.x release, but we encourage you to upgrade as soon as possible
 
@@ -421,7 +421,7 @@ optimizelyClient.track("event_key", "user_id", userAttributes, eventTags);
   - `getVariableFloat` now becomes `getFeatureVariableDouble`
 
 ## 1.6.0
-Febuary 3, 2018
+February 3, 2018
 
 - Release 1.6.0
 
@@ -456,7 +456,7 @@ November 1, 2017
 - Call start listener if there is an exception.
 - Example of overriding Gson and android-logger in test-app gradle file.
 - Fix crash on API 17 (missing annotation).
-- Support for Android O (please see developer docs for details). Basically, Android O and above will use JobScheduler and pre Android O will continue to use AlarmService.  This is done through a class called the JobWorkService which allows you to keep your Service and IntentService intact.  Developers can piggyback on this method and keep thier IntentServices and use the JobWorkService.
+- Support for Android O (please see developer docs for details). Basically, Android O and above will use JobScheduler and pre Android O will continue to use AlarmService.  This is done through a class called the JobWorkService which allows you to keep your Service and IntentService intact.  Developers can piggyback on this method and keep their IntentServices and use the JobWorkService.
 - Proguard rules were broken and were causing event payload to be stripped to single character keys.
 
 *Breaking Changes*
@@ -485,7 +485,7 @@ October 30, 2017
 - Call start listener if there is an exception.
 - Example of overriding Gson and android-logger in test-app gradle file.
 - Fix crash on API 17 (missing annotation).
-- Support for Android O (please see developer docs for details). Basically, Android O and above will use JobScheduler and pre Android O will continue to use AlarmService.  This is done through a class called the JobWorkService which allows you to keep your Service and IntentService intact.  Developers can piggyback on this method and keep thier IntentServices and use the JobWorkService.
+- Support for Android O (please see developer docs for details). Basically, Android O and above will use JobScheduler and pre Android O will continue to use AlarmService.  This is done through a class called the JobWorkService which allows you to keep your Service and IntentService intact.  Developers can piggyback on this method and keep their IntentServices and use the JobWorkService.
 
 *Breaking Changes*
 
@@ -703,10 +703,10 @@ October 27, 2016
   - If a service is scheduled when rescheduling the old service will be unscheduled.
 - Now multiple `OptimizelyManager`instances can be created for multiple Optimizely X projects.
   - A manager builds `AndroidOptimizely` for the project id it was created with and only that that project id.
-  - Could run one project in your activites and one in your services.
+  - Could run one project in your activities and one in your services.
 - Now shows user experiment record logs.
 - Turns on more core logs.
 
 *New Features*
-- *Exponential Backoff.* Datafile download event dispatching now exmploy exponential backoff.
-- *Preemptive Wifi Event Flushing.* If event flushing is scheduled and wifi becomes available Optmizely will preemptively attempt to flush events before the next interval occurs.  If flushing occurs the flushing will be rescheduled.
+- *Exponential Backoff.* Datafile download event dispatching now employs exponential backoff.
+- *Preemptive Wifi Event Flushing.* If event flushing is scheduled and wifi becomes available Optimizely will preemptively attempt to flush events before the next interval occurs.  If flushing occurs the flushing will be rescheduled.
