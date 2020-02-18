@@ -185,6 +185,23 @@ public class OptimizelyManager {
      * @return an {@link OptimizelyClient} instance
      */
     public OptimizelyClient initialize(@NonNull Context context, @Nullable String datafile, boolean downloadToCache) {
+        return initialize(context, datafile, downloadToCache, false);
+    }
+
+    /**
+     * Initialize Optimizely Synchronously using the datafile passed in.
+     * It should be noted that even though it initiates a download of the datafile to cache, this method does not use that cached datafile.
+     * You can always test if a datafile exists in cache with {@link #isDatafileCached(Context)}.
+     * <p>
+     * Instantiates and returns an {@link OptimizelyClient} instance. It will also cache the instance
+     * for future lookups via getClient
+     *
+     * @param context  any {@link Context} instance
+     * @param datafile the datafile used to initialize the OptimizelyClient.
+     * @param downloadToCache to check if datafile should get updated in cache after initialization.
+     * @return an {@link OptimizelyClient} instance
+     */
+    public OptimizelyClient initialize(@NonNull Context context, @Nullable String datafile, boolean downloadToCache, boolean updateConfigOnNewDatafile) {
         if (!isAndroidVersionSupported()) {
             return optimizelyClient;
         }
@@ -207,7 +224,18 @@ public class OptimizelyManager {
         } catch (Error e) {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
-        if(downloadToCache){
+
+        if (downloadToCache) {
+            if (updateConfigOnNewDatafile) {
+                if (datafileHandler instanceof DefaultDatafileHandler) {
+                    DefaultDatafileHandler handler = (DefaultDatafileHandler) datafileHandler;
+                    handler.enableUpdateConfigOnNewDatafile(context, datafileConfig, null);
+                } else {
+                    // DatafileHandler is deprecated
+                    logger.warn("Dynamic update on cache download is not supported");
+                }
+            }
+
             datafileHandler.downloadDatafile(context, datafileConfig, null);
         }
 

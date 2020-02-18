@@ -48,6 +48,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
     private ProjectConfig currentProjectConfig;
     private DatafileServiceConnection datafileServiceConnection;
     private FileObserver fileObserver;
+    private DatafileLoadedListener updateDatafileListener;
 
     /**
      * Synchronous call to download the datafile.
@@ -127,6 +128,19 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
         serviceScheduler.schedule(intent, updateInterval * 1000);
 
         storeInterval(context, updateInterval * 1000);
+
+        enableUpdateConfigOnNewDatafile(context, datafileConfig, listener);
+    }
+
+    public void enableUpdateConfigOnNewDatafile(Context context, DatafileConfig datafileConfig, DatafileLoadedListener listener) {
+        if (listener != null) {
+            updateDatafileListener = listener;
+        }
+
+        // do not restart observer if already set
+        if (fileObserver != null) {
+            return;
+        }
 
         DatafileCache datafileCache = new DatafileCache(
                 datafileConfig.getKey(),
