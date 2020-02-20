@@ -227,12 +227,7 @@ public class OptimizelyManager {
         }
 
         if (downloadToCache) {
-            if (datafileHandler instanceof DefaultDatafileHandler) {
-                ((DefaultDatafileHandler) datafileHandler).downloadDatafileToCache(context, datafileConfig, updateConfigOnNewDatafile);
-            } else {
-                // config-update on new datafile not supported in DatafileHandler (deprecated)
-                datafileHandler.downloadDatafile(context, datafileConfig, null);
-            }
+            datafileHandler.downloadDatafileToCache(context, datafileConfig, updateConfigOnNewDatafile);
         }
 
         return optimizelyClient;
