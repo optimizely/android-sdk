@@ -199,6 +199,7 @@ public class OptimizelyManager {
      * @param context  any {@link Context} instance
      * @param datafile the datafile used to initialize the OptimizelyClient.
      * @param downloadToCache to check if datafile should get updated in cache after initialization.
+     * @param updateConfigOnNewDatafile When a new datafile is fetched from the server in the background thread, the SDK will be updated with the new datafile immediately if this value is set to true. When it's set to false (default), the new datafile is cached and will be used when the SDK is started again.
      * @return an {@link OptimizelyClient} instance
      */
     public OptimizelyClient initialize(@NonNull Context context, @Nullable String datafile, boolean downloadToCache, boolean updateConfigOnNewDatafile) {
@@ -226,19 +227,49 @@ public class OptimizelyManager {
         }
 
         if (downloadToCache) {
-            if (updateConfigOnNewDatafile) {
-                if (datafileHandler instanceof DefaultDatafileHandler) {
-                    DefaultDatafileHandler handler = (DefaultDatafileHandler) datafileHandler;
-                    handler.enableUpdateConfigOnNewDatafile(context, datafileConfig, null);
-                } else {
-                    // DatafileHandler is deprecated
-                    logger.warn("Dynamic update on cache download is not supported");
-                }
+            if (datafileHandler instanceof DefaultDatafileHandler) {
+                ((DefaultDatafileHandler) datafileHandler).downloadDatafileToCache(context, datafileConfig, updateConfigOnNewDatafile);
+            } else {
+                // config-update on new datafile not supported in DatafileHandler (deprecated)
+                datafileHandler.downloadDatafile(context, datafileConfig, null);
             }
-
-            datafileHandler.downloadDatafile(context, datafileConfig, null);
         }
 
+        return optimizelyClient;
+    }
+
+    /**
+     * Initialize Optimizely Synchronously by loading the resource, use it to initialize Optimizely,
+     * and downloading the latest datafile from the CDN in the background to cache.
+     * <p>
+     * Instantiates and returns an {@link OptimizelyClient}  instance using the datafile cached on disk
+     * if not available then it will expect that raw data file should exist on given id.
+     * and initialize using raw file. Will also cache the instance
+     * for future lookups via getClient. The datafile should be stored in res/raw.
+     *
+     * @param context     any {@link Context} instance
+     * @param datafileRes the R id that the data file is located under.
+     * @param downloadToCache to check if datafile should get updated in cache after initialization.
+     * @param updateConfigOnNewDatafile When a new datafile is fetched from the server in the background thread, the SDK will be updated with the new datafile immediately if this value is set to true. When it's set to false (default), the new datafile is cached and will be used when the SDK is started again.
+     * @return an {@link OptimizelyClient} instance
+     */
+    @NonNull
+    public OptimizelyClient initialize(@NonNull Context context, @RawRes Integer datafileRes, boolean downloadToCache, boolean updateConfigOnNewDatafile) {
+        try {
+
+            String datafile;
+            Boolean datafileInCache = isDatafileCached(context);
+            datafile = getDatafile(context, datafileRes);
+
+            optimizelyClient = initialize(context, datafile, downloadToCache, updateConfigOnNewDatafile);
+            if (datafileInCache) {
+                cleanupUserProfileCache(getUserProfileService());
+            }
+        }catch (NullPointerException e){
+            logger.error("Unable to find compiled data file in raw resource",e);
+        }
+
+        // return dummy client if not able to initialize a valid one
         return optimizelyClient;
     }
 
@@ -257,22 +288,7 @@ public class OptimizelyManager {
      */
     @NonNull
     public OptimizelyClient initialize(@NonNull Context context, @RawRes Integer datafileRes) {
-        try {
-
-            String datafile;
-            Boolean datafileInCache = isDatafileCached(context);
-            datafile = getDatafile(context, datafileRes);
-
-            optimizelyClient = initialize(context, datafile, true);
-            if (datafileInCache) {
-                cleanupUserProfileCache(getUserProfileService());
-            }
-        }catch (NullPointerException e){
-            logger.error("Unable to find compiled data file in raw resource",e);
-        }
-
-        // return dummy client if not able to initialize a valid one
-        return optimizelyClient;
+        return initialize(context, datafileRes, true, false);
     }
 
     private void cleanupUserProfileCache(UserProfileService userProfileService) {

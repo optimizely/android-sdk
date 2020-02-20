@@ -102,6 +102,14 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
         }
     }
 
+    public void downloadDatafileToCache(final Context context, DatafileConfig datafileConfig, boolean updateConfigOnNewDatafile) {
+        if (updateConfigOnNewDatafile) {
+            enableUpdateConfigOnNewDatafile(context, datafileConfig, null);
+        }
+
+        downloadDatafile(context, datafileConfig, null);
+    }
+
     /**
      * Start background checks if the the project datafile jas been updated.  This starts an alarm service that checks to see if there is a
      * new datafile to download at interval provided.  If there is a update, the new datafile is cached.
@@ -152,6 +160,8 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
         fileObserver = new FileObserver(filesFolder.getPath()) {
             @Override
             public void onEvent(int event, @Nullable String path) {
+
+                logger.debug("EVENT: " + String.valueOf(event) + path + datafileCache.getFileName());
                 if (event == MODIFY && path.equals(datafileCache.getFileName())) {
                     JSONObject newConfig = datafileCache.load();
                     if (newConfig == null) {
