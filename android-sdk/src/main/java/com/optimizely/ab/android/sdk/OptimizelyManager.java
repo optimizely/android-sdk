@@ -677,6 +677,7 @@ public class OptimizelyManager {
          * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
          * cached datafile.  If you set this to -1, you disable background updates.  If you don't set
          * a download interval (or set to less than 0), then no background updates will be scheduled or occur.
+         * The minimum interval is 900 secs (15 minutes, enforced by the Android JobScheduler API)
          *
          * @param interval the interval in seconds
          * @return this {@link Builder} instance
@@ -789,10 +790,10 @@ public class OptimizelyManager {
             }
 
             if (datafileDownloadInterval > 0) {
-                // AlarmManager doesn't allow intervals less than 60 seconds
-                if (datafileDownloadInterval < 60) {
-                    datafileDownloadInterval = 60;
-                    logger.warn("Minimum datafile polling interval is 60 seconds. Defaulting to 60 seconds.");
+                // JobScheduler API doesn't allow intervals less than 15 minutes
+                if (datafileDownloadInterval < 900) {
+                    datafileDownloadInterval = 900;
+                    logger.warn("Minimum datafile polling interval is 15 minutes. Defaulting to 15 minutes.");
                 }
             }
 
