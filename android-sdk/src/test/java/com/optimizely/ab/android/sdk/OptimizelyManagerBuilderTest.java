@@ -61,7 +61,7 @@ public class OptimizelyManagerBuilderTest {
                 .withDatafileDownloadInterval(5L)
                 .build(appContext);
 
-        assertEquals(60L, manager.getDatafileDownloadInterval().longValue());
+        assertEquals(900L, manager.getDatafileDownloadInterval().longValue());
     }
 
     /**
@@ -73,10 +73,10 @@ public class OptimizelyManagerBuilderTest {
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withDatafileDownloadInterval(61L)
+                .withDatafileDownloadInterval(901L)
                 .build(appContext);
 
-        assertEquals(61L, manager.getDatafileDownloadInterval().longValue());
+        assertEquals(901L, manager.getDatafileDownloadInterval().longValue());
     }
 
     @Test
@@ -85,11 +85,11 @@ public class OptimizelyManagerBuilderTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
         EventHandler eventHandler = mock(EventHandler.class);
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
-                .withDatafileDownloadInterval(61L)
+                .withDatafileDownloadInterval(901L)
                 .withEventHandler(eventHandler)
                 .build(appContext);
 
-        assertEquals(61L, manager.getDatafileDownloadInterval().longValue());
+        assertEquals(901L, manager.getDatafileDownloadInterval().longValue());
         assertEquals(manager.getEventHandler(appContext), eventHandler);
 
 
