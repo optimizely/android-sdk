@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -346,14 +347,16 @@ public class OptimizelyManager {
             @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
             @Override
             public void onDatafileLoaded(@Nullable String datafile) {
-                // App is being used, i.e. in the foreground
-                if (datafile != null && !datafile.isEmpty()) {
-                    injectOptimizely(context, userProfileService, datafile);
-                } else {
-                    //if datafile is null than it should be able to take from cache and if not present
-                    //in Cache than should be able to get from raw data file
-                    injectOptimizely(context, userProfileService, getDatafile(context,datafileRes));
-                }
+                AsyncTask.execute(() -> {
+                    // App is being used, i.e. in the foreground
+                    if (datafile != null && !datafile.isEmpty()) {
+                        injectOptimizely(context, userProfileService, datafile);
+                    } else {
+                        //if datafile is null than it should be able to take from cache and if not present
+                        //in Cache than should be able to get from raw data file
+                        injectOptimizely(context, userProfileService, getDatafile(context,datafileRes));
+                    }
+                });
             }
         };
     }
