@@ -26,6 +26,7 @@ import android.support.annotation.RequiresApi;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.OptlyStorage;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.util.concurrent.Executor;
@@ -128,6 +129,12 @@ public class DatafileLoader {
                 }
                 if (!datafileCache.save(dataFile)) {
                     logger.warn("Unable to save new datafile");
+                }
+            }
+            else {
+                JSONObject jsonFile = datafileCache.load();
+                if (jsonFile != null) {
+                    dataFile = jsonFile.toString();
                 }
             }
 

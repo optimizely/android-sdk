@@ -286,12 +286,12 @@ public class OptimizelyManager {
      */
     public String getDatafile(Context context,@RawRes Integer datafileRes){
         try {
-            if (isDatafileCached(context)) {
-                String datafile = datafileHandler.loadSavedDatafile(context, datafileConfig);
-                if (datafile != null) {
-                    return datafile;
-                }
-            }
+//            if (isDatafileCached(context)) {
+//                String datafile = datafileHandler.loadSavedDatafile(context, datafileConfig);
+//                if (datafile != null) {
+//                    return datafile;
+//                }
+//            }
 
             if (datafileRes != null) {
                 return loadRawResource(context, datafileRes);
@@ -347,16 +347,11 @@ public class OptimizelyManager {
             @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
             @Override
             public void onDatafileLoaded(@Nullable String datafile) {
-                AsyncTask.execute(() -> {
-                    // App is being used, i.e. in the foreground
-                    if (datafile != null && !datafile.isEmpty()) {
-                        injectOptimizely(context, userProfileService, datafile);
-                    } else {
-                        //if datafile is null than it should be able to take from cache and if not present
-                        //in Cache than should be able to get from raw data file
-                        injectOptimizely(context, userProfileService, getDatafile(context,datafileRes));
-                    }
-                });
+                if (datafile != null && !datafile.isEmpty()) {
+                    injectOptimizely(context, userProfileService, datafile);
+                } else {
+                    injectOptimizely(context, userProfileService, getDatafile(context,datafileRes));
+                }
             }
         };
     }
