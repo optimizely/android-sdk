@@ -726,10 +726,24 @@ public class OptimizelyManager {
          * If you set this to -1, you disable background updates.  If you don't set
          * a event dispatch interval, then no background updates will be scheduled or occur.
          *
+         * @param interval the interval in milliseconds
+         * @return this {@link Builder} instance
+         */
+        @Deprecated
+        public Builder withEventDispatchInterval(long interval) {
+            this.eventDispatchInterval = interval;
+            return this;
+        }
+
+        /**
+         * Sets the interval which {@link EventIntentService} will flush events.
+         * If you set this to -1, you disable background updates.  If you don't set
+         * a event dispatch interval, then no background updates will be scheduled or occur.
+         *
          * @param interval the interval in seconds
          * @return this {@link Builder} instance
          */
-        public Builder withEventDispatchInterval(long interval) {
+        public Builder withEventFlushInterval(long interval) {
             this.eventDispatchInterval = interval;
             return this;
         }

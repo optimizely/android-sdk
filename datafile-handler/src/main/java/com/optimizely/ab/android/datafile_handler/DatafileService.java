@@ -29,6 +29,7 @@ import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.DatafileConfig;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,20 @@ public class DatafileService extends Service {
 
                 String datafileUrl = datafileConfig.getUrl();
                 DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
+
+
+                ////
+                JSONObject newConfig = datafileCache.load();
+                if (newConfig == null) {
+                    logger.error("Cached datafile is empty or corrupt");
+                }
+                String config = newConfig.toString();
+                logger.info("OPTIMIZELY: read datafile in background: " + config);
+
+
+
+
+
                 datafileLoader.getDatafile(datafileUrl, null);
             } else {
                 logger.warn("Data file service received an intent with no project id extra");
