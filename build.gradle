@@ -61,7 +61,7 @@ ext {
     mockito_ver = "1.10.19"
     powermock_ver = "1.6.4"
     support_test_runner_ver = "0.5"
-    dexmaker_ver = "1.2"
+    dexmaker_ver = "1.4"
     espresso_ver = "2.2.2"
     gson_ver = "2.8.5"
     group_id = "com.optimizely.ab"
