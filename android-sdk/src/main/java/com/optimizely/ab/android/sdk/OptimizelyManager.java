@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -648,8 +649,10 @@ public class OptimizelyManager {
 
         // -1 will cause the background download to not be initiated.
         private long datafileDownloadInterval = -1L;
-        // -1 will cause the background download to not be initiated.
-        private long eventDispatchInterval = -1L;
+        // -1 will disable event batching.
+        private long eventFlushInterval = -1L;
+        // -l will disable periodic retries on event dispatch failures (but queued and retried on next event dispatch request)
+        private long eventDispatchRetryInterval = -1L;
         @Nullable private DatafileHandler datafileHandler = null;
         @Nullable private Logger logger = null;
         @Nullable private EventHandler eventHandler = null;
@@ -722,15 +725,40 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which {@link EventIntentService} will flush events.
-         * If you set this to -1, you disable background updates.  If you don't set
-         * a event dispatch interval, then no background updates will be scheduled or occur.
+         * Sets the interval which queued events will be flushed periodically.
+         * If you don't set this value or set this to -1, the default interval will be used (30 seconds).
          *
          * @param interval the interval in seconds
          * @return this {@link Builder} instance
          */
+        public Builder withEventFlushInterval(long interval) {
+            this.eventFlushInterval = interval * 1000;
+            return this;
+        }
+
+        /**
+         * Sets the interval which {@link EventIntentService} will retry event dispatch periodically.
+         * If you don't set this value or set this to -1, periodic retries on event dispatch failures will be disabled (but still queued and retried on next event dispatch request)
+         *
+         * @param interval the interval in seconds
+         * @return this {@link Builder} instance
+         */
+        public Builder withEventDispatchRetryInterval(long interval) {
+            this.eventDispatchRetryInterval = interval * 1000;
+            return this;
+        }
+
+        /**
+         * Sets the interval which {@link EventIntentService} will retry event dispatch periodically.
+         * If you don't set this value or set this to -1, periodic retries on event dispatch failures will be disabled (but still queued and retried on next event dispatch request)
+         *
+         * @param interval the interval in milliseconds
+         * @return this {@link Builder} instance
+         */
+        @Deprecated
         public Builder withEventDispatchInterval(long interval) {
-            this.eventDispatchInterval = interval;
+            this.eventFlushInterval = interval;
+            this.eventDispatchRetryInterval = interval;
             return this;
         }
 
@@ -796,6 +824,19 @@ public class OptimizelyManager {
                 }
             }
 
+            if (eventFlushInterval > 1_000_000) {
+                logger.warn("Event flush interval {} milliseconds is too big", eventFlushInterval);
+            }
+            if (eventFlushInterval > 0 && eventFlushInterval < 1000) {
+                logger.warn("Event flush interval {} milliseconds is too small", eventFlushInterval);
+            }
+            if (eventDispatchRetryInterval > 1_000_000) {
+                logger.warn("Event dispatch retry interval {} milliseconds is too big", eventDispatchRetryInterval);
+            }
+            if (eventDispatchRetryInterval > 0 && eventDispatchRetryInterval < 1000) {
+                logger.warn("Event dispatch retry interval {} milliseconds is too small", eventDispatchRetryInterval);
+            }
+
             if (datafileConfig == null) {
                 datafileConfig = new DatafileConfig(projectId, sdkKey);
             }
@@ -821,7 +862,7 @@ public class OptimizelyManager {
                 eventProcessor = BatchEventProcessor.builder()
                     .withNotificationCenter(notificationCenter)
                     .withEventHandler(eventHandler)
-                    .withFlushInterval(eventDispatchInterval)
+                    .withFlushInterval(eventFlushInterval)
                     .build();
 
             }
@@ -837,7 +878,7 @@ public class OptimizelyManager {
                     datafileDownloadInterval,
                     datafileHandler,
                     errorHandler,
-                    eventDispatchInterval,
+                    eventDispatchRetryInterval,
                     eventHandler,
                     eventProcessor,
                     userProfileService,

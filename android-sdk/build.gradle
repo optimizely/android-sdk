@@ -71,6 +71,7 @@ dependencies {
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
+    testImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
     androidTestImplementation "com.android.support.test:runner:$support_test_runner_ver"

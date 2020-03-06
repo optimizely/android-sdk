@@ -21,6 +21,7 @@ import android.content.Context;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.error.ErrorHandler;
+import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 
 import org.junit.Test;
@@ -29,8 +30,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class OptimizelyManagerBuilderTest {
