@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 
 
@@ -677,7 +678,7 @@ public class OptimizelyManager {
          * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
          * cached datafile.  If you set this to -1, you disable background updates.  If you don't set
          * a download interval (or set to less than 0), then no background updates will be scheduled or occur.
-         * The minimum interval is 900 secs (15 minutes, enforced by the Android JobScheduler API)
+         * The minimum interval is 900 secs (15 minutes) (enforced by the Android JobScheduler API. See {@link android.app.job.JobInfo})
          *
          * @param interval the interval in seconds
          * @return this {@link Builder} instance

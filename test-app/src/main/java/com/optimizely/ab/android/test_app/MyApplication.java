@@ -27,6 +27,7 @@ import com.optimizely.ab.android.sdk.OptimizelyManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class MyApplication extends Application {
 
@@ -74,7 +75,7 @@ public class MyApplication extends Application {
 
          OptimizelyManager.Builder builder = OptimizelyManager.builder();
          optimizelyManager =  builder.withEventDispatchInterval(60L * 1000L)
-            .withDatafileDownloadInterval(15 * 60)
+            .withDatafileDownloadInterval(TimeUnit.MINUTES.toSeconds(15))
             .withSDKKey("FCnSegiEkRry9rhVMroit4")
             .build(getApplicationContext());
     }
