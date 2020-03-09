@@ -6,3 +6,5 @@
 /build
 /captures
 values.gradle
+jacoco.exec
+
