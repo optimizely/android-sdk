@@ -292,20 +292,13 @@ public class OptimizelyManager {
                     return datafile;
                 }
             }
-
-            if (datafileRes != null) {
-                return loadRawResource(context, datafileRes);
-            }else{
-                logger.error("Invalid datafile resource ID.");
-                return null;
-            }
-        } catch (IOException e) {
-            logger.error("Unable to load compiled data file", e);
+            return safeLoadResource(context, datafileRes);
         } catch (NullPointerException e){
             logger.error("Unable to find compiled data file in raw resource",e);
         }
         return null;
     }
+
 
     /**
      * Starts Optimizely asynchronously
@@ -342,18 +335,32 @@ public class OptimizelyManager {
         datafileHandler.downloadDatafile(context, datafileConfig, getDatafileLoadedListener(context,datafileRes));
     }
 
+    private String safeLoadResource(Context context, @RawRes final Integer datafileRes) {
+        String resource = null;
+        try {
+            if (datafileRes != null) {
+                resource = loadRawResource(context, datafileRes);
+            }
+            else {
+                logger.error("Invalid datafile resource ID.");
+            }
+        }
+        catch (IOException exception) {
+            logger.error("Error parsing resource", exception);
+        }
+        return resource;
+    }
+
     DatafileLoadedListener getDatafileLoadedListener(final Context context, @RawRes final Integer datafileRes) {
         return new DatafileLoadedListener() {
             @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
             @Override
             public void onDatafileLoaded(@Nullable String datafile) {
-                // App is being used, i.e. in the foreground
                 if (datafile != null && !datafile.isEmpty()) {
                     injectOptimizely(context, userProfileService, datafile);
                 } else {
-                    //if datafile is null than it should be able to take from cache and if not present
-                    //in Cache than should be able to get from raw data file
-                    injectOptimizely(context, userProfileService, getDatafile(context,datafileRes));
+
+                    injectOptimizely(context, userProfileService, safeLoadResource(context, datafileRes));
                 }
             }
         };
