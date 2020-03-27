@@ -40,8 +40,10 @@ import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.DatafileProjectConfig;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
+import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -60,9 +62,12 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,6 +83,7 @@ public class OptimizelyManagerTest {
     private Logger logger;
     private OptimizelyManager optimizelyManager;
     private DefaultDatafileHandler defaultDatafileHandler;
+    private String defaultDatafile;
 
     private String minDatafile = "{\n" +
             "experiments: [ ],\n" +
@@ -106,8 +112,8 @@ public class OptimizelyManagerTest {
                 .withEventHandler(eventHandler)
                 .withEventProcessor(eventProcessor)
                 .build(InstrumentationRegistry.getTargetContext());
-        String datafile = optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
-        ProjectConfig config = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+        defaultDatafile = optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+        ProjectConfig config = new DatafileProjectConfig.Builder().withDatafile(defaultDatafile).build();
 
         when(defaultDatafileHandler.getConfig()).thenReturn(config);
     }
@@ -213,7 +219,8 @@ public class OptimizelyManagerTest {
         assertNotNull(datafile);
         assertNotNull(optimizelyManager.getDatafileHandler());
     }
-    @Test
+
+        @Test
     public void initializeAsyncWithEnvironment() {
         Logger logger = mock(Logger.class);
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
@@ -496,4 +503,225 @@ public class OptimizelyManagerTest {
         verify(logger).info("Sending Optimizely instance to listener");
         verify(startListener).onStart(any(OptimizelyClient.class));
     }
+
+    // Init Sync Flows
+
+    @Test
+    public void initializeSyncWithUpdateOnNewDatafileDisabled() {
+        boolean downloadToCache = true;
+        boolean updateConfigOnNewDatafiel = false;
+        int pollingInterval = 0;   // disable polling
+
+        DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
+        Logger logger = mock(Logger.class);
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                null, null, null, null);
+
+        doAnswer(
+                new Answer<Object>() {
+                    public Object answer(InvocationOnMock invocation) {
+                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
+                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
+                        return null;
+                    }
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+
+        OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafiel);
+
+        try {
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            //
+        }
+
+        assertEquals(client.getOptimizelyConfig().getRevision(), "7");
+    }
+
+    @Test
+    public void initializeSyncWithUpdateOnNewDatafileEnabled() {
+        boolean downloadToCache = true;
+        boolean updateConfigOnNewDatafiel = true;
+        int pollingInterval = 0;   // disable polling
+
+        DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
+        Logger logger = mock(Logger.class);
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                null, null, null, null);
+
+        doAnswer(
+                new Answer<Object>() {
+                    public Object answer(InvocationOnMock invocation) {
+                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
+                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
+                        return null;
+                    }
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+
+        OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafiel);
+
+        try {
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            //
+        }
+
+        assertEquals(client.getOptimizelyConfig().getRevision(), "241");
+    }
+
+    @Test
+    public void initializeSyncWithDownloadToCacheDisabled() {
+        boolean downloadToCache = false;
+        boolean updateConfigOnNewDatafiel = true;
+        int pollingInterval = 0;   // disable polling
+
+        DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
+        Logger logger = mock(Logger.class);
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                null, null, null, null);
+
+        doAnswer(
+                new Answer<Object>() {
+                    public Object answer(InvocationOnMock invocation) {
+                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
+                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
+                        return null;
+                    }
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+
+        OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafiel);
+
+        try {
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            //
+        }
+
+        assertEquals(client.getOptimizelyConfig().getRevision(), "7");
+    }
+
+    @Test
+    public void initializeSyncWithUpdateOnNewDatafileDisabledWithPeriodicPollingEnabled() {
+        boolean downloadToCache = true;
+        boolean updateConfigOnNewDatafiel = false;
+        int pollingInterval = 30;   // enable polling
+
+        DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
+        Logger logger = mock(Logger.class);
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                null, null, null, null);
+
+        doAnswer(
+                new Answer<Object>() {
+                    public Object answer(InvocationOnMock invocation) {
+                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
+                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
+                        return null;
+                    }
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+
+        OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafiel);
+
+        try {
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            //
+        }
+
+        // when periodic polling enabled, project config always updated on cache datafile update (regardless of "updateConfigOnNewDatafile" setting)
+        assertEquals(client.getOptimizelyConfig().getRevision(), "241");
+    }
+
+    @Test
+    public void initializeSyncWithUpdateOnNewDatafileEnabledWithPeriodicPollingEnabled() {
+        boolean downloadToCache = true;
+        boolean updateConfigOnNewDatafiel = true;
+        int pollingInterval = 30;   // enable polling
+
+        DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
+        Logger logger = mock(Logger.class);
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                null, null, null, null);
+
+        doAnswer(
+                new Answer<Object>() {
+                    public Object answer(InvocationOnMock invocation) {
+                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
+                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
+                        return null;
+                    }
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+
+        OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafiel);
+
+        try {
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            //
+        }
+
+        // when periodic polling enabled, project config always updated on cache datafile update (regardless of "updateConfigOnNewDatafile" setting)
+        assertEquals(client.getOptimizelyConfig().getRevision(), "241");
+    }
+
+    @Test
+    public void initializeSyncWithResourceDatafileNoCache() {
+        boolean downloadToCache = true;
+        boolean updateConfigOnNewDatafiel = true;
+        int pollingInterval = 30;   // enable polling
+
+        DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
+        Logger logger = mock(Logger.class);
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        OptimizelyManager manager = spy(new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                null, null, null, null));
+
+        datafileHandler.removeSavedDatafile(context, manager.getDatafileConfig());
+        OptimizelyClient client = manager.initialize(context, R.raw.datafile, downloadToCache, updateConfigOnNewDatafiel);
+
+        verify(manager).initialize(eq(context), eq(defaultDatafile), eq(downloadToCache),  eq(updateConfigOnNewDatafiel));
+    }
+
+    @Test
+    public void initializeSyncWithResourceDatafileNoCacheWithDefaultParams() {
+        boolean downloadToCache = true;
+        boolean updateConfigOnNewDatafiel = true;
+        int pollingInterval = 30;   // enable polling
+
+        DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
+        Logger logger = mock(Logger.class);
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        OptimizelyManager manager = spy(new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                null, null, null, null));
+
+        datafileHandler.removeSavedDatafile(context, manager.getDatafileConfig());
+        OptimizelyClient client = manager.initialize(context, R.raw.datafile);
+
+        verify(manager).initialize(eq(context), eq(defaultDatafile), eq(true),  eq(false));
+    }
+
+
+    // Utils
+
+    void mockProjectConfig(DefaultDatafileHandler datafileHandler, String datafile) {
+        ProjectConfig config = null;
+        try {
+            config = new DatafileProjectConfig.Builder().withDatafile(datafile).build();
+            when(datafileHandler.getConfig()).thenReturn(config);
+        } catch (ConfigParseException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
