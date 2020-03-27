@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.optimizely.ab:android-sdk:3.4.+'
+	implementation 'com.optimizely.ab:android-sdk:3.5.0'
 }
 ```
 
@@ -53,30 +53,25 @@ optimizelyManager.initialize(this, null, (OptimizelyClient optimizely) -> {
 
 ## Architecture
 
-This project has 5 modules. Each module has source in `<module>/src/main/java`
-and test source in `<module>src/main/androidTest`. The build is configured
-in the `build.gradle` for each module.  The `settings.gradle` in the project
-root declares modules.  The `build.gradle` in the project root has build
-config common for all modules.
+This project includes 5 library modules and a test app.
 
 1. Android SDK
-  - Users who want all modules should declare a dependency on this module
-  - This is the outer module that depends on all other modules
-  - Handles downloading the Optimizely datafile and building Optimizely objects
-2. Event Handler
-  - Handles dispatching events to the Optimizely backend
-  - Uses a Service so events can be sent without the app being re-opened
-  - Persists events in a SQLite3 database
-  - Required to be implemented by the Optimizely Java core
-3. User Profile
-  - Optional implementation for Optimizely Java core
-  - Makes bucketing persistent
-    - Once a user is bucketed in a variation, they will remain in that variation
-4. Shared
+  - Users who want all modules should declare a dependency on this module.
+  - This is the outer module that depends on all other modules.
+  - This builds Optimizely objects and provides all public APIs.
+2. Datafile Handler
+  - This handles downloading the datafile from the Optimizely server.
+3. Event Handler
+  - This handles dispatching events to the Optimizely server.
+  - This uses a Service so events can be sent without the app being re-opened.
+  - Events remain persistent until dispatching completed successfully.
+4. User Profile
+  - Persistent bucketing
+  - Once a user is bucketed in a variation, the user will remain in that variation.
+5. Shared
   - Common utils for all modules
-5. Test App
-  - Built against the source of all modules
-  - Simple app showing how to use Android Optimizely
+6. Test App
+  - A simple app showing how to use the Optimizely Android SDK
 
 ## Development
 
@@ -89,20 +84,18 @@ config common for all modules.
   * `./gradlew assemble`
 4. Run tests for all modules
   * `./gradlew testAllModules`
-  * A device or emulator must be connected
+  * A device or emulator must be connected.
 5. Install the test app onto all connected devices and emulators
   * `./gradlew test-app:installDebug`
-  * The test app depends on all of the other project modules
-  * The modules are built from source
-  * Changes in any modules source will be applied to the test app on the next build
+  * The test app depends on all of the other project modules.
+  * The modules are built from source.
 6.  Discover more gradle tasks
   * `./gradlew tasks`
-  * To see the task of an individual module
-    * `./gradlew user-profile:tasks`
+  * To see the task of an individual module: `./gradlew user-profile:tasks`
 
 ### Android Studio
 
-Android Studio is an IDE that wraps gradle (and `adb`).  Everything you can do in Android Studio can be done from command line with gradle and the other android command line tools.  
+Android Studio is an IDE that wraps gradle.  Everything you can do in Android Studio can be done from the command line tools.  
 
 You can import this project into Android Studio by opening Android Studio and selecting `Import Project` from the first dialog or from the `File` menu.  Simply select the project's root `build.gradle` file and Android Studio will do the rest.
 
