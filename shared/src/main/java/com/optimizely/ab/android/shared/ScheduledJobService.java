@@ -66,66 +66,74 @@ public class ScheduledJobService extends JobService {
              * Even if we are cancelled for any reason, it should still service all items in the queue if it can.
              *
              */
-                logger.info("Processing schueduled service");
-                try {
-                    PersistableBundle persistableBundle = mParams.getExtras();
-                    Class clazz = Class.forName(persistableBundle.getString(ScheduledJobService.INTENT_EXTRA_COMPONENT_NAME));
-                    Object service = clazz.newInstance();
-                    setContext((Service) service);
+            logger.info("Processing scheduled service");
+            try {
+                PersistableBundle persistableBundle = mParams.getExtras();
+                Class clazz = Class.forName(persistableBundle.getString(ScheduledJobService.INTENT_EXTRA_COMPONENT_NAME));
+                Object service = clazz.newInstance();
+                setContext((Service) service);
 
-                    Intent intent = new Intent(getApplicationContext(), clazz );
+                Intent intent = new Intent(getApplicationContext(), clazz );
 
-                    for (String key : persistableBundle.keySet()) {
-                        if (key == ScheduledJobService.INTENT_EXTRA_COMPONENT_NAME) {
-                            continue;
-                        }
-                        Object object = persistableBundle.get(key);
-                        switch (object.getClass().getSimpleName()) {
-                            case "String":
-                                intent.putExtra(key, (String) object);
-                                break;
-                            case "long":
-                            case "Long":
-                                intent.putExtra(key, (Long) object);
-                                break;
-                            default:
-                                logger.info("Extra key of type {}", object.getClass().getSimpleName());
-                                if (object instanceof Parcelable) {
-                                    intent.putExtra(key, (Parcelable) object);
-                                }
-                                break;
-                        }
+                for (String key : persistableBundle.keySet()) {
+                    if (key == ScheduledJobService.INTENT_EXTRA_COMPONENT_NAME) {
+                        continue;
                     }
-
-                    if (service instanceof IntentService) {
-                        IntentService intentService = (IntentService) service;
-                        intentService.onCreate();
-                        callOnHandleIntent(intentService, intent);
-                        jobFinished(mParams, false);
-                    } else {
-                        Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
-                        final Service mainService = (Service)service;
-                        final Intent manServiceIntent = intent;
-
-                        mainHandler.post(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                // run code
-                                try {
-                                    callOnStartCommand(mainService, manServiceIntent);
-                                    jobFinished(mParams, false);
-                                }
-                                catch (Exception e) {
-                                    logger.error("Problem running service ", e);
-                                }
+                    Object object = persistableBundle.get(key);
+                    switch (object.getClass().getSimpleName()) {
+                        case "String":
+                            intent.putExtra(key, (String) object);
+                            break;
+                        case "long":
+                        case "Long":
+                            intent.putExtra(key, (Long) object);
+                            break;
+                        default:
+                            logger.info("Extra key of type {}", object.getClass().getSimpleName());
+                            if (object instanceof Parcelable) {
+                                intent.putExtra(key, (Parcelable) object);
                             }
-                        });
-
+                            break;
                     }
-                } catch (Exception e) {
-                    logger.error("Error creating ScheduledJobService", e);
                 }
+
+                if (service instanceof IntentService) {
+                    IntentService intentService = (IntentService) service;
+                    intentService.onCreate();
+                    try {
+                        callOnHandleIntent(intentService, intent);
+                    }
+                    catch (Exception e) {
+                        logger.error("Error running intent", e);
+                    }
+                } else {
+                    Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
+                    final Service mainService = (Service)service;
+                    final Intent manServiceIntent = intent;
+
+                    mainHandler.post(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            // run code
+                            try {
+                                callOnStartCommand(mainService, manServiceIntent);
+                            }
+                            catch (Exception e) {
+                                logger.error("Problem running service ", e);
+                            }
+                        }
+                    });
+
+                }
+            } catch (Exception e) {
+                logger.error("Error creating ScheduledJobService", e);
+            }
+            // we don't rely on the job scheduler for failed tasks. It is either running persistent
+            // or it will be picked up on the next event flush.  there have been reported issues of
+            // out of memory and repeated hits when having dns errors.  these should be handled
+            // by retries and then next job and not rescheduling the job automatically.
+            jobFinished(mParams, false);
             return null;
         }
     }
