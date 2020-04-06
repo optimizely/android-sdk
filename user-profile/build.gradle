@@ -54,18 +54,18 @@ android {
 dependencies {
     api project(':shared')
 
-    compileOnly 'androidx.annotation:annotation:1.0.0'
+    compileOnly "androidx.annotation:annotation:$androidx_annotation_ver"
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation "androidx.test.ext:junit:$androidx_test_runner_ver"
     // Set this dependency to use JUnit 4 rules
-    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation "androidx.test:rules:$androidx_test_runner_ver"
     // Set this dependency to build and run Espresso tests
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidx_espresso_ver"
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
     androidTestImplementation "com.google.dexmaker:dexmaker:$dexmaker_ver"
     androidTestImplementation "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
