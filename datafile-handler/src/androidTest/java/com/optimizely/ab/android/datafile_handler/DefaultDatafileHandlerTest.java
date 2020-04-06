@@ -1,9 +1,9 @@
 package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.DatafileConfig;
 

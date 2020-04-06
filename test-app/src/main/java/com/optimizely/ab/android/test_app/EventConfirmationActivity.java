@@ -15,7 +15,7 @@
  ***************************************************************************/
 package com.optimizely.ab.android.test_app;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class EventConfirmationActivity extends AppCompatActivity {

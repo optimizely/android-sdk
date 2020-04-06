@@ -21,11 +21,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.RequiresApi;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
-import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
-import android.support.test.rule.ServiceTestRule;
+import androidx.annotation.RequiresApi;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
+import androidx.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
+import androidx.test.rule.ServiceTestRule;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;

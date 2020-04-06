@@ -16,7 +16,7 @@
 
 package com.optimizely.ab.android.shared;
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;

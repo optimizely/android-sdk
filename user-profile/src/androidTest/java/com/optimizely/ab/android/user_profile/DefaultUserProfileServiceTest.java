@@ -16,10 +16,10 @@
 
 package com.optimizely.ab.android.user_profile;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
-import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
+import androidx.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.Cache;
 

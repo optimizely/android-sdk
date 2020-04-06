@@ -17,7 +17,7 @@
 package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;

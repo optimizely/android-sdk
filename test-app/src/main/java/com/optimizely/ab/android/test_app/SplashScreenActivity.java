@@ -18,21 +18,17 @@ package com.optimizely.ab.android.test_app;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.optimizely.ab.android.event_handler.EventRescheduler;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
-import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.LogEvent;
-import com.optimizely.ab.notification.ActivateNotificationListener;
-import com.optimizely.ab.notification.NotificationHandler;
-import com.optimizely.ab.notification.TrackNotificationListenerInterface;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 
 import java.util.Map;

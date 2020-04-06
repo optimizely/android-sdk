@@ -16,7 +16,7 @@
 
 package com.optimizely.ab.android.user_profile;
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.json.JSONException;
 import org.json.JSONObject;
