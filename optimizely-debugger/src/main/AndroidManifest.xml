@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.optimizely.ab.android.optimizely_debugger">
+
+    <application>
+        <activity android:name=".DebugActivity"/>
+        <activity android:name=".PropsActivity"/>
+        <activity android:name=".LogActivity"/>
+        <activity android:name=".ForcedVariationsActivity"/>
+    </application>
+</manifest>

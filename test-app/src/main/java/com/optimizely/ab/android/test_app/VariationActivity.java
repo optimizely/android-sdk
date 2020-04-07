@@ -22,7 +22,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
-import com.optimizely.ab.android.sdk.optimizely_debugger.OptimizelyDebugger;
+import com.optimizely.ab.android.optimizely_debugger.OptimizelyDebugger;
 
 public class VariationActivity extends AppCompatActivity {
 
@@ -47,6 +47,6 @@ public class VariationActivity extends AppCompatActivity {
     }
 
     public void openDebugger(View view) {
-        OptimizelyDebugger.open(this, ((MyApplication)getApplication()).getOptimizelyManager().getOptimizely());
+        OptimizelyDebugger.open(this, ((MyApplication)getApplication()).getOptimizelyManager());
     }
 }

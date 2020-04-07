@@ -40,6 +40,7 @@ dependencies {
         exclude group: 'com.google.code.gson', module:'gson'
         exclude group: 'com.noveogroup.android', module:'android-logger'
     }
+    implementation (project(':optimizely-debugger'))
 
     // implementation 'com.optimizely.ab:android-sdk:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.0.0'

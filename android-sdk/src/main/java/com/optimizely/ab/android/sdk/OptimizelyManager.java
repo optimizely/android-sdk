@@ -116,6 +116,10 @@ public class OptimizelyManager {
         this.notificationCenter = notificationCenter;
     }
 
+    public String getSdkKey() {
+        return this.sdkKey;
+    }
+
     @VisibleForTesting
     public Long getDatafileDownloadInterval() {
         return datafileDownloadInterval;
