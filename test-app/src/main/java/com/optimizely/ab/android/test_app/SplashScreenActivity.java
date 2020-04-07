@@ -108,11 +108,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         // variation is nullable so we should check for null values
         if (backgroundVariation != null) {
             // Show activity based on the variation the user got bucketed into
-            if (backgroundVariation.getKey().equals("variation_a")) {
-                intent = new Intent(myApplication.getBaseContext(), VariationAActivity.class);
-            } else if (backgroundVariation.getKey().equals("variation_b")) {
-                intent = new Intent(myApplication.getBaseContext(), VariationBActivity.class);
-            }
+            intent = new Intent(myApplication.getBaseContext(), VariationActivity.class);
+            intent.putExtra("variation", backgroundVariation.getKey());
         }
         startActivity(intent);
 

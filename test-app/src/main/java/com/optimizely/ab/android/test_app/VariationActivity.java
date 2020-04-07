@@ -13,17 +13,40 @@
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
  ***************************************************************************/
-
 package com.optimizely.ab.android.test_app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import android.view.View;
+import android.widget.TextView;
 
-public class VariationBActivity extends AppCompatActivity {
+import com.optimizely.ab.android.sdk.OptimizelyStartListener;
+import com.optimizely.ab.android.sdk.optimizely_debugger.OptimizelyDebugger;
+
+public class VariationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_variation_b);
+
+        Intent intent = getIntent();
+        String variation = intent.getStringExtra("variation");
+
+        setContentView(R.layout.activity_variation);
+        View view = (View)findViewById(R.id.activity_variation_activity);
+        TextView textView = (TextView)findViewById(R.id.tv_variation_a_text_1);
+
+        if(variation.equals("variation_a")) {
+            view.setBackgroundResource(R.drawable.ic_background_varia);
+            textView.setText("A");
+        } else {
+            view.setBackgroundResource(R.drawable.ic_background_varib_marina);
+            textView.setText("B");
+        }
+    }
+
+    public void openDebugger(View view) {
+        OptimizelyDebugger.open(this, ((MyApplication)getApplication()).getOptimizelyManager().getOptimizely());
     }
 }

@@ -19,42 +19,54 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_variation_activity"
-    android:background="@drawable/ic_background_varia"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:gravity="center_vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.optimizely.ab.android.test_app.VariationAActivity">
+
     <TextView
         android:id="@+id/tv_variation_a_text_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:text="T"
         android:textColor="@color/colorPrimary"
-        android:textSize="150dp"
-        android:text="A"
-        android:layout_centerVertical="true" />
+        android:textSize="150dp" />
+
     <TextView
         android:id="@+id/tv_variation_a_text_2"
-        android:layout_below="@+id/tv_variation_a_text_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_variation_a_text_1"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/colorPrimary"
-        android:textSize="20dp"
-        android:textAllCaps="true"
-        android:text="variation"
+        android:layout_centerVertical="true"
         android:layout_marginTop="-20dp"
         android:layout_marginBottom="30dp"
-        android:layout_centerVertical="true"/>
+        android:text="variation"
+        android:textAllCaps="true"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20dp" />
+
     <fragment
+        android:name="com.optimizely.ab.android.test_app.ConversionFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@id/tv_variation_a_text_2"
-        android:name="com.optimizely.ab.android.test_app.ConversionFragment"
+        android:layout_centerHorizontal="true"
         tools:layout="@layout/fragment_conversion" />
+
+    <Button
+        android:id="@+id/info_btn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="30dp"
+        android:onClick="openDebugger"
+        android:text="i " />
 </RelativeLayout>
