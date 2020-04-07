@@ -53,7 +53,11 @@ public class PropsActivity extends AppCompatActivity {
                 String key = customAdapter.getItemKey(position);
                 Object item = customAdapter.getItem(position);
 
-                if (isValueType((item))) {
+                if (isValueType(item)) {
+                    return;
+                }
+
+                if (isObjectEmpty(item)) {
                     return;
                 }
 
@@ -96,6 +100,10 @@ public class PropsActivity extends AppCompatActivity {
 
     boolean isValueType(Object object) {
         return object instanceof String || object instanceof Boolean;
+    }
+
+    boolean isObjectEmpty(Object object) {
+        return (object instanceof Map) && ((Map)object).size() == 0;
     }
 
     // ArrayAdapter
@@ -147,8 +155,9 @@ public class PropsActivity extends AppCompatActivity {
             TextView arrowView = view.findViewById(R.id.arrow);
 
             titleView.setText(key);
-            if (isValueType((item))) {
-                valueView.setText(item.toString());
+            if (isValueType(item) || isObjectEmpty(item)) {
+                String text = isValueType(item) ? item.toString() : "(empty)";
+                valueView.setText(text);
 
                 arrowView.setVisibility(View.INVISIBLE);
                 view.setEnabled(false);
