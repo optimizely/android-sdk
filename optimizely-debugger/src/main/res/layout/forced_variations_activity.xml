@@ -82,7 +82,7 @@
                 android:layout_width="60dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:onClick="hideAddView"
+                android:onClick="onCancelClicked"
                 android:text="@android:string/cancel" />
 
             <Button
@@ -90,7 +90,7 @@
                 android:layout_width="60dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:onClick="saveForcedVariation"
+                android:onClick="onSaveClicked"
                 android:text="Save" />
         </LinearLayout>
     </LinearLayout>

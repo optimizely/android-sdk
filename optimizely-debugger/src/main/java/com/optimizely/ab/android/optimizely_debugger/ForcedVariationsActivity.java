@@ -1,18 +1,24 @@
 package com.optimizely.ab.android.optimizely_debugger;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Path;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethod;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
@@ -20,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,6 +40,8 @@ import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 import com.optimizely.ab.optimizelyconfig.OptimizelyExperiment;
+import com.optimizely.ab.optimizelyconfig.OptimizelyVariable;
+import com.optimizely.ab.optimizelyconfig.OptimizelyVariation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,11 +59,9 @@ public class ForcedVariationsActivity extends AppCompatActivity {
     TextView experimentView;
     TextView variationView;
 
-    String curUserId;
-    String curExperimentKey;
-    String curVariationKey;
-
-    String[] experimentKeys;
+    String selectedExperimentKey;
+    String[] experimentKeys = {};
+    String[] variationKeys = {};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,18 +71,17 @@ public class ForcedVariationsActivity extends AppCompatActivity {
         setTitle("Forced Variations");
         listView = findViewById(R.id.listview);
         addView = findViewById(R.id.add_view);
-        addView.setVisibility(View.INVISIBLE);
         userIdView = findViewById(R.id.user_id);
         experimentView = findViewById(R.id.experiment_key);
         variationView = findViewById(R.id.variation_key);
 
+        hideAddView();
         refreshListView();
 
-        OptimizelyManager optimizelyManager = OptimizelyDebugger.getInstance().getOptimizelyManager();
-        OptimizelyClient client = optimizelyManager.getOptimizely();
-        Map<String, OptimizelyExperiment> map = client.getOptimizelyConfig().getExperimentsMap();
-        experimentKeys = map.keySet().toArray(new String[map.size()]);
+        experimentKeys = getAllExperimentKeys();
     }
+
+    // ActionBar menu
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -92,6 +98,8 @@ public class ForcedVariationsActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    // ListView
 
     void refreshListView() {
         OptimizelyManager optimizelyManager = OptimizelyDebugger.getInstance().getOptimizelyManager();
@@ -111,75 +119,189 @@ public class ForcedVariationsActivity extends AppCompatActivity {
         if (adapter == null) {
             adapter = new FVCustomAdapter(getApplicationContext(), items);
             listView.setAdapter(adapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    new AlertDialog.Builder(ForcedVariationsActivity.this)
+                            .setMessage("Do you want to remove this forced-variation item?")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ForcedVariation item = (ForcedVariation) listView.getAdapter().getItem(position);
+                                    removeForcedVariation(item.experimentKey, item.userId);
+                                    refreshListView();
+                                }
+                            })
+                            .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // close
+                                }
+                            })
+                            .create().show();
+                }
+            });
         } else {
             adapter.setItems(items);
             adapter.notifyDataSetChanged();
         }
     }
 
+    public void onSaveClicked(View view) {
+        saveForcedVariation();
+    }
+
+    public void onCancelClicked(View view) {
+        hideAddView();
+    }
+
     public void showAddView() {
         addView.setVisibility(View.VISIBLE);
     }
 
-    public void hideAddView(View view) {
+    public void hideAddView() {
         userIdView.setText(null);
         experimentView.setText(null);
         variationView.setText(null);
 
-        addView.setVisibility(View.INVISIBLE);
+        addView.setVisibility(View.GONE);
+
+        // close soft keyboard
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(listView.getRootView().getWindowToken(), 0);
     }
 
-    public void saveForcedVariation(View view) {
+    public void saveForcedVariation() {
+        String userId = userIdView.getText().toString();
+        String experimentKey = experimentView.getText().toString();
+        String variationKey = variationView.getText().toString();
 
+        if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(experimentKey) || TextUtils.isEmpty(variationKey)) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Invalid data for forced variation setting. Try again!")
+                    .setPositiveButton("DISMISS", null)
+                    .create().show();
+            return;
+        }
+
+        updateForcedVariation(experimentKey, userId, variationKey);
+
+        hideAddView();
+        refreshListView();
     }
 
-    public void removeForcedVariation(String userId, String experimentKey) {
-
-    }
+    // Experiment + Variation Pickers
 
     public void selectExperiment(View view) {
+        String[] items = experimentKeys;
+        TextView textView = experimentView;
+
         NumberPicker pickers = new NumberPicker(this);
 
         pickers.setMinValue(0);
-        pickers.setMaxValue(experimentKeys.length - 1);
-        pickers.setDisplayedValues(experimentKeys);
+        pickers.setMaxValue(items.length - 1);
+        pickers.setDisplayedValues(items);
+
         //disable soft keyboard
         pickers.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         pickers.setWrapSelectorWheel(false);
 
-        int selectedIndex = Arrays.asList(experimentKeys).indexOf(experimentView.getText());
-        Log.d("OptimizelyDebugger", "selected: " + experimentView.getText() + "  " + selectedIndex);
+        int selectedIndex = Arrays.asList(items).indexOf(textView.getText());
         pickers.setValue(selectedIndex);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Experiment");
-        builder.setMessage("Select an experiment key:");
+        new AlertDialog.Builder(this)
+                .setMessage("Select an experiment key:")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int pos = pickers.getValue();
+                        selectedExperimentKey = experimentKeys[pos];
+                        textView.setText(selectedExperimentKey);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Log.d("OptimizelyDebugger", "select experiment OK");
-
-                int pos = pickers.getValue();
-                curExperimentKey = experimentKeys[pos];
-                experimentView.setText(curExperimentKey);
-            }
-        });
-
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // close
-            }
-        });
-
-        builder.setView(pickers).create().show();
+                        variationKeys = getAllVariationKeysForExperiment(selectedExperimentKey);
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // close
+                    }
+                })
+                .setView(pickers)
+                .create().show();
     }
 
     public void selectVariation(View view) {
-        Log.d("OptimizelyDebugger", "select variation");
+        if (selectedExperimentKey == null) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Select an experiment key first and try again!")
+                    .setPositiveButton("DISMISS", null)
+                    .create().show();
+            return;
+        }
 
+        String[] items = variationKeys;
+        TextView textView = variationView;
 
+        NumberPicker pickers = new NumberPicker(this);
+
+        pickers.setMinValue(0);
+        pickers.setMaxValue(items.length - 1);
+        pickers.setDisplayedValues(items);
+
+        //disable soft keyboard
+        pickers.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        pickers.setWrapSelectorWheel(false);
+
+        int selectedIndex = Arrays.asList(items).indexOf(textView.getText());
+        pickers.setValue(selectedIndex);
+
+        new AlertDialog.Builder(this)
+                .setMessage("Select a variation key:")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int pos = pickers.getValue();
+                        String variationKey = variationKeys[pos];
+                        textView.setText(variationKey);
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // close
+                    }
+                })
+                .setView(pickers)
+                .create().show();
+    }
+
+    // Project Config
+
+    String[] getAllExperimentKeys() {
+        OptimizelyManager optimizelyManager = OptimizelyDebugger.getInstance().getOptimizelyManager();
+        OptimizelyClient client = optimizelyManager.getOptimizely();
+        Map<String, OptimizelyExperiment> map = client.getOptimizelyConfig().getExperimentsMap();
+        return map.keySet().toArray(new String[map.size()]);
+    }
+
+    String[] getAllVariationKeysForExperiment(String experimentKey) {
+        OptimizelyManager optimizelyManager = OptimizelyDebugger.getInstance().getOptimizelyManager();
+        OptimizelyClient client = optimizelyManager.getOptimizely();
+        OptimizelyExperiment experiment = client.getOptimizelyConfig().getExperimentsMap().get(experimentKey);
+        Map<String, OptimizelyVariation> map = experiment.getVariationsMap();
+        return map.keySet().toArray(new String[map.size()]);
+    }
+
+    public void updateForcedVariation(String experimentKey, String userId, @Nullable String variationKey) {
+        OptimizelyManager optimizelyManager = OptimizelyDebugger.getInstance().getOptimizelyManager();
+        OptimizelyClient client = optimizelyManager.getOptimizely();
+        client.setForcedVariation(experimentKey, userId, variationKey);
+    }
+
+    public void removeForcedVariation(String experimentKey, String userId) {
+        updateForcedVariation(experimentKey, userId, null);
     }
 
     // ForcedVariation
@@ -219,8 +341,8 @@ public class ForcedVariationsActivity extends AppCompatActivity {
         }
 
         @Override
-        public Object getItem(int i) {
-            return null;
+        public ForcedVariation getItem(int i) {
+            return items.get(i);
         }
 
         @Override
@@ -230,9 +352,9 @@ public class ForcedVariationsActivity extends AppCompatActivity {
 
         @Override
         public View getView(int i, View view, ViewGroup parent) {
-            ForcedVariation item = items.get(i);
+            ForcedVariation item = getItem(i);
 
-            view = inflter.inflate(R.layout.debug_item, parent, false);
+            view = inflter.inflate(R.layout.forced_variation_item, parent, false);
             ViewGroup.LayoutParams params = view.getLayoutParams();
             float factor = context.getResources().getDisplayMetrics().density;
             params.height = (int)(60.0 * factor);
@@ -240,13 +362,11 @@ public class ForcedVariationsActivity extends AppCompatActivity {
 
             TextView titleView = view.findViewById(R.id.title);
             TextView valueView = view.findViewById(R.id.value);
-            TextView arrowView = view.findViewById(R.id.arrow);
+            ImageView iconView = view.findViewById(R.id.delete);
 
             titleView.setText(item.userId);
             valueView.setText(item.experimentKey + " -> " + item.variationKey);
-
-            arrowView.setVisibility(View.INVISIBLE);
-            view.setEnabled(false);
+            iconView.setImageResource(android.R.drawable.ic_menu_delete);
 
             return view;
         }

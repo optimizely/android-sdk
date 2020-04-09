@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
@@ -33,14 +34,17 @@
             android:background="#00FFFFFF"
             android:ellipsize="end"
             android:gravity="center_vertical" />
+
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/arrow"
-        android:layout_width="40dp"
+    <ImageView
+        android:id="@+id/delete"
+        android:layout_width="50dp"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal|center_vertical"
-        android:text=">"
-        android:textSize="20sp" />
+        android:padding="5dp"
+        android:scaleType="fitCenter"
+        android:tint="#F48FB1"
+        android:visibility="visible"
+        app:srcCompat="@android:drawable/ic_menu_delete" />
 
 </LinearLayout>
