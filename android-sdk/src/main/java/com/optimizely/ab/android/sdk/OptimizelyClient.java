@@ -37,6 +37,7 @@ import java.io.Closeable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The top-level container class that wraps an {@link Optimizely} instance.
@@ -349,7 +350,11 @@ public class OptimizelyClient {
                                       @Nullable String variationKey) {
 
         if (isValid()) {
-            return optimizely.setForcedVariation(experimentKey, userId, variationKey);
+            boolean success = optimizely.setForcedVariation(experimentKey, userId, variationKey);
+
+            // [OptimizelyDebugger]
+            if (success) keepCopyOfForcedVariation(experimentKey, userId, variationKey);
+            return success;
         } else {
             logger.warn("Optimizely is not initialized, could not set forced variation");
         }
@@ -732,4 +737,31 @@ public class OptimizelyClient {
 
         return null;
     }
+
+
+    //--------------------------------------------------------------------------------------------
+    // Temp fix for OptimizelyDebugger support
+    // - keep a copy of forced variations (fix access control from Java-SDK for a clean solution)
+    //--------------------------------------------------------------------------------------------
+    public ConcurrentHashMap<String, ConcurrentHashMap<String, String>> forcedVariationMapping = new ConcurrentHashMap<String, ConcurrentHashMap<String, String>>();
+
+    private void keepCopyOfForcedVariation(@NonNull String experimentKey,
+                                           @NonNull String userId,
+                                           @Nullable String variationKey) {
+
+        ConcurrentHashMap<String, String> experimentToVariation;
+        if (!forcedVariationMapping.containsKey(userId)) {
+            forcedVariationMapping.putIfAbsent(userId, new ConcurrentHashMap<String, String>());
+        }
+        experimentToVariation = forcedVariationMapping.get(userId);
+
+        boolean retVal = true;
+        // if it is null remove the variation if it exists.
+        if (variationKey == null) {
+            experimentToVariation.remove(experimentKey);
+        } else {
+            experimentToVariation.put(experimentKey, variationKey);
+        }
+    }
+
 }

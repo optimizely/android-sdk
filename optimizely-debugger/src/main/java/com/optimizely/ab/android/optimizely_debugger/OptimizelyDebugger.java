@@ -5,12 +5,16 @@ import android.content.Intent;
 import android.graphics.Path;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.optimizely.ab.android.optimizely_debugger.DebugActivity;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class OptimizelyDebugger {
     private static OptimizelyDebugger _instance;
