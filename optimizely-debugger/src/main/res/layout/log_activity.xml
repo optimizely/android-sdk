@@ -3,6 +3,67 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:id="@+id/filter_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#CDDC39"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <RadioGroup
+            android:id="@+id/level_group"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/error"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Error" />
+
+            <RadioButton
+                android:id="@+id/warning"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Warning" />
+
+            <RadioButton
+                android:id="@+id/info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Info" />
+
+            <RadioButton
+                android:id="@+id/debug"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Debug" />
+        </RadioGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/keyword_layout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="#FFFFFF"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/keyword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Enter search keywords" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
     <ListView
         android:id="@+id/listview"
         android:layout_width="match_parent"

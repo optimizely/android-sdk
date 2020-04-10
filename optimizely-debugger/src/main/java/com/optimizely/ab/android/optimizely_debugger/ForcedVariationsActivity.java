@@ -3,18 +3,13 @@ package com.optimizely.ab.android.optimizely_debugger;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Path;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -23,7 +18,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,24 +25,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
-import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
-import com.optimizely.ab.bucketing.UserProfileService;
-import com.optimizely.ab.config.Experiment;
-import com.optimizely.ab.config.ProjectConfig;
-import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 import com.optimizely.ab.optimizelyconfig.OptimizelyExperiment;
-import com.optimizely.ab.optimizelyconfig.OptimizelyVariable;
 import com.optimizely.ab.optimizelyconfig.OptimizelyVariation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static org.xmlpull.v1.XmlPullParser.TYPES;
 
 public class ForcedVariationsActivity extends AppCompatActivity {
     ListView listView;
@@ -361,7 +346,7 @@ public class ForcedVariationsActivity extends AppCompatActivity {
             view.setLayoutParams(params);
 
             TextView titleView = view.findViewById(R.id.title);
-            TextView valueView = view.findViewById(R.id.value);
+            TextView valueView = view.findViewById(R.id.message);
             ImageView iconView = view.findViewById(R.id.delete);
 
             titleView.setText(item.userId);

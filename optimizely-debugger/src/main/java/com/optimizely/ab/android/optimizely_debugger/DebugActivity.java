@@ -2,23 +2,18 @@ package com.optimizely.ab.android.optimizely_debugger;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 
@@ -130,7 +125,7 @@ public class DebugActivity extends AppCompatActivity {
             view.setLayoutParams(params);
 
             TextView titleView = view.findViewById(R.id.title);
-            TextView valueView = view.findViewById(R.id.value);
+            TextView valueView = view.findViewById(R.id.message);
             TextView arrowView = view.findViewById(R.id.arrow);
 
             titleView.setText(item.title);

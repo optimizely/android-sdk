@@ -1,9 +1,7 @@
 package com.optimizely.ab.android.optimizely_debugger;
 
-import android.bluetooth.BluetoothAssignedNumbers;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Path;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,12 +15,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.optimizely.ab.android.sdk.OptimizelyClient;
-import com.optimizely.ab.android.sdk.OptimizelyManager;
-import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
-
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -151,7 +144,7 @@ public class PropsActivity extends AppCompatActivity {
             view.setLayoutParams(params);
 
             TextView titleView = view.findViewById(R.id.title);
-            TextView valueView = view.findViewById(R.id.value);
+            TextView valueView = view.findViewById(R.id.message);
             TextView arrowView = view.findViewById(R.id.arrow);
 
             titleView.setText(key);
