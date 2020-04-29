@@ -1,5 +1,12 @@
 # Optimizely Android X SDK Changelog
 
+## 3.5.1
+April 29th, 2020
+
+### Bug Fixes
+* Change FeatureVariable type from enum to string for forward compatibility (upgrade the core java-sdk to 3.4.3).
+
+
 ## 3.5.0
 March 13th, 2020
 
