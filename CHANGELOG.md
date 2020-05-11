@@ -1,5 +1,31 @@
 # Optimizely Android X SDK Changelog
 
+## 3.5.1
+April 29th, 2020
+
+### Bug Fixes
+* Change FeatureVariable type from enum to string for forward compatibility (upgrade the core java-sdk to 3.4.3).
+
+
+## 3.5.0
+March 13th, 2020
+
+This release includes an enhancement of SDK initialization API to enable SDK updated on cached datafile change. It also fixes known bugs.
+
+### New Features
+* Add an option for **synchronous** initialization to enable SDK immediately updated when a new datafile is cached. Unless this feature is enabled, by default, the cached datafile will be used only when the SDK re-starts in the next session. Note that this option is for **synchronous** initialization only. ([#318](https://github.com/optimizely/android-sdk/pull/318))
+
+	```
+    // enable SDK update when a new datafile is cached
+    optimizelyManager.initialize(context, R.raw.datafile, true, true)
+
+    // by default, this feature is disabled
+    optimizelyManager.initialize(context, R.raw.datafile)
+	```
+
+### Bug Fixes
+* When datafile download fails or receives 304, the SDK loads a datafile from cache. This loading process is moved to a background thread. ([#321](https://github.com/optimizely/android-sdk/pull/321))
+
 ## 3.4.0
 January 31st, 2020
 

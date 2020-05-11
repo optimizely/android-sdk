@@ -52,6 +52,10 @@ public interface DatafileHandler {
      */
     void downloadDatafile(Context context, DatafileConfig datafileConfig, DatafileLoadedListener listener);
 
+    default void downloadDatafileToCache(final Context context, DatafileConfig datafileConfig, boolean updateConfigOnNewDatafile) {
+        downloadDatafile(context, datafileConfig, null);
+    }
+
     /**
      * Start background updates to the project datafile .
      *
