@@ -69,7 +69,7 @@ public class OptimizelyManager {
 
     @NonNull private DatafileHandler datafileHandler;
     private final long datafileDownloadInterval;
-    private final long eventDispatchInterval;
+    private final long eventDispatchRetryInterval;
     @Nullable private EventHandler eventHandler = null;
     @Nullable private EventProcessor eventProcessor = null;
     @Nullable private NotificationCenter notificationCenter = null;
@@ -90,7 +90,7 @@ public class OptimizelyManager {
                       long datafileDownloadInterval,
                       @NonNull DatafileHandler datafileHandler,
                       @Nullable ErrorHandler errorHandler,
-                      long eventDispatchInterval,
+                      long eventDispatchRetryInterval,
                       @NonNull EventHandler eventHandler,
                       @Nullable EventProcessor eventProcessor,
                       @NonNull UserProfileService userProfileService,
@@ -110,7 +110,7 @@ public class OptimizelyManager {
         this.logger = logger;
         this.datafileDownloadInterval = datafileDownloadInterval;
         this.datafileHandler = datafileHandler;
-        this.eventDispatchInterval = eventDispatchInterval;
+        this.eventDispatchRetryInterval = eventDispatchRetryInterval;
         this.eventHandler = eventHandler;
         this.eventProcessor = eventProcessor;
         this.errorHandler = errorHandler;
@@ -592,7 +592,7 @@ public class OptimizelyManager {
     protected EventHandler getEventHandler(Context context) {
         if (eventHandler == null) {
             DefaultEventHandler eventHandler = DefaultEventHandler.getInstance(context);
-            eventHandler.setDispatchInterval(eventDispatchInterval);
+            eventHandler.setDispatchInterval(eventDispatchRetryInterval);
             this.eventHandler = eventHandler;
         }
 
@@ -722,21 +722,6 @@ public class OptimizelyManager {
             this.projectId = null;
         }
 
-
-        /**
-         * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
-         * cached datafile.  If you set this to -1, you disable background updates.  If you don't set
-         * a download interval (or set to less than 0), then no background updates will be scheduled or occur.
-         * The minimum interval is 900 secs (15 minutes) (enforced by the Android JobScheduler API. See {@link android.app.job.JobInfo})
-         *
-         * @param interval the interval in seconds
-         * @return this {@link Builder} instance
-         */
-        public Builder withDatafileDownloadInterval(long interval) {
-            this.datafileDownloadInterval = interval;
-            return this;
-        }
-
         /**
          * Override the default {@link DatafileHandler}.
          * @param overrideHandler datafile handler to replace default handler
@@ -773,14 +758,45 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which queued events will be flushed periodically.
-         * If you don't set this value or set this to -1, the default interval will be used (30 seconds).
+         * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
+         * cached datafile.  If you set this to -1, you disable background updates.  If you don't set
+         * a download interval (or set to less than 0), then no background updates will be scheduled or occur.
+         * The minimum interval is 15 minutes (enforced by the Android JobScheduler API. See {@link android.app.job.JobInfo})
+         *
+         * @param interval the interval
+         * @param timeUnit the time unit of the timeout argument
+         * @return this {@link Builder} instance
+         */
+        public Builder withDatafileDownloadInterval(long interval, TimeUnit timeUnit) {
+            this.datafileDownloadInterval = interval > 0 ? timeUnit.toSeconds(interval) : interval;
+            return this;
+        }
+
+        /**
+         * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
+         * cached datafile.  If you set this to -1, you disable background updates.  If you don't set
+         * a download interval (or set to less than 0), then no background updates will be scheduled or occur.
+         * The minimum interval is 900 secs (15 minutes) (enforced by the Android JobScheduler API. See {@link android.app.job.JobInfo})
          *
          * @param interval the interval in seconds
          * @return this {@link Builder} instance
          */
-        public Builder withEventFlushInterval(long interval) {
-            this.eventFlushInterval = interval * 1000;
+        @Deprecated
+        public Builder withDatafileDownloadInterval(long interval) {
+            this.datafileDownloadInterval = interval;
+            return this;
+        }
+
+        /**
+         * Sets the interval which queued events will be flushed periodically.
+         * If you don't set this value or set this to -1, the default interval will be used (30 seconds).
+         *
+         * @param interval the interval
+         * @param timeUnit the time unit of the timeout argument
+         * @return this {@link Builder} instance
+         */
+        public Builder withEventDispatchInterval(long interval, TimeUnit timeUnit) {
+            this.eventFlushInterval = interval > 0 ? timeUnit.toMillis(interval) : interval;
             return this;
         }
 
@@ -788,11 +804,12 @@ public class OptimizelyManager {
          * Sets the interval which {@link EventIntentService} will retry event dispatch periodically.
          * If you don't set this value or set this to -1, periodic retries on event dispatch failures will be disabled (but still queued and retried on next event dispatch request)
          *
-         * @param interval the interval in seconds
+         * @param interval the interval
+         * @param timeUnit the time unit of the timeout argument
          * @return this {@link Builder} instance
          */
-        public Builder withEventDispatchRetryInterval(long interval) {
-            this.eventDispatchRetryInterval = interval * 1000;
+        public Builder withEventDispatchRetryInterval(long interval, TimeUnit timeUnit) {
+            this.eventDispatchRetryInterval = interval > 0 ? timeUnit.toMillis(interval) : interval;
             return this;
         }
 
@@ -809,6 +826,7 @@ public class OptimizelyManager {
             this.eventDispatchRetryInterval = interval;
             return this;
         }
+
 
         /**
          * Override the default {@link EventHandler}.
@@ -870,19 +888,6 @@ public class OptimizelyManager {
                     datafileDownloadInterval = 900;
                     logger.warn("Minimum datafile polling interval is 15 minutes. Defaulting to 15 minutes.");
                 }
-            }
-
-            if (eventFlushInterval > 1_000_000) {
-                logger.warn("Event flush interval {} milliseconds is too big", eventFlushInterval);
-            }
-            if (eventFlushInterval > 0 && eventFlushInterval < 1000) {
-                logger.warn("Event flush interval {} milliseconds is too small", eventFlushInterval);
-            }
-            if (eventDispatchRetryInterval > 1_000_000) {
-                logger.warn("Event dispatch retry interval {} milliseconds is too big", eventDispatchRetryInterval);
-            }
-            if (eventDispatchRetryInterval > 0 && eventDispatchRetryInterval < 1000) {
-                logger.warn("Event dispatch retry interval {} milliseconds is too small", eventDispatchRetryInterval);
             }
 
             if (datafileConfig == null) {

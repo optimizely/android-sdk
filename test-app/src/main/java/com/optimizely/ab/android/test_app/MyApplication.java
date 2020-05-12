@@ -75,8 +75,8 @@ public class MyApplication extends Application {
 
          OptimizelyManager.Builder builder = OptimizelyManager.builder();
          optimizelyManager =  builder
-                 .withDatafileDownloadInterval(TimeUnit.MINUTES.toSeconds(15))
-                 .withEventFlushInterval(60)
+                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
+                 .withEventDispatchInterval(60, TimeUnit.SECONDS)
                  .withSDKKey("FCnSegiEkRry9rhVMroit4")
                  .build(getApplicationContext());
     }

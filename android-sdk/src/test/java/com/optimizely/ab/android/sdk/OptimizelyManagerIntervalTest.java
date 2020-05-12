@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -58,11 +59,83 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 @PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class})
 public class OptimizelyManagerIntervalTest {
 
-    private String testProjectId = "7595190003";
     private Logger logger;
 
+    // DatafileDownloadInterval
+
     @Test
-    public void testBuildWithEventFlushInterval() throws Exception {
+    public void testBuildWithDatafileDownloadInterval() throws Exception {
+        whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
+
+        Context appContext = mock(Context.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
+
+        long goodNumber = 27;
+        OptimizelyManager manager = OptimizelyManager.builder("1")
+                .withLogger(logger)
+                .withDatafileDownloadInterval(goodNumber, TimeUnit.MINUTES)
+                .build(appContext);
+
+        verifyNew(OptimizelyManager.class).withArguments(anyString(),
+                anyString(),
+                any(DatafileConfig.class),
+                any(Logger.class),
+                eq(goodNumber * 60L),                   // seconds
+                any(DatafileHandler.class),
+                any(ErrorHandler.class),
+                anyLong(),
+                any(EventHandler.class),
+                any(EventProcessor.class),
+                any(UserProfileService.class),
+                any(NotificationCenter.class));
+    }
+
+    @Test
+    public void testBuildWithDatafileDownloadIntervalDeprecated() throws Exception {
+        whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
+
+        Context appContext = mock(Context.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
+
+        long goodNumber = 1234L;
+        OptimizelyManager manager = OptimizelyManager.builder("1")
+                .withLogger(logger)
+                .withDatafileDownloadInterval(goodNumber)      // deprecated
+                .build(appContext);
+
+        verifyNew(OptimizelyManager.class).withArguments(anyString(),
+                anyString(),
+                any(DatafileConfig.class),
+                any(Logger.class),
+                eq(goodNumber),                             // seconds
+                any(DatafileHandler.class),
+                any(ErrorHandler.class),
+                anyLong(),
+                any(EventHandler.class),
+                any(EventProcessor.class),
+                any(UserProfileService.class),
+                any(NotificationCenter.class));
+    }
+
+    @Test
+    public void testBuildWithInvalidDatafileDownloadInterval() {
+        Context appContext = mock(Context.class);
+        Logger logger = mock(Logger.class);
+        when(appContext.getApplicationContext()).thenReturn(appContext);
+
+        long tooSmallNumber = 60;
+        OptimizelyManager manager = OptimizelyManager.builder("1")
+                .withLogger(logger)
+                .withDatafileDownloadInterval(tooSmallNumber, TimeUnit.SECONDS)
+                .build(appContext);
+
+        verify(logger).warn("Minimum datafile polling interval is 15 minutes. Defaulting to 15 minutes.");
+    }
+
+    // EventDispatchInterval
+
+    @Test
+    public void testBuildWithEventDispatchInterval() throws Exception {
         whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
         whenNew(BatchEventProcessor.class).withAnyArguments().thenReturn(mock(BatchEventProcessor.class));
 
@@ -72,7 +145,7 @@ public class OptimizelyManagerIntervalTest {
         long goodNumber = 100L;
         OptimizelyManager manager = OptimizelyManager.builder("1")
                 .withLogger(logger)
-                .withEventFlushInterval(goodNumber)     // seconds
+                .withEventDispatchInterval(goodNumber, TimeUnit.SECONDS)
                 .build(appContext);
 
         verifyNew(BatchEventProcessor.class).withArguments(any(BlockingQueue.class),
@@ -111,7 +184,7 @@ public class OptimizelyManagerIntervalTest {
 
         OptimizelyManager manager = OptimizelyManager.builder("1")
                 .withLogger(logger)
-                .withEventDispatchRetryInterval(goodNumber)     // seconds
+                .withEventDispatchRetryInterval(goodNumber, TimeUnit.MINUTES)
                 .build(appContext);
 
         verifyNew(BatchEventProcessor.class).withArguments(any(BlockingQueue.class),
@@ -130,7 +203,7 @@ public class OptimizelyManagerIntervalTest {
                 anyLong(),
                 any(DatafileHandler.class),
                 any(ErrorHandler.class),
-                eq(goodNumber * 1000L),     // milliseconds
+                eq(goodNumber * 1000L * 60L),     // milliseconds
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
@@ -138,17 +211,17 @@ public class OptimizelyManagerIntervalTest {
     }
 
     @Test
-    public void testBuildWithEventDispatchInterval() throws Exception {
+    public void testBuildWithEventDispatchIntervalDeprecated() throws Exception {
         whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
         whenNew(BatchEventProcessor.class).withAnyArguments().thenReturn(mock(BatchEventProcessor.class));
 
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
 
-        long goodNumber = 100L*1000L;
+        long goodNumber = 1234L;
         OptimizelyManager manager = OptimizelyManager.builder("1")
                 .withLogger(logger)
-                .withEventDispatchInterval(goodNumber)      // milliseconds
+                .withEventDispatchInterval(goodNumber)      // deprecated
                 .build(appContext);
 
         verifyNew(BatchEventProcessor.class).withArguments(any(BlockingQueue.class),
@@ -172,66 +245,6 @@ public class OptimizelyManagerIntervalTest {
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class));
-    }
-
-    @Test
-    public void testBuildWithInvalidEventDispatchInterval() {
-        Context appContext = mock(Context.class);
-        Logger logger = mock(Logger.class);
-        when(appContext.getApplicationContext()).thenReturn(appContext);
-
-        long tooSmallNumber = 100L;
-        OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withLogger(logger)
-                .withEventDispatchInterval(tooSmallNumber)
-                .build(appContext);
-
-        verify(logger).warn("Event flush interval {} milliseconds is too small", tooSmallNumber);
-    }
-
-    @Test
-    public void testBuildWithValidEventDispatchInterval() {
-        Context appContext = mock(Context.class);
-        Logger logger = mock(Logger.class);
-        when(appContext.getApplicationContext()).thenReturn(appContext);
-
-        long goodNumber = 100L * 1000L;
-        OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withLogger(logger)
-                .withEventDispatchInterval(goodNumber)
-                .build(appContext);
-
-        verify(logger, never()).warn(any(String.class), any(Integer.class));
-    }
-
-    @Test
-    public void testBuildWithInvalidEventFlushInterval() {
-        Context appContext = mock(Context.class);
-        Logger logger = mock(Logger.class);
-        when(appContext.getApplicationContext()).thenReturn(appContext);
-
-        long tooBigNumber = 100L * 1000L;
-        OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withLogger(logger)
-                .withEventFlushInterval(tooBigNumber)
-                .build(appContext);
-
-        verify(logger).warn("Event flush interval {} milliseconds is too big", tooBigNumber * 1000L);
-    }
-
-    @Test
-    public void testBuildWithValidEventFlushInterval() {
-        Context appContext = mock(Context.class);
-        Logger logger = mock(Logger.class);
-        when(appContext.getApplicationContext()).thenReturn(appContext);
-
-        long goodNumber = 100L;
-        OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withLogger(logger)
-                .withEventFlushInterval(goodNumber)
-                .build(appContext);
-
-        verify(logger, never()).warn(any(String.class), any(Integer.class));
     }
 
 }
