@@ -31,9 +31,12 @@ import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.notification.ActivateNotificationListener;
+import com.optimizely.ab.notification.DecisionNotification;
 import com.optimizely.ab.notification.NotificationHandler;
+import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.TrackNotificationListenerInterface;
 import com.optimizely.ab.notification.UpdateConfigNotification;
+import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 
 import java.util.Map;
 
@@ -68,30 +71,52 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         getApplicationContext().registerReceiver(eventRescheduler, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
 
-        /** Example of using Cache datafile to initialize optimizely client, if file is not present
-         in Cache it will be initialized from Raw.datafile.
-         **/
-        if (!INITIALIZE_ASYNCHRONOUSLY) {
-               optimizelyManager.initialize(myApplication, R.raw.datafile);
-               optimizelyManager.getOptimizely().getNotificationCenter().addActivateNotificationListener((Experiment experiment, String s,  Map<String, ?> map,  Variation variation,  LogEvent logEvent) -> {
-                   System.out.println("got activation");
-               });
-               optimizelyManager.getOptimizely().getNotificationCenter().addTrackNotificationListener((String s, String s1, Map<String, ?> map, Map<String, ?> map1, LogEvent logEvent) -> {
+        if (INITIALIZE_ASYNCHRONOUSLY) {
+            optimizelyManager.initialize(this, R.raw.datafile, (OptimizelyClient optimizely) -> {
+                addNotificationListeners();
 
-                   System.out.println("got track");
-               });
-               optimizelyManager.getOptimizely().getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, (UpdateConfigNotification notification) -> {
-                        System.out.println("got datafile change");
-               });
-
-               startVariation();
-        } else {
-            // Initialize Optimizely asynchronously
-            optimizelyManager.initialize(this,R.raw.datafile, (OptimizelyClient optimizely) -> {
                 startVariation();
             });
-        }
+        } else {
+            optimizelyManager.initialize(myApplication, R.raw.datafile);
 
+            addNotificationListeners();
+
+            startVariation();
+        }
+    }
+
+    private void addNotificationListeners() {
+        OptimizelyClient optimizely = optimizelyManager.getOptimizely();
+
+        // DECISION notification
+        // - this callback is triggered with the decision type, associated decision information, user ID, and attributes.
+        // - different APIs trigger different types of decisions: activate() -> "ab-test", isFeatureEnabled() -> "feature", ...
+        optimizely.addDecisionNotificationHandler((DecisionNotification notification) -> {
+            String type = notification.getType();
+            String userId = notification.getUserId();
+            Map<String, ?> attributes = notification.getAttributes();
+            Map<String, ?> decisionInfo = notification.getDecisionInfo();
+
+            System.out.println("got decision notification: " + "(" + type + ")(" + userId + ")(" + attributes.toString() + ")(" + decisionInfo.toString());
+        });
+
+        // Track notification
+        // - this callback is triggered when a tracking event has been sent
+        optimizely.addTrackNotificationHandler((TrackNotification notification) -> {
+            String eventKey = notification.getEventKey();
+            String userId = notification.getUserId();
+            Map<String, ?> attributes = notification.getAttributes();
+            Map<String, ?> eventTags = notification.getEventTags();
+
+            System.out.println("got track notification: " + "(" + eventKey + ")(" + userId + ")(" + attributes.toString() + ")(" + eventTags.toString());
+        });
+
+        // UpdateConfig notification
+        // - this callback is triggered when a new datafile is downloaded and the SDK project configuration has been updated
+        optimizely.addUpdateConfigNotificationHandler((UpdateConfigNotification notification) -> {
+            System.out.println("got datafile change notification:");
+        });
     }
 
     /**
@@ -104,7 +129,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         // Activate user and start activity based on the variation we get.
         // You can pass in any string for the user ID. In this example we just use a convenience method to generate a random one.
         String userId = myApplication.getAnonUserId();
-        Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId);
+        Map<String,String> attributes = myApplication.getAttributes();
+        Variation backgroundVariation = optimizelyManager.getOptimizely().activate("background_experiment", userId, attributes);
 
         // Utility method for verifying event dispatches in our automated tests
         CountingIdlingResourceManager.increment(); // increment for impression event

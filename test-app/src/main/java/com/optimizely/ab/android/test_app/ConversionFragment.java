@@ -29,6 +29,8 @@ import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 
+import java.util.Map;
+
 public class ConversionFragment extends Fragment {
 
     Button conversionButton;
@@ -50,10 +52,11 @@ public class ConversionFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 String userId = myApplication.getAnonUserId();
+                Map<String,String> attributes = myApplication.getAttributes();
 
                 // This tracks a conversion event for the event named `sample_conversion`
                 OptimizelyClient optimizely = optimizelyManager.getOptimizely();
-                optimizely.track("sample_conversion", userId);
+                optimizely.track("sample_conversion", userId, attributes);
 
                 // Utility method for verifying event dispatches in our automated tests
                 CountingIdlingResourceManager.increment(); // increment for conversion event
