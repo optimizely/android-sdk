@@ -87,12 +87,13 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void addNotificationListeners() {
-        OptimizelyClient optimizely = optimizelyManager.getOptimizely();
+        OptimizelyClient optimizelyClient = optimizelyManager.getOptimizely();
 
         // DECISION notification
         // - this callback is triggered with the decision type, associated decision information, user ID, and attributes.
         // - different APIs trigger different types of decisions: activate() -> "ab-test", isFeatureEnabled() -> "feature", ...
-        optimizely.addDecisionNotificationHandler((DecisionNotification notification) -> {
+
+        optimizelyClient.addDecisionNotificationHandler(notification -> {
             String type = notification.getType();
             String userId = notification.getUserId();
             Map<String, ?> attributes = notification.getAttributes();
@@ -103,7 +104,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         // Track notification
         // - this callback is triggered when a tracking event has been sent
-        optimizely.addTrackNotificationHandler((TrackNotification notification) -> {
+
+        optimizelyClient.addTrackNotificationHandler(notification -> {
             String eventKey = notification.getEventKey();
             String userId = notification.getUserId();
             Map<String, ?> attributes = notification.getAttributes();
@@ -114,7 +116,8 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         // UpdateConfig notification
         // - this callback is triggered when a new datafile is downloaded and the SDK project configuration has been updated
-        optimizely.addUpdateConfigNotificationHandler((UpdateConfigNotification notification) -> {
+        
+        optimizelyClient.addUpdateConfigNotificationHandler(notification -> {
             System.out.println("got datafile change notification:");
         });
     }
