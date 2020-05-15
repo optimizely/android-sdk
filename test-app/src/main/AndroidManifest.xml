@@ -50,7 +50,7 @@
         <activity android:name=".VariationAActivity" />
         <activity android:name=".EventConfirmationActivity" />
         <activity android:name=".ActivationErrorActivity" />
-        <activity android:name=".VariationBActivity"></activity>
+        <activity android:name=".VariationBActivity" />
 
         <!--
            Add these lines to your manifest if you want the datafile download background services to schedule themselves again after a boot

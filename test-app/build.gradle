@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -69,4 +71,8 @@ dependencies {
     androidTestImplementation project(':android-sdk')
     androidTestImplementation project(path: ':shared')
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }
