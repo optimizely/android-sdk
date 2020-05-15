@@ -838,10 +838,10 @@ public class OptimizelyManager {
 
             if (datafileDownloadInterval > 0) {
                 // JobScheduler API doesn't allow intervals less than 15 minutes
-                if (datafileDownloadInterval < 900) {
-                    datafileDownloadInterval = 900;
-                    logger.warn("Minimum datafile polling interval is 15 minutes. Defaulting to 15 minutes.");
-                }
+//                if (datafileDownloadInterval < 900) {
+//                    datafileDownloadInterval = 900;
+//                    logger.warn("Minimum datafile polling interval is 15 minutes. Defaulting to 15 minutes.");
+//                }
             }
 
             if (datafileConfig == null) {

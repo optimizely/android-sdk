@@ -69,14 +69,13 @@ class MyApplication : Application() {
         // espresso tests are run against this project id.  Changing it will make the Optimizely
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
         val builder = OptimizelyManager.builder()
-        optimizelyManager = builder.withEventDispatchInterval(60L * 1000L)
+        optimizelyManager = builder.withEventDispatchInterval(60L)
                 .withDatafileDownloadInterval(TimeUnit.MINUTES.toSeconds(15))
                 .withSDKKey("FCnSegiEkRry9rhVMroit4")
                 .build(applicationContext)
     }
 
-    val currentActivity: BaseActivity?
-        get() = null
+    var currentActivity: BaseActivity? = null
 
     private fun getAbbriviation(locality: Any): String {
         return "NY"

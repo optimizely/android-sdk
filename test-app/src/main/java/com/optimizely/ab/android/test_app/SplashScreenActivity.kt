@@ -78,9 +78,11 @@ class SplashScreenActivity : AppCompatActivity() {
             "variation_b" -> intent = Intent(myApplication!!.baseContext, VariationBActivity::class.java)
         }
         enabled?.let {
-            intent.putExtra("show_coupon", true)
-            val message = optimizelyManager?.optimizely?.getFeatureVariableString("show_coupon", "message", userId)
-            var color = optimizelyManager?.optimizely?.getFeatureVariableString("my_feature", "string_variable", "userId")
+            if (it) {
+                intent.putExtra("show_coupon", true)
+                val message = optimizelyManager?.optimizely?.getFeatureVariableString("show_coupon", "message", userId)
+                var color = optimizelyManager?.optimizely?.getFeatureVariableString("my_feature", "string_variable", "userId")
+            }
         }
 
         optimizelyManager?.optimizely?.notificationCenter?.addNotificationHandler(UpdateConfigNotification::class.java) {

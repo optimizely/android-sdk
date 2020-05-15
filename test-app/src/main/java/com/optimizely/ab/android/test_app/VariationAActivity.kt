@@ -15,7 +15,10 @@
  */
 package com.optimizely.ab.android.test_app
 
+import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
+import android.view.View
 
 class VariationAActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
