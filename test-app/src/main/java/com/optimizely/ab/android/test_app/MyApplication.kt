@@ -34,9 +34,10 @@ class MyApplication : Application() {
             } else {
                 attributes["locale"] = resources.configuration.locale.toString()
             }
-            val cityAbbr = getAbbriviation(getLocality(location))
-            attributes["location"] = cityAbbr
+            val abbr = getAbbriviation(getLocality(location))
+            attributes["location"] = abbr
             attributes["age"] = userAge
+            attributes["browser_type"] = "chrome"
             return attributes
         }// comment this out to get a brand new user id every time this function is called.
     // useful for incrementing results page count for QA purposes

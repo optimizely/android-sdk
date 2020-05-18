@@ -40,6 +40,7 @@ class ConversionFragment : Fragment() {
             // This tracks a conversion event for the event named `sample_conversion`
             val optimizely = optimizelyManager?.optimizely
             optimizely?.track("sample_conversion", userId)
+            optimizely?.track("my_conversion", userId)
 
             // Utility method for verifying event dispatches in our automated tests
             CountingIdlingResourceManager.increment() // increment for conversion event

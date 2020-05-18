@@ -64,32 +64,21 @@ class SplashScreenActivity : AppCompatActivity() {
         var intent = Intent(myApplication!!.baseContext, ActivationErrorActivity::class.java)
 
         // Activate user and start activity based on the variation we get.
-        // You can pass in any string for the user ID. In this example we just use a convenience method to generate a random one.
+        // You can pass in any string for the user ID. In this example
+        // we just use a convenience method to generate a random one.
         val userId = myApplication?.anonUserId ?: ""
-        var backgroundVariation = optimizelyManager?.optimizely?.activate("background_experiment", "userId")
+        val attributes = myApplication?.attributes ?: HashMap<String, Any>()
 
-        val message = optimizelyManager?.optimizely?.getFeatureVariableString("join_banner", "banner", "userId")
-        val bold = optimizelyManager?.optimizely?.getFeatureVariableBoolean("join_banner", "isBold", "userId")
-
-        val enabled = optimizelyManager?.optimizely?.isFeatureEnabled("show_coupon", userId, myApplication?.attributes ?: HashMap<String,Any>()  )
-        // variation is nullable so we should check for null values
-        when (backgroundVariation?.key) {
+        val v = optimizelyManager?.optimizely?.activate("background_experiment", userId, attributes)
+        when (v?.key) {
             "variation_a" -> intent = Intent(myApplication!!.baseContext, VariationAActivity::class.java)
             "variation_b" -> intent = Intent(myApplication!!.baseContext, VariationBActivity::class.java)
         }
-        enabled?.let {
-            if (it) {
-                intent.putExtra("show_coupon", true)
-                val message = optimizelyManager?.optimizely?.getFeatureVariableString("show_coupon", "message", userId)
-                var color = optimizelyManager?.optimizely?.getFeatureVariableString("my_feature", "string_variable", "userId")
-            }
+
+        when (optimizelyManager?.optimizely?.isFeatureEnabled("show_coupon", userId, attributes)) {
+            true -> intent.putExtra("show_coupon", true)
         }
 
-        optimizelyManager?.optimizely?.notificationCenter?.addNotificationHandler(UpdateConfigNotification::class.java) {
-            println("got datafile change")
-            val currentActivity = myApplication?.currentActivity
-            currentActivity?.setShowCoupon(optimizelyManager!!.optimizely.isFeatureEnabled("show_coupon", userId, myApplication!!.attributes))
-        }
         startActivity(intent)
 
         //call this method if you set an interval but want to now stop doing bakcground updates.
