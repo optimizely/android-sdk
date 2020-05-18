@@ -32,11 +32,11 @@ class CouponActivity : BaseActivity() {
         val message = app.optimizelyManager?.optimizely?.getFeatureVariableString("show_coupon", "message", userId, attributes)
         val discount = app.optimizelyManager?.optimizely?.getFeatureVariableInteger("show_coupon", "discount", userId, attributes)
 
-        txt.text = message + " $discount%"
+        txt.text = "$message $discount%"
 
-        val background = app.optimizelyManager?.optimizely?.getFeatureVariableString("show_coupon", "background", userId, attributes)
-
-
+        when (app.optimizelyManager?.optimizely?.getFeatureVariableString("show_coupon", "text_color", userId, attributes)) {
+            "yellow" -> txt.setTextColor(Color.YELLOW)
+        }
 
         button.setOnClickListener() {
             finish()

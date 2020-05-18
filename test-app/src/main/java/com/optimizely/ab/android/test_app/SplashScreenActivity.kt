@@ -79,6 +79,10 @@ class SplashScreenActivity : AppCompatActivity() {
             true -> intent.putExtra("show_coupon", true)
         }
 
+        optimizelyManager?.optimizely?.notificationCenter?.addNotificationHandler(UpdateConfigNotification::class.java) {
+            myApplication?.currentActivity?.setShowCoupon(optimizelyManager?.optimizely?.isFeatureEnabled("show_coupon", userId, attributes))
+        }
+
         startActivity(intent)
 
         //call this method if you set an interval but want to now stop doing bakcground updates.

@@ -15,6 +15,7 @@
  */
 package com.optimizely.ab.android.test_app
 
+import android.content.Intent
 import android.os.Bundle
 
 class VariationBActivity : BaseActivity() {
@@ -22,4 +23,14 @@ class VariationBActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_variation_b)
     }
+
+    override fun setShowCoupon(v: Boolean?) {
+        super.setShowCoupon(v)
+        if (getShowCoupon()) {
+            val app = applicationContext as MyApplication
+            val intent = Intent(app?.baseContext, CouponActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
 }
