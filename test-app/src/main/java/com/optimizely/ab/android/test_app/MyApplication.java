@@ -74,9 +74,10 @@ public class MyApplication extends Application {
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
 
          OptimizelyManager.Builder builder = OptimizelyManager.builder();
-         optimizelyManager =  builder.withEventDispatchInterval(60L * 1000L)
-            .withDatafileDownloadInterval(TimeUnit.MINUTES.toSeconds(15))
-            .withSDKKey("FCnSegiEkRry9rhVMroit4")
-            .build(getApplicationContext());
+         optimizelyManager =  builder
+                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
+                 .withEventDispatchInterval(60, TimeUnit.SECONDS)
+                 .withSDKKey("FCnSegiEkRry9rhVMroit4")
+                 .build(getApplicationContext());
     }
 }
