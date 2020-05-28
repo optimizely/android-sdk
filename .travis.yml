@@ -53,7 +53,6 @@ script:
 stages:
   - 'Lint markdown files'
   - 'Integration tests'
-  - 'Benchmarking tests'
   - 'Test'
 
 jobs:
@@ -80,8 +79,7 @@ jobs:
         - mdspell -a -n -r --en-us '**/*.md'
       after_success: skip
 
-    - &integrationtest
-      stage: 'Integration tests'
+    - stage: 'Integration tests'
       addons:
         srcclr: true
       env:
@@ -98,6 +96,3 @@ jobs:
       script:
         - $HOME/travisci-tools/trigger-script-with-status-update.sh
       after_success: travis_terminate 0
-    - <<: *integrationtest
-      stage: 'Benchmarking tests'
-      env: SDK=android FULLSTACK_TEST_REPO=Benchmarking BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.} SDK_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
