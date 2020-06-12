@@ -88,9 +88,8 @@ public class ServiceScheduler {
         logger.info("Scheduled {}", intent.getComponent().toShortString());
     }
 
-
     private void setRepeating(long interval, PendingIntent pendingIntent, Intent intent) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int jobId = getJobId(intent);
             if (jobId == -1) {
                 logger.error("Problem getting scheduled job id");
@@ -109,7 +108,11 @@ public class ServiceScheduler {
                             ScheduledJobService.class.getName()));
             builder.setPeriodic(interval, interval);
             builder.setPersisted(true);
-            builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+            // we are only doing repeating on datafile service. it is a prefetch.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                builder.setPrefetch(true);
+            }
+            //builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
             builder.setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_LINEAR);
 
             intent.putExtra(JobWorkService.INTENT_EXTRA_JWS_PERIODIC, interval);
@@ -270,8 +273,7 @@ public class ServiceScheduler {
             JobInfo jobInfo = new JobInfo.Builder(jobId,
                     new ComponentName(context, JobWorkService.class))
                     // schedule it to run any time between 1 - 5 minutes
-                    .setMinimumLatency(0)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .setMinimumLatency(JobWorkService.ONE_MINUTE)
                     .setOverrideDeadline(5 * JobWorkService.ONE_MINUTE)
                     .build();
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);

@@ -228,7 +228,7 @@ public class OptimizelyManager {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
 
-        if (downloadToCache) {
+        if (downloadToCache && !datafileDownloadEnabled()) {
             datafileHandler.downloadDatafileToCache(context, datafileConfig, updateConfigOnNewDatafile);
         }
 
@@ -491,8 +491,12 @@ public class OptimizelyManager {
         return datafileHandler;
     }
 
+    private boolean datafileDownloadEnabled() {
+        return datafileDownloadInterval > 0;
+    }
+
     private void startDatafileHandler(Context context) {
-        if (datafileDownloadInterval <= 0) {
+        if (!datafileDownloadEnabled()) {
             logger.debug("Invalid download interval, ignoring background updates.");
             return;
         }

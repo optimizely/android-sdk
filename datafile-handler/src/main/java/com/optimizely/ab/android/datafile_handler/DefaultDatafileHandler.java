@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The default implementation of {@link DatafileHandler} and the main
@@ -139,7 +140,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
         enableUpdateConfigOnNewDatafile(context, datafileConfig, listener);
     }
 
-    public void enableUpdateConfigOnNewDatafile(Context context, DatafileConfig datafileConfig, DatafileLoadedListener listener) {
+    synchronized public void enableUpdateConfigOnNewDatafile(Context context, DatafileConfig datafileConfig, DatafileLoadedListener listener) {
         // do not restart observer if already set
         if (fileObserver != null) {
             return;
@@ -174,6 +175,13 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
         fileObserver.startWatching();
     }
 
+    synchronized private void disableUploadConfig() {
+        if (fileObserver != null) {
+            fileObserver.stopWatching();
+            fileObserver = null;
+        }
+    }
+
     private static void storeInterval(Context context, long interval) {
         OptlyStorage storage = new OptlyStorage(context);
         storage.saveLong("DATAFILE_INTERVAL", interval);
@@ -202,10 +210,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
 
         storeInterval(context, -1);
 
-        if (fileObserver != null) {
-            fileObserver.stopWatching();
-            fileObserver = null;
-        }
+        disableUploadConfig();
     }
 
     private void enableBackgroundCache(Context context, DatafileConfig datafileConfig) {
