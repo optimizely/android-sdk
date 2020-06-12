@@ -636,7 +636,7 @@ public class OptimizelyManagerTest {
         }
 
         // when periodic polling enabled, project config always updated on cache datafile update (regardless of "updateConfigOnNewDatafile" setting)
-        assertEquals(client.getOptimizelyConfig().getRevision(), "241");
+        assertEquals(client.getOptimizelyConfig().getRevision(), "7"); // wait for first download.
     }
 
     @Test
@@ -669,7 +669,73 @@ public class OptimizelyManagerTest {
             //
         }
 
+        assertEquals(client.getOptimizelyConfig().getRevision(), "7");
+    }
+
+    @Test
+    public void initializeSyncWithUpdateOnNewDatafileDisabledWithPeriodicPollingDisabled() {
+        boolean downloadToCache = true;
+        boolean updateConfigOnNewDatafiel = false;
+        int pollingInterval = 0;   // disable polling
+
+        DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
+        Logger logger = mock(Logger.class);
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                null, null, null, null);
+
+        doAnswer(
+                new Answer<Object>() {
+                    public Object answer(InvocationOnMock invocation) {
+                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
+                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
+                        return null;
+                    }
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+
+        OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafiel);
+
+        try {
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            //
+        }
+
         // when periodic polling enabled, project config always updated on cache datafile update (regardless of "updateConfigOnNewDatafile" setting)
+        assertEquals(client.getOptimizelyConfig().getRevision(), "7"); // wait for first download.
+    }
+
+    @Test
+    public void initializeSyncWithUpdateOnNewDatafileEnabledWithPeriodicPollingDisabled() {
+        boolean downloadToCache = true;
+        boolean updateConfigOnNewDatafiel = true;
+        int pollingInterval = 0;   // disable polling
+
+        DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
+        Logger logger = mock(Logger.class);
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                null, null, null, null);
+
+        doAnswer(
+                new Answer<Object>() {
+                    public Object answer(InvocationOnMock invocation) {
+                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
+                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
+                        return null;
+                    }
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+
+        OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafiel);
+
+        try {
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            //
+        }
+
         assertEquals(client.getOptimizelyConfig().getRevision(), "241");
     }
 
