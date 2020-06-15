@@ -49,7 +49,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    buildToolsVersion '28.0.3'
+    buildToolsVersion build_tools_version
 }
 
 dependencies {
