@@ -228,7 +228,7 @@ public class OptimizelyManager {
             logger.error("Unable to build OptimizelyClient instance", e);
         }
 
-        if (downloadToCache && !datafileDownloadEnabled()) {
+        if (downloadToCache) {
             datafileHandler.downloadDatafileToCache(context, datafileConfig, updateConfigOnNewDatafile);
         }
 

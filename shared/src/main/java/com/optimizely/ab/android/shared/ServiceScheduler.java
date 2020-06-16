@@ -112,7 +112,6 @@ public class ServiceScheduler {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 builder.setPrefetch(true);
             }
-            //builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
             builder.setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_LINEAR);
 
             intent.putExtra(JobWorkService.INTENT_EXTRA_JWS_PERIODIC, interval);

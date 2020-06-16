@@ -29,18 +29,22 @@ import com.optimizely.ab.android.shared.OptlyStorage;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import java.util.Date;
 import java.util.concurrent.Executor;
 
 /**
  * Handles intents and bindings in {@link DatafileService}
  */
 public class DatafileLoader {
+    private static String datafileDownloadTime = "optlyDatafileDownloadTime";
+    private static long minTimeBetweenDownloadsMilli = 60 * 1000;
 
     @NonNull private final DatafileCache datafileCache;
     @NonNull private final DatafileClient datafileClient;
     @NonNull private final DatafileService datafileService;
     @NonNull private final Executor executor;
     @NonNull private final Logger logger;
+    @NonNull private final OptlyStorage storage;
 
     private boolean hasNotifiedListener = false;
 
@@ -55,14 +59,40 @@ public class DatafileLoader {
         this.datafileCache = datafileCache;
         this.executor = executor;
 
+        this.storage = new OptlyStorage(datafileService.getApplicationContext());
+
         new DatafileServiceConnection(new DatafileConfig("projectId", (String)null), datafileService.getApplicationContext(), new DatafileLoadedListener() {
             public void onDatafileLoaded(@Nullable String dataFile) {}
             public void onStop(Context context) {}
         });
     }
 
+    private boolean allowDownload(String url, DatafileLoadedListener datafileLoadedListener) {
+        long time = storage.getLong(url + datafileDownloadTime, 1);
+        Date last = new Date(time);
+        Date now = new Date();
+        if (now.getTime() - last.getTime() < minTimeBetweenDownloadsMilli) {
+            logger.debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
+            if (datafileLoadedListener != null) {
+                notify(datafileLoadedListener, getCachedDatafile());
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    private void saveDownloadTime(String url) {
+        long time = new Date().getTime();
+        storage.saveLong(url + datafileDownloadTime, time);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     public void getDatafile(@NonNull String datafileUrl, @Nullable DatafileLoadedListener datafileLoadedListener) {
+        if (!allowDownload(datafileUrl, datafileLoadedListener)) {
+            return;
+        }
+
         RequestDatafileFromClientTask requestDatafileFromClientTask =
                 new RequestDatafileFromClientTask(datafileUrl,
                         datafileService,
@@ -71,8 +101,11 @@ public class DatafileLoader {
                         this,
                         datafileLoadedListener,
                         logger);
+
         // Execute tasks in order
         requestDatafileFromClientTask.executeOnExecutor(executor);
+        // set the download time and don't allow downloads to overlap less than a minute
+        saveDownloadTime(datafileUrl);
         logger.info("Refreshing data file");
     }
 
@@ -84,6 +117,18 @@ public class DatafileLoader {
             this.hasNotifiedListener = true;
         }
     }
+
+    private String getCachedDatafile() {
+        String dataFile = null;
+
+        JSONObject jsonFile = datafileCache.load();
+        if (jsonFile != null) {
+            dataFile = jsonFile.toString();
+        }
+
+        return dataFile;
+    }
+
     private static class RequestDatafileFromClientTask extends AsyncTask<Void, Void, String> {
 
         @NonNull private final String datafileUrl;
@@ -132,9 +177,9 @@ public class DatafileLoader {
                 }
             }
             else {
-                JSONObject jsonFile = datafileCache.load();
-                if (jsonFile != null) {
-                    dataFile = jsonFile.toString();
+                String cachedDatafile = datafileLoader.getCachedDatafile();
+                if (cachedDatafile != null) {
+                    dataFile = cachedDatafile;
                 }
             }
 

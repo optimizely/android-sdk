@@ -150,7 +150,7 @@ public class DatafileLoaderTest {
     public void warningsAreLogged() throws IOException {
         final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
         Cache cache = mock(Cache.class);
-        datafileCache = new DatafileCache("1", cache, logger);
+        datafileCache = new DatafileCache("warningsAreLogged", cache, logger);
         DatafileLoader datafileLoader =
                 new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
 
@@ -159,7 +159,7 @@ public class DatafileLoaderTest {
         when(cache.delete(datafileCache.getFileName())).thenReturn(false);
         when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(false);
 
-        datafileLoader.getDatafile("1", datafileLoadedListener);
+        datafileLoader.getDatafile("warningsAreLogged", datafileLoadedListener);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -169,5 +169,30 @@ public class DatafileLoaderTest {
         verify(logger).warn("Unable to delete old datafile");
         verify(logger).warn("Unable to save new datafile");
         verify(datafileLoadedListener, atMost(1)).onDatafileLoaded("{}");
+    }
+
+    @Test
+    public void debugLogged() throws IOException {
+        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        Cache cache = mock(Cache.class);
+        datafileCache = new DatafileCache("debugLogged", cache, logger);
+        DatafileLoader datafileLoader =
+                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+
+        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
+        when(cache.exists(datafileCache.getFileName())).thenReturn(true);
+        when(cache.delete(datafileCache.getFileName())).thenReturn(false);
+        when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(false);
+
+        datafileLoader.getDatafile("debugLogged", datafileLoadedListener);
+        datafileLoader.getDatafile("debugLogged", datafileLoadedListener);
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        verify(logger).debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
+        verify(datafileLoadedListener, atMost(2)).onDatafileLoaded("{}");
     }
 }
