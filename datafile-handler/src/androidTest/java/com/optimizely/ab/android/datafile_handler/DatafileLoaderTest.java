@@ -45,6 +45,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -194,5 +195,6 @@ public class DatafileLoaderTest {
 
         verify(logger).debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
         verify(datafileLoadedListener, atMost(2)).onDatafileLoaded("{}");
+        verify(datafileLoadedListener, atLeast(1)).onDatafileLoaded("{}");
     }
 }
