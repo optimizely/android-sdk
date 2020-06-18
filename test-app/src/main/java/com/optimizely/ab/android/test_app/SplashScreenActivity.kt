@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2018, Optimizely, Inc. and contributors                        *
+ * Copyright 2017-2020, Optimizely, Inc. and contributors                        *
  * *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -61,7 +61,7 @@ class SplashScreenActivity : AppCompatActivity() {
      */
     private fun startVariation() {
         // this is the control variation, it will show if we are not able to determine which variation to bucket the user into
-        var intent = Intent(myApplication!!.baseContext, ActivationErrorActivity::class.java)
+        var intent = Intent(this, ActivationErrorActivity::class.java)
 
         // Activate user and start activity based on the variation we get.
         // You can pass in any string for the user ID. In this example
@@ -71,8 +71,8 @@ class SplashScreenActivity : AppCompatActivity() {
 
         val v = optimizelyManager?.optimizely?.activate("background_experiment", userId, attributes)
         when (v?.key) {
-            "variation_a" -> intent = Intent(myApplication!!.baseContext, VariationAActivity::class.java)
-            "variation_b" -> intent = Intent(myApplication!!.baseContext, VariationBActivity::class.java)
+            "variation_a" -> intent = Intent(this, VariationAActivity::class.java)
+            "variation_b" -> intent = Intent(this, VariationBActivity::class.java)
         }
 
         when (optimizelyManager?.optimizely?.isFeatureEnabled("show_coupon", userId, attributes)) {

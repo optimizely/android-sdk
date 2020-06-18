@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017, Optimizely, Inc. and contributors                        *
+ * Copyright 2017-2020, Optimizely, Inc. and contributors                        *
  * *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -31,7 +31,7 @@ class VariationAActivity : BaseActivity() {
         super.setShowCoupon(v)
         if (getShowCoupon()) {
             val app = applicationContext as MyApplication
-            val intent = Intent(app?.baseContext, CouponActivity::class.java)
+            val intent = Intent(this, CouponActivity::class.java)
             startActivity(intent)
         }
     }

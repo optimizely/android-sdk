@@ -134,6 +134,4 @@ android.libraryVariants.all { variant ->
     }
     project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
 }
-repositories {
-    mavenCentral()
-}
+
