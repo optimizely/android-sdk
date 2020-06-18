@@ -36,6 +36,8 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.util.concurrent.TimeUnit;
 
@@ -45,8 +47,10 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -150,7 +154,7 @@ public class DatafileLoaderTest {
     public void warningsAreLogged() throws IOException {
         final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
         Cache cache = mock(Cache.class);
-        datafileCache = new DatafileCache("1", cache, logger);
+        datafileCache = new DatafileCache("warningsAreLogged", cache, logger);
         DatafileLoader datafileLoader =
                 new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
 
@@ -159,7 +163,7 @@ public class DatafileLoaderTest {
         when(cache.delete(datafileCache.getFileName())).thenReturn(false);
         when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(false);
 
-        datafileLoader.getDatafile("1", datafileLoadedListener);
+        datafileLoader.getDatafile("warningsAreLogged", datafileLoadedListener);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -169,5 +173,119 @@ public class DatafileLoaderTest {
         verify(logger).warn("Unable to delete old datafile");
         verify(logger).warn("Unable to save new datafile");
         verify(datafileLoadedListener, atMost(1)).onDatafileLoaded("{}");
+    }
+
+    @Test
+    public void debugLogged() throws IOException {
+        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        Cache cache = mock(Cache.class);
+        datafileCache = new DatafileCache("debugLogged", cache, logger);
+        DatafileLoader datafileLoader =
+                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+
+        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
+        when(cache.exists(datafileCache.getFileName())).thenReturn(true);
+        when(cache.delete(datafileCache.getFileName())).thenReturn(false);
+        when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(false);
+
+        datafileLoader.getDatafile("debugLogged", datafileLoadedListener);
+        datafileLoader.getDatafile("debugLogged", datafileLoadedListener);
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        verify(logger).debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
+        verify(datafileLoadedListener, atMost(2)).onDatafileLoaded("{}");
+        verify(datafileLoadedListener, atLeast(1)).onDatafileLoaded("{}");
+    }
+
+    @Test
+    public void debugLoggedMultiThreaded() throws IOException {
+        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        Cache cache = mock(Cache.class);
+        datafileCache = new DatafileCache("debugLoggedMultiThreaded", cache, logger);
+        DatafileLoader datafileLoader =
+                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+
+        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
+        when(cache.exists(datafileCache.getFileName())).thenReturn(true);
+        when(cache.delete(datafileCache.getFileName())).thenReturn(true);
+        when(cache.load(datafileCache.getFileName())).thenReturn("{}");
+        when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(true);
+
+        Runnable r = () -> datafileLoader.getDatafile("debugLoggedMultiThreaded", datafileLoadedListener);
+
+        new Thread(r).start();
+        new Thread(r).start();
+        new Thread(r).start();
+        new Thread(r).start();
+
+        datafileLoader.getDatafile("debugLoggedMultiThreaded", datafileLoadedListener);
+
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        verify(logger, atLeast(1)).debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
+        verify(datafileLoadedListener, atMost(4)).onDatafileLoaded("{}");
+        verify(datafileLoadedListener, atLeast(1)).onDatafileLoaded("{}");
+    }
+
+
+    private void setTestDownloadFrequency(DatafileLoader datafileLoader, long value) {
+        try {
+            Field betweenDownloadsMilli = DatafileLoader.class.getDeclaredField("minTimeBetweenDownloadsMilli");
+            betweenDownloadsMilli.setAccessible(true);
+
+            //Field modifiersField;
+            //modifiersField = Field.class.getDeclaredField("modifiers");
+            //modifiersField.setAccessible(true);
+            //modifiersField.setInt(betweenDownloadsMilli, betweenDownloadsMilli.getModifiers() & ~Modifier.FINAL);
+            betweenDownloadsMilli.set(null, value);
+
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void allowDoubleDownload() throws IOException {
+        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        Cache cache = mock(Cache.class);
+        datafileCache = new DatafileCache("allowDoubleDownload", cache, logger);
+        DatafileLoader datafileLoader =
+                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+
+        // set download time to 1 second
+        setTestDownloadFrequency(datafileLoader, 1000L);
+
+        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
+        when(cache.exists(datafileCache.getFileName())).thenReturn(true);
+        when(cache.delete(datafileCache.getFileName())).thenReturn(false);
+        when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(false);
+
+        datafileLoader.getDatafile("allowDoubleDownload", datafileLoadedListener);
+        try {
+            executor.awaitTermination(2, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        datafileLoader.getDatafile("allowDoubleDownload", datafileLoadedListener);
+
+        // reset back to normal.
+        setTestDownloadFrequency(datafileLoader, 60 * 1000L);
+
+        verify(logger, never()).debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
+        verify(datafileLoadedListener, atMost(2)).onDatafileLoaded("{}");
+        verify(datafileLoadedListener, atLeast(1)).onDatafileLoaded("{}");
     }
 }
