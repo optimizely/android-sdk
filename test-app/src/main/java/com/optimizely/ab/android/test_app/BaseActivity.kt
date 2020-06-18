@@ -35,8 +35,8 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        showCoupon = intent.getBooleanExtra("show_coupon", false)
         super.onCreate(savedInstanceState)
+        showCoupon = intent.getBooleanExtra("show_coupon", false)
 
         val application = applicationContext as MyApplication
         application?.currentActivity = this
