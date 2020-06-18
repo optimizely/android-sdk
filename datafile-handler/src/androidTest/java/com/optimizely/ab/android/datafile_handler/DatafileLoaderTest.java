@@ -185,6 +185,7 @@ public class DatafileLoaderTest {
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
         when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(true);
+        when(cache.exists(datafileCache.getFileName())).thenReturn(true);
         when(cache.load(datafileCache.getFileName())).thenReturn("{}");
 
         datafileLoader.getDatafile("debugLogged", datafileLoadedListener);
