@@ -36,6 +36,8 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.util.concurrent.TimeUnit;
 
@@ -48,6 +50,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -194,6 +197,54 @@ public class DatafileLoaderTest {
         }
 
         verify(logger).debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
+        verify(datafileLoadedListener, atMost(2)).onDatafileLoaded("{}");
+        verify(datafileLoadedListener, atLeast(1)).onDatafileLoaded("{}");
+    }
+
+    private void setTestDownloadFrequency(DatafileLoader datafileLoader) {
+        try {
+            Field betweenDownloadsMilli = DatafileLoader.class.getDeclaredField("minTimeBetweenDownloadsMilli");
+            betweenDownloadsMilli.setAccessible(true);
+
+            //Field modifiersField;
+            //modifiersField = Field.class.getDeclaredField("modifiers");
+            //modifiersField.setAccessible(true);
+            //modifiersField.setInt(betweenDownloadsMilli, betweenDownloadsMilli.getModifiers() & ~Modifier.FINAL);
+            betweenDownloadsMilli.set(null, 1000L);
+
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void allowDoubleDownload() throws IOException {
+        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        Cache cache = mock(Cache.class);
+        datafileCache = new DatafileCache("allowDoubleDownload", cache, logger);
+        DatafileLoader datafileLoader =
+                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+        setTestDownloadFrequency(datafileLoader);
+
+        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
+        when(cache.exists(datafileCache.getFileName())).thenReturn(true);
+        when(cache.delete(datafileCache.getFileName())).thenReturn(false);
+        when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(false);
+
+        datafileLoader.getDatafile("allowDoubleDownload", datafileLoadedListener);
+        try {
+            executor.awaitTermination(2, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        datafileLoader.getDatafile("allowDoubleDownload", datafileLoadedListener);
+
+        verify(logger, never()).debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
         verify(datafileLoadedListener, atMost(2)).onDatafileLoaded("{}");
         verify(datafileLoadedListener, atLeast(1)).onDatafileLoaded("{}");
     }

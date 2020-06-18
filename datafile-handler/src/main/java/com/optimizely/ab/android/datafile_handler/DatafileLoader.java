@@ -36,8 +36,8 @@ import java.util.concurrent.Executor;
  * Handles intents and bindings in {@link DatafileService}
  */
 public class DatafileLoader {
-    private static String datafileDownloadTime = "optlyDatafileDownloadTime";
-    private static long minTimeBetweenDownloadsMilli = 60 * 1000;
+    private static final String datafileDownloadTime = "optlyDatafileDownloadTime";
+    private static Long minTimeBetweenDownloadsMilli = 60 * 1000L;
 
     @NonNull private final DatafileCache datafileCache;
     @NonNull private final DatafileClient datafileClient;
