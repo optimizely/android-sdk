@@ -18,6 +18,8 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
@@ -201,7 +203,42 @@ public class DatafileLoaderTest {
         verify(datafileLoadedListener, atLeast(1)).onDatafileLoaded("{}");
     }
 
-    private void setTestDownloadFrequency(DatafileLoader datafileLoader) {
+    @Test
+    public void debugLoggedMultiThreaded() throws IOException {
+        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        Cache cache = mock(Cache.class);
+        datafileCache = new DatafileCache("debugLoggedMultiThreaded", cache, logger);
+        DatafileLoader datafileLoader =
+                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+
+        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
+        when(cache.exists(datafileCache.getFileName())).thenReturn(true);
+        when(cache.delete(datafileCache.getFileName())).thenReturn(true);
+        when(cache.load(datafileCache.getFileName())).thenReturn("{}");
+        when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(true);
+
+        Runnable r = () -> datafileLoader.getDatafile("debugLoggedMultiThreaded", datafileLoadedListener);
+
+        new Thread(r).start();
+        new Thread(r).start();
+        new Thread(r).start();
+        new Thread(r).start();
+
+        datafileLoader.getDatafile("debugLoggedMultiThreaded", datafileLoadedListener);
+
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        verify(logger, atLeast(1)).debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
+        verify(datafileLoadedListener, atMost(4)).onDatafileLoaded("{}");
+        verify(datafileLoadedListener, atLeast(1)).onDatafileLoaded("{}");
+    }
+
+
+    private void setTestDownloadFrequency(DatafileLoader datafileLoader, long value) {
         try {
             Field betweenDownloadsMilli = DatafileLoader.class.getDeclaredField("minTimeBetweenDownloadsMilli");
             betweenDownloadsMilli.setAccessible(true);
@@ -210,7 +247,7 @@ public class DatafileLoaderTest {
             //modifiersField = Field.class.getDeclaredField("modifiers");
             //modifiersField.setAccessible(true);
             //modifiersField.setInt(betweenDownloadsMilli, betweenDownloadsMilli.getModifiers() & ~Modifier.FINAL);
-            betweenDownloadsMilli.set(null, 1000L);
+            betweenDownloadsMilli.set(null, value);
 
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
@@ -228,7 +265,9 @@ public class DatafileLoaderTest {
         datafileCache = new DatafileCache("allowDoubleDownload", cache, logger);
         DatafileLoader datafileLoader =
                 new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
-        setTestDownloadFrequency(datafileLoader);
+
+        // set download time to 1 second
+        setTestDownloadFrequency(datafileLoader, 1000L);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
         when(cache.exists(datafileCache.getFileName())).thenReturn(true);
@@ -243,6 +282,9 @@ public class DatafileLoaderTest {
         }
 
         datafileLoader.getDatafile("allowDoubleDownload", datafileLoadedListener);
+
+        // reset back to normal.
+        setTestDownloadFrequency(datafileLoader, 60 * 1000L);
 
         verify(logger, never()).debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
         verify(datafileLoadedListener, atMost(2)).onDatafileLoaded("{}");
