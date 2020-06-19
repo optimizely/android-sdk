@@ -1,5 +1,15 @@
 # Optimizely Android X SDK Changelog
 
+## 3.5.2
+June 18th, 2020
+
+Upgrade to latest stable build tools 29.0.3.
+
+### Bug Fixes
+* Cleanup scheduled jobs to ensure that there is no jobs delayed.[335](https://github.com/optimizely/android-sdk/pull/335)
+* Throttle datafile downloads to ensure there is a minimum of 1 minute between them.
+* Clarify dispatch intervals. [323](https://github.com/optimizely/android-sdk/pull/323)
+
 ## 3.5.1
 April 29th, 2020
 
