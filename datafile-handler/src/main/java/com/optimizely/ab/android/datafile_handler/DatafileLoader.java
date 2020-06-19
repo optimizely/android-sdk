@@ -71,7 +71,7 @@ public class DatafileLoader {
         long time = storage.getLong(url + datafileDownloadTime, 1);
         Date last = new Date(time);
         Date now = new Date();
-        if (now.getTime() - last.getTime() < minTimeBetweenDownloadsMilli) {
+        if (now.getTime() - last.getTime() < minTimeBetweenDownloadsMilli && datafileCache.exists()) {
             logger.debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
             if (datafileLoadedListener != null) {
                 notify(datafileLoadedListener, getCachedDatafile());
