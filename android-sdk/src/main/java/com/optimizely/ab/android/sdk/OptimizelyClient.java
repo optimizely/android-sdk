@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2019, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2020, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -30,6 +30,7 @@ import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationHandler;
 import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
+import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
 
 import org.slf4j.Logger;
 
@@ -667,6 +668,98 @@ public class OptimizelyClient {
         } else {
             logger.warn("Optimizely is not initialized, could not get feature {} variable {} string for user {} with attributes",
                     featureKey, variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the JSON value of the specified variable in the feature.
+     *
+     * @param featureKey  The unique key of the feature.
+     * @param variableKey The unique key of the variable.
+     * @param userId      The ID of the user.
+     * @return An OptimizelyJSON instance for the JSON variable value.
+     * Null if the feature or variable could not be found.
+     */
+    @Nullable
+    public OptimizelyJSON getFeatureVariableJSON(@NonNull String featureKey,
+                                                 @NonNull String variableKey,
+                                                 @NonNull String userId) {
+        if (isValid()) {
+            return optimizely.getFeatureVariableJSON(featureKey, variableKey, userId);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {}",
+                    featureKey, variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the JSON value of the specified variable in the feature.
+     *
+     * @param featureKey  The unique key of the feature.
+     * @param variableKey The unique key of the variable.
+     * @param userId      The ID of the user.
+     * @param attributes  The user's attributes.
+     * @return An OptimizelyJSON instance for the JSON variable value.
+     * Null if the feature or variable could not be found.
+     */
+    @Nullable
+    public OptimizelyJSON getFeatureVariableJSON(@NonNull String featureKey,
+                                                 @NonNull String variableKey,
+                                                 @NonNull String userId,
+                                                 @NonNull Map<String, ?> attributes) {
+        if (isValid()) {
+            return optimizely.getFeatureVariableJSON(
+                    featureKey,
+                    variableKey,
+                    userId,
+                    attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {} with attributes",
+                    featureKey, variableKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the values of all variables in the feature.
+     *
+     * @param featureKey The unique key of the feature.
+     * @param userId     The ID of the user.
+     * @return An OptimizelyJSON instance for all variable values.
+     * Null if the feature could not be found.
+     */
+    @Nullable
+    public OptimizelyJSON getAllFeatureVariables(@NonNull String featureKey,
+                                                 @NonNull String userId) {
+        if (isValid()) {
+            return optimizely.getAllFeatureVariables(featureKey, userId);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} all feature variables for user {}.",
+                    featureKey, userId);
+            return null;
+        }
+    }
+
+    /**
+     * Get the values of all variables in the feature.
+     *
+     * @param featureKey The unique key of the feature.
+     * @param userId     The ID of the user.
+     * @param attributes The user's attributes.
+     * @return An OptimizelyJSON instance for all variable values.
+     * Null if the feature could not be found.
+     */
+    @Nullable
+    public OptimizelyJSON getAllFeatureVariables(@NonNull String featureKey,
+                                                 @NonNull String userId,
+                                                 @NonNull Map<String, ?> attributes) {
+        if (isValid()) {
+            return optimizely.getAllFeatureVariables(featureKey, userId, attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not get feature {} all feature variables for user {} with attributes.",
+                    featureKey, userId);
             return null;
         }
     }
