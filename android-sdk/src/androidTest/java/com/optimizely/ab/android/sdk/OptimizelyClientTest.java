@@ -1995,6 +1995,9 @@ public class OptimizelyClientTest {
         try {
             assertEquals(optimizelyJSON.getValue("first_letter", String.class), "H");
             assertEquals(optimizelyJSON.getValue("json_patched.k4", Map.class), expectedMap);
+
+            // When given jsonKey does not exist
+            assertNull(optimizelyJSON.getValue("json_patched.k5", String.class));
         } catch (JsonParseException e) {
             e.printStackTrace();
         }
