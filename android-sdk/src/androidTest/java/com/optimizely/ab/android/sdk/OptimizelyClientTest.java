@@ -29,6 +29,7 @@ import com.optimizely.ab.bucketing.DecisionService;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.config.parser.JsonParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.internal.ReservedEventKey;
@@ -1970,6 +1971,33 @@ public class OptimizelyClientTest {
                 STRING_FEATURE_KEY,
                 GENERIC_USER_ID
         );
+    }
+
+    // Accessibility testing of OptimizelyJSON.getValue
+    @Test
+    public void testGetValueOfOptimizelyJson() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        Map<String, Object> expectedMap = new HashMap<>();
+        expectedMap.put("kk1", "vv1");
+        expectedMap.put("kk2", false);
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+
+        OptimizelyJSON optimizelyJSON = optimizelyClient.getAllFeatureVariables(
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID
+        );
+
+        try {
+            assertEquals(optimizelyJSON.getValue("first_letter", String.class), "H");
+            assertEquals(optimizelyJSON.getValue("json_patched.k4", Map.class), expectedMap);
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
