@@ -1887,7 +1887,7 @@ public class OptimizelyClientTest {
      * getAllFeatureVariables
      * Scenario#1 Without attributes in which user
      * was not bucketed into any variation for feature flag will return default value which is
-     * '{"k1":"v1","k2":3.5,"k3":true,"k4":{"kk1":"vv1","kk2":false}}' in config
+     * '{"first_letter":"H","json_patched":{"k1":"v1","k2":3.5,"k3":true,"k4":{"kk1":"vv1","kk2":false}},"rest_of_name":"arry"}' in config
      */
     @Test
     public void testGetAllFeatureVariablesWithoutAttr() {
