@@ -1862,7 +1862,7 @@ public class OptimizelyClientTest {
                 GENERIC_USER_ID
         ));
 
-        verify(logger).warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {}",
+        verify(logger).warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {}.",
                 STRING_FEATURE_KEY,
                 JSON_VARIABLE_KEY,
                 GENERIC_USER_ID
@@ -1873,12 +1873,101 @@ public class OptimizelyClientTest {
                 STRING_FEATURE_KEY,
                 JSON_VARIABLE_KEY,
                 GENERIC_USER_ID,
-                Collections.<String, String>emptyMap()
+                Collections.EMPTY_MAP
         ));
 
-        verify(logger).warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {} with attributes",
+        verify(logger).warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {} with attributes.",
                 STRING_FEATURE_KEY,
                 JSON_VARIABLE_KEY,
+                GENERIC_USER_ID
+        );
+    }
+
+    /*
+     * getAllFeatureVariables
+     * Scenario#1 Without attributes in which user
+     * was not bucketed into any variation for feature flag will return default value which is
+     * '{"k1":"v1","k2":3.5,"k3":true,"k4":{"kk1":"vv1","kk2":false}}' in config
+     */
+    @Test
+    public void testGetAllFeatureVariablesWithoutAttr() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+        String defaultValueOfStringVar = "{\"first_letter\":\"H\",\"json_patched\":{\"k1\":\"v1\",\"k2\":3.5,\"k3\":true,\"k4\":{\"kk1\":\"vv1\",\"kk2\":false}},\"rest_of_name\":\"arry\"}";
+
+        OptimizelyJSON json = optimizelyClient.getAllFeatureVariables(
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID
+        );
+
+        assertTrue(compareJsonStrings(json.toString(), defaultValueOfStringVar));
+    }
+
+    //GetAllFeatureVariables Scenario#2 with attributes
+    @Test
+    public void testGetAllFeatureVariablesWithAttr() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger);
+
+
+        String defaultValueOfStringVar = "{\"first_letter\":\"F\",\"json_patched\":{\"k1\":\"s1\",\"k2\":103.5,\"k3\":false,\"k4\":{\"kk1\":\"ss1\",\"kk2\":true}},\"rest_of_name\":\"eorge\"}";
+
+        OptimizelyJSON json = optimizelyClient.getAllFeatureVariables(
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID,
+                Collections.singletonMap("house", "Gryffindor")
+        );
+
+        assertTrue(compareJsonStrings(json.toString(), defaultValueOfStringVar));
+        verifyZeroInteractions(logger);
+    }
+
+    //GetAllFeatureVariables Scenario#3 if feature not found
+    @Test
+    public void testGetAllFeatureVariablesInvalidFeatureKey() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger);
+
+        assertNull(optimizelyClient.getAllFeatureVariables(
+                "invalidFeatureKey",
+                GENERIC_USER_ID
+        ));
+    }
+
+    @Test
+    public void testBadGetAllFeatureVariables() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+
+        //Scenario#1 without attributes
+        assertNull(optimizelyClient.getAllFeatureVariables(
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID
+        ));
+
+        verify(logger).warn("Optimizely is not initialized, could not get feature {} all feature variables for user {}.",
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID
+        );
+
+        //Scenario#2 with attributes
+        assertNull(optimizelyClient.getAllFeatureVariables(
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID,
+                Collections.EMPTY_MAP
+        ));
+
+        verify(logger).warn("Optimizely is not initialized, could not get feature {} all feature variables for user {} with attributes.",
+                STRING_FEATURE_KEY,
                 GENERIC_USER_ID
         );
     }

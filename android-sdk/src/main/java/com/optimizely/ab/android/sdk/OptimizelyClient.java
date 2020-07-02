@@ -688,7 +688,7 @@ public class OptimizelyClient {
         if (isValid()) {
             return optimizely.getFeatureVariableJSON(featureKey, variableKey, userId);
         } else {
-            logger.warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {}",
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {}.",
                     featureKey, variableKey, userId);
             return null;
         }
@@ -716,7 +716,7 @@ public class OptimizelyClient {
                     userId,
                     attributes);
         } else {
-            logger.warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {} with attributes",
+            logger.warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {} with attributes.",
                     featureKey, variableKey, userId);
             return null;
         }
