@@ -49,7 +49,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    buildToolsVersion '28.0.3'
+    buildToolsVersion build_tools_version
 }
 
 dependencies {
@@ -68,8 +68,9 @@ dependencies {
     // Set this dependency to build and run Espresso tests
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_ver"
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "com.google.dexmaker:dexmaker:$dexmaker_ver"
-    androidTestImplementation "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
+    androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
+    androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
+    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 }
