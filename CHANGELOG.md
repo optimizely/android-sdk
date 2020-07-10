@@ -3,7 +3,7 @@
 ## 3.6.0
 July 10th, 2020
 
-This build has support for Feature JSON and Authenticated Datafiles.  It also includes an update to the test app (converted to kotlin)
+This build has support for Feature JSON and Authenticated Datafiles.  It also includes an update to the test application (converted to kotlin)
 with feature flag example and package level log setting.
 
 Using Java SDK 3.5.0
@@ -11,7 +11,7 @@ Using Java SDK 3.5.0
 ### New Features
 - Add support for JSON feature variables ([#372](https://github.com/optimizely/java-sdk/pull/372), [#371](https://github.com/optimizely/java-sdk/pull/371), [#375](https://github.com/optimizely/java-sdk/pull/375))
 - Add support for authenticated datafile access ([#378](https://github.com/optimizely/java-sdk/pull/378))
-- Convert test app to kotlin ([#331](https://github.com/optimizely/java-sdk/pull/331))
+- Convert test application to kotlin ([#331](https://github.com/optimizely/java-sdk/pull/331))
 
 ### Bug Fixes:
 - Adjust log level on audience evaluation logs ([#377](https://github.com/optimizely/java-sdk/pull/377)) 
