@@ -3,17 +3,13 @@
 ## 3.6.0
 July 10th, 2020
 
-This build has support for Feature JSON and Authenticated Datafiles.  It also includes an update to the test application 
+This build has support for Feature JSON.  It also includes an update to the test application 
 with feature flag example and package level log setting.
 
 Using Java SDK 3.5.0
 
 ### New Features
-- Add support for JSON feature variables ([#372](https://github.com/optimizely/java-sdk/pull/372), [#371](https://github.com/optimizely/java-sdk/pull/371), [#375](https://github.com/optimizely/java-sdk/pull/375))
-- Add support for authenticated datafile access ([#378](https://github.com/optimizely/java-sdk/pull/378))
-
-### Bug Fixes:
-- Adjust log level on audience evaluation logs ([#377](https://github.com/optimizely/java-sdk/pull/377)) 
+- Add support for JSON feature variables ([#337](https://github.com/optimizely/android-sdk/pull/337))
 
 ## 3.5.2
 June 18th, 2020
