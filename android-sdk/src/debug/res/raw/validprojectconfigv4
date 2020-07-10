@@ -169,10 +169,13 @@
 			}, {
                   "id": "4111654444",
                   "value": "3.14"
-              }, {
+            }, {
                   "id": "593964691",
                   "value": "2"
-              }]
+            }, {
+                  "id": "4111661000",
+                  "value": "{\"k1\":\"s1\",\"k2\":103.5,\"k3\":false,\"k4\":{\"kk1\":\"ss1\",\"kk2\":true}}"
+            }]
 		}, {
 			"id": "4204375027",
 			"key": "Gred",
@@ -477,7 +480,13 @@
 			"key": "rest_of_name",
 			"type": "string",
 			"defaultValue": "arry"
-		}]
+		}, {
+            "id": "4111661000",
+            "key": "json_patched",
+            "type": "string",
+            "subType": "json",
+            "defaultValue": "{\"k1\":\"v1\",\"k2\":3.5,\"k3\":true,\"k4\":{\"kk1\":\"vv1\",\"kk2\":false}}"
+        }]
 	}, {
 		"id": "3263342226",
 		"key": "mutex_group_feature",
