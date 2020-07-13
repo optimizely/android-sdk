@@ -1,7 +1,7 @@
 # Optimizely Android X SDK Changelog
 
 ## 3.6.0
-July 10th, 2020
+July 13th, 2020
 
 This build has support for Feature JSON.  It also includes an update to the test application 
 with feature flag example and package level log setting.
