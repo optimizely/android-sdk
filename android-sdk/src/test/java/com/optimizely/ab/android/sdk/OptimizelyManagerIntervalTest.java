@@ -118,23 +118,6 @@ public class OptimizelyManagerIntervalTest {
     }
 
     @Test
-    public void testBuildWithInvalidDatafileDownloadInterval() {
-        Context appContext = mock(Context.class);
-        Logger logger = mock(Logger.class);
-        when(appContext.getApplicationContext()).thenReturn(appContext);
-
-        long tooSmallNumber = 60;
-        OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withLogger(logger)
-                .withDatafileDownloadInterval(tooSmallNumber, TimeUnit.SECONDS)
-                .build(appContext);
-
-        verify(logger).warn("Minimum datafile polling interval is 15 minutes. Defaulting to 15 minutes.");
-    }
-
-    // EventDispatchInterval
-
-    @Test
     public void testBuildWithEventDispatchInterval() throws Exception {
         whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
         whenNew(BatchEventProcessor.class).withAnyArguments().thenReturn(mock(BatchEventProcessor.class));
