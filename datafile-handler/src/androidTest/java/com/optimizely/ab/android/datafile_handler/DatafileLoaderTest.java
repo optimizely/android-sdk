@@ -242,14 +242,14 @@ public class DatafileLoaderTest {
         when(cache.load(datafileCache.getFileName())).thenReturn("{}");
         when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(true);
 
+        datafileLoader.getDatafile("debugLoggedMultiThreaded", datafileLoadedListener);
+
         Runnable r = () -> datafileLoader.getDatafile("debugLoggedMultiThreaded", datafileLoadedListener);
 
         new Thread(r).start();
         new Thread(r).start();
         new Thread(r).start();
         new Thread(r).start();
-
-        datafileLoader.getDatafile("debugLoggedMultiThreaded", datafileLoadedListener);
 
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
