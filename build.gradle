@@ -34,7 +34,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath 'com.android.tools.build:gradle:4.0.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -49,10 +49,10 @@ allprojects {
 }
 
 ext {
-    compile_sdk_version = 30
+    compile_sdk_version = 29
     build_tools_version = "29.0.3"
     min_sdk_version = 14
-    target_sdk_version = 30
+    target_sdk_version = 29
     java_core_ver = "3.4.3"
     android_logger_ver = "1.3.6"
     jacksonversion= "2.9.9.1"
