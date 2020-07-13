@@ -53,16 +53,16 @@ public class OptimizelyManagerBuilderTest {
      * Verify that building the {@link OptimizelyManager} with a polling interval less than 60
      * seconds defaults to 60 seconds.
      */
-    @Test
-    public void testBuildWithInvalidPollingInterval() {
-        Context appContext = mock(Context.class);
-        when(appContext.getApplicationContext()).thenReturn(appContext);
-        OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withDatafileDownloadInterval(5L)
-                .build(appContext);
-
-        assertEquals(900L, manager.getDatafileDownloadInterval().longValue());
-    }
+//    @Test
+//    public void testBuildWithInvalidPollingInterval() {
+//        Context appContext = mock(Context.class);
+//        when(appContext.getApplicationContext()).thenReturn(appContext);
+//        OptimizelyManager manager = OptimizelyManager.builder("1")
+//                .withDatafileDownloadInterval(5L)
+//                .build(appContext);
+//
+//        assertEquals(900L, manager.getDatafileDownloadInterval().longValue());
+//    }
 
     /**
      * Verify that building the {@link OptimizelyManager} with a polling interval greater than 60
