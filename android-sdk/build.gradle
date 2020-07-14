@@ -115,7 +115,7 @@ android.libraryVariants.all { variant ->
 
         doFirst {
             // First add all of your dependencies to the classpath, then add the android jars
-            classpath += files(variant.javaCompileProvider.classpath.files)
+            classpath += files(variant.javaCompileProvider.get().classpath.files)
             classpath += files(android.getBootClasspath())
         }
         // We're excluding these generated files
