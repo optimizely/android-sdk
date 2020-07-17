@@ -54,6 +54,7 @@ stages:
   - 'Lint markdown files'
   - 'Integration tests'
   - 'Test'
+  - 'Source Clear'
 
 jobs:
   include:
@@ -68,8 +69,6 @@ jobs:
         email: false
 
     - stage: 'Integration tests'
-      addons:
-        srcclr: true
       env:
         - SDK=android
         - BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.}
@@ -84,3 +83,14 @@ jobs:
       script:
         - $HOME/travisci-tools/trigger-script-with-status-update.sh
       after_success: travis_terminate 0
+
+    - stage: 'Source Clear'
+      if: type = cron
+      addons:
+        srcclr: true
+      before_install: skip
+      install: skip
+      before_script: skip
+      script: skip
+      after_script: skip
+      after_success: skip
