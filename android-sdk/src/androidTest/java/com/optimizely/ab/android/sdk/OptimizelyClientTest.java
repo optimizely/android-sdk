@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2019, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2020, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -19,6 +19,9 @@ package com.optimizely.ab.android.sdk;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.bucketing.Bucketer;
@@ -26,6 +29,7 @@ import com.optimizely.ab.bucketing.DecisionService;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
+import com.optimizely.ab.config.parser.JsonParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.internal.ReservedEventKey;
@@ -38,6 +42,7 @@ import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.TrackNotificationListener;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
+import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -106,6 +111,7 @@ public class OptimizelyClientTest {
     private final static String INTEGER_VARIABLE_KEY = "integer_variable";
     private final static String STRING_FEATURE_KEY = "multi_variate_feature";
     private final static String STRING_VARIABLE_KEY = "first_letter";
+    private final static String JSON_VARIABLE_KEY = "json_patched";
     private static final String GENERIC_USER_ID = "userId";
     private String testProjectId = "7595190003";
     private int datafileVersion;
@@ -1765,6 +1771,239 @@ public class OptimizelyClientTest {
         );
     }
 
+    /*
+     * FeatureVariableJSON
+     * Scenario#1 Without attributes in which user
+     * was not bucketed into any variation for feature flag will return default value which is
+     * '{"k1":"v1","k2":3.5,"k3":true,"k4":{"kk1":"vv1","kk2":false}}' in config
+     */
+    @Test
+    public void testGetFeatureVariableJSONWithoutAttr() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+        String defaultValueOfStringVar = "{\"k1\":\"v1\",\"k2\":3.5,\"k3\":true,\"k4\":{\"kk1\":\"vv1\",\"kk2\":false}}";
+
+        OptimizelyJSON json = optimizelyClient.getFeatureVariableJSON(
+                STRING_FEATURE_KEY,
+                JSON_VARIABLE_KEY,
+                GENERIC_USER_ID
+        );
+
+        assertTrue(compareJsonStrings(json.toString(), defaultValueOfStringVar));
+    }
+
+    //FeatureVariableJSON Scenario#2 with attributes
+    @Test
+    public void testGetFeatureVariableJsonWithAttr() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger);
+
+
+        String defaultValueOfStringVar = "{\"k1\":\"s1\",\"k2\":103.5,\"k3\":false,\"k4\":{\"kk1\":\"ss1\",\"kk2\":true}}";
+
+        OptimizelyJSON json = optimizelyClient.getFeatureVariableJSON(
+                STRING_FEATURE_KEY,
+                JSON_VARIABLE_KEY,
+                GENERIC_USER_ID,
+                Collections.singletonMap("house", "Gryffindor")
+        );
+
+        assertTrue(compareJsonStrings(json.toString(), defaultValueOfStringVar));
+        verifyZeroInteractions(logger);
+    }
+
+    //FeatureVariableJSON Scenario#3 if feature not found
+    @Test
+    public void testGetFeatureVariableJsonInvalidFeatureKey() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger);
+
+        assertNull(optimizelyClient.getFeatureVariableJSON(
+                "invalidFeatureKey",
+                "invalidVariableKey",
+                GENERIC_USER_ID
+        ));
+    }
+
+    //FeatureVariableJSON Scenario#4 if variable not found
+    @Test
+    public void testGetFeatureVariableJsonInvalidVariableKey() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+
+        //Scenario#4 if variable not found
+        assertNull(optimizelyClient.getFeatureVariableJSON(
+                STRING_FEATURE_KEY,
+                "invalidVariableKey",
+                GENERIC_USER_ID
+        ));
+    }
+
+    @Test
+    public void testBadGetFeatureVariableJson() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+
+        //Scenario#1 without attributes
+        assertNull(optimizelyClient.getFeatureVariableJSON(
+                STRING_FEATURE_KEY,
+                JSON_VARIABLE_KEY,
+                GENERIC_USER_ID
+        ));
+
+        verify(logger).warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {}.",
+                STRING_FEATURE_KEY,
+                JSON_VARIABLE_KEY,
+                GENERIC_USER_ID
+        );
+
+        //Scenario#2 with attributes
+        assertNull(optimizelyClient.getFeatureVariableJSON(
+                STRING_FEATURE_KEY,
+                JSON_VARIABLE_KEY,
+                GENERIC_USER_ID,
+                Collections.EMPTY_MAP
+        ));
+
+        verify(logger).warn("Optimizely is not initialized, could not get feature {} variable {} JSON for user {} with attributes.",
+                STRING_FEATURE_KEY,
+                JSON_VARIABLE_KEY,
+                GENERIC_USER_ID
+        );
+    }
+
+    /*
+     * getAllFeatureVariables
+     * Scenario#1 Without attributes in which user
+     * was not bucketed into any variation for feature flag will return default value which is
+     * '{"first_letter":"H","json_patched":{"k1":"v1","k2":3.5,"k3":true,"k4":{"kk1":"vv1","kk2":false}},"rest_of_name":"arry"}' in config
+     */
+    @Test
+    public void testGetAllFeatureVariablesWithoutAttr() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+        String defaultValueOfStringVar = "{\"first_letter\":\"H\",\"json_patched\":{\"k1\":\"v1\",\"k2\":3.5,\"k3\":true,\"k4\":{\"kk1\":\"vv1\",\"kk2\":false}},\"rest_of_name\":\"arry\"}";
+
+        OptimizelyJSON json = optimizelyClient.getAllFeatureVariables(
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID
+        );
+
+        assertTrue(compareJsonStrings(json.toString(), defaultValueOfStringVar));
+    }
+
+    //GetAllFeatureVariables Scenario#2 with attributes
+    @Test
+    public void testGetAllFeatureVariablesWithAttr() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger);
+
+
+        String defaultValueOfStringVar = "{\"first_letter\":\"F\",\"json_patched\":{\"k1\":\"s1\",\"k2\":103.5,\"k3\":false,\"k4\":{\"kk1\":\"ss1\",\"kk2\":true}},\"rest_of_name\":\"eorge\"}";
+
+        OptimizelyJSON json = optimizelyClient.getAllFeatureVariables(
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID,
+                Collections.singletonMap("house", "Gryffindor")
+        );
+
+        assertTrue(compareJsonStrings(json.toString(), defaultValueOfStringVar));
+        verifyZeroInteractions(logger);
+    }
+
+    //GetAllFeatureVariables Scenario#3 if feature not found
+    @Test
+    public void testGetAllFeatureVariablesInvalidFeatureKey() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger);
+
+        assertNull(optimizelyClient.getAllFeatureVariables(
+                "invalidFeatureKey",
+                GENERIC_USER_ID
+        ));
+    }
+
+    @Test
+    public void testBadGetAllFeatureVariables() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+
+        //Scenario#1 without attributes
+        assertNull(optimizelyClient.getAllFeatureVariables(
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID
+        ));
+
+        verify(logger).warn("Optimizely is not initialized, could not get feature {} all feature variables for user {}.",
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID
+        );
+
+        //Scenario#2 with attributes
+        assertNull(optimizelyClient.getAllFeatureVariables(
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID,
+                Collections.EMPTY_MAP
+        ));
+
+        verify(logger).warn("Optimizely is not initialized, could not get feature {} all feature variables for user {} with attributes.",
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID
+        );
+    }
+
+    // Accessibility testing of OptimizelyJSON.getValue
+    @Test
+    public void testGetValueOfOptimizelyJson() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        Map<String, Object> expectedMap = new HashMap<>();
+        expectedMap.put("kk1", "vv1");
+        expectedMap.put("kk2", false);
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+
+        OptimizelyJSON optimizelyJSON = optimizelyClient.getAllFeatureVariables(
+                STRING_FEATURE_KEY,
+                GENERIC_USER_ID
+        );
+
+        try {
+            assertEquals(optimizelyJSON.getValue("first_letter", String.class), "H");
+            assertEquals(optimizelyJSON.getValue("json_patched.k4", Map.class), expectedMap);
+
+            // When given jsonKey does not exist
+            assertNull(optimizelyJSON.getValue("json_patched.k5", String.class));
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test
     public void testGetOptimizelyConfig() {
         assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
@@ -1868,11 +2107,10 @@ public class OptimizelyClientTest {
                 optimizely,
                 logger
         );
-        NotificationManager<TrackNotification> manager = optimizely.getNotificationCenter()
-                .getNotificationManager(UpdateConfigNotification.class);
 
         int notificationId = optimizelyClient.addUpdateConfigNotificationHandler(notification -> {});
-        assertTrue(manager.remove(notificationId));
+        assertTrue(optimizely.getNotificationCenter()
+                .getNotificationManager(UpdateConfigNotification.class).remove(notificationId));
     }
 
     @Test
@@ -1881,12 +2119,11 @@ public class OptimizelyClientTest {
                 null,
                 logger
         );
-        NotificationManager<TrackNotification> manager = optimizely.getNotificationCenter()
-                .getNotificationManager(UpdateConfigNotification.class);
 
         int notificationId = optimizelyClient.addUpdateConfigNotificationHandler(notification -> {});
         assertEquals(-1, notificationId);
-        assertFalse(manager.remove(notificationId));
+        assertFalse(optimizely.getNotificationCenter()
+                .getNotificationManager(UpdateConfigNotification.class).remove(notificationId));
     }
 
     @Test
@@ -1895,11 +2132,10 @@ public class OptimizelyClientTest {
                 optimizely,
                 logger
         );
-        NotificationManager<TrackNotification> manager = optimizely.getNotificationCenter()
-                .getNotificationManager(LogEvent.class);
 
         int notificationId = optimizelyClient.addLogEventNotificationHandler(notification -> {});
-        assertTrue(manager.remove(notificationId));
+        assertTrue(optimizely.getNotificationCenter()
+                .getNotificationManager(LogEvent.class).remove(notificationId));
     }
 
     @Test
@@ -1908,12 +2144,22 @@ public class OptimizelyClientTest {
                 null,
                 logger
         );
-        NotificationManager<TrackNotification> manager = optimizely.getNotificationCenter()
-                .getNotificationManager(LogEvent.class);
 
         int notificationId = optimizelyClient.addLogEventNotificationHandler(notification -> {});
         assertEquals(-1, notificationId);
-        assertFalse(manager.remove(notificationId));
+        assertFalse(optimizely.getNotificationCenter()
+                .getNotificationManager(LogEvent.class).remove(notificationId));
     }
 
+    private boolean compareJsonStrings(String str1, String str2) {
+        JsonParser parser = new JsonParser();
+
+        JsonElement j1 = parser.parse(str1);
+        JsonElement j2 = parser.parse(str2);
+        return j1.equals(j2);
+    }
+
+    private Map parseJsonString(String str) {
+        return new Gson().fromJson(str, Map.class);
+    }
 }

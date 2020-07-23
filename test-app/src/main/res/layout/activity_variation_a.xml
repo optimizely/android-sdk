@@ -50,11 +50,13 @@
         android:layout_marginTop="-20dp"
         android:layout_marginBottom="30dp"
         android:layout_centerVertical="true"/>
+
     <fragment
+        android:id="@+id/frag"
+        android:name="com.optimizely.ab.android.test_app.ConversionFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@id/tv_variation_a_text_2"
-        android:name="com.optimizely.ab.android.test_app.ConversionFragment"
+        android:layout_centerHorizontal="true"
         tools:layout="@layout/fragment_conversion" />
 </RelativeLayout>

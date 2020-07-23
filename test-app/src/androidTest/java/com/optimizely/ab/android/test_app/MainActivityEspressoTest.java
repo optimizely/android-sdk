@@ -191,16 +191,11 @@ public class MainActivityEspressoTest {
             Pair<String, String> event = iterator.next();
             final String url = event.first;
             final String payload = event.second;
-            if (url.equals("https://logx.optimizely.com/v1/events") && payload.contains("8126664113") && payload.contains("8146590584")
+            if (url.equals("https://logx.optimizely.com/v1/events") && payload.contains("11178792174") && payload.contains("11146534908")
                     || url.equals("https://logx.optimizely.com/v1/events") && payload.contains("sample_conversion")) {
                 iterator.remove();
             }
         }
         assertTrue(events.isEmpty());
-        MyApplication myApplication = (MyApplication) activityTestRule.getActivity().getApplication();
-        UserProfileService userProfileService = myApplication.getOptimizelyManager().getUserProfileService();
-        // Being in the white list should override user profile
-        Map<String, Object> userProfileMap = userProfileService.lookup("test_user");
-        assertNull(userProfileMap);
     }
 }

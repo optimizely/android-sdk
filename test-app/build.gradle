@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -38,15 +40,16 @@ dependencies {
     // Includes the Optimizely X Full Stack Java SDK, event handler, and user profile
     implementation (project(':android-sdk')) {
         exclude group: 'com.google.code.gson', module:'gson'
-        exclude group: 'com.noveogroup.android', module:'android-logger'
+       // exclude group: 'com.noveogroup.android', module:'android-logger'
     }
 
+    implementation "com.noveogroup.android:android-logger:$android_logger_ver"
     // implementation 'com.optimizely.ab:android-sdk:1.0.0'
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
     // EXAMPLE REPLACE noveogroup android-looger with slf4j-android logger
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-android
-    implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
+    //implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
     // EXAMPLE REPLACE gson json parsing with jackson-databind json parsing.
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonversion"
 
@@ -63,10 +66,13 @@ dependencies {
     // Set this dependency to build and run Espresso tests
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_ver"
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "com.google.dexmaker:dexmaker:$dexmaker_ver"
-    androidTestImplementation "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
+    androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
+    androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
+    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
     // androidTestImplementation 'com.optimizely.ab:android-sdk:1.0.0'
     androidTestImplementation project(':android-sdk')
     androidTestImplementation project(path: ':shared')
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
+

@@ -19,6 +19,7 @@ package com.optimizely.ab.android.datafile_handler;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
 import com.optimizely.ab.android.shared.Cache;
@@ -95,11 +96,11 @@ public class DatafileRescheduler extends BroadcastReceiver {
             for (DatafileConfig datafileConfig : datafileConfigs) {
                 // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
                 // so, we don't need to do anything.
-               // if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+               if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                     intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, datafileConfig.toJSONString());
                     ServiceScheduler.startService(context, DatafileService.JOB_ID, intent);
                     logger.info("Rescheduled data file watching for project {}", datafileConfig);
-                //}
+                }
             }
 
         }

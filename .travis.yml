@@ -4,9 +4,9 @@ dist: trusty
 env:
  global:
 # These parameters should match the parameters for build tools and sdk versions in the gradle file
- - ANDROID_BUILD_TOOLS=28.0.3 # should match gradle
+ - ANDROID_BUILD_TOOLS=29.0.3 # should match gradle
  - ADB_INSTALL_TIMEOUT=5 # minutes
- - ANDROID_API=28 # api is same as gradle file
+ - ANDROID_API=29 # api is same as gradle file
  matrix:
  - EMULATOR_API=21
  - EMULATOR_API=22
@@ -53,8 +53,8 @@ script:
 stages:
   - 'Lint markdown files'
   - 'Integration tests'
-  - 'Benchmarking tests'
   - 'Test'
+  - 'Source Clear'
 
 jobs:
   include:
@@ -68,22 +68,7 @@ jobs:
       notifications:
         email: false
 
-    - stage: 'Lint markdown files'
-      os: linux
-      language: generic
-      before_install: skip
-      install:
-        - npm i -g markdown-spellcheck
-      before_script:
-        - wget --quiet https://raw.githubusercontent.com/optimizely/mdspell-config/master/.spelling
-      script:
-        - mdspell -a -n -r --en-us '**/*.md'
-      after_success: skip
-
-    - &integrationtest
-      stage: 'Integration tests'
-      addons:
-        srcclr: true
+    - stage: 'Integration tests'
       env:
         - SDK=android
         - BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.}
@@ -98,6 +83,14 @@ jobs:
       script:
         - $HOME/travisci-tools/trigger-script-with-status-update.sh
       after_success: travis_terminate 0
-    - <<: *integrationtest
-      stage: 'Benchmarking tests'
-      env: SDK=android FULLSTACK_TEST_REPO=Benchmarking BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.} SDK_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
+
+    - stage: 'Source Clear'
+      if: type = cron
+      addons:
+        srcclr: true
+      before_install: skip
+      install: skip
+      before_script: skip
+      script: skip
+      after_script: skip
+      after_success: skip

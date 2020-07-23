@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2020, Optimizely, Inc. and contributors                        *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -15,6 +15,8 @@
  ***************************************************************************/
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
@@ -67,10 +69,12 @@ dependencies {
     // Set this dependency to build and run Espresso tests
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_ver"
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "com.google.dexmaker:dexmaker:$dexmaker_ver"
-    androidTestImplementation "com.google.dexmaker:dexmaker-mockito:$dexmaker_ver"
+    androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
+    androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
+    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 uploadArchives {
@@ -97,7 +101,7 @@ android.libraryVariants.all { variant ->
 
         // First add all of your dependencies to the classpath, then add the android jars
         doFirst {
-            classpath += files(variant.javaCompileProvider.classpath.files)
+            classpath += files(variant.javaCompileProvider.get().classpath.files)
             classpath += files(android.getBootClasspath())
         }
         // We're excluding these generated files
