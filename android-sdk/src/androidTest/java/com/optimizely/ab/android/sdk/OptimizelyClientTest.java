@@ -40,6 +40,7 @@ import com.optimizely.ab.notification.NotificationHandler;
 import com.optimizely.ab.notification.NotificationManager;
 import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.TrackNotificationListener;
+import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
 
@@ -2098,6 +2099,56 @@ public class OptimizelyClientTest {
         assertEquals(-1, notificationId2);
         assertTrue(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId));
         assertFalse(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId2));
+    }
+
+    @Test
+    public void testAddUpdateConfigNotificationHandler() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+
+        int notificationId = optimizelyClient.addUpdateConfigNotificationHandler(notification -> {});
+        assertTrue(optimizely.getNotificationCenter()
+                .getNotificationManager(UpdateConfigNotification.class).remove(notificationId));
+    }
+
+    @Test
+    public void testAddUpdateConfigNotificationHandlerWithInvalidOptimizely() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                null,
+                logger
+        );
+
+        int notificationId = optimizelyClient.addUpdateConfigNotificationHandler(notification -> {});
+        assertEquals(-1, notificationId);
+        assertFalse(optimizely.getNotificationCenter()
+                .getNotificationManager(UpdateConfigNotification.class).remove(notificationId));
+    }
+
+    @Test
+    public void testAddLogEventNotificationHandler() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                optimizely,
+                logger
+        );
+
+        int notificationId = optimizelyClient.addLogEventNotificationHandler(notification -> {});
+        assertTrue(optimizely.getNotificationCenter()
+                .getNotificationManager(LogEvent.class).remove(notificationId));
+    }
+
+    @Test
+    public void testAddLogEventNotificationHandlerWithInvalidOptimizely() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(
+                null,
+                logger
+        );
+
+        int notificationId = optimizelyClient.addLogEventNotificationHandler(notification -> {});
+        assertEquals(-1, notificationId);
+        assertFalse(optimizely.getNotificationCenter()
+                .getNotificationManager(LogEvent.class).remove(notificationId));
     }
 
     private boolean compareJsonStrings(String str1, String str2) {

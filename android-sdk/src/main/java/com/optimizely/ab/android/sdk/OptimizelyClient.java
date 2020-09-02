@@ -25,10 +25,12 @@ import com.optimizely.ab.UnknownEventTypeException;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.notification.DecisionNotification;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationHandler;
 import com.optimizely.ab.notification.TrackNotification;
+import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
 
@@ -801,6 +803,34 @@ public class OptimizelyClient {
     public int addTrackNotificationHandler(NotificationHandler<TrackNotification> handler) {
         if (isValid()) {
             return optimizely.addTrackNotificationHandler(handler);
+        } else {
+            logger.warn("Optimizely is not initialized, could not add the notification listener");
+        }
+
+        return -1;
+    }
+
+    /**
+     * Convenience method for adding UpdateConfigNotification Handlers
+     * @return notificationId or -1 if notification is not added
+     */
+    public int addUpdateConfigNotificationHandler(NotificationHandler<UpdateConfigNotification> handler) {
+        if (isValid()) {
+            return optimizely.addUpdateConfigNotificationHandler(handler);
+        } else {
+            logger.warn("Optimizely is not initialized, could not add the notification listener");
+        }
+
+        return -1;
+    }
+
+    /**
+     * Convenience method for adding LogEvent Notification Handlers
+     * @return notificationId or -1 if notification is not added
+     */
+    public int addLogEventNotificationHandler(NotificationHandler<LogEvent> handler) {
+        if (isValid()) {
+            return optimizely.addLogEventNotificationHandler(handler);
         } else {
             logger.warn("Optimizely is not initialized, could not add the notification listener");
         }

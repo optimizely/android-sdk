@@ -24,9 +24,8 @@ import com.optimizely.ab.android.event_handler.EventRescheduler
 import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.android.sdk.OptimizelyManager
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager
-import com.optimizely.ab.config.Experiment
-import com.optimizely.ab.config.Variation
-import com.optimizely.ab.event.LogEvent
+import com.optimizely.ab.notification.DecisionNotification
+import com.optimizely.ab.notification.TrackNotification
 import com.optimizely.ab.notification.UpdateConfigNotification
 
 class SplashScreenActivity : AppCompatActivity() {
@@ -44,16 +43,53 @@ class SplashScreenActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
+        val INITIALIZE_ASYNCHRONOUSLY = false
+
         // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
         // in the manifest.
         val eventRescheduler = EventRescheduler()
         applicationContext.registerReceiver(eventRescheduler, IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION))
-        myApplication?.let {
-            optimizelyManager?.initialize(it, null) { _ ->
+
+        if (INITIALIZE_ASYNCHRONOUSLY) {
+            optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->
+                addNotificationListeners()
                 startVariation()
             }
-
+        } else {
+            optimizelyManager!!.initialize(this, R.raw.datafile)
+            addNotificationListeners()
+            startVariation()
         }
+
+    }
+
+    private fun addNotificationListeners() {
+        val optimizelyClient = optimizelyManager!!.optimizely
+
+        // DECISION notification
+        // - this callback is triggered with the decision type, associated decision information, user ID, and attributes.
+        // - different APIs trigger different types of decisions: activate() -> "ab-test", isFeatureEnabled() -> "feature", ...
+        optimizelyClient.addDecisionNotificationHandler { notification: DecisionNotification ->
+            val type = notification.type
+            val userId = notification.userId
+            val attributes = notification.attributes
+            val decisionInfo = notification.decisionInfo
+            println("got decision notification: ($type)($userId)($attributes)($decisionInfo")
+        }
+
+        // Track notification
+        // - this callback is triggered when a tracking event has been sent
+        optimizelyClient.addTrackNotificationHandler { notification: TrackNotification ->
+            val eventKey = notification.eventKey
+            val userId = notification.userId
+            val attributes = notification.attributes
+            val eventTags = notification.eventTags
+            println("got track notification: ($eventKey)($userId)($attributes)($eventTags")
+        }
+
+        // UpdateConfig notification
+        // - this callback is triggered when a new datafile is downloaded and the SDK project configuration has been updated
+        optimizelyClient.addUpdateConfigNotificationHandler { notification: UpdateConfigNotification? -> println("got datafile change notification:") }
     }
 
     /**
