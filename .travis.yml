@@ -85,7 +85,6 @@ jobs:
       after_success: travis_terminate 0
 
     - stage: 'Source Clear'
-      if: type = cron
       addons:
         srcclr: true
       before_install: skip
