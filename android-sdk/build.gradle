@@ -70,6 +70,7 @@ dependencies {
 
     compileOnly "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
     implementation "com.android.support:support-annotations:$support_annotations_ver"
+    compileOnly group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
