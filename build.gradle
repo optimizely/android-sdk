@@ -66,6 +66,7 @@ ext {
     mockito_ver = "1.10.19"
     powermock_ver = "1.6.4"
     support_test_runner_ver = "0.5"
+    slf4j_android = "1.7.25"
     dexmaker_ver = "1.4"
     espresso_ver = "2.2.2"
     gson_ver = "2.8.6"
