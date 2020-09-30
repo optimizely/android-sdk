@@ -1,5 +1,14 @@
 # Optimizely Android X SDK Changelog
 
+
+## 3.7.0
+September 30th, 2020
+
+This build has support for audience evaluation by version.  It also supports number 'greater than or equal to' and 'less than or equal to'.
+This build also supports getting the current config string.  For a complete list see the [release notes](https://github.com/optimizely/java-sdk/releases/tag/3.6.0) for java sdk 3.6.0
+
+Using Java SDK 3.6.0
+
 ## 3.6.0
 July 13th, 2020
 
