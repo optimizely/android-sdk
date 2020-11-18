@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.UnknownEventTypeException;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
@@ -778,6 +779,29 @@ public class OptimizelyClient {
             logger.error("Optimizely instance is not valid, failing getOptimizelyConfig call.");
             return null;
         }
+    }
+
+    /**
+     * Create a context of the user for which decision APIs will be called.
+     *
+     * A user context will be created successfully even when the SDK is not fully configured yet.
+     *
+     * @param userId The user ID to be used for bucketing.
+     * @param attributes: A map of attribute names to current user attribute values.
+     * @return An OptimizelyUserContext associated with this OptimizelyClient.
+     */
+    public OptimizelyUserContext createUserContext(@NonNull String userId,
+                                                   @NonNull Map<String, Object> attributes) {
+        if (userId == null) {
+            logger.warn("The userId parameter must be nonnull.");
+            return null;
+        }
+
+        return new OptimizelyUserContext(optimizely, userId, attributes);
+    }
+
+    public OptimizelyUserContext createUserContext(@NonNull String userId) {
+        return new OptimizelyUserContext(optimizely, userId);
     }
 
     //======== Notification APIs ========//

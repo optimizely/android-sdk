@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Path;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -48,13 +49,16 @@ import com.optimizely.ab.event.EventProcessor;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
+import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -83,6 +87,8 @@ public class OptimizelyManager {
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
+    @NonNull private final List<OptimizelyDecideOption> defaultDecideOptions;
+
     OptimizelyManager(@Nullable String projectId,
                       @Nullable String sdkKey,
                       @Nullable DatafileConfig datafileConfig,
@@ -94,7 +100,8 @@ public class OptimizelyManager {
                       @NonNull EventHandler eventHandler,
                       @Nullable EventProcessor eventProcessor,
                       @NonNull UserProfileService userProfileService,
-                      @NonNull NotificationCenter notificationCenter) {
+                      @NonNull NotificationCenter notificationCenter,
+                      @NonNull List<OptimizelyDecideOption> defaultDecideOptions) {
 
         if (projectId == null && sdkKey == null) {
             logger.error("projectId and sdkKey are both null!");
@@ -116,6 +123,7 @@ public class OptimizelyManager {
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
         this.notificationCenter = notificationCenter;
+        this.defaultDecideOptions = defaultDecideOptions;
     }
 
     @VisibleForTesting
@@ -582,6 +590,7 @@ public class OptimizelyManager {
 
         builder.withUserProfileService(userProfileService);
         builder.withNotificationCenter(notificationCenter);
+        builder.withDefaultDecideOptions(defaultDecideOptions);
         Optimizely optimizely = builder.build();
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
     }
@@ -713,6 +722,7 @@ public class OptimizelyManager {
         @Nullable private UserProfileService userProfileService = null;
         @Nullable private String sdkKey = null;
         @Nullable private DatafileConfig datafileConfig = null;
+        @Nullable private List<OptimizelyDecideOption> defaultDecideOptions = null;
 
         @Deprecated
         /**
@@ -868,6 +878,11 @@ public class OptimizelyManager {
             return this;
         }
 
+        public Builder withDefaultDecideOptions(List<OptimizelyDecideOption> defaultDecideOtions) {
+            this.defaultDecideOptions = defaultDecideOtions;
+            return this;
+        }
+
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          * @param  context the application context used to create default service if not provided.
@@ -939,7 +954,8 @@ public class OptimizelyManager {
                     eventHandler,
                     eventProcessor,
                     userProfileService,
-                    notificationCenter);
+                    notificationCenter,
+                    defaultDecideOptions);
         }
     }
 }

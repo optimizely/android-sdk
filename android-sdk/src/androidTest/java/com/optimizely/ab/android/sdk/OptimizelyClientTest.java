@@ -17,12 +17,14 @@
 package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
+import android.graphics.Path;
 import android.support.test.InstrumentationRegistry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.bucketing.Bucketer;
 import com.optimizely.ab.bucketing.DecisionService;
@@ -42,7 +44,11 @@ import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.TrackNotificationListener;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
+import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
+import com.optimizely.ab.optimizelydecision.OptimizelyDecision;
 import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
+
+import junit.framework.TestCase;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -2150,6 +2156,75 @@ public class OptimizelyClientTest {
         assertFalse(optimizely.getNotificationCenter()
                 .getNotificationManager(LogEvent.class).remove(notificationId));
     }
+
+    // OptimizelyUserContext + Decide API
+
+    @Test
+    public void testCreateUserContext() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(GENERIC_USER_ID);
+        assertEquals(userContext.getUserId(), GENERIC_USER_ID);
+        assert(userContext.getAttributes().isEmpty());
+    }
+
+    @Test
+    public void testCreateUserContext_withAttributes() {
+        Map<String, Object> attributes = Collections.singletonMap("house", "Gryffindor");
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(GENERIC_USER_ID, attributes);
+        assertEquals(userContext.getUserId(), GENERIC_USER_ID);
+        assertEquals(userContext.getAttributes(), attributes);
+    }
+
+//    @Test
+//    // this should be enough to validate connection to the core java-sdk
+//    public void testDecide() {
+//        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+//
+//        String flagKey = "integer_single_variable_feature";
+//        Map<String, Object> attributes = Collections.singletonMap("house", "Gryffindor");
+//
+//        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+//        OptimizelyUserContext userContext = optimizelyClient.createUserContext(GENERIC_USER_ID, attributes);
+//
+//
+//        List<OptimizelyDecideOption> options = Arrays.asList(OptimizelyDecideOption.INCLUDE_REASONS);
+//
+//        OptimizelyDecision decision = userContext.decide(flagKey, options);
+//
+//        OptimizelyJSON variablesExpected = new OptimizelyJSON(Collections.singletonMap("integer_variable", 7));
+//
+//        assertEquals(decision.getVariationKey(), null);
+//        assertFalse(decision.getEnabled());
+//        assertEquals(decision.getVariables().toMap(), variablesExpected.toMap());
+//        assertEquals(decision.getRuleKey(), null);
+//        assertEquals(decision.getFlagKey(), flagKey);
+//        assertEquals(decision.getUserContext(), userContext);
+//        assertTrue(decision.getReasons().isEmpty());
+//    }
+//
+//    @Test
+//    // this should be enough to validate connection to the core java-sdk
+//    public void testDecide_defaultDecideOptions() throws IOException {
+//        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+//
+//        List<OptimizelyDecideOption> defaultDecideOptions = Arrays.asList(OptimizelyDecideOption.EXCLUDE_VARIABLES);
+//        String datafile = loadRawResource(InstrumentationRegistry.getTargetContext(),R.raw.validprojectconfigv4);
+//
+//        Context context = InstrumentationRegistry.getTargetContext();
+//        OptimizelyManager optimizelyManager = OptimizelyManager.builder(testProjectId)
+//                .withDefaultDecideOptions(defaultDecideOptions)
+//                .build(context);
+//        optimizelyManager.initialize(context, datafile);
+//
+//        OptimizelyClient optimizelyClient = optimizelyManager.getOptimizely();
+//        OptimizelyUserContext userContext = optimizelyClient.createUserContext(GENERIC_USER_ID);
+//        OptimizelyDecision decision = userContext.decide("invalid-key");
+//        assertNull(decision);
+//    }
+
+    // Utils
 
     private boolean compareJsonStrings(String str1, String str2) {
         JsonParser parser = new JsonParser();
