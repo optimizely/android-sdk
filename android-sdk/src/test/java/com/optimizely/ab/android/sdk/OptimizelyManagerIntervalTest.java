@@ -35,6 +35,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -43,8 +44,10 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -87,7 +90,8 @@ public class OptimizelyManagerIntervalTest {
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
-                any(NotificationCenter.class));
+                any(NotificationCenter.class),
+                anyList());
     }
 
     @Test
@@ -114,7 +118,8 @@ public class OptimizelyManagerIntervalTest {
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
-                any(NotificationCenter.class));
+                any(NotificationCenter.class),
+                anyList());
     }
 
     @Test
@@ -151,7 +156,8 @@ public class OptimizelyManagerIntervalTest {
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
-                any(NotificationCenter.class));
+                any(NotificationCenter.class),
+                anyList());
     }
 
     @Test
@@ -190,7 +196,8 @@ public class OptimizelyManagerIntervalTest {
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
-                any(NotificationCenter.class));
+                any(NotificationCenter.class),
+                anyList());
     }
 
     @Test
@@ -227,7 +234,8 @@ public class OptimizelyManagerIntervalTest {
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
-                any(NotificationCenter.class));
+                any(NotificationCenter.class),
+                anyList());
     }
 
 }
