@@ -47,50 +47,64 @@ public class SamplesForAPI {
                 .withSDKKey("FCnSegiEkRry9rhVMroit4")
                 .withDefaultDecideOptions(defaultDecideOptions)
                 .build(context);
-        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+        optimizelyManager.initialize(context, R.raw.datafile, optimizelyClient -> {
 
-        String userId = "user_123";
-        Map<String, Object> attributes = new HashMap<>();
-        attributes.put("is_logged_in", false);
-        attributes.put("app_version", "1.3.2");
-        OptimizelyUserContext user = optimizelyClient.createUserContext(userId, attributes);
-        user.setAttribute("location", "NY");
+            // createUserContext
 
-        List<OptimizelyDecideOption> options = Arrays.asList(OptimizelyDecideOption.INCLUDE_REASONS);
-        OptimizelyDecision decision = user.decide("show_coupon", options);
+            String userId = "user_123";
+            Map<String, Object> attributes = new HashMap<>();
+            attributes.put("is_logged_in", false);
+            attributes.put("app_version", "1.3.2");
+            OptimizelyUserContext user = optimizelyClient.createUserContext(userId, attributes);
+            // attributes can be set in this way too
+            user.setAttribute("location", "NY");
 
-        String variationKey = decision.getVariationKey();
-        boolean enabled = decision.getEnabled();
-        OptimizelyJSON variables = decision.getVariables();
-        String vs = null;
-        try {
-            vs = variables.getValue("text_color", String.class);
-        } catch (JsonParseException e) {
-            e.printStackTrace();
-        }
-        int vb = (int) variables.toMap().get("discount");
-        String ruleKey = decision.getRuleKey();
-        String flagKey = decision.getFlagKey();
-        OptimizelyUserContext userContext = decision.getUserContext();
-        List<String> reasons = decision.getReasons();
+            // decide
 
-        Log.d("Samples", "decision: " + decision);
-        Log.d("Samples", "items: " + variationKey + " " + String.valueOf(enabled) + " " + vs + " " + String.valueOf(vb) + " " + ruleKey + " " + flagKey + " " + userContext + " " + reasons);
+            List<OptimizelyDecideOption> options = Arrays.asList(OptimizelyDecideOption.INCLUDE_REASONS);
+            OptimizelyDecision decision = user.decide("show_coupon", options);
 
-        List<String> keys = Arrays.asList("show_coupon", "bg-feature");
-        Map<String, OptimizelyDecision> decisionsMultiple = user.decideForKeys(keys);
+            String variationKey = decision.getVariationKey();
+            boolean enabled = decision.getEnabled();
+            OptimizelyJSON variables = decision.getVariables();
+            String vs = null;
+            try {
+                vs = variables.getValue("text_color", String.class);
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+            }
+            int vb = (int) variables.toMap().get("discount");
+            String ruleKey = decision.getRuleKey();
+            String flagKey = decision.getFlagKey();
+            OptimizelyUserContext userContext = decision.getUserContext();
+            List<String> reasons = decision.getReasons();
 
-        OptimizelyDecision decision1 = decisionsMultiple.get(keys.get(0));
-        OptimizelyDecision decision2 = decisionsMultiple.get(keys.get(1));
-        Log.d("Samples", "decisionsMultiple: " + keys + " " + decision1 + " " + decision2);
+            Log.d("Samples", "decision: " + decision);
+            Log.d("Samples", "items: " + variationKey + " " + String.valueOf(enabled) + " " + vs + " " + String.valueOf(vb) + " " + ruleKey + " " + flagKey + " " + userContext + " " + reasons);
 
-        List<OptimizelyDecideOption> options2 = Arrays.asList(OptimizelyDecideOption.ENABLED_FLAGS_ONLY);
-        Map<String, OptimizelyDecision> decisionsAll = user.decideAll(options2);
+            // decideForKeys
 
-        Set<String> allKeys = decisionsAll.keySet();
-        Collection<OptimizelyDecision> allDecisions = decisionsAll.values();
-        Log.d("Samples", "all keys: " + allKeys);
-        Log.d("Samples", "all decisions: " + allDecisions);
+            List<String> keys = Arrays.asList("show_coupon", "bg-feature");
+            Map<String, OptimizelyDecision> decisionsMultiple = user.decideForKeys(keys);
+
+            OptimizelyDecision decision1 = decisionsMultiple.get(keys.get(0));
+            OptimizelyDecision decision2 = decisionsMultiple.get(keys.get(1));
+            Log.d("Samples", "decisionsMultiple: " + keys + " " + decision1 + " " + decision2);
+
+            // decideAll
+
+            List<OptimizelyDecideOption> options2 = Arrays.asList(OptimizelyDecideOption.ENABLED_FLAGS_ONLY);
+            Map<String, OptimizelyDecision> decisionsAll = user.decideAll(options2);
+
+            Set<String> allKeys = decisionsAll.keySet();
+            Collection<OptimizelyDecision> allDecisions = decisionsAll.values();
+            Log.d("Samples", "all keys: " + allKeys);
+            Log.d("Samples", "all decisions: " + allDecisions);
+
+            // trackEvent
+
+            user.trackEvent("sample_conversion");
+        });
     }
 
     static public void samplesForInitialization(Context context) {
