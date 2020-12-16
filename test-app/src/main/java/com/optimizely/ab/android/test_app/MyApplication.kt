@@ -37,6 +37,7 @@ class MyApplication : Application() {
             val abbr = getAbbriviation(getLocality(location))
 
             attributes["location"] = abbr
+            attributes["semanticVersioning"] = "2.1.0"
 
             return attributes
         }// comment this out to get a brand new user id every time this function is called.
