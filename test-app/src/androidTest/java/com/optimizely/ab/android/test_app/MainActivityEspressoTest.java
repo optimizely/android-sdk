@@ -19,13 +19,13 @@ package com.optimizely.ab.android.test_app;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
-import android.support.test.espresso.IdlingPolicies;
-import android.support.test.espresso.idling.CountingIdlingResource;
-import android.support.test.filters.LargeTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.IdlingPolicies;
+import androidx.test.espresso.idling.CountingIdlingResource;
+import androidx.test.filters.LargeTest;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import android.util.Pair;
 import android.view.WindowManager;
 
@@ -35,7 +35,6 @@ import com.optimizely.ab.android.shared.CountingIdlingResourceInterface;
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.bucketing.UserProfileService;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,14 +46,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -63,7 +61,7 @@ import static junit.framework.Assert.assertTrue;
 @LargeTest
 public class MainActivityEspressoTest {
 
-    private Context context = InstrumentationRegistry.getTargetContext();
+    private Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
     private CountingIdlingResource countingIdlingResource;
     private ServiceScheduler serviceScheduler;
     private Intent dataFileServiceIntent, eventIntentService;

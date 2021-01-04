@@ -20,7 +20,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.DatafileConfig;
@@ -74,7 +74,7 @@ public class DatafileReschedulerTest {
 
     @Test
     public void receivedActionBootCompleted() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = mock(Intent.class);
         when(intent.getAction()).thenReturn(Intent.ACTION_BOOT_COMPLETED);
         datafileRescheduler.onReceive(context, intent);
@@ -84,7 +84,7 @@ public class DatafileReschedulerTest {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     @Test
     public void receivedActionMyPackageReplaced() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = mock(Intent.class);
         when(intent.getAction()).thenReturn(Intent.ACTION_MY_PACKAGE_REPLACED);
         datafileRescheduler.onReceive(context, intent);
@@ -94,7 +94,7 @@ public class DatafileReschedulerTest {
     @Test
     public void dispatchingOneWithoutEnvironment() {
         Context mockContext = mock(Context.class);
-        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        Cache cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
         backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), true);
         Logger logger = mock(Logger.class);
@@ -111,7 +111,7 @@ public class DatafileReschedulerTest {
     @Test
     public void dispatchingOneWithEnvironment() {
         Context mockContext = mock(Context.class);
-        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        Cache cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
         backgroundWatchersCache.setIsWatching(new DatafileConfig("1", "2"), true);
         Logger logger = mock(Logger.class);
@@ -128,7 +128,7 @@ public class DatafileReschedulerTest {
     @Test
     public void dispatchingManyWithoutEnvironment() {
         Context mockContext = mock(Context.class);
-        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        Cache cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
         backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), true);
         backgroundWatchersCache.setIsWatching(new DatafileConfig("2", null), true);
@@ -144,7 +144,7 @@ public class DatafileReschedulerTest {
     @Test
     public void dispatchingManyWithEnvironment() {
         Context mockContext = mock(Context.class);
-        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        Cache cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
         BackgroundWatchersCache backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
         backgroundWatchersCache.setIsWatching(new DatafileConfig("1", "1"), true);
         backgroundWatchersCache.setIsWatching(new DatafileConfig("2", "1"), true);

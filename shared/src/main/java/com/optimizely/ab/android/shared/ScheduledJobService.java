@@ -28,7 +28,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

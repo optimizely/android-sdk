@@ -16,7 +16,7 @@
 
 package com.optimizely.ab.android.datafile_handler;
 
-import android.support.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.DatafileConfig;
@@ -53,7 +53,7 @@ public class BackgroundWatchersCacheTest {
     @Before
     public void setup() {
         logger = mock(Logger.class);
-        cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
         backgroundWatchersCache = new BackgroundWatchersCache(cache, logger);
     }
 

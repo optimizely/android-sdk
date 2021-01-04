@@ -17,8 +17,8 @@
 package com.optimizely.ab.android.shared;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class CacheTest {
 
     @Before
     public void setup() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         logger = mock(Logger.class);
         cache = new Cache(context, logger);
     }

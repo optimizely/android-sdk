@@ -21,11 +21,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.RequiresApi;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
-import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
-import android.support.test.rule.ServiceTestRule;
+
+import androidx.annotation.RequiresApi;
+import androidx.test.espresso.core.internal.deps.guava.util.concurrent.ListeningExecutorService;
+import androidx.test.espresso.core.internal.deps.guava.util.concurrent.MoreExecutors;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.ServiceTestRule;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
@@ -39,6 +40,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -66,13 +68,13 @@ public class DatafileServiceTest {
 
     @Before
     public void setup() {
-        executor = MoreExecutors.newDirectExecutorService();
+        executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void testBinding() throws TimeoutException {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(context, DatafileService.class);
         IBinder binder = null;
         int it = 0;
@@ -81,7 +83,7 @@ public class DatafileServiceTest {
             it++;
         }
 
-        final Context targetContext = InstrumentationRegistry.getTargetContext();
+        final Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Logger logger = mock(Logger.class);
         DatafileCache datafileCache = new DatafileCache("1", new Cache(targetContext, logger), logger);
         Client client = mock(Client.class);
@@ -90,7 +92,8 @@ public class DatafileServiceTest {
 
 
         DatafileService datafileService = ((DatafileService.LocalBinder) binder).getService();
-        DatafileLoader datafileLoader = new DatafileLoader(datafileService, datafileClient, datafileCache, MoreExecutors.newDirectExecutorService(), mock(Logger.class));
+        DatafileLoader datafileLoader = new DatafileLoader(datafileService, datafileClient, datafileCache,
+                MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()), mock(Logger.class));
         datafileService.getDatafile("1", datafileLoader, datafileLoadedListener);
 
         assertTrue(datafileService.isBound());
@@ -99,7 +102,7 @@ public class DatafileServiceTest {
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void testValidStart() throws TimeoutException {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(context, DatafileService.class);
         IBinder binder = null;
         int it = 0;
@@ -119,7 +122,7 @@ public class DatafileServiceTest {
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void testNullIntentStart() throws TimeoutException {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(context, DatafileService.class);
         IBinder binder = null;
         int it = 0;
@@ -138,7 +141,7 @@ public class DatafileServiceTest {
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void testNoProjectIdIntentStart() throws TimeoutException {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(context, DatafileService.class);
         IBinder binder = null;
         int it = 0;
@@ -157,7 +160,7 @@ public class DatafileServiceTest {
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void testUnbind() throws TimeoutException {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(context, DatafileService.class);
         IBinder binder = null;
         int it = 0;

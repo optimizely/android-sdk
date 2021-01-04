@@ -32,7 +32,7 @@ android {
         targetSdkVersion target_sdk_version
         versionCode 1
         versionName version_name
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
         consumerProguardFiles '../proguard-rules.txt'
     }
@@ -69,18 +69,19 @@ dependencies {
     }
 
     compileOnly "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
-    implementation "com.android.support:support-annotations:$support_annotations_ver"
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'com.google.guava:guava:29.0-android'
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
     testImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
-    androidTestImplementation "com.android.support.test:runner:$support_test_runner_ver"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     // Set this dependency to use JUnit 4 rules
-    androidTestImplementation "com.android.support.test:rules:$support_test_runner_ver"
+    androidTestImplementation 'androidx.test:rules:1.1.1'
     // Set this dependency to build and run Espresso tests
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_ver"
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"

@@ -16,10 +16,10 @@
 
 package com.optimizely.ab.android.user_profile;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
-import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.espresso.core.internal.deps.guava.util.concurrent.ListeningExecutorService;
+import androidx.test.espresso.core.internal.deps.guava.util.concurrent.MoreExecutors;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
 
@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
@@ -49,7 +50,7 @@ import static org.mockito.Mockito.verify;
 public class UserProfileCacheTest {
 
     // Runs tasks serially on the calling thread
-    private ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+    private ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
     private Logger logger;
     private Cache cache;
     private UserProfileCache.DiskCache diskCache;
@@ -67,7 +68,7 @@ public class UserProfileCacheTest {
     public void setup() throws JSONException {
         logger = mock(Logger.class);
         projectId = "1";
-        cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
         diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
         legacyDiskCache = new UserProfileCache.LegacyDiskCache(cache, executor, logger, projectId);
         memoryCache = new ConcurrentHashMap<>();
