@@ -44,6 +44,7 @@ import java.lang.reflect.Method;
  */
 //BEGIN_INCLUDE(service)
 @RequiresApi(api = Build.VERSION_CODES.O)
+@Deprecated
 public class JobWorkService extends JobService {
     public static final String INTENT_EXTRA_JWS_PERIODIC = "com.optimizely.ab.android.shared.JobService.Periodic";
     public static final int ONE_MINUTE = 60 * 1000;

@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
 public class UserProfileCacheTest {
 
     // Runs tasks serially on the calling thread
-    private ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
+    private ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
     private Logger logger;
     private Cache cache;
     private UserProfileCache.DiskCache diskCache;
@@ -141,6 +141,12 @@ public class UserProfileCacheTest {
         verify(logger).info("Saved user profile for {}.", userId2);
 
         userProfileCache.remove(userId1);
+        // give cache a chance to save.  we should actually wait on the executor.
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         userProfileCache.start();
 
         assertNull(userProfileCache.lookup(userId1));
@@ -164,11 +170,16 @@ public class UserProfileCacheTest {
         verify(logger).info("Saved user profile for {}.", userId2);
 
         userProfileCache.remove(userId1, "exp_1");
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         userProfileCache.start();
 
         Map<String, Object> userProfileMap1 = userProfileCache.lookup(userId1);
-        Map<String, Map<String, String>> experimentBucketMap1 = (ConcurrentHashMap<String, Map<String, String>>)
-                userProfileMap1.get("experiment_bucket_map");
+        Map<String, Map<String, String>> experimentBucketMap1 =
+                (Map<String, Map<String, String>>) userProfileMap1.get("experiment_bucket_map");
         assertNull(experimentBucketMap1.get("exp_1"));
         assertNotNull(experimentBucketMap1.get("exp_2"));
 
