@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
 public class UserProfileCacheTest {
 
     // Runs tasks serially on the calling thread
-    private ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(3));
+    private ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(5));
     private Logger logger;
     private Cache cache;
     private UserProfileCache.DiskCache diskCache;
