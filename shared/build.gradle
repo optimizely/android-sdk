@@ -58,10 +58,10 @@ dependencies {
     api ("com.optimizely.ab:core-api:$java_core_ver") {
         exclude group: 'com.google.code.findbugs'
     }
+    implementation 'androidx.annotation:annotation:1.0.0'
     implementation "com.google.code.gson:gson:$gson_ver"
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
-    implementation 'androidx.annotation:annotation:1.0.0'
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
