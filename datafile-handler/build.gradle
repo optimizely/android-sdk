@@ -55,7 +55,7 @@ android {
 
 dependencies {
     api project(':shared')
-    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation "androidx.annotation:annotation:$annotations_ver"
     implementation 'com.google.guava:guava:29.0-android'
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
@@ -64,11 +64,11 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$mockito_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation "androidx.test.ext:junit:$androidx_test"
     // Set this dependency to use JUnit 4 rules
-    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation "androidx.test:rules:$androidx_test"
     // Set this dependency to build and run Espresso tests
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_ver"
 
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"

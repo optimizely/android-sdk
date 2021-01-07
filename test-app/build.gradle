@@ -64,11 +64,11 @@ dependencies {
     testImplementation project(':android-sdk')
 
     androidTestImplementation('androidx.test.ext:junit:1.1.1')
-    androidTestImplementation 'androidx.annotation:annotation:1.0.0'
+    //androidTestimplementation "androidx.annotation:annotation:$annotations_ver"
     // Set this dependency to use JUnit 4 rules
-    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation "androidx.test:rules:$androidx_test"
     // Set this dependency to build and run Espresso tests
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_ver"
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
