@@ -56,7 +56,6 @@ android {
 dependencies {
     api project(':shared')
     implementation "androidx.annotation:annotation:$annotations_ver"
-    implementation 'com.google.guava:guava:29.0-android'
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
