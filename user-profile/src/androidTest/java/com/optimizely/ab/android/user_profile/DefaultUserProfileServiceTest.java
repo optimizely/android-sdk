@@ -16,8 +16,6 @@
 
 package com.optimizely.ab.android.user_profile;
 
-import androidx.test.espresso.core.internal.deps.guava.util.concurrent.ListeningExecutorService;
-import androidx.test.espresso.core.internal.deps.guava.util.concurrent.MoreExecutors;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -31,6 +29,7 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +49,7 @@ public class DefaultUserProfileServiceTest {
     private DefaultUserProfileService userProfileService;
     private Cache cache;
     private UserProfileCache.DiskCache diskCache;
-    private ListeningExecutorService executor;
+    private ExecutorService executor;
     private Logger logger;
     private UserProfileCache.LegacyDiskCache legacyDiskCache;
     private Map<String, Map<String, Object>> memoryCache;
@@ -66,7 +65,7 @@ public class DefaultUserProfileServiceTest {
     public void setup() {
         logger = mock(Logger.class);
         cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
-        executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
+        executor =Executors.newSingleThreadExecutor();
         legacyDiskCache = new UserProfileCache.LegacyDiskCache(cache, executor, logger, projectId);
         memoryCache = new ConcurrentHashMap<>();
         projectId = "123";

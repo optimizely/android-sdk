@@ -24,8 +24,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
-import androidx.test.espresso.core.internal.deps.guava.util.concurrent.ListeningExecutorService;
-import androidx.test.espresso.core.internal.deps.guava.util.concurrent.MoreExecutors;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -53,6 +51,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -78,7 +77,7 @@ public class OptimizelyManagerTest {
 
     private String testProjectId = "7595190003";
     private String testSdkKey = "EQRZ12XAR22424";
-    private ListeningExecutorService executor;
+    private ExecutorService executor;
     private Logger logger;
     private OptimizelyManager optimizelyManager;
     private DefaultDatafileHandler defaultDatafileHandler;
@@ -99,7 +98,7 @@ public class OptimizelyManagerTest {
     @Before
     public void setup() throws Exception {
         logger = mock(Logger.class);
-        executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(5));
+        executor = Executors.newSingleThreadExecutor();
         defaultDatafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         EventProcessor eventProcessor = mock(EventProcessor.class);

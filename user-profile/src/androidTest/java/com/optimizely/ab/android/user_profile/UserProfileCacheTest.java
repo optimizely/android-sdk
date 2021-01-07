@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -16,8 +16,6 @@
 
 package com.optimizely.ab.android.user_profile;
 
-import androidx.test.espresso.core.internal.deps.guava.util.concurrent.ListeningExecutorService;
-import androidx.test.espresso.core.internal.deps.guava.util.concurrent.MoreExecutors;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -32,6 +30,7 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +49,7 @@ import static org.mockito.Mockito.verify;
 public class UserProfileCacheTest {
 
     // Runs tasks serially on the calling thread
-    private ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
     private Logger logger;
     private Cache cache;
     private UserProfileCache.DiskCache diskCache;

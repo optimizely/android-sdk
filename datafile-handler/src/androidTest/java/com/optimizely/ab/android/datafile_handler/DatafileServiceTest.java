@@ -23,8 +23,6 @@ import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.RequiresApi;
-import androidx.test.espresso.core.internal.deps.guava.util.concurrent.ListeningExecutorService;
-import androidx.test.espresso.core.internal.deps.guava.util.concurrent.MoreExecutors;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ServiceTestRule;
 
@@ -40,6 +38,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -60,7 +59,7 @@ import static org.mockito.Mockito.when;
     // Known bug https://code.google.com/p/android/issues/detail?id=180396
 public class DatafileServiceTest {
 
-    private ListeningExecutorService executor;
+    private ExecutorService executor;
     private static final int MAX_ITERATION = 100;
 
     @Rule
@@ -68,7 +67,7 @@ public class DatafileServiceTest {
 
     @Before
     public void setup() {
-        executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
+        executor = Executors.newSingleThreadExecutor();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
@@ -93,7 +92,7 @@ public class DatafileServiceTest {
 
         DatafileService datafileService = ((DatafileService.LocalBinder) binder).getService();
         DatafileLoader datafileLoader = new DatafileLoader(datafileService, datafileClient, datafileCache,
-                MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor()), mock(Logger.class));
+                Executors.newSingleThreadExecutor(), mock(Logger.class));
         datafileService.getDatafile("1", datafileLoader, datafileLoadedListener);
 
         assertTrue(datafileService.isBound());
