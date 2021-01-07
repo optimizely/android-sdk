@@ -49,8 +49,8 @@ dependencies {
 
     implementation "com.noveogroup.android:android-logger:$android_logger_ver"
     // implementation 'com.optimizely.ab:android-sdk:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
     // EXAMPLE REPLACE noveogroup android-looger with slf4j-android logger
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-android
     //implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
