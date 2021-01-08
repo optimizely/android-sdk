@@ -20,10 +20,9 @@ import android.app.UiModeManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.annotation.RequiresApi;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.optimizely.ab.event.internal.payload.Event;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 
 import org.junit.Test;

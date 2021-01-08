@@ -18,11 +18,10 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
-import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.annotation.RequiresApi;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
@@ -37,8 +36,9 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
@@ -67,13 +67,13 @@ public class DatafileLoaderTest {
     private Client client;
     private Logger logger;
     private DatafileLoadedListener datafileLoadedListener;
-    Context context = InstrumentationRegistry.getTargetContext();
+    Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
     @Before
     public void setup() {
         datafileService = mock(DatafileService.class);
         logger = mock(Logger.class);
-        final Context targetContext = InstrumentationRegistry.getTargetContext();
+        final Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         datafileCache = new DatafileCache("1", new Cache(targetContext, logger), logger);
         client = mock(Client.class);
         datafileClient = new DatafileClient(client, logger);
@@ -89,7 +89,7 @@ public class DatafileLoaderTest {
 
     @Test
     public void loadFromCDNWhenNoCachedFile() throws MalformedURLException, JSONException {
-        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
         DatafileLoader datafileLoader =
                 new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
 
@@ -110,7 +110,7 @@ public class DatafileLoaderTest {
 
     @Test
     public void loadWhenCacheFileExistsAndCDNNotModified() {
-        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
         DatafileLoader datafileLoader =
                 new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
         datafileCache.save("{}");
@@ -132,7 +132,7 @@ public class DatafileLoaderTest {
 
     @Test
     public void noCacheAndLoadFromCDNFails() {
-        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
         DatafileLoader datafileLoader =
                 new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
 
@@ -152,7 +152,7 @@ public class DatafileLoaderTest {
 
     @Test
     public void warningsAreLogged() throws IOException {
-        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("warningsAreLogged", cache, logger);
         DatafileLoader datafileLoader =
@@ -177,7 +177,7 @@ public class DatafileLoaderTest {
 
     @Test
     public void debugLogged() throws IOException {
-        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("debugLogged", cache, logger);
         DatafileLoader datafileLoader =
@@ -203,7 +203,7 @@ public class DatafileLoaderTest {
 
     @Test
     public void downloadAllowedNoCache() throws IOException {
-        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("downloadAllowedNoCache", cache, logger);
         DatafileLoader datafileLoader =
@@ -229,7 +229,7 @@ public class DatafileLoaderTest {
 
     @Test
     public void debugLoggedMultiThreaded() throws IOException {
-        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("debugLoggedMultiThreaded", cache, logger);
         DatafileLoader datafileLoader =
@@ -285,7 +285,7 @@ public class DatafileLoaderTest {
 
     @Test
     public void allowDoubleDownload() throws IOException {
-        final ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("allowDoubleDownload", cache, logger);
         DatafileLoader datafileLoader =

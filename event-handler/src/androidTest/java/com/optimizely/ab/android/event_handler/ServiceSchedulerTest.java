@@ -20,17 +20,15 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
-import android.app.job.JobWorkItem;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SdkSuppress;
-import android.support.test.runner.AndroidJUnit4;
 
-import com.optimizely.ab.android.shared.JobWorkService;
+import androidx.annotation.RequiresApi;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SdkSuppress;
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
@@ -45,7 +43,6 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -153,7 +150,7 @@ public class ServiceSchedulerTest {
 
     @Test
     public void arePendingIntentsForTheSameComponentEqual() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final Intent intent = new Intent(context, EventIntentService.class);
         PendingIntent pendingIntent1 = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent pendingIntent2 = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -164,7 +161,7 @@ public class ServiceSchedulerTest {
 
     @Test
     public void howDoesFlagNoCreateWorks() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final Intent intent = new Intent(context, EventIntentService.class);
         PendingIntent pendingIntent1 = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_NO_CREATE);
         assertNull(pendingIntent1);
@@ -177,7 +174,7 @@ public class ServiceSchedulerTest {
 
     @Test
     public void hasPendingIntent() {
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler.PendingIntentFactory(context);
         final Intent intent = new Intent(context, EventIntentService.class);
         assertFalse(pendingIntentFactory.hasPendingIntent(intent));
@@ -205,7 +202,7 @@ public class ServiceSchedulerTest {
 
     // Mockito can't mock PendingIntent because it's final
     private PendingIntent getPendingIntent() {
-        final Context context = InstrumentationRegistry.getTargetContext();
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         return PendingIntent.getService(context, 0, new Intent(context, EventIntentService.class), PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

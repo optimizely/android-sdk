@@ -27,7 +27,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +44,7 @@ import java.lang.reflect.Method;
  */
 //BEGIN_INCLUDE(service)
 @RequiresApi(api = Build.VERSION_CODES.O)
+@Deprecated
 public class JobWorkService extends JobService {
     public static final String INTENT_EXTRA_JWS_PERIODIC = "com.optimizely.ab.android.shared.JobService.Periodic";
     public static final int ONE_MINUTE = 60 * 1000;

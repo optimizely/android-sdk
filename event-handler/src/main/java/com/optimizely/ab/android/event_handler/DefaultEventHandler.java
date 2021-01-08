@@ -18,7 +18,7 @@ package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.event.EventHandler;

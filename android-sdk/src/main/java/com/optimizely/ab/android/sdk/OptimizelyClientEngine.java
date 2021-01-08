@@ -19,7 +19,7 @@ package com.optimizely.ab.android.sdk;
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.optimizely.ab.event.internal.payload.EventBatch;
 

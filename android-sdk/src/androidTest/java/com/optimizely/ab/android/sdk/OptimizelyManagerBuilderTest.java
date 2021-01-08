@@ -16,8 +16,8 @@
 
 package com.optimizely.ab.android.sdk;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.optimizely.ab.OptimizelyRuntimeException;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
@@ -51,29 +51,29 @@ public class OptimizelyManagerBuilderTest {
             }
         };
 
-        OptimizelyManager manager = OptimizelyManager.builder(testProjectId).withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getTargetContext()))
+        OptimizelyManager manager = OptimizelyManager.builder(testProjectId).withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
                 .withDatafileDownloadInterval(30L)
                 .withEventDispatchInterval(30L)
                 .withDatafileHandler(new DefaultDatafileHandler())
                 .withErrorHandler(errorHandler)
-                .withEventHandler(DefaultEventHandler.getInstance(InstrumentationRegistry.getTargetContext()))
-                .withLogger(logger).build(InstrumentationRegistry.getTargetContext());
+                .withEventHandler(DefaultEventHandler.getInstance(InstrumentationRegistry.getInstrumentation().getTargetContext()))
+                .withLogger(logger).build(InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         assertNotNull(manager);
         assertNotNull(manager.getDatafileHandler());
         assertNotNull(manager.getUserProfileService());
-        assertNotNull(manager.getErrorHandler(InstrumentationRegistry.getTargetContext()));
-        assertNotNull(manager.getEventHandler(InstrumentationRegistry.getTargetContext()));
+        assertNotNull(manager.getErrorHandler(InstrumentationRegistry.getInstrumentation().getTargetContext()));
+        assertNotNull(manager.getEventHandler(InstrumentationRegistry.getInstrumentation().getTargetContext()));
     }
 
     @Test
     public void testBuilderWithOut() {
-        OptimizelyManager manager = OptimizelyManager.builder(testProjectId).build(InstrumentationRegistry.getTargetContext());
+        OptimizelyManager manager = OptimizelyManager.builder(testProjectId).build(InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         assertNotNull(manager);
         assertNotNull(manager.getDatafileHandler());
         assertNotNull(manager.getUserProfileService());
-        assertNotNull(manager.getEventHandler(InstrumentationRegistry.getTargetContext()));
+        assertNotNull(manager.getEventHandler(InstrumentationRegistry.getInstrumentation().getTargetContext()));
     }
 
 }

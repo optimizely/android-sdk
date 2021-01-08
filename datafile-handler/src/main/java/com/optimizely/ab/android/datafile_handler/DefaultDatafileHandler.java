@@ -20,8 +20,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.FileObserver;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;

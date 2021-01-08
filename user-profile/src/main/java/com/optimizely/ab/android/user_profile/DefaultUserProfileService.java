@@ -20,8 +20,8 @@ import android.os.Build;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.annotation.TargetApi;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.bucketing.UserProfileService;

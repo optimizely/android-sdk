@@ -16,8 +16,7 @@
 
 package com.optimizely.ab.android.datafile_handler;
 
-import android.support.annotation.Nullable;
-import android.content.Context;
+import androidx.annotation.Nullable;
 
 /**
  * Listens for new Optimizely datafiles

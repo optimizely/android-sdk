@@ -17,7 +17,7 @@
 package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -87,11 +87,11 @@ public class OptimizelyClientTest {
         return Arrays.asList(new Object[][] {
                 {
                         3,
-                        loadRawResource(InstrumentationRegistry.getTargetContext(),R.raw.validprojectconfigv3)
+                        loadRawResource(InstrumentationRegistry.getInstrumentation().getTargetContext(),R.raw.validprojectconfigv3)
                 },
                 {
                         4,
-                        loadRawResource(InstrumentationRegistry.getTargetContext(),R.raw.validprojectconfigv4)
+                        loadRawResource(InstrumentationRegistry.getInstrumentation().getTargetContext(),R.raw.validprojectconfigv4)
                 }
         });
     }
@@ -120,7 +120,7 @@ public class OptimizelyClientTest {
     public OptimizelyClientTest(int datafileVersion,String datafile){
         try {
             this.datafileVersion = datafileVersion;
-            eventHandler = spy(DefaultEventHandler.getInstance(InstrumentationRegistry.getTargetContext()));
+            eventHandler = spy(DefaultEventHandler.getInstance(InstrumentationRegistry.getInstrumentation().getTargetContext()));
             optimizely = Optimizely.builder(datafile, eventHandler).build();
             if(datafileVersion==3) {
                 when(bucketer.bucket(optimizely.getProjectConfig().getExperiments().get(0), GENERIC_USER_ID, optimizely.getProjectConfig())).thenReturn(optimizely.getProjectConfig().getExperiments().get(0).getVariations().get(0));

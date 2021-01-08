@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -16,10 +16,8 @@
 
 package com.optimizely.ab.android.user_profile;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
-import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
 
@@ -32,6 +30,8 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
 public class UserProfileCacheTest {
 
     // Runs tasks serially on the calling thread
-    private ListeningExecutorService executor = MoreExecutors.newDirectExecutorService();
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
     private Logger logger;
     private Cache cache;
     private UserProfileCache.DiskCache diskCache;
@@ -67,7 +67,7 @@ public class UserProfileCacheTest {
     public void setup() throws JSONException {
         logger = mock(Logger.class);
         projectId = "1";
-        cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
         diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
         legacyDiskCache = new UserProfileCache.LegacyDiskCache(cache, executor, logger, projectId);
         memoryCache = new ConcurrentHashMap<>();
@@ -140,6 +140,12 @@ public class UserProfileCacheTest {
         verify(logger).info("Saved user profile for {}.", userId2);
 
         userProfileCache.remove(userId1);
+        // give cache a chance to save.  we should actually wait on the executor.
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         userProfileCache.start();
 
         assertNull(userProfileCache.lookup(userId1));
@@ -163,11 +169,16 @@ public class UserProfileCacheTest {
         verify(logger).info("Saved user profile for {}.", userId2);
 
         userProfileCache.remove(userId1, "exp_1");
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         userProfileCache.start();
 
         Map<String, Object> userProfileMap1 = userProfileCache.lookup(userId1);
-        Map<String, Map<String, String>> experimentBucketMap1 = (ConcurrentHashMap<String, Map<String, String>>)
-                userProfileMap1.get("experiment_bucket_map");
+        Map<String, Map<String, String>> experimentBucketMap1 =
+                (Map<String, Map<String, String>>) userProfileMap1.get("experiment_bucket_map");
         assertNull(experimentBucketMap1.get("exp_1"));
         assertNotNull(experimentBucketMap1.get("exp_2"));
 

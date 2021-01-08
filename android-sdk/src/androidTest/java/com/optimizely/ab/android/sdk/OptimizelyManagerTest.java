@@ -22,11 +22,10 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.core.deps.guava.util.concurrent.ListeningExecutorService;
-import android.support.test.espresso.core.deps.guava.util.concurrent.MoreExecutors;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.annotation.RequiresApi;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
@@ -43,7 +42,6 @@ import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
-import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +51,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
@@ -62,8 +62,6 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -79,7 +77,7 @@ public class OptimizelyManagerTest {
 
     private String testProjectId = "7595190003";
     private String testSdkKey = "EQRZ12XAR22424";
-    private ListeningExecutorService executor;
+    private ExecutorService executor;
     private Logger logger;
     private OptimizelyManager optimizelyManager;
     private DefaultDatafileHandler defaultDatafileHandler;
@@ -100,7 +98,7 @@ public class OptimizelyManagerTest {
     @Before
     public void setup() throws Exception {
         logger = mock(Logger.class);
-        executor = MoreExecutors.newDirectExecutorService();
+        executor = Executors.newSingleThreadExecutor();
         defaultDatafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         EventProcessor eventProcessor = mock(EventProcessor.class);
@@ -111,8 +109,8 @@ public class OptimizelyManagerTest {
                 .withEventDispatchInterval(3600L)
                 .withEventHandler(eventHandler)
                 .withEventProcessor(eventProcessor)
-                .build(InstrumentationRegistry.getTargetContext());
-        defaultDatafile = optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+                .build(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        defaultDatafile = optimizelyManager.getDatafile(InstrumentationRegistry.getInstrumentation().getTargetContext(), R.raw.datafile);
         ProjectConfig config = new DatafileProjectConfig.Builder().withDatafile(defaultDatafile).build();
 
         when(defaultDatafileHandler.getConfig()).thenReturn(config);
@@ -120,7 +118,7 @@ public class OptimizelyManagerTest {
 
     @Test
     public void initializeIntUseForcedVariation() {
-        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getTargetContext(), R.raw.datafile);
 
 
         assertTrue(optimizelyManager.getOptimizely().setForcedVariation("android_experiment_key", "1", "var_1"));
@@ -132,13 +130,13 @@ public class OptimizelyManagerTest {
     @Test
     public void initializeInt() {
 
-        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getTargetContext(), R.raw.datafile);
 
-        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
 
         assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
 
-        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(InstrumentationRegistry.getTargetContext()), eq(new DatafileConfig(testProjectId, null)), eq(3600L), any(DatafileLoadedListener.class));
+        verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(InstrumentationRegistry.getInstrumentation().getTargetContext()), eq(new DatafileConfig(testProjectId, null)), eq(3600L), any(DatafileLoadedListener.class));
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
 
@@ -149,16 +147,16 @@ public class OptimizelyManagerTest {
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
          */
-        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getTargetContext(), R.raw.datafile);
 
-        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
 
         assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
 
-        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(),(Integer) null);
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getTargetContext(),(Integer) null);
         verify(logger).error(eq("Invalid datafile resource ID."));
     }
     @Test
@@ -173,16 +171,16 @@ public class OptimizelyManagerTest {
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
         */
-        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getTargetContext(), R.raw.datafile);
 
-        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
 
         assertEquals(optimizelyManager.getDatafileUrl(), String.format((DatafileConfig.defaultHost + DatafileConfig.environmentUrlSuffix), testSdkKey));
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
 
-        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(),(Integer) null);
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getTargetContext(),(Integer) null);
         verify(logger).error(eq("Invalid datafile resource ID."));
     }
     @Test
@@ -193,7 +191,7 @@ public class OptimizelyManagerTest {
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
         when(defaultDatafileHandler.getConfig()).thenReturn(null);
-        optimizelyManager.initialize(InstrumentationRegistry.getTargetContext(), R.raw.emptydatafile);
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getTargetContext(), R.raw.emptydatafile);
         assertFalse(optimizelyManager.getOptimizely().isValid());
     }
     @Test
@@ -204,7 +202,7 @@ public class OptimizelyManagerTest {
         when(context.getApplicationContext()).thenReturn(appContext);
         when(appContext.getPackageName()).thenReturn("com.optly");
 
-        String datafile= optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.emptydatafile);
+        String datafile= optimizelyManager.getDatafile(InstrumentationRegistry.getInstrumentation().getTargetContext(), R.raw.emptydatafile);
         assertNotNull(datafile,"");
     }
     @Test
@@ -213,8 +211,8 @@ public class OptimizelyManagerTest {
          * Scenario#1: when datafile is Cached
          *  Scenario#2: when datafile is not cached and raw datafile is not empty
         */
-        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
-        String datafile =  optimizelyManager.getDatafile(InstrumentationRegistry.getTargetContext(), R.raw.datafile);
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
+        String datafile =  optimizelyManager.getDatafile(InstrumentationRegistry.getInstrumentation().getTargetContext(), R.raw.datafile);
         assertEquals(optimizelyManager.getDatafileUrl(), String.format("https://cdn.optimizely.com/json/%s.json", testProjectId) );
         assertNotNull(datafile);
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -251,12 +249,12 @@ public class OptimizelyManagerTest {
                 assertNull(optimizelyManager.getOptimizelyStartListener());
             }
         };
-        optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, listener);
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getContext(), R.raw.datafile, listener);
 
         verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(any(Context.class), eq(new DatafileConfig(testProjectId, testSdkKey)), eq(3600L), any(DatafileLoadedListener.class));
 
 
-        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
 
         assertEquals(optimizelyManager.getDatafileUrl(), String.format((DatafileConfig.defaultHost + DatafileConfig.environmentUrlSuffix), testSdkKey) );
     }
@@ -267,7 +265,7 @@ public class OptimizelyManagerTest {
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
          */
-        optimizelyManager.initialize(InstrumentationRegistry.getContext(), R.raw.datafile, new OptimizelyStartListener() {
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getContext(), R.raw.datafile, new OptimizelyStartListener() {
             @Override
             public void onStart(OptimizelyClient optimizely) {
                 assertNotNull(optimizelyManager.getOptimizely());
@@ -276,7 +274,7 @@ public class OptimizelyManagerTest {
             }
         });
 
-        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getTargetContext()), false);
+        assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
 
         assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
     }
@@ -324,7 +322,7 @@ public class OptimizelyManagerTest {
 
     @Test
     public void initializeAsyncWithNullDatafile() {
-        optimizelyManager.initialize(InstrumentationRegistry.getContext(), new OptimizelyStartListener() {
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getContext(), new OptimizelyStartListener() {
             @Override
             public void onStart(OptimizelyClient optimizely) {
                 assertNotNull(optimizely);
@@ -514,7 +512,7 @@ public class OptimizelyManagerTest {
 
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null);
@@ -547,7 +545,7 @@ public class OptimizelyManagerTest {
 
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null);
@@ -580,7 +578,7 @@ public class OptimizelyManagerTest {
 
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null);
@@ -613,7 +611,7 @@ public class OptimizelyManagerTest {
 
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null);
@@ -645,7 +643,7 @@ public class OptimizelyManagerTest {
 
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null);
@@ -678,7 +676,7 @@ public class OptimizelyManagerTest {
 
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null);
@@ -712,7 +710,7 @@ public class OptimizelyManagerTest {
 
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null);
@@ -745,7 +743,7 @@ public class OptimizelyManagerTest {
 
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = spy(new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null));
@@ -762,7 +760,7 @@ public class OptimizelyManagerTest {
 
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
-        Context context = InstrumentationRegistry.getTargetContext();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = spy(new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null));
