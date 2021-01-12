@@ -23,8 +23,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.optimizely.ab.android.event_handler.EventRescheduler
 import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.android.sdk.OptimizelyManager
+import com.optimizely.ab.android.sdk.OptimizelyStartListener
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager
 import com.optimizely.ab.notification.DecisionNotification
+import com.optimizely.ab.notification.NotificationHandler
 import com.optimizely.ab.notification.TrackNotification
 import com.optimizely.ab.notification.UpdateConfigNotification
 
@@ -51,10 +53,14 @@ class SplashScreenActivity : AppCompatActivity() {
         applicationContext.registerReceiver(eventRescheduler, IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION))
 
         if (INITIALIZE_ASYNCHRONOUSLY) {
-            optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->
-                addNotificationListeners()
-                startVariation()
+            val listener = object : OptimizelyStartListener {
+                override fun onStart(optimizely: OptimizelyClient?) {
+                    addNotificationListeners()
+                    startVariation()
+                }
+
             }
+            optimizelyManager!!.initialize(this, R.raw.datafile, listener)
         } else {
             optimizelyManager!!.initialize(this, R.raw.datafile)
             addNotificationListeners()
@@ -69,27 +75,42 @@ class SplashScreenActivity : AppCompatActivity() {
         // DECISION notification
         // - this callback is triggered with the decision type, associated decision information, user ID, and attributes.
         // - different APIs trigger different types of decisions: activate() -> "ab-test", isFeatureEnabled() -> "feature", ...
-        optimizelyClient.addDecisionNotificationHandler { notification: DecisionNotification ->
-            val type = notification.type
-            val userId = notification.userId
-            val attributes = notification.attributes
-            val decisionInfo = notification.decisionInfo
-            println("got decision notification: ($type)($userId)($attributes)($decisionInfo")
+        val dec = object : NotificationHandler<DecisionNotification?> {
+            override fun handle(notification: DecisionNotification?) {
+                val type = notification?.type
+                val userId = notification?.userId
+                val attributes = notification?.attributes
+                val decisionInfo = notification?.decisionInfo
+                println("got decision notification: ($type)($userId)($attributes)($decisionInfo")
+            }
         }
+
+        optimizelyClient.addDecisionNotificationHandler(dec)
 
         // Track notification
         // - this callback is triggered when a tracking event has been sent
-        optimizelyClient.addTrackNotificationHandler { notification: TrackNotification ->
-            val eventKey = notification.eventKey
-            val userId = notification.userId
-            val attributes = notification.attributes
-            val eventTags = notification.eventTags
-            println("got track notification: ($eventKey)($userId)($attributes)($eventTags")
+        val trak = object : NotificationHandler<TrackNotification?> {
+            override fun handle(notification: TrackNotification?) {
+                val eventKey = notification?.eventKey
+                val userId = notification?.userId
+                val attributes = notification?.attributes
+                val eventTags = notification?.eventTags
+                println("got track notification: ($eventKey)($userId)($attributes)($eventTags")
+            }
+
         }
+
+        optimizelyClient.addTrackNotificationHandler(trak)
 
         // UpdateConfig notification
         // - this callback is triggered when a new datafile is downloaded and the SDK project configuration has been updated
-        optimizelyClient.addUpdateConfigNotificationHandler { notification: UpdateConfigNotification? -> println("got datafile change notification:") }
+        val conf = object : NotificationHandler<UpdateConfigNotification?> {
+            override fun handle(message: UpdateConfigNotification?) {
+                println("got datafile change notification:")
+            }
+        }
+
+        optimizelyClient.addUpdateConfigNotificationHandler(conf)
     }
 
     /**
