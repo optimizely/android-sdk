@@ -129,6 +129,10 @@ public class OptimizelyClientTest {
             this.datafileVersion = datafileVersion;
             eventHandler = spy(DefaultEventHandler.getInstance(InstrumentationRegistry.getTargetContext()));
             optimizely = Optimizely.builder(datafile, eventHandler).build();
+
+            // set to return DecisionResponse with null variation by default (instead of null DecisionResponse)
+            when(bucketer.bucket(anyObject(), anyObject(), anyObject())).thenReturn(DecisionResponse.nullNoReasons());
+
             if(datafileVersion==3) {
                 Variation variation = optimizely.getProjectConfig().getExperiments().get(0).getVariations().get(0);
                 when(bucketer.bucket(
