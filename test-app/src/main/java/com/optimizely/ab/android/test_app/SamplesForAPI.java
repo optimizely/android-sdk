@@ -63,6 +63,8 @@ public class SamplesForAPI {
 
             List<OptimizelyDecideOption> options = Arrays.asList(OptimizelyDecideOption.INCLUDE_REASONS);
             OptimizelyDecision decision = user.decide("show_coupon", options);
+            // or can be called without options
+            //OptimizelyDecision decision = user.decide("show_coupon");
 
             String variationKey = decision.getVariationKey();
             boolean enabled = decision.getEnabled();

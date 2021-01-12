@@ -43,6 +43,7 @@ import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.TrackNotificationListener;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
+import com.optimizely.ab.optimizelydecision.DecisionResponse;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecision;
 import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
@@ -129,19 +130,19 @@ public class OptimizelyClientTest {
             eventHandler = spy(DefaultEventHandler.getInstance(InstrumentationRegistry.getTargetContext()));
             optimizely = Optimizely.builder(datafile, eventHandler).build();
             if(datafileVersion==3) {
+                Variation variation = optimizely.getProjectConfig().getExperiments().get(0).getVariations().get(0);
                 when(bucketer.bucket(
-                        eq(optimizely.getProjectConfig().getExperiments().get(0)),
-                        eq(GENERIC_USER_ID),
-                        eq(optimizely.getProjectConfig()),
-                        anyObject())
-                ).thenReturn(optimizely.getProjectConfig().getExperiments().get(0).getVariations().get(0));
+                        optimizely.getProjectConfig().getExperiments().get(0),
+                        GENERIC_USER_ID,
+                        optimizely.getProjectConfig())
+                ).thenReturn(DecisionResponse.responseNoReasons(variation));
             } else {
+                Variation variation = optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY).getVariations().get(1);
                 when(bucketer.bucket(
-                        eq(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY)),
-                        eq(GENERIC_USER_ID),
-                        eq(optimizely.getProjectConfig()),
-                        anyObject())
-                ).thenReturn(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY).getVariations().get(1));
+                        optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY),
+                        GENERIC_USER_ID,
+                        optimizely.getProjectConfig())
+                ).thenReturn(DecisionResponse.responseNoReasons(variation));
             }
             spyOnConfig();
         } catch (Exception configException) {
@@ -380,7 +381,7 @@ public class OptimizelyClientTest {
         Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get(FEATURE_ANDROID_EXPERIMENT_KEY);
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.activate(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
-        verify(bucketer).bucket(eq(experiment), eq(bucketingId), eq(optimizely.getProjectConfig()), anyObject());
+        verify(bucketer).bucket(experiment, bucketingId, optimizely.getProjectConfig());
     }
 
     @Test
@@ -905,7 +906,7 @@ public class OptimizelyClientTest {
         Map<String, String> attributes = new HashMap<>();
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.getVariation("android_experiment_key", "userId", attributes);
-        verify(bucketer).bucket(eq(experiment), eq(bucketingId), eq(optimizely.getProjectConfig()), anyObject());
+        verify(bucketer).bucket(experiment, bucketingId, optimizely.getProjectConfig());
     }
 
     @Test

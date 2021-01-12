@@ -772,6 +772,7 @@ public class OptimizelyClient {
      *
      * @return {@link OptimizelyConfig}
      */
+    @Nullable
     public OptimizelyConfig getOptimizelyConfig() {
         if (isValid()) {
             return optimizely.getOptimizelyConfig();
@@ -790,18 +791,19 @@ public class OptimizelyClient {
      * @param attributes: A map of attribute names to current user attribute values.
      * @return An OptimizelyUserContext associated with this OptimizelyClient.
      */
+    @Nullable
     public OptimizelyUserContext createUserContext(@NonNull String userId,
                                                    @NonNull Map<String, Object> attributes) {
-        if (userId == null) {
-            logger.warn("The userId parameter must be nonnull.");
+        if (isValid()) {
+            return optimizely.createUserContext(userId, attributes);
+        } else {
+            logger.warn("Optimizely is not initialized, could not create a user context");
             return null;
         }
-
-        return new OptimizelyUserContext(optimizely, userId, attributes);
     }
 
     public OptimizelyUserContext createUserContext(@NonNull String userId) {
-        return new OptimizelyUserContext(optimizely, userId);
+        return createUserContext(userId, null);
     }
 
     //======== Notification APIs ========//
