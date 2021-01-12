@@ -16,25 +16,17 @@
 
 package com.optimizely.ab.android.event_handler;
 
-import android.app.AlarmManager;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.app.job.JobWorkItem;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
-import com.optimizely.ab.android.shared.JobWorkService;
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static android.content.Context.ALARM_SERVICE;
 
 /**
  * Reschedules event flushing after package updates and reboots

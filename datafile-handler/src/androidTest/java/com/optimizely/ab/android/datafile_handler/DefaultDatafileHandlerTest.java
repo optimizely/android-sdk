@@ -1,9 +1,9 @@
 package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.annotation.Nullable;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.DatafileConfig;
 
@@ -34,7 +34,7 @@ public class DefaultDatafileHandlerTest {
     @Test
     public void useAppContext() throws Exception {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         assertEquals("com.optimizely.ab.android.datafile_handler.test", appContext.getPackageName());
     }
@@ -42,7 +42,7 @@ public class DefaultDatafileHandlerTest {
     @Test
     public void testSaveExistsRemoveWithoutEnvironment() throws Exception {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         DatafileConfig projectId = new DatafileConfig("1", null);
         datafileHandler.saveDatafile(appContext, projectId, "{}");
@@ -56,7 +56,7 @@ public class DefaultDatafileHandlerTest {
     @Test
     public void testSaveExistsRemoveWithEnvironments() throws Exception {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         DatafileConfig projectId = new DatafileConfig("1", "2");
         datafileHandler.saveDatafile(appContext, projectId, "{}");
@@ -70,7 +70,7 @@ public class DefaultDatafileHandlerTest {
     @Test
     public void testDownload() throws Exception {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         String datafile = datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", null));
 
@@ -80,7 +80,7 @@ public class DefaultDatafileHandlerTest {
     @Test
     public void testDownloadWithEnvironmemt() throws Exception {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         String datafile = datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", "2"));
 
@@ -90,7 +90,7 @@ public class DefaultDatafileHandlerTest {
     @Test
     public void testAsyncDownloadWithoutEnvironment() throws Exception {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", null), new DatafileLoadedListener() {
             @Override
@@ -105,7 +105,7 @@ public class DefaultDatafileHandlerTest {
     @Test
     public void testAsyncDownloadWithEnvironment() throws Exception {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         datafileHandler.downloadDatafile(appContext, new DatafileConfig("1", "2"), new DatafileLoadedListener() {
             @Override
@@ -119,7 +119,7 @@ public class DefaultDatafileHandlerTest {
     @Test
     public void testBackgroundWithoutEnvironment() throws Exception {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", null), 24 * 60 * 60L, null);
 
@@ -133,7 +133,7 @@ public class DefaultDatafileHandlerTest {
     @Test
     public void testBackgroundWithEnvironment() throws Exception {
         // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         datafileHandler.startBackgroundUpdates(appContext, new DatafileConfig("1", "2"), 24 * 60 * 60L, null);
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2020, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -17,8 +17,8 @@
 package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.OptimizelyUserContext;

@@ -16,8 +16,8 @@
 
 package com.optimizely.ab.android.datafile_handler;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.Cache;
 
@@ -52,7 +52,7 @@ public class DatafileCacheTest {
     @Before
     public void setup() {
         logger = mock(Logger.class);
-        Cache cache = new Cache(InstrumentationRegistry.getTargetContext(), logger);
+        Cache cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
         datafileCache = new DatafileCache("1", cache, logger);
     }
 

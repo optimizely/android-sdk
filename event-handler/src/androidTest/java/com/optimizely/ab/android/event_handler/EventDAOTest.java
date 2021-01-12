@@ -18,9 +18,9 @@ package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.annotation.RequiresApi;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import android.util.Pair;
 
 import org.junit.After;
@@ -53,7 +53,7 @@ public class EventDAOTest {
     @Before
     public void setupEventDAO() {
         logger = mock(Logger.class);
-        context = InstrumentationRegistry.getTargetContext();
+        context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         eventDAO = EventDAO.getInstance(context, "1", logger);
     }
 

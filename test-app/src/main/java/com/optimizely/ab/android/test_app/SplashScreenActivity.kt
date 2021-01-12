@@ -19,7 +19,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.optimizely.ab.android.event_handler.EventRescheduler
 import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.android.sdk.OptimizelyManager

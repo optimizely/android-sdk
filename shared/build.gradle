@@ -32,7 +32,7 @@ android {
         targetSdkVersion target_sdk_version
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         consumerProguardFiles '../proguard-rules.txt'
     }
     testOptions {
@@ -58,20 +58,20 @@ dependencies {
     api ("com.optimizely.ab:core-api:$java_core_ver") {
         exclude group: 'com.google.code.findbugs'
     }
+    implementation "androidx.annotation:annotation:$annotations_ver"
     implementation "com.google.code.gson:gson:$gson_ver"
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
-    compileOnly  "com.android.support:support-annotations:$support_annotations_ver"
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
-    androidTestImplementation "com.android.support.test:runner:$support_test_runner_ver"
+    androidTestImplementation "androidx.test.ext:junit:$androidx_test"
     // Set this dependency to use JUnit 4 rules
-    androidTestImplementation "com.android.support.test:rules:$support_test_runner_ver"
+    androidTestImplementation "androidx.test:rules:$androidx_test"
     // Set this dependency to build and run Espresso tests
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espresso_ver"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_ver"
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"

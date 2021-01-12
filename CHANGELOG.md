@@ -1,5 +1,13 @@
 # Optimizely Android X SDK Changelog
 
+## 3.8.0
+November 20th, 2020
+
+- Add support for upcoming application-controlled introduction of tracking for non-experiment Flag decisions.
+
+For a complete list see the [release notes](https://github.com/optimizely/java-sdk/releases/tag/3.7.0) for java sdk 3.7.0
+
+Using Java SDK 3.7.0
 
 ## 3.7.0
 September 30th, 2020

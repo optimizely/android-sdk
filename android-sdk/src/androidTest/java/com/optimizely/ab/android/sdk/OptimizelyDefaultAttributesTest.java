@@ -15,11 +15,10 @@
  ***************************************************************************/
 package com.optimizely.ab.android.sdk;
 
-import java.util.HashMap;
 import java.util.Map;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;

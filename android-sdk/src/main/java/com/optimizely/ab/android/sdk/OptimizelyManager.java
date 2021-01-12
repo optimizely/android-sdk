@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2018, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -23,11 +23,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RawRes;
-import android.support.annotation.RequiresApi;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RawRes;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;

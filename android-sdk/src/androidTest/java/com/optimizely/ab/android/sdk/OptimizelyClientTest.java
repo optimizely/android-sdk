@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2020, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -17,7 +17,7 @@
 package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -94,11 +94,11 @@ public class OptimizelyClientTest {
         return Arrays.asList(new Object[][] {
                 {
                         3,
-                        loadRawResource(InstrumentationRegistry.getTargetContext(),R.raw.validprojectconfigv3)
+                        loadRawResource(InstrumentationRegistry.getInstrumentation().getTargetContext(),R.raw.validprojectconfigv3)
                 },
                 {
                         4,
-                        loadRawResource(InstrumentationRegistry.getTargetContext(),R.raw.validprojectconfigv4)
+                        loadRawResource(InstrumentationRegistry.getInstrumentation().getTargetContext(),R.raw.validprojectconfigv4)
                 }
         });
     }
@@ -127,7 +127,7 @@ public class OptimizelyClientTest {
     public OptimizelyClientTest(int datafileVersion,String datafile){
         try {
             this.datafileVersion = datafileVersion;
-            eventHandler = spy(DefaultEventHandler.getInstance(InstrumentationRegistry.getTargetContext()));
+            eventHandler = spy(DefaultEventHandler.getInstance(InstrumentationRegistry.getInstrumentation().getTargetContext()));
             optimizely = Optimizely.builder(datafile, eventHandler).build();
 
             // set to return DecisionResponse with null variation by default (instead of null DecisionResponse)
@@ -2219,8 +2219,8 @@ public class OptimizelyClientTest {
     public void testDecide_withoutDefaultDecideOptions() throws IOException {
         assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
 
-        String datafile = loadRawResource(InstrumentationRegistry.getTargetContext(),R.raw.validprojectconfigv4);
-        Context context = InstrumentationRegistry.getTargetContext();
+        String datafile = loadRawResource(InstrumentationRegistry.getInstrumentation().getTargetContext(),R.raw.validprojectconfigv4);
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         OptimizelyManager optimizelyManager = OptimizelyManager.builder(testProjectId).build(context);
         optimizelyManager.initialize(context, datafile);
 
@@ -2238,8 +2238,8 @@ public class OptimizelyClientTest {
 
         List<OptimizelyDecideOption> defaultDecideOptions = Arrays.asList(OptimizelyDecideOption.INCLUDE_REASONS);
 
-        String datafile = loadRawResource(InstrumentationRegistry.getTargetContext(),R.raw.validprojectconfigv4);
-        Context context = InstrumentationRegistry.getTargetContext();
+        String datafile = loadRawResource(InstrumentationRegistry.getInstrumentation().getTargetContext(),R.raw.validprojectconfigv4);
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         OptimizelyManager optimizelyManager = OptimizelyManager.builder(testProjectId)
                 .withDefaultDecideOptions(defaultDecideOptions)
                 .build(context);
