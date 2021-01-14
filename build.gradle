@@ -49,7 +49,7 @@ allprojects {
         google()
         mavenCentral()
         // Uncomment the next line to use maven locally
-        mavenLocal()
+        //mavenLocal()
     }
 }
 
@@ -58,8 +58,7 @@ ext {
     build_tools_version = "29.0.3"
     min_sdk_version = 14
     target_sdk_version = 29
-    //java_core_ver = "3.7.0"
-    java_core_ver = "3.8.0-SNAPSHOT"
+    java_core_ver = "3.8.0-beta2"
     android_logger_ver = "1.3.6"
     jacksonversion= "2.11.2"
     annotations_ver = "1.0.0"
