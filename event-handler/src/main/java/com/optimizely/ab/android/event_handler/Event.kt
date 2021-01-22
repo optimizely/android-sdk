@@ -20,7 +20,7 @@ import java.net.URL
 /**
  * Event model
  */
-class Event(val uRL: URL, val requestBody: String) {
+open class Event(val uRL: URL, val requestBody: String) {
 
     /**
      * Returns the String representation of an event

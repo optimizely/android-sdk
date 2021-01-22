@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory
  * This is the main entry point to the Android Module.  This event handler creates a service intent and starts it in the passed
  * in context.  The intent service will attempt to send any and all queued events.
  */
-class DefaultEventHandler
+open class DefaultEventHandler
 /**
  * Private constructor
  * @param context current context for service.

@@ -128,10 +128,13 @@ class DatafileConfig @JvmOverloads constructor(projectId: String?, sdkKey: Strin
         this.projectId = projectId
         this.sdkKey = sdkKey
         this.host = host
-        if (sdkKey != null) {
-            url = String.format(this.host + environmentUrlSuffix, sdkKey)
-        } else {
-            url = String.format(this.host + projectUrlSuffix, projectId)
+        when {
+            sdkKey != null -> {
+                url = String.format(this.host + environmentUrlSuffix, sdkKey)
+            }
+            else -> {
+                url = String.format(this.host + projectUrlSuffix, projectId)
+            }
         }
     }
 }

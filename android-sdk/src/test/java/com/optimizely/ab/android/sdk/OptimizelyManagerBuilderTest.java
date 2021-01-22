@@ -72,11 +72,13 @@ public class OptimizelyManagerBuilderTest {
     public void testBuildWithValidPollingInterval() {
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
-        OptimizelyManager manager = OptimizelyManager.builder("1")
+        OptimizelyManager manager = OptimizelyManager.builder()
+                .withSDKKey("testBuildWithValidPollingInterval")
                 .withDatafileDownloadInterval(901L)
                 .build(appContext);
 
-        assertEquals(901L, manager.getDatafileDownloadInterval().longValue());
+        assert manager != null;
+        assertEquals(901L, manager.getDatafileDownloadInterval());
     }
 
     @Test
@@ -84,12 +86,13 @@ public class OptimizelyManagerBuilderTest {
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
         EventHandler eventHandler = mock(EventHandler.class);
-        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
+        OptimizelyManager manager = OptimizelyManager.builder()
                 .withDatafileDownloadInterval(901L)
                 .withEventHandler(eventHandler)
+                .withSDKKey("testBuildWithEventHandler")
                 .build(appContext);
 
-        assertEquals(901L, manager.getDatafileDownloadInterval().longValue());
+        assertEquals(901L, manager.getDatafileDownloadInterval());
         assertEquals(manager.getEventHandler(appContext), eventHandler);
 
 
@@ -100,9 +103,10 @@ public class OptimizelyManagerBuilderTest {
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
         ErrorHandler errorHandler = mock(ErrorHandler.class);
-        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
+        OptimizelyManager manager = OptimizelyManager.builder()
                 .withDatafileDownloadInterval(61L)
                 .withErrorHandler(errorHandler)
+                .withSDKKey("testBuildWithErrorHandler")
                 .build(appContext);
 
         manager.initialize(appContext, minDatafile);
@@ -115,9 +119,10 @@ public class OptimizelyManagerBuilderTest {
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
         DatafileHandler dfHandler = mock(DatafileHandler.class);
-        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
+        OptimizelyManager manager = OptimizelyManager.builder()
                 .withDatafileDownloadInterval(61L)
                 .withDatafileHandler(dfHandler)
+                .withSDKKey("testBuildWithDatafileHandler")
                 .build(appContext);
 
         manager.initialize(appContext, minDatafile);
@@ -130,9 +135,10 @@ public class OptimizelyManagerBuilderTest {
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
         DefaultUserProfileService ups = mock(DefaultUserProfileService.class);
-        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
+        OptimizelyManager manager = OptimizelyManager.builder()
                 .withDatafileDownloadInterval(61L)
                 .withUserProfileService(ups)
+                .withSDKKey("testBuildWithUserProfileService")
                 .build(appContext);
 
         manager.initialize(appContext, minDatafile);

@@ -18,12 +18,14 @@ package com.optimizely.ab.android.datafile_handler;
 
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.DatafileConfig;
+import com.optimizely.ab.android.shared.OptlyStorage;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.ArgumentCaptor;
+import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
@@ -60,6 +62,18 @@ public class DatafileClientTest {
     public void setup() {
         client = mock(Client.class);
         logger = mock(Logger.class);
+
+        try {
+            FieldSetter fs = new FieldSetter(client, Client.class.getDeclaredField("optlyStorage"));
+            fs.set(mock(OptlyStorage.class));
+
+            fs = new FieldSetter(client, Client.class.getDeclaredField("logger"));
+            fs.set(mock(Logger.class));
+
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
         datafileClient = new DatafileClient(client, logger);
         urlConnection = mock(HttpURLConnection.class);
     }

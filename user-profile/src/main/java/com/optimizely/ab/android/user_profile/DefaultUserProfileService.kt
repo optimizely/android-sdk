@@ -37,7 +37,7 @@ import java.util.concurrent.Executors
  * Once a user is bucketed they will stay bucketed unless the device's
  * storage is cleared. Bucketing information is stored in a simple file.
  */
-class DefaultUserProfileService internal constructor(private val userProfileCache: UserProfileCache, private val logger: Logger) : UserProfileService {
+open class DefaultUserProfileService internal constructor(private val userProfileCache: UserProfileCache, private val logger: Logger) : UserProfileService {
     interface StartCallback {
         fun onStartComplete(userProfileService: UserProfileService?)
     }

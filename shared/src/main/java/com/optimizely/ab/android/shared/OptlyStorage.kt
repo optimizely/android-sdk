@@ -22,7 +22,7 @@ import android.content.SharedPreferences
  * Wrapper for [SharedPreferences]
  * @hide
  */
-class OptlyStorage
+open class OptlyStorage
 /**
  * Creates a new instance of [OptlyStorage]
  *

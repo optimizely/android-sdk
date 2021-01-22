@@ -20,7 +20,6 @@ import android.content.Context;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.shared.DatafileConfig;
-import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.BatchEventProcessor;
@@ -30,7 +29,6 @@ import com.optimizely.ab.notification.NotificationCenter;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
@@ -39,17 +37,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.verifyNew;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
@@ -71,8 +64,9 @@ public class OptimizelyManagerIntervalTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
 
         long goodNumber = 27;
-        OptimizelyManager manager = OptimizelyManager.builder("1")
+        OptimizelyManager manager = OptimizelyManager.builder()
                 .withLogger(logger)
+                .withSDKKey("testBuildWithDatafileDownloadInterval")
                 .withDatafileDownloadInterval(goodNumber, TimeUnit.MINUTES)
                 .build(appContext);
 
@@ -98,8 +92,9 @@ public class OptimizelyManagerIntervalTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
 
         long goodNumber = 1234L;
-        OptimizelyManager manager = OptimizelyManager.builder("1")
+        OptimizelyManager manager = OptimizelyManager.builder()
                 .withLogger(logger)
+                .withSDKKey("testBuildWithDatafileDownloadIntervalDeprecated")
                 .withDatafileDownloadInterval(goodNumber)      // deprecated
                 .build(appContext);
 
@@ -126,8 +121,9 @@ public class OptimizelyManagerIntervalTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
 
         long goodNumber = 100L;
-        OptimizelyManager manager = OptimizelyManager.builder("1")
+        OptimizelyManager manager = OptimizelyManager.builder()
                 .withLogger(logger)
+                .withSDKKey("testBuildWithEventDispatchInterval")
                 .withEventDispatchInterval(goodNumber, TimeUnit.SECONDS)
                 .build(appContext);
 
@@ -165,8 +161,9 @@ public class OptimizelyManagerIntervalTest {
         long goodNumber = 100L;
         long defaultEventFlushInterval = 30L;
 
-        OptimizelyManager manager = OptimizelyManager.builder("1")
+        OptimizelyManager manager = OptimizelyManager.builder()
                 .withLogger(logger)
+                .withSDKKey("testBuildWithEventDispatchRetryInterval")
                 .withEventDispatchRetryInterval(goodNumber, TimeUnit.MINUTES)
                 .build(appContext);
 
@@ -202,8 +199,9 @@ public class OptimizelyManagerIntervalTest {
         when(appContext.getApplicationContext()).thenReturn(appContext);
 
         long goodNumber = 1234L;
-        OptimizelyManager manager = OptimizelyManager.builder("1")
+        OptimizelyManager manager = OptimizelyManager.builder()
                 .withLogger(logger)
+                .withSDKKey("testBuildWithEventDispatchIntervalDeprecated")
                 .withEventDispatchInterval(goodNumber)      // deprecated
                 .build(appContext);
 

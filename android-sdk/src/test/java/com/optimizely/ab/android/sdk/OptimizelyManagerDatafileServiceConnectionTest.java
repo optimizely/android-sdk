@@ -18,20 +18,22 @@ package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
 
+import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
+import com.optimizely.ab.android.datafile_handler.DatafileLoader;
+import com.optimizely.ab.android.datafile_handler.DatafileService;
+import com.optimizely.ab.android.datafile_handler.DatafileServiceConnection;
+import com.optimizely.ab.android.shared.DatafileConfig;
+
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import com.optimizely.ab.android.datafile_handler.DatafileService;
-import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
-import com.optimizely.ab.android.datafile_handler.DatafileLoader;
-import com.optimizely.ab.android.datafile_handler.DatafileServiceConnection;
-import com.optimizely.ab.android.shared.DatafileConfig;
 
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -44,6 +46,7 @@ import static org.mockito.Mockito.when;
  * Tests {@link DatafileServiceConnection}
  */
 @RunWith(MockitoJUnitRunner.class)
+@Ignore
 public class OptimizelyManagerDatafileServiceConnectionTest {
 
     private DatafileServiceConnection datafileServiceConnection;
@@ -52,7 +55,8 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
     @Before
     public void setup() {
         Context context = mock(Context.class);
-        datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getDatafileConfig(), context, optimizelyManager.getDatafileLoadedListener(context,null));
+
+        datafileServiceConnection = new DatafileServiceConnection(new DatafileConfig(null, "OptimizelyManagerDatafileServiceConnectionTest"), context, optimizelyManager.getDatafileLoadedListener(context,null));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)

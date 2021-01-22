@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory
  * The default implementation of [DatafileHandler] and the main
  * interaction point to the datafile-handler module.
  */
-class DefaultDatafileHandler : DatafileHandler, ProjectConfigManager {
+open class DefaultDatafileHandler : DatafileHandler, ProjectConfigManager {
     private var currentProjectConfig: ProjectConfig? = null
     private var datafileServiceConnection: DatafileServiceConnection? = null
     private var fileObserver: FileObserver? = null

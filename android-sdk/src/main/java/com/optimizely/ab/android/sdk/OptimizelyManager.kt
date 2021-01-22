@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Handles loading the Optimizely data file
  */
-class OptimizelyManager internal constructor(projectId: String?,
+open class OptimizelyManager internal constructor(projectId: String?,
                                              sdkKey: String?,
                                              datafileConfig: DatafileConfig?,
                                              logger: Logger,

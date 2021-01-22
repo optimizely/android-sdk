@@ -29,7 +29,7 @@ import java.util.concurrent.Executors
  * These services will only be used if you are using our [DefaultDatafileHandler].
  * You can chose to implement your own handler and use all or part of this package.
  */
-class DatafileService : Service() {
+open class DatafileService : Service() {
     private val binder: IBinder = LocalBinder()
     @JvmField
     var logger = LoggerFactory.getLogger(DatafileService::class.java)
@@ -99,7 +99,7 @@ class DatafileService : Service() {
         datafileLoader.getDatafile(datafileUrl, loadedListener)
     }
 
-    inner class LocalBinder : Binder() {
+    open inner class LocalBinder : Binder() {
         // Return this instance of LocalService so clients can call public methods
         val service: DatafileService
             get() =// Return this instance of LocalService so clients can call public methods

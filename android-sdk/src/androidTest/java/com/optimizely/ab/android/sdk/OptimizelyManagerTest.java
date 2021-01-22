@@ -42,6 +42,7 @@ import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
+import com.optimizely.ab.notification.NotificationCenter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -102,8 +103,9 @@ public class OptimizelyManagerTest {
         defaultDatafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         EventProcessor eventProcessor = mock(EventProcessor.class);
-        optimizelyManager = OptimizelyManager.builder(testProjectId)
+        optimizelyManager = OptimizelyManager.builder()
                 .withLogger(logger)
+                .withSDKKey(testSdkKey)
                 .withDatafileDownloadInterval(3600L)
                 .withDatafileHandler(defaultDatafileHandler)
                 .withEventDispatchInterval(3600L)
@@ -134,7 +136,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/datafiles/EQRZ12XAR22424.json" );
 
         verify(optimizelyManager.getDatafileHandler()).startBackgroundUpdates(eq(InstrumentationRegistry.getInstrumentation().getTargetContext()), eq(new DatafileConfig(testProjectId, null)), eq(3600L), any(DatafileLoadedListener.class));
         assertNotNull(optimizelyManager.getOptimizely());
@@ -151,7 +153,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/datafiles/EQRZ12XAR22424.json" );
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -166,7 +168,7 @@ public class OptimizelyManagerTest {
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         EventProcessor eventProcessor = mock(EventProcessor.class);
         OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, 3600L, datafileHandler, null, 3600L,
-                eventHandler, eventProcessor, null, null);
+                eventHandler, eventProcessor, mock(UserProfileService.class), mock(NotificationCenter.class));
         /*
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
@@ -213,7 +215,7 @@ public class OptimizelyManagerTest {
         */
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
         String datafile =  optimizelyManager.getDatafile(InstrumentationRegistry.getInstrumentation().getTargetContext(), R.raw.datafile);
-        assertEquals(optimizelyManager.getDatafileUrl(), String.format("https://cdn.optimizely.com/json/%s.json", testProjectId) );
+        assertEquals(optimizelyManager.getDatafileUrl(), String.format("https://cdn.optimizely.com/datafiles/%s.json", testSdkKey) );
         assertNotNull(datafile);
         assertNotNull(optimizelyManager.getDatafileHandler());
     }
@@ -224,8 +226,10 @@ public class OptimizelyManagerTest {
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         EventProcessor eventProcessor = mock(EventProcessor.class);
-        final OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, 3600L, datafileHandler, null, 3600L,
-                eventHandler, eventProcessor, null, null);
+        UserProfileService ups = mock(UserProfileService.class);
+        NotificationCenter nc = mock(NotificationCenter.class);
+        final OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, new DatafileConfig(testProjectId, testSdkKey), logger, 3600L, datafileHandler, null, 3600L,
+                eventHandler, eventProcessor, ups, nc);
 
         /*
          * Scenario#1: when datafile is not Empty
@@ -276,7 +280,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/json/7595190003.json" );
+        assertEquals(optimizelyManager.getDatafileUrl(), "https://cdn.optimizely.com/datafiles/EQRZ12XAR22424.json" );
     }
 
     @Test
@@ -515,7 +519,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null);
+                mock(EventHandler.class), mock(EventProcessor.class), mock(UserProfileService.class), mock(NotificationCenter.class));
 
         doAnswer(
                 new Answer<Object>() {
@@ -548,7 +552,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null);
+                mock(EventHandler.class), mock(EventProcessor.class), mock(UserProfileService.class), mock(NotificationCenter.class));
 
         doAnswer(
                 new Answer<Object>() {
@@ -581,7 +585,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null);
+                mock(EventHandler.class), mock(EventProcessor.class), mock(UserProfileService.class), mock(NotificationCenter.class));
 
         doAnswer(
                 new Answer<Object>() {
@@ -614,7 +618,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null);
+                mock(EventHandler.class), mock(EventProcessor.class), mock(UserProfileService.class), mock(NotificationCenter.class));
 
         doAnswer(
                 (Answer<Object>) invocation -> {
@@ -646,7 +650,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null);
+                mock(EventHandler.class), mock(EventProcessor.class), mock(UserProfileService.class), mock(NotificationCenter.class));
 
         doAnswer(
                 new Answer<Object>() {
@@ -679,7 +683,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null);
+                mock(EventHandler.class), mock(EventProcessor.class), mock(UserProfileService.class), mock(NotificationCenter.class));
 
         doAnswer(
                 new Answer<Object>() {
@@ -713,7 +717,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null);
+                mock(EventHandler.class), mock(EventProcessor.class), mock(UserProfileService.class), mock(NotificationCenter.class));
 
         doAnswer(
                 new Answer<Object>() {
@@ -745,8 +749,8 @@ public class OptimizelyManagerTest {
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        OptimizelyManager manager = spy(new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null));
+        OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                mock(EventHandler.class), mock(EventProcessor.class), mock(UserProfileService.class), mock(NotificationCenter.class));
 
         datafileHandler.removeSavedDatafile(context, manager.getDatafileConfig());
         OptimizelyClient client = manager.initialize(context, R.raw.datafile, downloadToCache, updateConfigOnNewDatafile);
@@ -762,8 +766,8 @@ public class OptimizelyManagerTest {
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        OptimizelyManager manager = spy(new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null));
+        OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
+                mock(EventHandler.class), mock(EventProcessor.class), mock(UserProfileService.class), mock(NotificationCenter.class));
 
         datafileHandler.removeSavedDatafile(context, manager.getDatafileConfig());
         OptimizelyClient client = manager.initialize(context, R.raw.datafile);

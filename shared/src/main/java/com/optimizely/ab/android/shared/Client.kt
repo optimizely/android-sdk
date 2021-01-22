@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Functionality common to all clients using http connections
  */
-class Client
+open class Client
 /**
  * Constructs a new Client instance
  *
@@ -144,7 +144,7 @@ class Client
      * Bundles up a request allowing it's execution to be deferred
      * @param <T> The response type of the request
     </T> */
-    interface Request<T> {
+    open interface Request<T> {
         fun execute(): T
     }
 

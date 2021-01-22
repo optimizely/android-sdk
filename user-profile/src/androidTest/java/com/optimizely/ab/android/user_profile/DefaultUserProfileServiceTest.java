@@ -105,8 +105,12 @@ public class DefaultUserProfileServiceTest {
 
     @Test
     public void saveAndStartAndLookup() {
-        userProfileService.save(userProfileMap1);
-        userProfileService.save(userProfileMap2);
+        try {
+            userProfileService.save(userProfileMap1);
+            userProfileService.save(userProfileMap2);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -124,8 +128,12 @@ public class DefaultUserProfileServiceTest {
 
     @Test
     public void remove() {
-        userProfileService.save(userProfileMap1);
-        userProfileService.save(userProfileMap2);
+        try {
+            userProfileService.save(userProfileMap1);
+            userProfileService.save(userProfileMap2);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -145,8 +153,12 @@ public class DefaultUserProfileServiceTest {
 
     @Test
     public void removeDecision() {
-        userProfileService.save(userProfileMap1);
-        userProfileService.save(userProfileMap2);
+        try {
+            userProfileService.save(userProfileMap1);
+            userProfileService.save(userProfileMap2);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
