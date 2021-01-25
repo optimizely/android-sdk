@@ -907,6 +907,11 @@ public class OptimizelyManager {
             }
 
             if (datafileConfig == null) {
+                if (projectId == null && sdkKey == null) {
+                    logger.error("ProjectId and SDKKey cannot both be null");
+                    return null;
+                }
+
                 datafileConfig = new DatafileConfig(projectId, sdkKey);
             }
 
@@ -915,8 +920,7 @@ public class OptimizelyManager {
             }
 
             if (userProfileService == null) {
-                DatafileConfig config = new DatafileConfig(projectId, sdkKey);
-                userProfileService = DefaultUserProfileService.newInstance(config.getKey(), context);
+                userProfileService = DefaultUserProfileService.newInstance(datafileConfig.getKey(), context);
             }
 
             if (eventHandler == null) {
@@ -934,11 +938,6 @@ public class OptimizelyManager {
                     .withFlushInterval(eventFlushInterval)
                     .build();
 
-            }
-
-            if (projectId == null && sdkKey == null) {
-                logger.error("ProjectId and SDKKey cannot both be null");
-                return null;
             }
 
             return new OptimizelyManager(projectId, sdkKey,
