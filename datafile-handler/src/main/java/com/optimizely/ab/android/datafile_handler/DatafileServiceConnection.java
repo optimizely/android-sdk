@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
  * The DatafileServiceConnection is used to bind to a DatafileService.  The DatafileService does that actual download.
  * The Service Connection kicks off the service after being connected.  The connection is unbound after a successful download.
  */
+@Deprecated
 public class DatafileServiceConnection implements ServiceConnection {
 
     @NonNull private final Context context;

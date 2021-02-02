@@ -82,22 +82,20 @@ public class EventRescheduler extends BroadcastReceiver {
     void reschedule(@NonNull Context context, @NonNull Intent broadcastIntent, @NonNull Intent eventServiceIntent, @NonNull ServiceScheduler serviceScheduler) {
         if (broadcastIntent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
                 broadcastIntent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
-            ServiceScheduler.startService(context,  EventIntentService.JOB_ID, eventServiceIntent);
+            ServiceScheduler.startService(context, EventWorker.workerId, EventWorker.class, null);
             logger.info("Rescheduling event flushing if necessary");
         } else if (broadcastIntent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)
                 && broadcastIntent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
 
-                if (serviceScheduler.isScheduled(eventServiceIntent)) {
-                    // If we get wifi and the event flushing service is scheduled preemptively
-                    // flush events before the next interval occurs.  If sending fails even
-                    // with wifi the service will be rescheduled on the interval.
-                    // Wifi connection state changes all the time and starting services is expensive
-                    // so it's important to only do this if we have stored events.
-                    // In android O and higher, we use a persistent job so we do not need to restart.
-                    if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                        ServiceScheduler.startService(context, EventIntentService.JOB_ID, eventServiceIntent);
-                        logger.info("Preemptively flushing events since wifi became available");
-                    }
+                // If we get wifi and the event flushing service is scheduled preemptively
+                // flush events before the next interval occurs.  If sending fails even
+                // with wifi the service will be rescheduled on the interval.
+                // Wifi connection state changes all the time and starting services is expensive
+                // so it's important to only do this if we have stored events.
+                // In android O and higher, we use a persistent job so we do not need to restart.
+                if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                    ServiceScheduler.startService(context, EventWorker.workerId, EventWorker.class, null);
+                    logger.info("Preemptively flushing events since wifi became available");
                 }
         } else {
             logger.warn("Received unsupported broadcast action to event rescheduler");

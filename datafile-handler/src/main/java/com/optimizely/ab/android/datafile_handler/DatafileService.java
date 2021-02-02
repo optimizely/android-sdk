@@ -39,6 +39,7 @@ import java.util.concurrent.Executors;
  * These services will only be used if you are using our {@link DefaultDatafileHandler}.
  * You can chose to implement your own handler and use all or part of this package.
  */
+@Deprecated
 public class DatafileService extends Service {
     /**
      * Extra containing the project id this instance of Optimizely was built with

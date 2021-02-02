@@ -26,8 +26,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PersistableBundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -255,6 +260,18 @@ public class ServiceScheduler {
         }
     }
 
+    public static void startService(Context context, String workerId, Class clazz, Data data) {
+        // Create a WorkRequest for your Worker and sending it input
+        WorkRequest workRequest =
+                new OneTimeWorkRequest.Builder(clazz)
+                        .setInputData(data)
+                        .addTag(workerId)
+                        .build();
+
+        WorkManager.getInstance(context).enqueue(workRequest);
+
+    }
+
     /**
      * Start a service either through the context or enqueued to the JobService to be run in a minute.
      * For example, the BroadcastReceivers use this to handle all versions of the API.
@@ -263,6 +280,7 @@ public class ServiceScheduler {
      * @param jobId - job id for the job to start if it is a job
      * @param intent - Intent you want to run.
      */
+    @Deprecated
     public static void startService(Context context, Integer jobId, Intent intent) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 

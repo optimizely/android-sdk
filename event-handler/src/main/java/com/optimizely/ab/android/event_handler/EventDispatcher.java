@@ -18,8 +18,9 @@ package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
 import android.content.Intent;
-import androidx.annotation.NonNull;
 import android.util.Pair;
+
+import androidx.annotation.NonNull;
 
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.OptlyStorage;
@@ -57,6 +58,25 @@ class EventDispatcher {
         this.logger = logger;
     }
 
+    boolean dispatch(String url, String body) {
+        boolean dispatched = false;
+
+        Event event = null;
+        try {
+            event = new Event(new URL(url), body);
+            // Send the event that triggered this run of the service for store it if sending fails
+            dispatched = dispatch(event);
+        } catch (MalformedURLException e) {
+            logger.error("Received a malformed URL in event handler service", e);
+        }
+        finally {
+            eventDAO.closeDb();
+        }
+
+        return dispatched;
+    }
+
+    @Deprecated
     void dispatch(@NonNull Intent intent) {
         // Dispatch events still in storage
         boolean dispatched = dispatch();
@@ -90,18 +110,21 @@ class EventDispatcher {
         } catch (Exception e) {
             logger.warn("Failed to schedule event dispatch.", e);
         }
-
-        eventDAO.closeDb();
+        finally {
+            eventDAO.closeDb();
+        }
     }
 
     // Either grab the interval for the first time from Intent or from storage
     // The extra won't exist if we are being restarted after a reboot or app update
+    @Deprecated
     private long getInterval(@NonNull Intent intent) {
         long duration = intent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1);
         // We are either scheduling for the first time or rescheduling after our alarms were cancelled
         return duration;
     }
 
+    @Deprecated
     private void saveInterval(long interval) {
         optlyStorage.saveLong(EventIntentService.EXTRA_INTERVAL, interval);
     }
@@ -111,7 +134,7 @@ class EventDispatcher {
      *
      * @return true if all events were dispatched, otherwise false
      */
-    private boolean dispatch() {
+    protected boolean dispatch() {
         List<Pair<Long, Event>> events = eventDAO.getEvents();
         Iterator<Pair<Long,Event>> iterator = events.iterator();
         while (iterator.hasNext()) {

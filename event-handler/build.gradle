@@ -57,6 +57,7 @@ android {
 dependencies {
     api project(':shared')
     implementation "androidx.annotation:annotation:$annotations_ver"
+    implementation 'androidx.work:work-runtime:2.3.4'
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
