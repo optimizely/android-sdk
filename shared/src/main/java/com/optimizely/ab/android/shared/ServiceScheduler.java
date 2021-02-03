@@ -44,6 +44,7 @@ import static android.app.job.JobScheduler.RESULT_SUCCESS;
  *
  */
 // TODO Unit test coverage
+@Deprecated
 public class ServiceScheduler {
 
    // @NonNull private final AlarmManager alarmManager;

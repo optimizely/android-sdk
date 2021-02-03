@@ -18,9 +18,8 @@ package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
 
-import androidx.annotation.RequiresApi;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.payload.EventBatch;
@@ -33,10 +32,6 @@ import org.slf4j.Logger;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -64,7 +59,6 @@ public class DefaultEventHandlerTest {
     @Test
     public void dispatchEventSuccess() throws MalformedURLException {
         eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), new EventBatch()));
-        //verify(context).startService(any(Intent.class));
         verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
     }
 
