@@ -21,13 +21,18 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.optimizely.ab.OptimizelyRuntimeException;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
+import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.error.ErrorHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
+
+import java.util.concurrent.TimeUnit;
+
 import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
 @RunWith(AndroidJUnit4.class)
@@ -64,6 +69,78 @@ public class OptimizelyManagerBuilderTest {
         assertNotNull(manager.getUserProfileService());
         assertNotNull(manager.getErrorHandler(InstrumentationRegistry.getInstrumentation().getTargetContext()));
         assertNotNull(manager.getEventHandler(InstrumentationRegistry.getInstrumentation().getTargetContext()));
+    }
+
+    @Test
+    public void testBuilderWithOutDatafileConfig() {
+        ErrorHandler errorHandler = new ErrorHandler() {
+            @Override
+            public <T extends OptimizelyRuntimeException> void handleError(T exception) throws T {
+                logger.error("Inside error handler", exception);
+            }
+        };
+
+        OptimizelyManager manager = OptimizelyManager.builder().withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
+                .withDatafileDownloadInterval(30L, TimeUnit.MINUTES)
+                .withEventDispatchInterval(30L, TimeUnit.MINUTES)
+                .withDatafileHandler(new DefaultDatafileHandler())
+                .withErrorHandler(errorHandler)
+                .withEventHandler(DefaultEventHandler.getInstance(InstrumentationRegistry.getInstrumentation().getTargetContext()))
+                .withLogger(logger).build(InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        assertNull(manager);
+    }
+
+    @Test
+    public void testBuilderWithOutDatafileConfigWithSdkKey() {
+        ErrorHandler errorHandler = new ErrorHandler() {
+            @Override
+            public <T extends OptimizelyRuntimeException> void handleError(T exception) throws T {
+                logger.error("Inside error handler", exception);
+            }
+        };
+
+        OptimizelyManager manager = OptimizelyManager.builder().withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
+                .withDatafileDownloadInterval(30L, TimeUnit.MINUTES)
+                .withEventDispatchInterval(30L, TimeUnit.MINUTES)
+                .withDatafileHandler(new DefaultDatafileHandler())
+                .withErrorHandler(errorHandler)
+                .withSDKKey("sdkKey7")
+                .withEventHandler(DefaultEventHandler.getInstance(InstrumentationRegistry.getInstrumentation().getTargetContext()))
+                .withLogger(logger).build(InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        assertNotNull(manager);
+        assertNotNull(manager.getDatafileHandler());
+        assertNotNull(manager.getUserProfileService());
+        assertNotNull(manager.getEventHandler(InstrumentationRegistry.getInstrumentation().getTargetContext()));
+
+        manager.stop(InstrumentationRegistry.getInstrumentation().getTargetContext());
+    }
+
+    @Test
+    public void testBuilderWithDatafileConfig() {
+        ErrorHandler errorHandler = new ErrorHandler() {
+            @Override
+            public <T extends OptimizelyRuntimeException> void handleError(T exception) throws T {
+                logger.error("Inside error handler", exception);
+            }
+        };
+
+        OptimizelyManager manager = OptimizelyManager.builder().withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
+                .withDatafileDownloadInterval(30L, TimeUnit.MINUTES)
+                .withEventDispatchInterval(30L, TimeUnit.MINUTES)
+                .withDatafileHandler(new DefaultDatafileHandler())
+                .withErrorHandler(errorHandler)
+                .withDatafileConfig(new DatafileConfig(null, "sdkKey7"))
+                .withEventHandler(DefaultEventHandler.getInstance(InstrumentationRegistry.getInstrumentation().getTargetContext()))
+                .withLogger(logger).build(InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        assertNotNull(manager);
+        assertNotNull(manager.getDatafileHandler());
+        assertNotNull(manager.getUserProfileService());
+        assertNotNull(manager.getEventHandler(InstrumentationRegistry.getInstrumentation().getTargetContext()));
+
+        manager.stop(InstrumentationRegistry.getInstrumentation().getTargetContext());
     }
 
     @Test
