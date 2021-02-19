@@ -61,7 +61,6 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class DatafileLoaderTest {
 
-    private DatafileService datafileService;
     private DatafileCache datafileCache;
     private DatafileClient datafileClient;
     private Client client;
@@ -71,15 +70,12 @@ public class DatafileLoaderTest {
 
     @Before
     public void setup() {
-        datafileService = mock(DatafileService.class);
         logger = mock(Logger.class);
         final Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         datafileCache = new DatafileCache("1", new Cache(targetContext, logger), logger);
         client = mock(Client.class);
         datafileClient = new DatafileClient(client, logger);
         datafileLoadedListener = mock(DatafileLoadedListener.class);
-        when(datafileService.getApplicationContext()).thenReturn(targetContext);
-        when(datafileService.isBound()).thenReturn(true);
     }
 
     @After
@@ -91,7 +87,7 @@ public class DatafileLoaderTest {
     public void loadFromCDNWhenNoCachedFile() throws MalformedURLException, JSONException {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileClient, datafileCache, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
 
@@ -112,7 +108,7 @@ public class DatafileLoaderTest {
     public void loadWhenCacheFileExistsAndCDNNotModified() {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileClient, datafileCache, logger);
         datafileCache.save("{}");
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("");
@@ -134,7 +130,7 @@ public class DatafileLoaderTest {
     public void noCacheAndLoadFromCDNFails() {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileClient, datafileCache, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn(null);
 
@@ -156,7 +152,7 @@ public class DatafileLoaderTest {
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("warningsAreLogged", cache, logger);
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileClient, datafileCache, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
         when(cache.exists(datafileCache.getFileName())).thenReturn(true);
@@ -181,7 +177,7 @@ public class DatafileLoaderTest {
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("debugLogged", cache, logger);
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileClient, datafileCache, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
         when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(true);
@@ -189,9 +185,14 @@ public class DatafileLoaderTest {
         when(cache.load(datafileCache.getFileName())).thenReturn("{}");
 
         datafileLoader.getDatafile("debugLogged", datafileLoadedListener);
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         datafileLoader.getDatafile("debugLogged", datafileLoadedListener);
         try {
-            executor.awaitTermination(5, TimeUnit.SECONDS);
+            executor.awaitTermination(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail();
         }
@@ -207,7 +208,7 @@ public class DatafileLoaderTest {
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("downloadAllowedNoCache", cache, logger);
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileClient, datafileCache, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
         when(cache.save(datafileCache.getFileName(), "{}")).thenReturn(false);
@@ -233,7 +234,7 @@ public class DatafileLoaderTest {
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("debugLoggedMultiThreaded", cache, logger);
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileClient, datafileCache, logger);
 
         when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("{}");
         when(cache.exists(datafileCache.getFileName())).thenReturn(true);
@@ -257,8 +258,7 @@ public class DatafileLoaderTest {
             fail();
         }
 
-        verify(logger, atLeast(1)).debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
-        verify(datafileLoadedListener, atMost(4)).onDatafileLoaded("{}");
+        verify(datafileLoadedListener, atMost(5)).onDatafileLoaded("{}");
         verify(datafileLoadedListener, atLeast(1)).onDatafileLoaded("{}");
     }
 
@@ -289,7 +289,7 @@ public class DatafileLoaderTest {
         Cache cache = mock(Cache.class);
         datafileCache = new DatafileCache("allowDoubleDownload", cache, logger);
         DatafileLoader datafileLoader =
-                new DatafileLoader(datafileService, datafileClient, datafileCache, executor, logger);
+                new DatafileLoader(context, datafileClient, datafileCache, logger);
 
         // set download time to 1 second
         setTestDownloadFrequency(datafileLoader, 1000L);

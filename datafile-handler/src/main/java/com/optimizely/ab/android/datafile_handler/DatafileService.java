@@ -21,18 +21,17 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
-import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.DatafileConfig;
+import com.optimizely.ab.android.shared.OptlyStorage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Executors;
 
 /**
  * Service that handles loading the datafile from cache or downloads it from the CDN
@@ -71,7 +70,7 @@ public class DatafileService extends Service {
                         LoggerFactory.getLogger(DatafileCache.class));
 
                 String datafileUrl = datafileConfig.getUrl();
-                DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(DatafileLoader.class));
+                DatafileLoader datafileLoader = new DatafileLoader(this, datafileClient, datafileCache, LoggerFactory.getLogger(DatafileLoader.class));
                 datafileLoader.getDatafile(datafileUrl, null);
             } else {
                 logger.warn("Data file service received an intent with no project id extra");

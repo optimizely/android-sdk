@@ -20,7 +20,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.DatafileConfig;
@@ -64,8 +66,7 @@ public class DatafileRescheduler extends BroadcastReceiver {
                     new Cache(context, LoggerFactory.getLogger(Cache.class)),
                     LoggerFactory.getLogger(BackgroundWatchersCache.class));
             Dispatcher dispatcher = new Dispatcher(context, backgroundWatchersCache, LoggerFactory.getLogger(Dispatcher.class));
-            intent = new Intent(context, DatafileService.class);
-            dispatcher.dispatch(intent);
+            dispatcher.dispatch();
 
 
         } else {
@@ -90,15 +91,18 @@ public class DatafileRescheduler extends BroadcastReceiver {
             this.logger = logger;
         }
 
-        void dispatch(Intent intent) {
+        void dispatch() {
             List<DatafileConfig> datafileConfigs = backgroundWatchersCache.getWatchingDatafileConfigs();
 
             for (DatafileConfig datafileConfig : datafileConfigs) {
                 // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
                 // so, we don't need to do anything.
                if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                    intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, datafileConfig.toJSONString());
-                    ServiceScheduler.startService(context, DatafileService.JOB_ID, intent);
+                   ServiceScheduler.scheduleService(context,
+                           DatafileWorker.workerId + datafileConfig.getKey(),
+                           DatafileWorker.class,
+                           new Data.Builder().putString("DatafileConfig", datafileConfig.toJSONString()).build(),
+                           DefaultDatafileHandler.getUpdateInterval(context));
                     logger.info("Rescheduled data file watching for project {}", datafileConfig);
                 }
             }

@@ -21,17 +21,16 @@ import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.IBinder;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
-import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.DatafileConfig;
+import com.optimizely.ab.android.shared.OptlyStorage;
 
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Executors;
 
 /**
  * The DatafileServiceConnection is used to bind to a DatafileService.  The DatafileService does that actual download.
@@ -85,10 +84,10 @@ public class DatafileServiceConnection implements ServiceConnection {
                     new Cache(context.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
                     LoggerFactory.getLogger(DatafileCache.class));
 
-            DatafileLoader datafileLoader = new DatafileLoader(datafileService,
+            DatafileLoader datafileLoader = new DatafileLoader(
+                    context,
                     datafileClient,
                     datafileCache,
-                    Executors.newSingleThreadExecutor(),
                     LoggerFactory.getLogger(DatafileLoader.class));
 
             datafileService.getDatafile(datafileConfig.getUrl(), datafileLoader, listener);

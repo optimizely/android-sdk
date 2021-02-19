@@ -97,7 +97,7 @@ public class DefaultEventHandler implements EventHandler {
                 .putString("url", logEvent.getEndpointUrl())
                 .putString("body", logEvent.getBody())
                 .build();
-        ServiceScheduler.startService(context, EventWorker.workerId, EventWorker.class, data);
+        ServiceScheduler.startService(context, EventWorker.workerId, EventWorker.class, data, dispatchInterval);
 
         logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
     }

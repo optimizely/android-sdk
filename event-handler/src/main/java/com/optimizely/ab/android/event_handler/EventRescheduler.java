@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
 
@@ -82,7 +83,7 @@ public class EventRescheduler extends BroadcastReceiver {
     void reschedule(@NonNull Context context, @NonNull Intent broadcastIntent, @NonNull Intent eventServiceIntent, @NonNull ServiceScheduler serviceScheduler) {
         if (broadcastIntent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
                 broadcastIntent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
-            ServiceScheduler.startService(context, EventWorker.workerId, EventWorker.class, null);
+            ServiceScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY);
             logger.info("Rescheduling event flushing if necessary");
         } else if (broadcastIntent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)
                 && broadcastIntent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
@@ -94,7 +95,7 @@ public class EventRescheduler extends BroadcastReceiver {
                 // so it's important to only do this if we have stored events.
                 // In android O and higher, we use a persistent job so we do not need to restart.
                 if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                    ServiceScheduler.startService(context, EventWorker.workerId, EventWorker.class, null);
+                    ServiceScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY);
                     logger.info("Preemptively flushing events since wifi became available");
                 }
         } else {
