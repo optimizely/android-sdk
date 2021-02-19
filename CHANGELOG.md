@@ -1,5 +1,23 @@
 # Optimizely Android X SDK Changelog
 
+# Release 3.9.0
+Febuary 9th 2021
+
+-  upgrade the androidx and get all tests passing [#356](https://github.com/optimizely/android-sdk/pull/356)
+-  add a new set of decide apis [#352](https://github.com/optimizely/android-sdk/pull/352)
+The new `OptimizelyUserContext` class is instantiated with `createUserContext` and exposes the following APIs to get `OptimizelyDecision`:
+
+	- setAttribute
+	- decide
+	- decideAll
+	- decideForKeys
+	- trackEvent
+
+Also related to java sdk release [here]https://github.com/optimizely/java-sdk/releases/tag/3.8.0).
+- For details, refer to our documentation page: [https://docs.developers.optimizely.com/full-stack/v4.0/docs/android-sdk](https://docs.developers.optimizely.com/full-stack/v4.0/docs/android-sdk).
+
+-  remove erroneous error if project id and sdk key are null. [#358](https://github.com/optimizely/android-sdk/pull/358)
+
 ## 3.8.0
 November 20th, 2020
 
