@@ -18,16 +18,17 @@
 
 buildscript {
     ext.kotlin_version = '1.4.0'
-    def bintray_user = System.getenv('BINTRAY_USER')
-    def bintray_api_key = System.getenv('BINTRAY_API_KEY')
-    def version_name = System.getenv('TRAVIS_TAG')
-    if (bintray_user != null && bintray_api_key != null && version_name != null) {
-        rootProject.ext.bintray_user = bintray_user
-        rootProject.ext.bintray_api_key = bintray_api_key
+
+
+    ////def version_name = System.getenv('TRAVIS_TAG')
+    def version_name = "3.8.0-test-1"
+
+
+
+
+    if (version_name != null) {
         rootProject.ext.version_name = version_name
     } else {
-        rootProject.ext.bintray_user = ''
-        rootProject.ext.bintray_api_key = ''
         rootProject.ext.version_name= 'debugVersion'
     }
     repositories {
@@ -77,12 +78,6 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-task ship() {
-    dependsOn(':android-sdk:uploadArchives', ':shared:uploadArchives',
-            'event-handler:uploadArchives', 'user-profile:uploadArchives',
-            'datafile-handler:uploadArchives')
-}
-
 task cleanAllModules () {
     logger.info("Running clean for all modules")
 }
@@ -104,3 +99,73 @@ testAllModulesTravis.dependsOn(':android-sdk:connectedAndroidTest', ':android-sd
         ':user-profile:connectedAndroidTest', ':shared:connectedAndroidTest')
 
 testAllModules.dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')
+
+// Publish to MavenCentral
+
+task ship() {
+    dependsOn(':android-sdk:uploadArchives', ':shared:uploadArchives',
+            'event-handler:uploadArchives', 'user-profile:uploadArchives',
+            'datafile-handler:uploadArchives')
+}
+
+configure([project(':android-sdk'),
+           project(':datafile-handler'),
+           project(':event-handler'),
+           project(':shared'),
+           project(':user-profile')]) {
+
+    apply plugin: 'com.android.library'
+    apply plugin: 'kotlin-android'
+    apply plugin: 'kotlin-android-extensions'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+
+    def docTitle = "Optimizely X Android SDK"
+    if (name.equals('android-sdk')) docTitle = "Optimizely X Android SDK"
+    else if (name.equals('datafile-handler')) docTitle = "Optimizely X Android Datafile Handler"
+    else if (name.equals('event-handler')) docTitle = "Optimizely X Android Event Handler"
+    else if (name.equals('shared')) docTitle = "Optimizely X Android Shared"
+    else if (name.equals('user-profile')) docTitle = "Optimizely X Android User Profile"
+    else return
+
+    android.libraryVariants.all { variant ->
+        task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
+            source = variant.javaCompile.source
+
+            title = docTitle
+
+            options.links("http://docs.oracle.com/javase/7/docs/api/");
+            options.linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference");
+
+            // First add all of your dependencies to the classpath, then add the android jars
+            doFirst {
+                classpath += files(variant.javaCompileProvider.get().classpath.files)
+                classpath += files(android.getBootClasspath())
+            }
+            // We're excluding these generated files
+            exclude '**/BuildConfig.java'
+            exclude '**/R.java'
+
+            options.tags = ["hide"]
+        }
+    }
+
+    android.libraryVariants.all { variant ->
+        task("${variant.name}JavadocJar", type: Jar, dependsOn: "${variant.name}Javadoc") {
+            classifier = 'javadoc'
+            from tasks["${variant.name}Javadoc"].destinationDir
+        }
+
+        // Add the Javadoc jar to the project's artifacts. This will allow us to upload it easily later
+        project.artifacts.add("archives", tasks["${variant.name}JavadocJar"]);
+    }
+
+    android.libraryVariants.all { variant ->
+        task("${variant.name}SourcesJar", type: Jar) {
+            classifier = 'sources'
+            from variant.javaCompile.source
+        }
+        project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
+    }
+}
+
