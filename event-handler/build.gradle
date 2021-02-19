@@ -78,13 +78,3 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-uploadArchives {
-    dependsOn = [':event-handler:releaseJavadocJar', ':event-handler:releaseSourcesJar']
-    shouldRunAfter = [':event-handler:clean', ':shared:uploadArchives']
-    repositories {
-        mavenDeployer {
-            repository(url: "file://${buildDir}/repo")
-            pom.artifactId = "android-sdk-event-handler"
-        }
-    }
-}

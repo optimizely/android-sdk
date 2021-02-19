@@ -91,14 +91,4 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-uploadArchives {
-    dependsOn = [':android-sdk:releaseJavadocJar', ':android-sdk:releaseSourcesJar']
-    shouldRunAfter = [':android-sdk:clean', ':datafile-handler:uploadArchives', ':event-handler:uploadArchives', ':user-profile:uploadArchives']
-    repositories {
-        mavenDeployer {
-            repository(url: "file://${buildDir}/repo")
-            pom.artifactId = "android-sdk"
-        }
-    }
-}
 

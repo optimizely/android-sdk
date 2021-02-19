@@ -78,15 +78,3 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-uploadArchives {
-    dependsOn = [':datafile-handler:releaseJavadocJar', ':datafile-handler:releaseSourcesJar']
-    shouldRunAfter = [':datafile-handler:clean', ':shared:uploadArchives']
-    repositories {
-        mavenDeployer {
-            repository(url: "file://${buildDir}/repo")
-            pom.artifactId = "android-sdk-datafile-handler"
-        }
-    }
-}
-
-

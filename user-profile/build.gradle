@@ -77,15 +77,3 @@ dependencies {
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
-
-uploadArchives {
-    dependsOn = [':user-profile:releaseJavadocJar', ':user-profile:releaseSourcesJar']
-    shouldRunAfter = [':user-profile:clean', ':shared:uploadArchives']
-    repositories {
-        mavenDeployer {
-            repository(url: "file://${buildDir}/repo")
-            pom.artifactId = "android-sdk-user-profile"
-        }
-    }
-}
-

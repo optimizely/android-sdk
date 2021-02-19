@@ -120,13 +120,33 @@ configure([project(':android-sdk'),
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
 
+    def artifactName = "android-sdk"
     def docTitle = "Optimizely X Android SDK"
-    if (name.equals('android-sdk')) docTitle = "Optimizely X Android SDK"
-    else if (name.equals('datafile-handler')) docTitle = "Optimizely X Android Datafile Handler"
-    else if (name.equals('event-handler')) docTitle = "Optimizely X Android Event Handler"
-    else if (name.equals('shared')) docTitle = "Optimizely X Android Shared"
-    else if (name.equals('user-profile')) docTitle = "Optimizely X Android User Profile"
-    else return
+    switch(name){
+        case 'android-sdk':
+            artifactName = 'android-sdk'
+            docTitle = 'Optimizely X Android SDK'
+            break
+        case 'datafile-handler':
+            artifactName = 'android-sdk-datafile-handler'
+            docTitle = 'Optimizely X Android Datafile Handler'
+            uploadArchives.shouldRunAfter = [':datafile-handler:clean', ':shared:uploadArchives']
+            break
+        case 'event-handler':
+            artifactName = 'android-sdk-event-handler'
+            docTitle = 'Optimizely X Android Event Handler'
+            break
+        case 'shared':
+            artifactName = 'android-sdk-shared'
+            docTitle = 'Optimizely X Android Shared'
+            break
+        case 'user-profile':
+            artifactName = 'android-sdk-user-profile'
+            docTitle = 'Optimizely X Android User Profile'
+            break
+        default:
+            return
+    }
 
     android.libraryVariants.all { variant ->
         task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
@@ -167,5 +187,21 @@ configure([project(':android-sdk'),
         }
         project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
     }
+
+    uploadArchives {
+        dependsOn = [project.path + ':releaseJavadocJar', project.path + ':releaseSourcesJar']
+        repositories {
+            mavenDeployer {
+                repository(url: "file://${buildDir}/repo")
+                pom.artifactId = artifactName
+            }
+        }
+    }
 }
+
+project(':android-sdk').uploadArchives.shouldRunAfter = [':android-sdk:clean', ':datafile-handler:uploadArchives', ':event-handler:uploadArchives', ':user-profile:uploadArchives']
+project(':datafile-handler').uploadArchives.shouldRunAfter = [':datafile-handler:clean', ':shared:uploadArchives']
+project(':event-handler').uploadArchives.shouldRunAfter = [':event-handler:clean', ':shared:uploadArchives']
+project(':shared').uploadArchives.shouldRunAfter = [':shared:clean']
+project(':user-profile').uploadArchives.shouldRunAfter = [':user-profile:clean', ':shared:uploadArchives']
 
