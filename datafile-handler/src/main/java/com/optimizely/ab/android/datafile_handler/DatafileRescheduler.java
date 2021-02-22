@@ -22,11 +22,10 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
-import androidx.work.Data;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.DatafileConfig;
-import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.android.shared.WorkerScheduler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +68,7 @@ public class DatafileRescheduler extends BroadcastReceiver {
             dispatcher.dispatch();
 
 
-        } else {
+        }  else {
             logger.warn("Received invalid broadcast to data file rescheduler");
         }
     }
@@ -98,10 +97,10 @@ public class DatafileRescheduler extends BroadcastReceiver {
                 // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
                 // so, we don't need to do anything.
                if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                   ServiceScheduler.scheduleService(context,
+                   WorkerScheduler.scheduleService(context,
                            DatafileWorker.workerId + datafileConfig.getKey(),
                            DatafileWorker.class,
-                           new Data.Builder().putString("DatafileConfig", datafileConfig.toJSONString()).build(),
+                           DatafileWorker.getData(datafileConfig),
                            DefaultDatafileHandler.getUpdateInterval(context));
                     logger.info("Rescheduled data file watching for project {}", datafileConfig);
                 }

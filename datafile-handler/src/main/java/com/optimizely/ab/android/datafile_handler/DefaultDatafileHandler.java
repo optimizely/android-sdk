@@ -20,13 +20,12 @@ import android.content.Context;
 import android.os.FileObserver;
 
 import androidx.annotation.Nullable;
-import androidx.work.Data;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.shared.OptlyStorage;
-import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.android.shared.WorkerScheduler;
 import com.optimizely.ab.config.DatafileProjectConfig;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.ProjectConfigManager;
@@ -124,8 +123,8 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
 
         // save the project id background start is set.  If we get a reboot or a replace, we can restart via the
         // DatafileRescheduler
-        ServiceScheduler.scheduleService(context, DatafileWorker.workerId + datafileConfig.getKey(), DatafileWorker.class,
-                new Data.Builder().putString("DatafileConfig", datafileConfig.toJSONString()).build(), updateInterval / 60);
+        WorkerScheduler.scheduleService(context, DatafileWorker.workerId + datafileConfig.getKey(), DatafileWorker.class,
+                DatafileWorker.getData(datafileConfig), updateInterval / 60);
         enableBackgroundCache(context, datafileConfig);
 
         storeInterval(context, updateInterval * 1000);
@@ -192,7 +191,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
      * @param datafileConfig DatafileConfig for the datafile
      */
     public void stopBackgroundUpdates(Context context, DatafileConfig datafileConfig) {
-        ServiceScheduler.unscheduleService(context, DatafileWorker.workerId + datafileConfig.getKey());
+        WorkerScheduler.unscheduleService(context, DatafileWorker.workerId + datafileConfig.getKey());
         clearBackgroundCache(context, datafileConfig);
 
         storeInterval(context, -1);

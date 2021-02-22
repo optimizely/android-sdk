@@ -3,12 +3,14 @@ package com.optimizely.ab.android.event_handler;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.event.LogEvent;
 
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +32,13 @@ public class EventWorker extends Worker {
                 LoggerFactory.getLogger(ServiceScheduler.class));
         eventDispatcher = new EventDispatcher(context, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
 
+    }
+
+    public static Data getData(LogEvent event) {
+        return new Data.Builder()
+                .putString("url", event.getEndpointUrl())
+                .putString("body", event.getBody())
+                .build();
     }
 
     @NonNull

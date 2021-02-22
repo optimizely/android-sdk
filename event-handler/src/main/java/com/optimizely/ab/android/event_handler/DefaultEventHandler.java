@@ -19,9 +19,8 @@ package com.optimizely.ab.android.event_handler;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.work.Data;
 
-import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.android.shared.WorkerScheduler;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
 
@@ -93,11 +92,8 @@ public class DefaultEventHandler implements EventHandler {
             logger.error("Event dispatcher received an empty url");
         }
 
-        Data data = new Data.Builder()
-                .putString("url", logEvent.getEndpointUrl())
-                .putString("body", logEvent.getBody())
-                .build();
-        ServiceScheduler.startService(context, EventWorker.workerId, EventWorker.class, data, dispatchInterval);
+        WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class,
+                EventWorker.getData(logEvent), dispatchInterval);
 
         logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
     }

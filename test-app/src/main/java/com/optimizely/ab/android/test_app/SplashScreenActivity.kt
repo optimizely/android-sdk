@@ -20,6 +20,7 @@ import android.content.IntentFilter
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.optimizely.ab.android.datafile_handler.DatafileRescheduler
 import com.optimizely.ab.android.event_handler.EventRescheduler
 import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.android.sdk.OptimizelyManager
@@ -48,7 +49,7 @@ class SplashScreenActivity : AppCompatActivity() {
         // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
         // in the manifest.
         val eventRescheduler = EventRescheduler()
-        applicationContext.registerReceiver(eventRescheduler, IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION))
+        applicationContext.registerReceiver(eventRescheduler, IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION))
 
         if (INITIALIZE_ASYNCHRONOUSLY) {
             optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->

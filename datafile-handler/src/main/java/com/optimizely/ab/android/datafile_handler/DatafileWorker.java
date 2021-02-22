@@ -3,6 +3,7 @@ package com.optimizely.ab.android.datafile_handler;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -19,11 +20,19 @@ public class DatafileWorker extends Worker {
         super(context, workerParams);
     }
 
+    public static Data getData(DatafileConfig datafileConfig) {
+        return new Data.Builder().putString("DatafileConfig", datafileConfig.toJSONString()).build();
+    }
+
+    public static DatafileConfig getDataConfig(Data data) {
+        String extraDatafileConfig = data.getString("DatafileConfig");
+        return DatafileConfig.fromJSONString(extraDatafileConfig);
+    }
+
     @NonNull
     @Override
     public Result doWork() {
-        String extraDatafileConfig = getInputData().getString("DatafileConfig");
-        DatafileConfig datafileConfig = DatafileConfig.fromJSONString(extraDatafileConfig);
+        DatafileConfig datafileConfig = getDataConfig(getInputData());
         DatafileClient datafileClient = new DatafileClient(
                 new Client(new OptlyStorage(this.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
                 LoggerFactory.getLogger(DatafileClient.class));

@@ -29,17 +29,9 @@ import android.os.PersistableBundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.work.BackoffPolicy;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
 
 import static android.app.job.JobScheduler.RESULT_SUCCESS;
 
@@ -264,61 +256,6 @@ public class ServiceScheduler {
         }
     }
 
-
-    public static void unscheduleService(Context context, String workerId) {
-        WorkManager.getInstance(context).cancelAllWorkByTag(workerId);
-    }
-
-    public static void scheduleService(Context context, String workerId, Class clazz, Data data, long interval) {
-        WorkManager.getInstance(context).cancelAllWorkByTag(workerId);
-        long minutes = interval < 15 ? 15 : interval;
-        WorkRequest workRequest =
-                new PeriodicWorkRequest.Builder(clazz, minutes, TimeUnit.MINUTES)
-                        .addTag(workerId)
-                        .setInputData(data)
-                        .build();
-        WorkManager.getInstance(context).enqueue(workRequest);
-    }
-
-    /**
-     * This method should be pulled out to a worker helper class.  This method uses the
-     * WorkManagerRequest
-     * @param context - application context
-     * @param workerId - the tag as well as unique identifier
-     * @param clazz - worker class
-     * @param data - input data for the worker
-     */
-    public static void startService(Context context, String workerId, Class clazz, Data data) {
-        startService(context, workerId, clazz, data, 0L);
-
-    }
-
-    /**
-     * This method should be pulled out to a worker helper class.  This method uses the
-     * WorkManagerRequest
-     * @param context - application context
-     * @param workerId - the tag as well as unique identifier
-     * @param clazz - worker class
-     * @param data - input data for the worker
-     * @param retryInterval - if the service fails, retry on this interval (in seconds).
-     */
-    public static void startService(Context context, String workerId, Class clazz, Data data, Long retryInterval) {
-        // Create a WorkRequest for your Worker and sending it input
-        WorkRequest.Builder workRequestBuilder =
-                new OneTimeWorkRequest.Builder(clazz)
-                        .setInputData(data)
-                        .addTag(workerId);
-        if (retryInterval > 0) {
-            workRequestBuilder.setBackoffCriteria(
-                    BackoffPolicy.LINEAR,
-                    retryInterval * 1000,
-                    TimeUnit.MILLISECONDS);
-
-        }
-
-        WorkRequest wq = workRequestBuilder.build();
-        WorkManager.getInstance(context).enqueue(wq);
-    }
 
     /**
      * Start a service either through the context or enqueued to the JobService to be run in a minute.
