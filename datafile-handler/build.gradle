@@ -56,7 +56,7 @@ android {
 dependencies {
     api project(':shared')
     implementation "androidx.annotation:annotation:$annotations_ver"
-    implementation 'androidx.work:work-runtime:2.3.4'
+    implementation 'androidx.work:work-runtime:$work_runtime''
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
@@ -131,5 +131,4 @@ android.libraryVariants.all { variant ->
     }
     project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
 }
-
 
