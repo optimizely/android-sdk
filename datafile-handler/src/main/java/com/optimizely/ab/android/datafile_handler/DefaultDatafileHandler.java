@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2018, Optimizely, Inc. and contributors                        *
+ * Copyright 2017-2021, Optimizely, Inc. and contributors                        *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -121,13 +121,15 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
         // if already running, stop it
         stopBackgroundUpdates(context, datafileConfig);
 
+        long updateIntervalInMinutes = updateInterval / 60;
+
         // save the project id background start is set.  If we get a reboot or a replace, we can restart via the
         // DatafileRescheduler
         WorkerScheduler.scheduleService(context, DatafileWorker.workerId + datafileConfig.getKey(), DatafileWorker.class,
-                DatafileWorker.getData(datafileConfig), updateInterval / 60);
+                DatafileWorker.getData(datafileConfig), updateIntervalInMinutes);
         enableBackgroundCache(context, datafileConfig);
 
-        storeInterval(context, updateInterval * 1000);
+        storeInterval(context, updateIntervalInMinutes);
 
         enableUpdateConfigOnNewDatafile(context, datafileConfig, listener);
     }
@@ -181,7 +183,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
 
     public static long getUpdateInterval(Context context) {
         OptlyStorage storage = new OptlyStorage(context);
-        return storage.getLong("DATAFILE_INTERVAL", -1);
+        return storage.getLong("DATAFILE_INTERVAL", 15);
     }
 
     /**
