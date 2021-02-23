@@ -82,7 +82,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
                 LoggerFactory.getLogger(DatafileClient.class));
         DatafileCache datafileCache = new DatafileCache(
                 datafileConfig.getKey(),
-                new Cache(context.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DatafileCache.class));
 
         String datafileUrl = datafileConfig.getUrl();
