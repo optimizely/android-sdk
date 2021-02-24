@@ -119,6 +119,7 @@ configure([project(':android-sdk'),
     apply plugin: 'kotlin-android-extensions'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 
     def artifactName = "android-sdk"
     def docTitle = "Optimizely X Android SDK"
@@ -188,10 +189,18 @@ configure([project(':android-sdk'),
         project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
     }
 
+    signing {
+        def signingKey = System.getenv('MAVEN_SIGNING_KEY')
+        def signingPassword = System.getenv('MAVEN_SIGNING_PASSWORD')
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign configurations.archives
+    }
+
     uploadArchives {
         dependsOn = [project.path + ':releaseJavadocJar', project.path + ':releaseSourcesJar']
         repositories {
             mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
                 repository(url: "file://${buildDir}/repo")
                 pom.artifactId = artifactName
             }
