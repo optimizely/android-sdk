@@ -1,6 +1,6 @@
 # Optimizely Android X SDK Changelog
 
-# Release 4.0.0
+# Release 3.10.0
 February 24th 2021
 
 PR : [#360](https://github.com/optimizely/android-sdk/pull/360)
