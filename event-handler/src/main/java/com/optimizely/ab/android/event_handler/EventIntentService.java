@@ -19,7 +19,7 @@ package com.optimizely.ab.android.event_handler;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Build;
-import androidx.annotation.NonNull;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * worker queue.
  *
  */
+@Deprecated
 public class EventIntentService extends IntentService {
     static final String EXTRA_URL = "com.optimizely.ab.android.EXTRA_URL";
     static final String EXTRA_REQUEST_BODY = "com.optimizely.ab.android.EXTRA_REQUEST_BODY";

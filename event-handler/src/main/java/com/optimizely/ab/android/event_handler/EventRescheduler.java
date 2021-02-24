@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2021, Optimizely, Inc. and contributors                        *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -19,11 +19,14 @@ package com.optimizely.ab.android.event_handler;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
+
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 
 import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.android.shared.WorkerScheduler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,23 +85,14 @@ public class EventRescheduler extends BroadcastReceiver {
     void reschedule(@NonNull Context context, @NonNull Intent broadcastIntent, @NonNull Intent eventServiceIntent, @NonNull ServiceScheduler serviceScheduler) {
         if (broadcastIntent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
                 broadcastIntent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
-            ServiceScheduler.startService(context,  EventIntentService.JOB_ID, eventServiceIntent);
+            WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY);
             logger.info("Rescheduling event flushing if necessary");
-        } else if (broadcastIntent.getAction().equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)
-                && broadcastIntent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
-
-                if (serviceScheduler.isScheduled(eventServiceIntent)) {
-                    // If we get wifi and the event flushing service is scheduled preemptively
-                    // flush events before the next interval occurs.  If sending fails even
-                    // with wifi the service will be rescheduled on the interval.
-                    // Wifi connection state changes all the time and starting services is expensive
-                    // so it's important to only do this if we have stored events.
-                    // In android O and higher, we use a persistent job so we do not need to restart.
-                    if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                        ServiceScheduler.startService(context, EventIntentService.JOB_ID, eventServiceIntent);
-                        logger.info("Preemptively flushing events since wifi became available");
-                    }
-                }
+        } else if (broadcastIntent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
+            NetworkInfo info = broadcastIntent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+            if(info != null && info.isConnected()) {
+                WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY);
+                logger.info("Preemptively flushing events since wifi became available");
+            }
         } else {
             logger.warn("Received unsupported broadcast action to event rescheduler");
         }

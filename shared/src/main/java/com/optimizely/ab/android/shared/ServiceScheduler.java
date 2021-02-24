@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PersistableBundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
@@ -38,7 +39,7 @@ import static android.app.job.JobScheduler.RESULT_SUCCESS;
  * Schedules {@link android.app.Service}es to run.
  *
  */
-// TODO Unit test coverage
+@Deprecated
 public class ServiceScheduler {
 
    // @NonNull private final AlarmManager alarmManager;
@@ -80,7 +81,7 @@ public class ServiceScheduler {
 
         PendingIntent pendingIntent = pendingIntentFactory.getPendingIntent(intent);
 
-        setRepeating(interval, pendingIntent, intent);
+        //setRepeating(interval, pendingIntent, intent);
 
         logger.info("Scheduled {}", intent.getComponent().toShortString());
     }
@@ -255,6 +256,7 @@ public class ServiceScheduler {
         }
     }
 
+
     /**
      * Start a service either through the context or enqueued to the JobService to be run in a minute.
      * For example, the BroadcastReceivers use this to handle all versions of the API.
@@ -263,6 +265,7 @@ public class ServiceScheduler {
      * @param jobId - job id for the job to start if it is a job
      * @param intent - Intent you want to run.
      */
+    @Deprecated
     public static void startService(Context context, Integer jobId, Intent intent) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 

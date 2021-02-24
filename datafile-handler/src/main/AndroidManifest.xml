@@ -22,25 +22,14 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <application>
-        <service
-            android:name=".DatafileService"
+        <receiver
+            android:name="DatafileRescheduler"
             android:enabled="true"
             android:exported="false">
-        </service>
-        <!--
-          Add these lines to your manifest if you want the services to schedule themselves again after a boot
-          or package replace.  Without these lines in your application manifest, the DatafileRescheduler will not be used.
-          See {link test_app} AndroidManifest.xml as an example.
-
-                <receiver
-                    android:name="DatafileRescheduler"
-                    android:enabled="true"
-                    android:exported="false">
-                    <intent-filter>
-                        <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                        <action android:name="android.intent.action.BOOT_COMPLETED" />
-                    </intent-filter>
-                </receiver>
-        -->
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

@@ -30,6 +30,8 @@ import java.net.URL;
  * Makes requests to the Optly CDN to get the datafile
  */
 public class DatafileClient {
+    // easy way to set the connection timeout
+    public static int CONNECTION_TIMEOUT = 5 * 1000;
     // the numerical base for the exponential backoff
     public static final int REQUEST_BACKOFF_TIMEOUT = 2;
     // power the number of retries
@@ -78,7 +80,7 @@ public class DatafileClient {
 
                     client.setIfModifiedSince(urlConnection);
 
-                    urlConnection.setConnectTimeout(5 * 1000);
+                    urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
                     urlConnection.connect();
 
                     int status = urlConnection.getResponseCode();
@@ -108,6 +110,6 @@ public class DatafileClient {
             }
         };
 
-        return client.execute(request, 2, 3);
+        return client.execute(request, REQUEST_BACKOFF_TIMEOUT, REQUEST_RETRIES_POWER);
     }
 }
