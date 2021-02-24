@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.optimizely.ab:android-sdk:3.8.0'
+	implementation 'com.optimizely.ab:android-sdk:3.10.0'
 }
 ```
 
