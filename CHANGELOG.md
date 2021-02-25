@@ -1,7 +1,18 @@
 # Optimizely Android X SDK Changelog
 
+# Release 3.10.0
+February 24th 2021
+
+PR : [#360](https://github.com/optimizely/android-sdk/pull/360)
+- Deprecate and remove job scheduler in favor of the androidx work manager. Issue #350
+- Deprecate Intent and Intent service in favor of workers. Issue #350
+- Remove deprecated API SUPPLICANT ACTION. Issue #347
+- Remove AsyncTask in favor of straight executor. Issue #351
+- DatafileClient download timeout can be set.
+
+
 # Release 3.9.0
-Febuary 9th 2021
+February 9th 2021
 
 -  upgrade the androidx and get all tests passing [#356](https://github.com/optimizely/android-sdk/pull/356)
 -  add a new set of decide apis [#352](https://github.com/optimizely/android-sdk/pull/352)
