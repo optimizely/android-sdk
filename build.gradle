@@ -103,47 +103,40 @@ testAllModules.dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest
 // Publish to MavenCentral
 
 task ship() {
-    dependsOn(':android-sdk:uploadArchives', ':shared:uploadArchives',
-            'event-handler:uploadArchives', 'user-profile:uploadArchives',
-            'datafile-handler:uploadArchives')
+    dependsOn(':android-sdk:ship', ':shared:ship', ':event-handler:ship', ':user-profile:ship', ':datafile-handler:ship')
 }
 
-configure([project(':android-sdk'),
-           project(':datafile-handler'),
-           project(':event-handler'),
-           project(':shared'),
-           project(':user-profile')]) {
-
+def publishedProjects = subprojects.findAll { it.path != ':test-app' }
+configure(publishedProjects) {
     apply plugin: 'com.android.library'
     apply plugin: 'kotlin-android'
     apply plugin: 'kotlin-android-extensions'
-    apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
 
     def artifactName = "android-sdk"
-    def docTitle = "Optimizely X Android SDK"
+    def docTitle = "Optimizely Android SDK"
     switch(name){
         case 'android-sdk':
             artifactName = 'android-sdk'
-            docTitle = 'Optimizely X Android SDK'
+            docTitle = 'Optimizely Android SDK'
             break
         case 'datafile-handler':
             artifactName = 'android-sdk-datafile-handler'
-            docTitle = 'Optimizely X Android Datafile Handler'
+            docTitle = 'Optimizely Android SDK: Datafile Handler'
             uploadArchives.shouldRunAfter = [':datafile-handler:clean', ':shared:uploadArchives']
             break
         case 'event-handler':
             artifactName = 'android-sdk-event-handler'
-            docTitle = 'Optimizely X Android Event Handler'
+            docTitle = 'Optimizely Android SDK: Event Handler'
             break
         case 'shared':
             artifactName = 'android-sdk-shared'
-            docTitle = 'Optimizely X Android Shared'
+            docTitle = 'Optimizely Android SDK: Shared'
             break
         case 'user-profile':
             artifactName = 'android-sdk-user-profile'
-            docTitle = 'Optimizely X Android User Profile'
+            docTitle = 'Optimizely X Android SDK: User Profile'
             break
         default:
             return
@@ -189,28 +182,73 @@ configure([project(':android-sdk'),
         project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
     }
 
-    signing {
-        def signingKey = System.getenv('MAVEN_SIGNING_KEY')
-        def signingPassword = System.getenv('MAVEN_SIGNING_PASSWORD')
-        useInMemoryPgpKeys(signingKey, signingPassword)
-        sign configurations.archives
+    afterEvaluate {
+        publishing {
+            publications {
+                release(MavenPublication) {
+                    artifactId = artifactName
+                    customizePom(pom, docTitle)
+
+                    from components.release
+                    artifact releaseSourcesJar
+                    artifact releaseJavadocJar
+                }
+            }
+            repositories {
+                maven {
+                    name = 'testRepo'
+                    url = "file://${buildDir}/repo"
+                }
+            }
+        }
+
+        signing {
+            def signingKey = System.getenv('MAVEN_SIGNING_KEY')
+            def signingPassword = System.getenv('MAVEN_SIGNING_PASSWORD')
+            useInMemoryPgpKeys(signingKey, signingPassword)
+            sign publishing.publications.release
+        }
     }
 
-    uploadArchives {
-        dependsOn = [project.path + ':releaseJavadocJar', project.path + ':releaseSourcesJar']
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-                repository(url: "file://${buildDir}/repo")
-                pom.artifactId = artifactName
+    task ship() {
+        dependsOn('clean', 'publish')
+    }
+}
+
+project(':android-sdk').ship.shouldRunAfter = [':android-sdk:clean', ':datafile-handler:ship', ':event-handler:ship', ':user-profile:ship']
+project(':datafile-handler').ship.shouldRunAfter = [':datafile-handler:clean', ':shared:ship']
+project(':event-handler').ship.shouldRunAfter = [':event-handler:clean', ':shared:ship']
+project(':shared').ship.shouldRunAfter = [':shared:clean']
+project(':user-profile').ship.shouldRunAfter = [':user-profile:clean', ':shared:ship']
+
+// standard POM format required by MavenCentral
+
+def customizePom(pom, title) {
+    pom.withXml {
+        asNode().children().last() + {
+            name title
+            description 'The Android SDK for Optimizely Full Stack (feature flag management for product development teams)'
+            url 'https://github.com/optimizely/android-sdk'
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            developers {
+                developer {
+                    id 'optimizely'
+                    name 'Optimizely'
+                    email 'optimizely-fullstack@optimizely.com'
+                }
+            }
+            scm {
+                connection 'scm:git:git://github.com/optimizely/android-sdk.git'
+                developerConnection 'scm:git:ssh:github.com/optimizely/android-sdk.git'
+                url 'https://github.com/optimizely/android-sdk.git'
             }
         }
     }
 }
-
-project(':android-sdk').uploadArchives.shouldRunAfter = [':android-sdk:clean', ':datafile-handler:uploadArchives', ':event-handler:uploadArchives', ':user-profile:uploadArchives']
-project(':datafile-handler').uploadArchives.shouldRunAfter = [':datafile-handler:clean', ':shared:uploadArchives']
-project(':event-handler').uploadArchives.shouldRunAfter = [':event-handler:clean', ':shared:uploadArchives']
-project(':shared').uploadArchives.shouldRunAfter = [':shared:clean']
-project(':user-profile').uploadArchives.shouldRunAfter = [':user-profile:clean', ':shared:uploadArchives']
 
