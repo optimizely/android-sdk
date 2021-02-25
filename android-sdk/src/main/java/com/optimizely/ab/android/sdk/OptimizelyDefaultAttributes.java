@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2021, Optimizely, Inc. and contributors                        *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -16,12 +16,13 @@
 
 package com.optimizely.ab.android.sdk;
 
-import java.util.HashMap;
-import java.util.Map;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 
 import org.slf4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *  Class to encapsulate default attributes that will be added to attributes passed in
@@ -45,15 +46,15 @@ public class OptimizelyDefaultAttributes {
     static Map<String, String> buildDefaultAttributesMap(Context context, Logger logger) {
         String androidDeviceModel = android.os.Build.MODEL;
         String androidOSVersion = android.os.Build.VERSION.RELEASE;
-        int androidSdkVersion = 0;
+        String androidSdkVersion = "";
         String androidSdkVersionName = "";
         String androidAppVersionName = "";
         int androidAppVersion = 0;
 
         // In case there is some problem with accessing the BuildConfig file....
         try {
-            androidSdkVersion = BuildConfig.VERSION_CODE;
-            androidSdkVersionName = BuildConfig.VERSION_NAME;
+            androidSdkVersion = BuildConfig.CLIENT_VERSION;
+            androidSdkVersionName = BuildConfig.LIBRARY_PACKAGE_NAME;
         }
         catch (Exception e) {
             logger.warn("Error getting BuildConfig version code and version name");

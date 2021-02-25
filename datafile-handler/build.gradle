@@ -54,6 +54,7 @@ android {
 dependencies {
     api project(':shared')
     implementation "androidx.annotation:annotation:$annotations_ver"
+    implementation "androidx.work:work-runtime:$work_runtime"
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
@@ -75,4 +76,3 @@ dependencies {
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
-

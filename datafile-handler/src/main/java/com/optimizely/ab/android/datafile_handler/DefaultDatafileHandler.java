@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2018, Optimizely, Inc. and contributors                        *
+ * Copyright 2017-2021, Optimizely, Inc. and contributors                        *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -17,17 +17,15 @@
 package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.os.FileObserver;
+
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
-import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.DatafileConfig;
-import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.android.shared.OptlyStorage;
+import com.optimizely.ab.android.shared.WorkerScheduler;
 import com.optimizely.ab.config.DatafileProjectConfig;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.ProjectConfigManager;
@@ -79,26 +77,28 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
      * @param listener  listener to call when datafile download complete
      */
     public void downloadDatafile(final Context context, DatafileConfig datafileConfig, final DatafileLoadedListener listener) {
-        final Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
-        if (datafileServiceConnection == null) {
-            this.datafileServiceConnection = new DatafileServiceConnection(datafileConfig, context.getApplicationContext(),
-                    new DatafileLoadedListener() {
-                        @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
-                        @Override
-                        public void onDatafileLoaded(@Nullable String dataFile) {
-                            if (listener != null) {
-                                listener.onDatafileLoaded(dataFile);
-                            }
+        DatafileClient datafileClient = new DatafileClient(
+                new Client(new OptlyStorage(context.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
+                LoggerFactory.getLogger(DatafileClient.class));
+        DatafileCache datafileCache = new DatafileCache(
+                datafileConfig.getKey(),
+                new Cache(context, LoggerFactory.getLogger(Cache.class)),
+                LoggerFactory.getLogger(DatafileCache.class));
 
-                            if (datafileServiceConnection != null && datafileServiceConnection.isBound()) {
-                                context.getApplicationContext().unbindService(datafileServiceConnection);
-                                datafileServiceConnection = null;
-                            }
+        String datafileUrl = datafileConfig.getUrl();
+        DatafileLoader datafileLoader = new DatafileLoader(context, datafileClient, datafileCache, LoggerFactory.getLogger(DatafileLoader.class));
+        datafileLoader.getDatafile(datafileUrl, new DatafileLoadedListener() {
 
-                        }
-             });
-            context.getApplicationContext().bindService(intent, datafileServiceConnection, Context.BIND_AUTO_CREATE);
-        }
+            @Override
+            public void onDatafileLoaded(@Nullable String dataFile) {
+                if (listener != null) {
+                    listener.onDatafileLoaded(dataFile);
+                }
+            }
+        });
+
+
+
     }
 
     public void downloadDatafileToCache(final Context context, DatafileConfig datafileConfig, boolean updateConfigOnNewDatafile) {
@@ -121,20 +121,15 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
         // if already running, stop it
         stopBackgroundUpdates(context, datafileConfig);
 
+        long updateIntervalInMinutes = updateInterval / 60;
+
         // save the project id background start is set.  If we get a reboot or a replace, we can restart via the
         // DatafileRescheduler
+        WorkerScheduler.scheduleService(context, DatafileWorker.workerId + datafileConfig.getKey(), DatafileWorker.class,
+                DatafileWorker.getData(datafileConfig), updateIntervalInMinutes);
         enableBackgroundCache(context, datafileConfig);
 
-        ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
-                .PendingIntentFactory(context.getApplicationContext());
-        ServiceScheduler serviceScheduler = new ServiceScheduler(context, pendingIntentFactory,
-                LoggerFactory.getLogger(ServiceScheduler.class));
-
-        Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, datafileConfig.toJSONString());
-        serviceScheduler.schedule(intent, updateInterval * 1000);
-
-        storeInterval(context, updateInterval * 1000);
+        storeInterval(context, updateIntervalInMinutes);
 
         enableUpdateConfigOnNewDatafile(context, datafileConfig, listener);
     }
@@ -188,7 +183,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
 
     public static long getUpdateInterval(Context context) {
         OptlyStorage storage = new OptlyStorage(context);
-        return storage.getLong("DATAFILE_INTERVAL", -1);
+        return storage.getLong("DATAFILE_INTERVAL", 15);
     }
 
     /**
@@ -198,13 +193,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
      * @param datafileConfig DatafileConfig for the datafile
      */
     public void stopBackgroundUpdates(Context context, DatafileConfig datafileConfig) {
-        ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
-                .PendingIntentFactory(context.getApplicationContext());
-        ServiceScheduler serviceScheduler = new ServiceScheduler(context.getApplicationContext(), pendingIntentFactory,
-                LoggerFactory.getLogger(ServiceScheduler.class));
-        Intent intent = new Intent(context.getApplicationContext(), DatafileService.class);
-        serviceScheduler.unschedule(intent);
-
+        WorkerScheduler.unscheduleService(context, DatafileWorker.workerId + datafileConfig.getKey());
         clearBackgroundCache(context, datafileConfig);
 
         storeInterval(context, -1);

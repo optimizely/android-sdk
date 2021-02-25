@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2016-2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -20,11 +20,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+
 import androidx.annotation.NonNull;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.DatafileConfig;
-import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.android.shared.WorkerScheduler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,11 +65,10 @@ public class DatafileRescheduler extends BroadcastReceiver {
                     new Cache(context, LoggerFactory.getLogger(Cache.class)),
                     LoggerFactory.getLogger(BackgroundWatchersCache.class));
             Dispatcher dispatcher = new Dispatcher(context, backgroundWatchersCache, LoggerFactory.getLogger(Dispatcher.class));
-            intent = new Intent(context, DatafileService.class);
-            dispatcher.dispatch(intent);
+            dispatcher.dispatch();
 
 
-        } else {
+        }  else {
             logger.warn("Received invalid broadcast to data file rescheduler");
         }
     }
@@ -90,15 +90,18 @@ public class DatafileRescheduler extends BroadcastReceiver {
             this.logger = logger;
         }
 
-        void dispatch(Intent intent) {
+        void dispatch() {
             List<DatafileConfig> datafileConfigs = backgroundWatchersCache.getWatchingDatafileConfigs();
 
             for (DatafileConfig datafileConfig : datafileConfigs) {
                 // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
                 // so, we don't need to do anything.
                if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                    intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, datafileConfig.toJSONString());
-                    ServiceScheduler.startService(context, DatafileService.JOB_ID, intent);
+                   WorkerScheduler.scheduleService(context,
+                           DatafileWorker.workerId + datafileConfig.getKey(),
+                           DatafileWorker.class,
+                           DatafileWorker.getData(datafileConfig),
+                           DefaultDatafileHandler.getUpdateInterval(context));
                     logger.info("Rescheduled data file watching for project {}", datafileConfig);
                 }
             }
