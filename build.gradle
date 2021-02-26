@@ -18,14 +18,8 @@
 
 buildscript {
     ext.kotlin_version = '1.4.0'
-
-
-    ////def version_name = System.getenv('TRAVIS_TAG')
-    def version_name = "3.8.0-test-1"
-
-
-
-
+    
+    def version_name = System.getenv('TRAVIS_TAG')
     if (version_name != null) {
         rootProject.ext.version_name = version_name
     } else {
@@ -76,7 +70,7 @@ ext {
 }
 
 task clean(type: Delete) {
-    delete rootProject.buildDir
+    dependsOn('cleanAllModules')
 }
 
 task cleanAllModules () {
@@ -107,7 +101,7 @@ task ship() {
     dependsOn(':android-sdk:ship', ':shared:ship', ':event-handler:ship', ':user-profile:ship', ':datafile-handler:ship')
 }
 
-def publishedProjects = subprojects.findAll { it.path != ':test-app' }
+def publishedProjects = subprojects.findAll { it.name != 'test-app' }
 configure(publishedProjects) {
     apply plugin: 'com.android.library'
     apply plugin: 'kotlin-android'
@@ -125,7 +119,6 @@ configure(publishedProjects) {
         case 'datafile-handler':
             artifactName = 'android-sdk-datafile-handler'
             docTitle = 'Optimizely Android SDK: Datafile Handler'
-            uploadArchives.shouldRunAfter = [':datafile-handler:clean', ':shared:uploadArchives']
             break
         case 'event-handler':
             artifactName = 'android-sdk-event-handler'
@@ -187,8 +180,13 @@ configure(publishedProjects) {
         publishing {
             publications {
                 release(MavenPublication) {
+                    version = version_name
+                    group = group_id
                     artifactId = artifactName
+
                     customizePom(pom, docTitle)
+                    // "description" is required by MavenCentral but it does not work in customizePom(). added here explicitly.
+                    pom.description = 'The Android SDK for Optimizely Full Stack (feature flag management for product development teams)'
 
                     from components.release
                     artifact releaseSourcesJar
@@ -197,22 +195,25 @@ configure(publishedProjects) {
             }
             repositories {
                 maven {
-                    name = 'testRepo'
-                    url = "file://${buildDir}/repo"
+                    url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                    credentials {
+                        username System.getenv('MAVEN_CENTRAL_USERNAME')
+                        password System.getenv('MAVEN_CENTRAL_PASSWORD')
+                    }
                 }
             }
         }
 
         signing {
             def signingKey = System.getenv('MAVEN_SIGNING_KEY')
-            def signingPassword = System.getenv('MAVEN_SIGNING_PASSWORD')
+            def signingPassword = System.getenv('MAVEN_SIGNING_PASSPHRASE')
             useInMemoryPgpKeys(signingKey, signingPassword)
             sign publishing.publications.release
         }
     }
 
     task ship() {
-        dependsOn('clean', 'publish')
+        dependsOn('publish')
     }
 }
 
@@ -227,8 +228,10 @@ project(':user-profile').ship.shouldRunAfter = [':user-profile:clean', ':shared:
 def customizePom(pom, title) {
     pom.withXml {
         asNode().children().last() + {
+            // keep this - otherwise some properties are not made into pom properly
+            resolveStrategy = Closure.DELEGATE_FIRST
+
             name title
-            description 'The Android SDK for Optimizely Full Stack (feature flag management for product development teams)'
             url 'https://github.com/optimizely/android-sdk'
             licenses {
                 license {
