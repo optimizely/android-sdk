@@ -143,7 +143,6 @@ configure(publishedProjects) {
             title = docTitle
 
             options.links("http://docs.oracle.com/javase/7/docs/api/");
-            options.linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference");
 
             // First add all of your dependencies to the classpath, then add the android jars
             doFirst {
