@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2018, Optimizely, Inc. and contributors                        *
+ * Copyright 2018,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -120,7 +120,7 @@ public class DatafileConfig {
     /**
      * To string either returns the proejct id as string or a concatenated string of project id
      * delimiter and environment key.
-     * @return
+     * @return the string identification for the DatafileConfig
      */
     @Override
     public String toString() {

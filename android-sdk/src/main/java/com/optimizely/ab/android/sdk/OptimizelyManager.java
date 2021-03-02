@@ -325,8 +325,8 @@ public class OptimizelyManager {
 
     /** This function will first try to get datafile from Cache, if file is not cached yet
      * than it will read from Raw file
-     * @param context
-     * @param datafileRes
+     * @param context     any {@link Context} instance
+     * @param datafileRes the R id that the data file is located under.
      * @return datafile
      */
     public String getDatafile(Context context,@RawRes Integer datafileRes){
