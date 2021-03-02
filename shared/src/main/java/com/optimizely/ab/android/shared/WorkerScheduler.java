@@ -49,7 +49,7 @@ public class WorkerScheduler {
      * @param workerId worker id
      * @param clazz class based on ListenableWorker
      * @param data androidx.work.Data
-     * @param interval
+     * @param interval the interval for the repeated service
      */
     public static void scheduleService(Context context, String workerId, Class clazz, Data data, long interval) {
         WorkManager.getInstance(context).cancelAllWorkByTag(workerId);

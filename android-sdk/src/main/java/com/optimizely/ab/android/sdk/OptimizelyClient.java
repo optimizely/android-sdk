@@ -810,6 +810,7 @@ public class OptimizelyClient {
 
     /**
      * Convenience method for adding DecisionNotification Handlers
+     * @param handler a NotificationHandler to be added
      * @return notificationId or -1 if notification is not added
      */
     @Nullable
@@ -824,6 +825,7 @@ public class OptimizelyClient {
 
     /**
      * Convenience method for adding TrackNotification Handlers
+     * @param handler a NotificationHandler to be added
      * @return notificationId or -1 if notification is not added
      */
     public int addTrackNotificationHandler(NotificationHandler<TrackNotification> handler) {
@@ -838,6 +840,7 @@ public class OptimizelyClient {
 
     /**
      * Convenience method for adding UpdateConfigNotification Handlers
+     * @param handler a NotificationHandler to be added
      * @return notificationId or -1 if notification is not added
      */
     public int addUpdateConfigNotificationHandler(NotificationHandler<UpdateConfigNotification> handler) {
@@ -852,6 +855,7 @@ public class OptimizelyClient {
 
     /**
      * Convenience method for adding LogEvent Notification Handlers
+     * @param handler a NotificationHandler to be added
      * @return notificationId or -1 if notification is not added
      */
     public int addLogEventNotificationHandler(NotificationHandler<LogEvent> handler) {
