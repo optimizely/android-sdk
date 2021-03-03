@@ -47,7 +47,6 @@ before_script:
 script:
   - ./gradlew cleanAllModules
   - ./gradlew testAllModulesTravis
-  - if [[ -n $TRAVIS_TAG ]]; then ./gradlew ship; fi
 
 # Integration tests need to run first to reset the PR build status to pending
 stages:
@@ -55,6 +54,7 @@ stages:
   - 'Lint markdown files'
   - 'Integration tests'
   - 'Test'
+  - 'Publish'
 
 jobs:
   include:
@@ -92,5 +92,12 @@ jobs:
       install: skip
       before_script: skip
       script: skip
+      after_script: skip
+      after_success: skip
+
+    - stage: 'Publish'
+      if: tag IS present
+      script:
+        - ./gradlew ship
       after_script: skip
       after_success: skip
