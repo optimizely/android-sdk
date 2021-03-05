@@ -794,12 +794,7 @@ public class OptimizelyClient {
     @Nullable
     public OptimizelyUserContext createUserContext(@NonNull String userId,
                                                    @NonNull Map<String, Object> attributes) {
-        if (isValid()) {
-            return optimizely.createUserContext(userId, attributes);
-        } else {
-            logger.warn("Optimizely is not initialized, could not create a user context");
-            return null;
-        }
+        return optimizely.createUserContext(userId, attributes);
     }
 
     public OptimizelyUserContext createUserContext(@NonNull String userId) {
