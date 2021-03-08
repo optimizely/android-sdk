@@ -17,11 +17,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-
-version = version_name
-group = group_id
 
 android {
     compileSdkVersion compile_sdk_version
@@ -78,57 +73,3 @@ dependencies {
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
-
-uploadArchives {
-    dependsOn = [':datafile-handler:releaseJavadocJar', ':datafile-handler:releaseSourcesJar']
-    shouldRunAfter = [':datafile-handler:clean', ':shared:uploadArchives']
-    repositories {
-        mavenDeployer {
-            repository(url: "https://api.bintray.com/maven/optimizely/optimizely/optimizely-sdk-android-datafile-handler") {
-                authentication(userName: bintray_user, password: bintray_api_key)
-            }
-            pom.artifactId = "android-sdk-datafile-handler"
-        }
-    }
-}
-
-android.libraryVariants.all { variant ->
-    task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
-        source = variant.javaCompile.source
-
-        title = "Optimizely X Android Datafile Handler"
-
-        options.links("http://docs.oracle.com/javase/8/docs/api/");
-        options.linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference");
-
-        // First add all of your dependencies to the classpath, then add the android jars
-        doFirst {
-            classpath += files(variant.javaCompileProvider.get().classpath.files)
-            classpath += files(android.getBootClasspath())
-        }
-        // We're excluding these generated files
-        exclude '**/BuildConfig.java'
-        exclude '**/R.java'
-
-        options.tags = ["hide"]
-    }
-}
-
-android.libraryVariants.all { variant ->
-    task("${variant.name}JavadocJar", type: Jar, dependsOn: "${variant.name}Javadoc") {
-        classifier = 'javadoc'
-        from tasks["${variant.name}Javadoc"].destinationDir
-    }
-
-    // Add the Javadoc jar to the project's artifacts. This will allow us to upload it easily later
-    project.artifacts.add("archives", tasks["${variant.name}JavadocJar"]);
-}
-
-android.libraryVariants.all { variant ->
-    task("${variant.name}SourcesJar", type: Jar) {
-        classifier = 'sources'
-        from variant.javaCompile.source
-    }
-    project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
-}
-

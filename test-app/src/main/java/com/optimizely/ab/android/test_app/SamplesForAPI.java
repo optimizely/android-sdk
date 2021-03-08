@@ -72,6 +72,7 @@ public class SamplesForAPI {
             String vs = null;
             try {
                 vs = variables.getValue("text_color", String.class);
+                int a = variables.getValue("price", Integer.class);
             } catch (JsonParseException e) {
                 e.printStackTrace();
             }

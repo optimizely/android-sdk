@@ -18,16 +18,11 @@
 
 buildscript {
     ext.kotlin_version = '1.4.0'
-    def bintray_user = System.getenv('BINTRAY_USER')
-    def bintray_api_key = System.getenv('BINTRAY_API_KEY')
+    
     def version_name = System.getenv('TRAVIS_TAG')
-    if (bintray_user != null && bintray_api_key != null && version_name != null) {
-        rootProject.ext.bintray_user = bintray_user
-        rootProject.ext.bintray_api_key = bintray_api_key
+    if (version_name != null) {
         rootProject.ext.version_name = version_name
     } else {
-        rootProject.ext.bintray_user = ''
-        rootProject.ext.bintray_api_key = ''
         rootProject.ext.version_name= 'debugVersion'
     }
     repositories {
@@ -58,7 +53,7 @@ ext {
     build_tools_version = "29.0.3"
     min_sdk_version = 14
     target_sdk_version = 29
-    java_core_ver = "3.8.0"
+    java_core_ver = "3.8.1"
     android_logger_ver = "1.3.6"
     jacksonversion= "2.11.2"
     annotations_ver = "1.0.0"
@@ -75,13 +70,7 @@ ext {
 }
 
 task clean(type: Delete) {
-    delete rootProject.buildDir
-}
-
-task ship() {
-    dependsOn(':android-sdk:uploadArchives', ':shared:uploadArchives',
-            'event-handler:uploadArchives', 'user-profile:uploadArchives',
-            'datafile-handler:uploadArchives')
+    dependsOn('cleanAllModules')
 }
 
 task cleanAllModules () {
@@ -105,3 +94,170 @@ testAllModulesTravis.dependsOn(':android-sdk:connectedAndroidTest', ':android-sd
         ':user-profile:connectedAndroidTest', ':shared:connectedAndroidTest')
 
 testAllModules.dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')
+
+// Publish to MavenCentral
+
+task ship() {
+    dependsOn(':android-sdk:ship', ':shared:ship', ':event-handler:ship', ':user-profile:ship', ':datafile-handler:ship')
+}
+
+def publishedProjects = subprojects.findAll { it.name != 'test-app' }
+configure(publishedProjects) {
+    apply plugin: 'com.android.library'
+    apply plugin: 'kotlin-android'
+    apply plugin: 'kotlin-android-extensions'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    def artifactName = "android-sdk"
+    def docTitle = "Optimizely Android SDK"
+    switch(name){
+        case 'android-sdk':
+            artifactName = 'android-sdk'
+            docTitle = 'Optimizely Android SDK'
+            break
+        case 'datafile-handler':
+            artifactName = 'android-sdk-datafile-handler'
+            docTitle = 'Optimizely Android SDK: Datafile Handler'
+            break
+        case 'event-handler':
+            artifactName = 'android-sdk-event-handler'
+            docTitle = 'Optimizely Android SDK: Event Handler'
+            break
+        case 'shared':
+            artifactName = 'android-sdk-shared'
+            docTitle = 'Optimizely Android SDK: Shared'
+            break
+        case 'user-profile':
+            artifactName = 'android-sdk-user-profile'
+            docTitle = 'Optimizely X Android SDK: User Profile'
+            break
+        default:
+            return
+    }
+
+    android.libraryVariants.all { variant ->
+        task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
+            source = variant.javaCompile.source
+
+            title = docTitle
+
+            options.links("http://docs.oracle.com/javase/7/docs/api/");
+
+            // First add all of your dependencies to the classpath, then add the android jars
+            doFirst {
+                classpath += files(variant.javaCompileProvider.get().classpath.files)
+                classpath += files(android.getBootClasspath())
+            }
+            // We're excluding these generated files
+            exclude '**/BuildConfig.java'
+            exclude '**/R.java'
+
+            options.tags = ["hide"]
+        }
+    }
+
+    android.libraryVariants.all { variant ->
+        task("${variant.name}JavadocJar", type: Jar, dependsOn: "${variant.name}Javadoc") {
+            classifier = 'javadoc'
+            from tasks["${variant.name}Javadoc"].destinationDir
+        }
+
+        // Add the Javadoc jar to the project's artifacts. This will allow us to upload it easily later
+        project.artifacts.add("archives", tasks["${variant.name}JavadocJar"]);
+    }
+
+    android.libraryVariants.all { variant ->
+        task("${variant.name}SourcesJar", type: Jar) {
+            classifier = 'sources'
+            from variant.javaCompile.source
+        }
+        project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
+    }
+
+    afterEvaluate {
+        publishing {
+            publications {
+                release(MavenPublication) {
+                    version = version_name
+                    group = group_id
+                    artifactId = artifactName
+
+                    customizePom(pom, docTitle)
+                    // "description" is required by MavenCentral but it does not work in customizePom(). added here explicitly.
+                    pom.description = 'The Android SDK for Optimizely Full Stack (feature flag management for product development teams)'
+
+                    from components.release
+                    artifact releaseSourcesJar
+                    artifact releaseJavadocJar
+                }
+            }
+            repositories {
+                maven {
+                    url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                    credentials {
+                        username System.getenv('MAVEN_CENTRAL_USERNAME')
+                        password System.getenv('MAVEN_CENTRAL_PASSWORD')
+                    }
+                }
+            }
+        }
+
+        signing {
+            // base64 for workaround travis escape chars issue
+            def signingKeyBase64 = System.getenv('MAVEN_SIGNING_KEY_BASE64')
+            // skip signing for "local" version into MavenLocal
+            if (!signingKeyBase64?.trim()) return
+            byte[] decoded = signingKeyBase64.decodeBase64()
+            def signingKey = new String(decoded)
+
+            def signingPassword = System.getenv('MAVEN_SIGNING_PASSPHRASE')
+            useInMemoryPgpKeys(signingKey, signingPassword)
+            sign publishing.publications.release
+        }
+    }
+
+    task ship() {
+        dependsOn('publish')
+    }
+}
+
+project(':android-sdk').ship.shouldRunAfter = [':android-sdk:clean', ':datafile-handler:ship', ':event-handler:ship', ':user-profile:ship']
+project(':datafile-handler').ship.shouldRunAfter = [':datafile-handler:clean', ':shared:ship']
+project(':event-handler').ship.shouldRunAfter = [':event-handler:clean', ':shared:ship']
+project(':shared').ship.shouldRunAfter = [':shared:clean']
+project(':user-profile').ship.shouldRunAfter = [':user-profile:clean', ':shared:ship']
+
+// standard POM format required by MavenCentral
+
+def customizePom(pom, title) {
+    pom.withXml {
+        asNode().children().last() + {
+            // keep this - otherwise some properties are not made into pom properly
+            resolveStrategy = Closure.DELEGATE_FIRST
+
+            name title
+            url 'https://github.com/optimizely/android-sdk'
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            developers {
+                developer {
+                    id 'optimizely'
+                    name 'Optimizely'
+                    email 'optimizely-fullstack@optimizely.com'
+                }
+            }
+            scm {
+                connection 'scm:git:git://github.com/optimizely/android-sdk.git'
+                developerConnection 'scm:git:ssh:github.com/optimizely/android-sdk.git'
+                url 'https://github.com/optimizely/android-sdk.git'
+            }
+        }
+    }
+}
+
