@@ -1,6 +1,15 @@
 # Optimizely Android X SDK Changelog
 
-# Release 3.10.0
+## 3.10.1
+March 8th, 2021
+
+* Switch publish repository to MavenCentral (bintray/jcenter sunset).
+
+### Bug Fixes
+* Remove isValid condition checking from CreateUserContext ([367](https://github.com/optimizely/android-sdk/pull/367)).
+
+
+# 3.10.0
 February 24th 2021
 
 PR : [#360](https://github.com/optimizely/android-sdk/pull/360)
@@ -11,11 +20,11 @@ PR : [#360](https://github.com/optimizely/android-sdk/pull/360)
 - DatafileClient download timeout can be set.
 
 
-# Release 3.9.0
+# 3.9.0
 February 9th 2021
 
--  upgrade the androidx and get all tests passing [#356](https://github.com/optimizely/android-sdk/pull/356)
--  add a new set of decide apis [#352](https://github.com/optimizely/android-sdk/pull/352)
+-  Upgrade the androidx and get all tests passing [#356](https://github.com/optimizely/android-sdk/pull/356)
+-  Add a new set of decide apis [#352](https://github.com/optimizely/android-sdk/pull/352)
 The new `OptimizelyUserContext` class is instantiated with `createUserContext` and exposes the following APIs to get `OptimizelyDecision`:
 
 	- setAttribute
@@ -27,7 +36,7 @@ The new `OptimizelyUserContext` class is instantiated with `createUserContext` a
 Also related to java sdk release [here]https://github.com/optimizely/java-sdk/releases/tag/3.8.0).
 - For details, refer to our documentation page: [https://docs.developers.optimizely.com/full-stack/v4.0/docs/android-sdk](https://docs.developers.optimizely.com/full-stack/v4.0/docs/android-sdk).
 
--  remove erroneous error if project id and sdk key are null. [#358](https://github.com/optimizely/android-sdk/pull/358)
+-  Remove erroneous error if project id and sdk key are null. [#358](https://github.com/optimizely/android-sdk/pull/358)
 
 ## 3.8.0
 November 20th, 2020
