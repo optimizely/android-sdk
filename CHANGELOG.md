@@ -9,8 +9,8 @@ March 8th, 2021
 * Remove isValid condition checking from CreateUserContext ([367](https://github.com/optimizely/android-sdk/pull/367)).
 
 
-# 3.10.0
-February 24th 2021
+## 3.10.0
+February 24th, 2021
 
 PR : [#360](https://github.com/optimizely/android-sdk/pull/360)
 - Deprecate and remove job scheduler in favor of the androidx work manager. Issue #350
@@ -20,8 +20,8 @@ PR : [#360](https://github.com/optimizely/android-sdk/pull/360)
 - DatafileClient download timeout can be set.
 
 
-# 3.9.0
-February 9th 2021
+## 3.9.0
+February 9th, 2021
 
 -  Upgrade the androidx and get all tests passing [#356](https://github.com/optimizely/android-sdk/pull/356)
 -  Add a new set of decide apis [#352](https://github.com/optimizely/android-sdk/pull/352)
