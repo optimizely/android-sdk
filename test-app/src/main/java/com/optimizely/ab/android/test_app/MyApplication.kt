@@ -40,11 +40,8 @@ class MyApplication : Application() {
             attributes["semanticVersioning"] = "2.1.0"
 
             return attributes
-        }// comment this out to get a brand new user id every time this function is called.
-    // useful for incrementing results page count for QA purposes
+        }
 
-    // this is a convenience method that creates and persists an anonymous user id,
-    // which we need to pass into the activate and track calls
     val anonUserId: String
         get() {
             // this is a convenience method that creates and persists an anonymous user id,
@@ -70,9 +67,9 @@ class MyApplication : Application() {
         // This app is built against a real Optimizely project with real experiments set.  Automated
         // espresso tests are run against this project id.  Changing it will make the Optimizely
         // must match the project id of the compiled in Optimizely data file in rest/raw/data_file.json.
-        val builder = OptimizelyManager.builder()
-        optimizelyManager = builder.withEventDispatchInterval(60L)
-                .withDatafileDownloadInterval(TimeUnit.MINUTES.toSeconds(15))
+        optimizelyManager = OptimizelyManager.builder()
+                .withEventDispatchInterval(60L, TimeUnit.SECONDS)
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .withSDKKey("FCnSegiEkRry9rhVMroit4")
                 .build(applicationContext)
     }
@@ -90,10 +87,4 @@ class MyApplication : Application() {
     private val location: Any?
         private get() = null
 
-    companion object {
-        // Project ID owned by mobile-test@optimizely.com
-        // if you'd like to configure your own experiment please check out https://developers.optimizely.com/x/solutions/sdks/getting-started/index.html?language=android&platform=mobile
-        // to create your own project and experiment. Then just replace your project ID below.
-        const val PROJECT_ID = "10554895220"
-    }
 }
