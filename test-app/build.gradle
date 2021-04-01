@@ -43,18 +43,21 @@ dependencies {
     // Includes the Optimizely X Full Stack Java SDK, event handler, and user profile
     implementation (project(':android-sdk')) {
         exclude group: 'com.google.code.gson', module:'gson'
-       // exclude group: 'com.noveogroup.android', module:'android-logger'
+        // exclude group: 'com.noveogroup.android', module:'android-logger'
     }
 
     implementation "com.noveogroup.android:android-logger:$android_logger_ver"
-    // implementation 'com.optimizely.ab:android-sdk:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
+    // implementation "com.optimizely.ab:android-sdk:1.0.0"
+    implementation "androidx.appcompat:appcompat:1.2.0"
+    implementation "com.google.android.material:material:1.2.1"
     // EXAMPLE REPLACE noveogroup android-looger with slf4j-android logger
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-android
-    //implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
+    //implementation "org.slf4j:slf4j-android:1.7.25"
     // EXAMPLE REPLACE gson json parsing with jackson-databind json parsing.
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonversion"
+    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
+
+    //implementation "com.google.code.gson:gson:$gson_ver"
+    //implementation 'com.google.code.findbugs:annotations:3.0.0'
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"

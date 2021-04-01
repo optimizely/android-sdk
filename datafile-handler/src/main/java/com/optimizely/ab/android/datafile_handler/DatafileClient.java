@@ -16,6 +16,8 @@
 
 package com.optimizely.ab.android.datafile_handler;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 

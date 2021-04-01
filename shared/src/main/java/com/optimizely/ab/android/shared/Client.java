@@ -16,6 +16,8 @@
 
 package com.optimizely.ab.android.shared;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -26,8 +28,14 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.SecureRandom;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 
 /**
  * Functionality common to all clients using http connections
@@ -57,14 +65,45 @@ public class Client {
      * @return an open {@link HttpURLConnection}
      */
     @Nullable
+//    public HttpURLConnection openConnection(URL url) {
+//        try {
+//            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//
+//            // API 21 (LOLLIPOP)+ supposed to use TLS1.2 as default, but some API-21 devices still fail, so include it here.
+//            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+//                if (urlConnection instanceof HttpsURLConnection) {
+//                    SSLContext sc = SSLContext.getInstance("TLSv1.2");
+//                    sc.init(null, null, null);
+//                    SSLSocketFactory sslSocketFactory = new TLSSocketFactory(sc.getSocketFactory());
+//                    ((HttpsURLConnection) urlConnection).setSSLSocketFactory(sslSocketFactory);
+//                }
+//            }
+//
+//            return urlConnection;
+//        } catch (Exception e) {
+//            logger.warn("Error making request to {}.", url);
+//        }
+//        return null;
+//    }
     public HttpURLConnection openConnection(URL url) {
         try {
+            // API 21 (LOLLIPOP)+ supposed to use TLS1.2 as default, but some API-21 devices still fail, so include it here.
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+                SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+                sslContext.init(null, null, null);
+                SSLSocketFactory sslSocketFactory = new TLSSocketFactory(sslContext.getSocketFactory());
+                HttpsURLConnection.setDefaultSSLSocketFactory(sslSocketFactory);
+            }
+
             return (HttpURLConnection) url.openConnection();
         } catch (Exception e) {
             logger.warn("Error making request to {}.", url);
         }
         return null;
     }
+
+
+
 
     /**
      * Adds a if-modified-since header to the open {@link URLConnection} if this value is
