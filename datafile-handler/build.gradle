@@ -58,6 +58,8 @@ dependencies {
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
+    testImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"
+    androidTestImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"
 
     androidTestImplementation "androidx.test.ext:junit:$androidx_test"
     // Set this dependency to use JUnit 4 rules
@@ -68,7 +70,6 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

@@ -1,0 +1,89 @@
+/****************************************************************************
+ * Copyright 2021, Optimizely, Inc. and contributors                   *
+ * *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
+ * *
+ * http://www.apache.org/licenses/LICENSE-2.0                            *
+ * *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
+ */
+package com.optimizely.ab.android.shared
+
+import android.content.Context
+import androidx.work.*
+import java.util.concurrent.TimeUnit
+
+/**
+ * WorkScheduler uses androidx work manager to schedule tasks. It replaces the deprecated ServiceScheduler.
+ * The WorkScheduler takes a ListenableWorker and using the work manager schedules the task.  Because the work manager
+ * does expose a way to persist jobs, you will need to use a rescheduler to reschedule tasks.
+ *
+ * This class eliminates the use of the deprecated Intents and JobSchedulers .
+ */
+object WorkerScheduler {
+    /**
+     * Unschedule a scheduled service for a given worker id
+     * @param context current application context
+     * @param workerId work id to cancel
+     */
+    fun unscheduleService(context: Context?, workerId: String?) {
+        WorkManager.getInstance(context!!).cancelAllWorkByTag(workerId!!)
+    }
+
+    /**
+     * Schedule a repeated service using the work scheduler from androidx.
+     * @param context current application context
+     * @param workerId worker id
+     * @param clazz class based on ListenableWorker
+     * @param data androidx.work.Data
+     * @param interval the interval for the repeated service
+     */
+    fun scheduleService(context: Context?, workerId: String?, clazz: Class<*>, data: Data, interval: Long) {
+        WorkManager.getInstance(context!!).cancelAllWorkByTag(workerId!!)
+        val minutes = if (interval < 15) 15 else interval
+        val workRequest: WorkRequest = PeriodicWorkRequest.Builder(clazz as Class<out ListenableWorker>, minutes, TimeUnit.MINUTES)
+                .addTag(workerId)
+                .setInputData(data)
+                .setInitialDelay(minutes, TimeUnit.MINUTES)
+                .build()
+        WorkManager.getInstance(context).enqueue(workRequest)
+    }
+    /**
+     * This method should be pulled out to a worker helper class.  This method uses the
+     * WorkManagerRequest
+     * @param context - application context
+     * @param workerId - the tag as well as unique identifier
+     * @param clazz - worker class
+     * @param data - input data for the worker
+     * @param retryInterval - if the service fails, retry on this interval (in seconds).
+     */
+    /**
+     * This method should be pulled out to a worker helper class.  This method uses the
+     * WorkManagerRequest
+     * @param context - application context
+     * @param workerId - the tag as well as unique identifier
+     * @param clazz - worker class
+     * @param data - input data for the worker
+     */
+    @JvmOverloads
+    fun startService(context: Context?, workerId: String?, clazz: Class<*>, data: Data?, retryInterval: Long = 0L) {
+        // Create a WorkRequest for your Worker and sending it input
+        val workRequestBuilder: WorkRequest.Builder<*, *> = OneTimeWorkRequest.Builder(clazz as Class<out ListenableWorker>)
+                .setInputData(data!!)
+                .addTag(workerId!!)
+        if (retryInterval > 0) {
+            workRequestBuilder.setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    retryInterval * 1000,
+                    TimeUnit.MILLISECONDS)
+        }
+        val wq = workRequestBuilder.build()
+        WorkManager.getInstance(context!!).enqueue(wq)
+    }
+}
