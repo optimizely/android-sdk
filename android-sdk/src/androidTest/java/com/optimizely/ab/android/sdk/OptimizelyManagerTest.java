@@ -175,7 +175,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl(), String.format((DatafileConfig.defaultHost + DatafileConfig.environmentUrlSuffix), testSdkKey));
+        assertEquals(optimizelyManager.getDatafileUrl(), String.format((DatafileConfig.Companion.getDefaultHost() + DatafileConfig.Companion.getEnvironmentUrlSuffix()), testSdkKey));
 
         assertNotNull(optimizelyManager.getOptimizely());
         assertNotNull(optimizelyManager.getDatafileHandler());
@@ -256,7 +256,7 @@ public class OptimizelyManagerTest {
 
         assertEquals(optimizelyManager.isDatafileCached(InstrumentationRegistry.getInstrumentation().getTargetContext()), false);
 
-        assertEquals(optimizelyManager.getDatafileUrl(), String.format((DatafileConfig.defaultHost + DatafileConfig.environmentUrlSuffix), testSdkKey) );
+        assertEquals(optimizelyManager.getDatafileUrl(), String.format((DatafileConfig.Companion.getDefaultHost() + DatafileConfig.Companion.getEnvironmentUrlSuffix()), testSdkKey) );
     }
 
     @Test

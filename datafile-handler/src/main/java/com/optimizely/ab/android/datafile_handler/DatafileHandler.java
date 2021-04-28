@@ -18,11 +18,8 @@ package com.optimizely.ab.android.datafile_handler;
 
 import android.content.Context;
 
-import com.optimizely.ab.config.ProjectConfig;
-import com.optimizely.ab.config.ProjectConfigManager;
 import com.optimizely.ab.android.shared.DatafileConfig;
-
-import java.util.function.Function;
+import com.optimizely.ab.config.ProjectConfigManager;
 
 /**
  * DatafileHandler

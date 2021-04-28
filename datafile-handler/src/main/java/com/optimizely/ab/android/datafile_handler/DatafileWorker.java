@@ -41,7 +41,7 @@ public class DatafileWorker extends Worker {
 
     public static DatafileConfig getDataConfig(Data data) {
         String extraDatafileConfig = data.getString("DatafileConfig");
-        return DatafileConfig.fromJSONString(extraDatafileConfig);
+        return DatafileConfig.Companion.fromJSONString(extraDatafileConfig);
     }
 
     @NonNull

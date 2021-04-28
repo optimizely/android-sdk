@@ -16,7 +16,6 @@
 
 package com.optimizely.ab.android.event_handler;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.Client;
