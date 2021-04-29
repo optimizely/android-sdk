@@ -56,7 +56,7 @@ public class OptimizelyManagerBuilderTest {
             }
         };
 
-        OptimizelyManager manager = OptimizelyManager.builder(testProjectId).withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
+        OptimizelyManager manager = OptimizelyManager.builder(testProjectId).withUserProfileService(DefaultUserProfileService.Companion.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
                 .withDatafileDownloadInterval(30L)
                 .withEventDispatchInterval(30L)
                 .withDatafileHandler(new DefaultDatafileHandler())
@@ -80,7 +80,7 @@ public class OptimizelyManagerBuilderTest {
             }
         };
 
-        OptimizelyManager manager = OptimizelyManager.builder().withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
+        OptimizelyManager manager = OptimizelyManager.builder().withUserProfileService(DefaultUserProfileService.Companion.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
                 .withDatafileDownloadInterval(30L, TimeUnit.MINUTES)
                 .withEventDispatchInterval(30L, TimeUnit.MINUTES)
                 .withDatafileHandler(new DefaultDatafileHandler())
@@ -100,7 +100,7 @@ public class OptimizelyManagerBuilderTest {
             }
         };
 
-        OptimizelyManager manager = OptimizelyManager.builder().withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
+        OptimizelyManager manager = OptimizelyManager.builder().withUserProfileService(DefaultUserProfileService.Companion.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
                 .withDatafileDownloadInterval(30L, TimeUnit.MINUTES)
                 .withEventDispatchInterval(30L, TimeUnit.MINUTES)
                 .withDatafileHandler(new DefaultDatafileHandler())
@@ -126,7 +126,7 @@ public class OptimizelyManagerBuilderTest {
             }
         };
 
-        OptimizelyManager manager = OptimizelyManager.builder().withUserProfileService(DefaultUserProfileService.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
+        OptimizelyManager manager = OptimizelyManager.builder().withUserProfileService(DefaultUserProfileService.Companion.newInstance(testProjectId, InstrumentationRegistry.getInstrumentation().getTargetContext()))
                 .withDatafileDownloadInterval(30L, TimeUnit.MINUTES)
                 .withEventDispatchInterval(30L, TimeUnit.MINUTES)
                 .withDatafileHandler(new DefaultDatafileHandler())

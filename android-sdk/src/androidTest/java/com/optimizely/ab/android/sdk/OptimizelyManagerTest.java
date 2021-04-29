@@ -456,7 +456,7 @@ public class OptimizelyManagerTest {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        DefaultUserProfileService userProfileService = mock(DefaultUserProfileService.class);
+        UserProfileService userProfileService = DefaultUserProfileService.Companion.newInstance(testProjectId ,context);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<DefaultUserProfileService.StartCallback> callbackArgumentCaptor =
                 ArgumentCaptor.forClass(DefaultUserProfileService.StartCallback.class);

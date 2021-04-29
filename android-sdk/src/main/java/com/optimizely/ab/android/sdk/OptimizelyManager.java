@@ -920,7 +920,7 @@ public class OptimizelyManager {
             }
 
             if (userProfileService == null) {
-                userProfileService = DefaultUserProfileService.newInstance(datafileConfig.getKey(), context);
+                userProfileService = DefaultUserProfileService.Companion.newInstance(datafileConfig.getKey(), context);
             }
 
             if (eventHandler == null) {
