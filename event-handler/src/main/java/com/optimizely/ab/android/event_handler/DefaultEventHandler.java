@@ -93,7 +93,7 @@ public class DefaultEventHandler implements EventHandler {
         }
 
         WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class,
-                EventWorker.getData(logEvent), dispatchInterval);
+                EventWorker.Companion.getData(logEvent), dispatchInterval);
 
         logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
     }

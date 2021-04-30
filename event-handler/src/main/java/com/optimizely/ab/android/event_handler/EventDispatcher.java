@@ -40,7 +40,7 @@ import java.util.List;
  *
  * This abstraction makes unit testing much simpler
  */
-class EventDispatcher {
+public class EventDispatcher {
 
     @NonNull private final Context context;
     @NonNull private final ServiceScheduler serviceScheduler;

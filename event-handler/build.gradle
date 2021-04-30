@@ -59,6 +59,7 @@ dependencies {
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
+    testImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"
 
     androidTestImplementation "androidx.test.ext:junit:$androidx_test"
     // Set this dependency to use JUnit 4 rules
