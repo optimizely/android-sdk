@@ -56,8 +56,9 @@ dependencies {
     // EXAMPLE REPLACE gson json parsing with jackson-databind json parsing.
     implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 
-    //implementation "com.google.code.gson:gson:$gson_ver"
-    //implementation 'com.google.code.findbugs:annotations:3.0.0'
+    // required by API-16
+    implementation "com.google.code.gson:gson:$gson_ver"
+    implementation 'com.google.code.findbugs:annotations:3.0.0'
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
