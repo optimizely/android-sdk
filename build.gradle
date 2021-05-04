@@ -75,25 +75,22 @@ task clean(type: Delete) {
 
 task cleanAllModules () {
     logger.info("Running clean for all modules")
+    dependsOn(':android-sdk:clean', ':event-handler:clean',
+            ':user-profile:clean', ':shared:clean', ':datafile-handler:clean')
 }
-
-cleanAllModules.dependsOn(':android-sdk:clean', ':event-handler:clean',
-        ':user-profile:clean', ':shared:clean', ':datafile-handler:clean')
 
 task testAllModules () {
     logger.info("Running android tests for all modules")
+    dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')
 }
 
 task testAllModulesTravis () {
     logger.info("Running android tests for Travis")
+    dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
+            ':event-handler:connectedAndroidTest', ':event-handler:test',
+            ':datafile-handler:connectedAndroidTest', ':datafile-handler:test',
+            ':user-profile:connectedAndroidTest', ':shared:connectedAndroidTest')
 }
-
-testAllModulesTravis.dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
-        ':event-handler:connectedAndroidTest', ':event-handler:test',
-        ':datafile-handler:connectedAndroidTest', ':datafile-handler:test',
-        ':user-profile:connectedAndroidTest', ':shared:connectedAndroidTest')
-
-testAllModules.dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')
 
 // Publish to MavenCentral
 

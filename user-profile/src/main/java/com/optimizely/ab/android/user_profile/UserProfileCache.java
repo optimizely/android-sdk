@@ -270,7 +270,6 @@ class UserProfileCache {
         /**
          * Save the in-memory cache to disk in a background thread.
          */
-        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
         void save(final Map<String, Map<String, Object>> userProfilesMap) {
             AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
@@ -347,7 +346,6 @@ class UserProfileCache {
         /**
          * Delete the legacy user profile cache from disk in a background thread.
          */
-        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
         void delete() {
             AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override

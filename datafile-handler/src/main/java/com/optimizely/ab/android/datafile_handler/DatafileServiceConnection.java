@@ -62,7 +62,6 @@ public class DatafileServiceConnection implements ServiceConnection {
      *
      * @see ServiceConnection#onServiceConnected(ComponentName, IBinder)
      */
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onServiceConnected(ComponentName className,
                                    IBinder service) {

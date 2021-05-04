@@ -48,7 +48,6 @@ class EventSQLiteOpenHelper extends SQLiteOpenHelper {
     @NonNull private final String projectId;
     @NonNull private final Context context;
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     EventSQLiteOpenHelper(@NonNull Context context, @NonNull String projectId, @Nullable SQLiteDatabase.CursorFactory factory, int version, @NonNull Logger logger) {
         super(context, String.format(DB_NAME, projectId), factory, version);
         this.logger = logger;

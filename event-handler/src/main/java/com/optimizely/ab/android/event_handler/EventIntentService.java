@@ -57,7 +57,6 @@ public class EventIntentService extends IntentService {
      * Create the event dispatcher {@link EventDispatcher}
      * @see IntentService#onCreate()
      */
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onCreate() {
         super.onCreate();

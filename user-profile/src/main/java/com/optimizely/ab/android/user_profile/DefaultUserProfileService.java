@@ -79,7 +79,6 @@ public class DefaultUserProfileService implements UserProfileService {
         void onStartComplete(UserProfileService userProfileService);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void startInBackground(final StartCallback callback) {
                 final DefaultUserProfileService userProfileService = this;
 

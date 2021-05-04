@@ -71,7 +71,6 @@ public class DatafileServiceTest {
         executor = Executors.newSingleThreadExecutor();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     @Ignore
     public void testBinding() throws TimeoutException {
@@ -99,7 +98,6 @@ public class DatafileServiceTest {
         assertTrue(datafileService.isBound());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void testValidStart() throws TimeoutException {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -119,7 +117,6 @@ public class DatafileServiceTest {
         assertEquals(val, START_FLAG_REDELIVERY);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     @Ignore
     public void testNullIntentStart() throws TimeoutException {
@@ -139,7 +136,6 @@ public class DatafileServiceTest {
         verify(logger).warn("Data file service received a null intent");
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     @Ignore
     public void testNoProjectIdIntentStart() throws TimeoutException {
@@ -159,7 +155,6 @@ public class DatafileServiceTest {
         verify(logger).warn("Data file service received an intent with no project id extra");
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     @Ignore
     public void testUnbind() throws TimeoutException {
@@ -180,7 +175,6 @@ public class DatafileServiceTest {
         verify(logger).info("All clients are unbound from data file service");
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     @Ignore
     public void testIntentExtraData(){
@@ -209,7 +203,6 @@ public class DatafileServiceTest {
         assertTrue(intent2.getComponent().getShortClassName().contains("DatafileService"));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void testGetDatafileUrl(){
         // HARD-CODING link here to make sure we don't unintentionally mess up the datafile version
@@ -218,8 +211,7 @@ public class DatafileServiceTest {
         String datafileUrl = new DatafileConfig("1", null).getUrl();
         assertEquals("https://cdn.optimizely.com/json/1.json", datafileUrl);
     }
-    @
-            RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
+
     @Test
     public void testGetDatafileEnvironmentUrl(){
         // HARD-CODING link here to make sure we don't unintentionally mess up the datafile version

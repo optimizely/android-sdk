@@ -34,7 +34,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class OptimizelyClientEngineTest {
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR2)
     @Test
     public void testGetClientEngineFromContextAndroidTV() {
         Context context = mock(Context.class);
@@ -44,7 +43,6 @@ public class OptimizelyClientEngineTest {
         assertEquals(EventBatch.ClientEngine.ANDROID_TV_SDK, OptimizelyClientEngine.getClientEngineFromContext(context));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR2)
     @Test
     public void testGetClientEngineFromContextAndroid() {
         Context context = mock(Context.class);

@@ -82,7 +82,6 @@ public class EventReschedulerTest {
         verify(logger).info("Rescheduling event flushing if necessary");
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR1)
     @Test
     public void onReceiveValidPackageReplaced() {
         when(intent.getAction()).thenReturn(Intent.ACTION_MY_PACKAGE_REPLACED);

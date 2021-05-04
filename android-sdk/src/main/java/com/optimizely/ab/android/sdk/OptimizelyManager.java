@@ -398,7 +398,6 @@ public class OptimizelyManager {
 
     DatafileLoadedListener getDatafileLoadedListener(final Context context, @RawRes final Integer datafileRes) {
         return new DatafileLoadedListener() {
-            @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
             @Override
             public void onDatafileLoaded(@Nullable String datafile) {
                 if (datafile != null && !datafile.isEmpty()) {
@@ -516,7 +515,6 @@ public class OptimizelyManager {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void injectOptimizely(@NonNull final Context context, final @NonNull UserProfileService userProfileService,
                           @NonNull final String datafile) {
 

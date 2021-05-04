@@ -55,7 +55,6 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
         datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getDatafileConfig(), context, optimizelyManager.getDatafileLoadedListener(context,null));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnected() {
         DatafileService.LocalBinder binder = mock(DatafileService.LocalBinder.class);
@@ -72,7 +71,6 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
         verify(service).getDatafile(eq(sameString), any(DatafileLoader.class), any(DatafileLoadedListener.class));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnectedNullServiceFromBinder() {
         DatafileService.LocalBinder binder = mock(DatafileService.LocalBinder.class);

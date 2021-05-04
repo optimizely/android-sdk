@@ -54,7 +54,6 @@ public class DatafileService extends Service {
      * @hide
      * @see Service#onStartCommand(Intent, int, int)
      */
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
@@ -111,7 +110,6 @@ public class DatafileService extends Service {
         stopSelf();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     public void getDatafile(String datafileUrl, DatafileLoader datafileLoader, DatafileLoadedListener loadedListener) {
         datafileLoader.getDatafile(datafileUrl, loadedListener);
     }

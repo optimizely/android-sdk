@@ -54,7 +54,6 @@ public class EventSQLiteOpenHelperTest {
         context.deleteDatabase(String.format(EventSQLiteOpenHelper.DB_NAME, "1"));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onCreateMakesTables() {
         EventSQLiteOpenHelper eventSQLiteOpenHelper =

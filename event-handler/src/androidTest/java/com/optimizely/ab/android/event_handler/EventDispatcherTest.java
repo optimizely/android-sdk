@@ -62,7 +62,6 @@ public class EventDispatcherTest {
     private Context context;
     private Client client;
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Before
     public void setup() {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();

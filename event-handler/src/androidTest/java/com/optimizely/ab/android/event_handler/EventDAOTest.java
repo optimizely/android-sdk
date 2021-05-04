@@ -49,7 +49,6 @@ public class EventDAOTest {
     private Logger logger;
     private Context context;
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Before
     public void setupEventDAO() {
         logger = mock(Logger.class);

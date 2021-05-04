@@ -57,7 +57,6 @@ import static org.mockito.Mockito.when;
 /**
  * Tests for {@link DatafileLoader}
  */
-@RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
 @RunWith(AndroidJUnit4.class)
 public class DatafileLoaderTest {
 

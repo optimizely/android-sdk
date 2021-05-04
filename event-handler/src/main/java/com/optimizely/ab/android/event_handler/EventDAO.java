@@ -60,7 +60,6 @@ class EventDAO {
      * @param logger where to log errors and warnings.
      * @return a new instance of EventDAO.
      */
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     static EventDAO getInstance(@NonNull Context context, @NonNull String projectId, @NonNull Logger logger) {
         EventSQLiteOpenHelper sqLiteOpenHelper = new EventSQLiteOpenHelper(context, projectId, null, EventSQLiteOpenHelper.VERSION, LoggerFactory.getLogger(EventSQLiteOpenHelper.class));
         return new EventDAO(sqLiteOpenHelper, logger);
