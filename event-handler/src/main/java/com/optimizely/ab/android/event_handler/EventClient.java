@@ -74,11 +74,11 @@ class EventClient {
                         return Boolean.FALSE;
                     }
                 } catch (IOException e) {
-                    logger.error("Unable to send event: " + event, e);
+                    logger.error("Unable to send event: {}", event, e);
                     return Boolean.FALSE;
                 }
                 catch (Exception e) {
-                    logger.error("Unable to send event: " + event, e);
+                    logger.error("Unable to send event: {}", event, e);
                     return Boolean.FALSE;
                 }
                 finally {
