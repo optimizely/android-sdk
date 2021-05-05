@@ -24,6 +24,9 @@ android:
     - sys-img-armeabi-v7a-addon-google_apis-google-$ANDROID_API
     - sys-img-armeabi-v7a-addon-google_apis-google-$EMULATOR_API
     - sys-img-armeabi-v7a-android-$EMULATOR_API
+    - sys-img-arme64-v8a-addon-google_apis-google-$ANDROID_API
+    - sys-img-arme64-v8a-addon-google_apis-google-$EMULATOR_API
+    - sys-img-arme64-v8a-android-$EMULATOR_API
   licenses:
     - android-sdk-preview-license-.+
     - android-sdk-license-.+
