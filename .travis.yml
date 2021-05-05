@@ -7,11 +7,10 @@ env:
  - ANDROID_BUILD_TOOLS=29.0.3 # should match gradle
  - ADB_INSTALL_TIMEOUT=5 # minutes
  - ANDROID_API=29 # api is same as gradle file
- - ANDROID_ABI=armeabi-v7a
  matrix:
- - EMULATOR_API=19  # API-16 build fails in travis
- - EMULATOR_API=21
- - EMULATOR_API=29
+ - EMULATOR_API=19 ANDROID_ABI=armeabi-v7a  # API-16 build fails in travis
+ - EMULATOR_API=21 ANDROID_ABI=armeabi-v7a
+ - EMULATOR_API=29 ANDROID_ABI=arm64-v8a
 android:
   components:
     - tools
@@ -42,7 +41,7 @@ before_install:
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
-  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI || sdkmanager --list
+  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI || { sdkmanager --list; exit 1; }
   - emulator -avd test -no-audio -no-window &
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
