@@ -18,7 +18,6 @@ package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
 import android.os.Build;
-import androidx.annotation.RequiresApi;
 
 import org.junit.Before;
 import org.junit.Test;

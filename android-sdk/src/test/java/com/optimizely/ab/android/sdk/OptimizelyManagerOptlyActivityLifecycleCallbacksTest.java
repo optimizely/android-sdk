@@ -18,7 +18,6 @@ package com.optimizely.ab.android.sdk;
 
 import android.app.Activity;
 import android.os.Build;
-import androidx.annotation.RequiresApi;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,13 +37,11 @@ public class OptimizelyManagerOptlyActivityLifecycleCallbacksTest {
     @Mock Activity activity;
     private OptimizelyManager.OptlyActivityLifecycleCallbacks optlyActivityLifecycleCallbacks;
 
-    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Before
     public void setup() {
         optlyActivityLifecycleCallbacks = new OptimizelyManager.OptlyActivityLifecycleCallbacks(optimizelyManager);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Test
     public void onActivityStopped() {
         optlyActivityLifecycleCallbacks.onActivityStopped(activity);

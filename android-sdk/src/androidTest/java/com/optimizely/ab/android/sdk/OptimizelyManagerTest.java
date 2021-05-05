@@ -23,8 +23,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
@@ -396,7 +396,7 @@ public class OptimizelyManagerTest {
     }
 
     @Test
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void injectOptimizelyNullListener() {
         Context context = mock(Context.class);
         PackageManager packageManager = mock(PackageManager.class);
