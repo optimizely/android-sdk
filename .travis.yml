@@ -37,11 +37,11 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 before_install:
-    #- yes | sdkmanager "platforms;android-$ANDROID_API"
+    - yes | sdkmanager "platforms;android-$ANDROID_API"
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
-  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI || { sdkmanager --list; exit 1; }
+  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI
   - emulator -avd test -no-audio -no-window &
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
