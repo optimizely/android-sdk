@@ -298,7 +298,6 @@ public class ServiceScheduler {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private static boolean isScheduled(Context context, Integer jobId) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);

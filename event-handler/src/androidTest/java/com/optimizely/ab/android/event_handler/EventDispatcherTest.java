@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -81,6 +82,7 @@ public class EventDispatcherTest {
     }
 
     @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void handleIntentSchedulesWhenEventsLeftInStorage() throws IOException {
         Event event1 = new Event(new URL("http://www.foo1.com"), "");
         Event event2 = new Event(new URL("http://www.foo2.com"), "");
@@ -107,6 +109,7 @@ public class EventDispatcherTest {
     }
 
     @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void handleIntentSchedulesWhenNewEventFailsToSend() throws IOException {
         Event event = new Event(new URL("http://www.foo.com"), "");
 
@@ -126,6 +129,7 @@ public class EventDispatcherTest {
     }
 
     @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void unschedulesServiceWhenNoEventsToFlush() {
         Intent mockIntent = mock(Intent.class);
         eventDispatcher.dispatch(mockIntent);
@@ -134,6 +138,7 @@ public class EventDispatcherTest {
     }
 
     @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void handleMalformedURL() throws MalformedURLException {
         String url= "foo";
 
