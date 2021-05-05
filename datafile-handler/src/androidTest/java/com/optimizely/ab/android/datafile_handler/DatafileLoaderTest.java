@@ -21,6 +21,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
@@ -146,6 +147,8 @@ public class DatafileLoaderTest {
     }
 
     @Test
+    // flacky with lower API
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void warningsAreLogged() throws IOException {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         Cache cache = mock(Cache.class);
@@ -171,6 +174,8 @@ public class DatafileLoaderTest {
     }
 
     @Test
+    // flacky with lower API
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void debugLogged() throws IOException {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         Cache cache = mock(Cache.class);
