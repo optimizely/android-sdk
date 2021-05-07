@@ -10,7 +10,7 @@ env:
  matrix:
  - EMULATOR_API=19 ANDROID_ABI=armeabi-v7a  # API-16 build fails in travis
  - EMULATOR_API=21 ANDROID_ABI=armeabi-v7a
- - EMULATOR_API=25 ANDROID_ABI=armeabi-v7a
+ - EMULATOR_API=25 ANDROID_ABI=google_apis/armeabi-v7a
 android:
   components:
     - tools
