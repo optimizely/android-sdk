@@ -24,7 +24,7 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 before_install:
-  - touch $HOME/.android/repositories.cfg
+  - mkdir -p $HOME/.android && touch $HOME/.android/repositories.cfg
   - yes | sdkmanager "platforms;android-$ANDROID_API"
   - yes | sdkmanager "build-tools;$ANDROID_BUILD_TOOLS"
 before_script:
