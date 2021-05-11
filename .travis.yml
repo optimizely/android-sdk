@@ -14,7 +14,10 @@ env:
 android:
   components:
     - tools
-    - platform-tools
+    - platform-tools-$ANDROID_BUILD_TOOLS
+    - build-tools-$ANDROID_BUILD_TOOLS
+    - android-$ANDROID_API
+    - android-$EMULATOR_API
 jdk:
   - oraclejdk8
 before_cache:
