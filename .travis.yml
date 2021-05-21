@@ -19,7 +19,7 @@ android:
 
 before_install:
   - touch $HOME/.android/repositories.cfg
-  - yes | sdkmanager "platforms;android-29"
+  - yes | sdkmanager "platforms;android-$EMULATOR_API"
   - yes | sdkmanager "build-tools;29.0.3"
 
 before_script:
