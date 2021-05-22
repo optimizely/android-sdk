@@ -20,7 +20,7 @@ android:
 before_install:
   - touch $HOME/.android/repositories.cfg
   - yes | sdkmanager "platforms;android-$EMULATOR_API"
-  - yes | sdkmanager "system-images;android-$EMULATOR_API;default;armeabi-v7a
+  - yes | sdkmanager "system-images;android-$EMULATOR_API;default;armeabi-v7a"
   - yes | sdkmanager "build-tools;29.0.3"
 
 before_script:
