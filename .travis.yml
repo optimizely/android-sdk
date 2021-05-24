@@ -1,5 +1,3 @@
-# travis ref: https://docs.travis-ci.com/user/languages/android
-
 language: android
 # you MUST mention trusty https://docs.travis-ci.com/user/languages/android/
 dist: trusty
@@ -7,6 +5,11 @@ sudo: required
 jdk: oraclejdk8
 
 env:
+  global:
+  # These parameters should match the parameters for build tools and sdk versions in the gradle file
+  - ANDROID_BUILD_TOOLS=29.0.3 # should match gradle
+  - ADB_INSTALL_TIMEOUT=5 # minutes
+  - ANDROID_API=29 # api is same as gradle file
   matrix:
   # API 26+ supports x86 (ANDROID_ABI=x86) emulators only, which are not supported yet in travis VMs
   # so API 25 is the highest level we can run with emulator for now
@@ -18,11 +21,8 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-29.0.3
-    - android-29
-    - sys-img-armeabi-v7a-android-19
-    - sys-img-armeabi-v7a-android-21
-    - sys-img-armeabi-v7a-android-25
+    - build-tools-$ANDROID_BUILD_TOOLS
+    - android-$ANDROID_API
     - addon-google_apis-google-19 # google play services
     - sys-img-armeabi-v7a-addon-google_apis-google-$ANDROID_API
     - sys-img-armeabi-v7a-addon-google_apis-google-$EMULATOR_API
@@ -30,7 +30,6 @@ android:
 
 before_install:
   - touch $HOME/.android/repositories.cfg
-  - export ANDROID_SDK_ROOT=$ANDROID_HOME
   # needed to install "avdmanager"
   #- echo yes | sdkmanager tools
   #- echo yes | sdkmanager "system-images;android-$EMULATOR_API;$EMULATOR_TAG;$ANDROID_ABI"
@@ -40,7 +39,7 @@ before_script:
   - echo $TRAVIS_TAG
   #- echo no | avdmanager --verbose create avd --force --name "emulator-$EMULATOR_API" --package "system-images;android-$EMULATOR_API;$EMULATOR_TAG;$ANDROID_ABI" --tag "$EMULATOR_TAG"
   #- $ANDROID_HOME/emulator/emulator -avd "emulator-$EMULATOR_API" -no-audio -no-window &
-  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi armeabi-v7a
+  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI
   - emulator -avd test -no-audio -no-window &
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
