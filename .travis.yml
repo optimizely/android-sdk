@@ -6,9 +6,11 @@ jdk: oraclejdk8
 
 env:
   matrix:
-  - EMULATOR_API=19 EMULATOR_TAG=google_apis ANDROID_ABI=x86    # API-16 build fails in travis
-  - EMULATOR_API=21 EMULATOR_TAG=google_apis ANDROID_ABI=x86
-  - EMULATOR_API=29 EMULATOR_TAG=google_apis ANDROID_ABI=x86
+  # API 26+ supports x86 (ANDROID_ABI=x86) emulators only, which are not supported yet in travis VMs
+  # so API 25 is the highest level we can run with emulator for now
+  - EMULATOR_API=19 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a    # API-16 build fails in travis
+  - EMULATOR_API=21 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a
+  - EMULATOR_API=25 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a
   
 android:
   components:
@@ -27,7 +29,7 @@ before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
   - echo no | avdmanager --verbose create avd --force --name "emulator-$EMULATOR_API" --package "system-images;android-$EMULATOR_API;$EMULATOR_TAG;$ANDROID_ABI" --tag "$EMULATOR_TAG"
-  - emulator -avd test -no-audio -no-window &
+  - $ANDROID_HOME/emulator/emulator -avd "emulator-$EMULATOR_API" -no-audio -no-window &
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
 script:
