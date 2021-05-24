@@ -1,6 +1,8 @@
 # travis ref: https://docs.travis-ci.com/user/languages/android
 
 language: android
+# you MUST mention trusty https://docs.travis-ci.com/user/languages/android/
+dist: trusty
 sudo: required
 jdk: oraclejdk8
 
@@ -10,7 +12,7 @@ env:
   # so API 25 is the highest level we can run with emulator for now
   - EMULATOR_API=19 EMULATOR_TAG=default ANDROID_ABI=armeabi-v7a    # API-16 build fails in travis
   - EMULATOR_API=21 EMULATOR_TAG=default ANDROID_ABI=armeabi-v7a
-  - EMULATOR_API=25 EMULATOR_TAG=default ANDROID_ABI=armeabi-v7a
+  - EMULATOR_API=25 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a
   
 android:
   components:
