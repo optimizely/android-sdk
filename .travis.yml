@@ -6,9 +6,9 @@ jdk: oraclejdk8
 
 env:
   matrix:
-  - EMULATOR_API=19 ANDROID_ABI=armeabi-v7a    # API-16 build fails in travis
-  - EMULATOR_API=21 ANDROID_ABI=armeabi-v7a
-  - EMULATOR_API=29 ANDROID_ABI=x86
+  - EMULATOR_API=19 EMULATOR_TAG=google_apis ANDROID_ABI=x86    # API-16 build fails in travis
+  - EMULATOR_API=21 EMULATOR_TAG=google_apis ANDROID_ABI=x86
+  - EMULATOR_API=29 EMULATOR_TAG=google_apis ANDROID_ABI=x86
   
 android:
   components:
@@ -19,14 +19,14 @@ android:
 
 before_install:
   - touch $HOME/.android/repositories.cfg
-  #- yes | sdkmanager "platforms;android-$EMULATOR_API"
-  - yes | sdkmanager "system-images;android-$EMULATOR_API;google-apis;x64"
-  #- yes | sdkmanager "build-tools;29.0.3"
+  # needed to install "avdmanager"
+  - echo yes | sdkmanager tools
+  - echo yes | sdkmanager "system-images;android-$EMULATOR_API;$EMULATOR_TAG;$ANDROID_ABI"
 
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
-  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI || sdkmanager --list
+  - echo no | avdmanager --verbose create avd --force --name "emulator-$EMULATOR_API" --package "system-images;android-$EMULATOR_API;$EMULATOR_TAG;$ANDROID_ABI" --tag "$EMULATOR_TAG"
   - emulator -avd test -no-audio -no-window &
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
