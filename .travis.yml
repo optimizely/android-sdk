@@ -23,6 +23,7 @@ android:
 
 before_install:
   - touch $HOME/.android/repositories.cfg
+  - export ANDROID_SDK_ROOT=$ANDROID_HOME
   # needed to install "avdmanager"
   - echo yes | sdkmanager tools
   - echo yes | sdkmanager "system-images;android-$EMULATOR_API;$EMULATOR_TAG;$ANDROID_ABI"
