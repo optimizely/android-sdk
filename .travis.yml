@@ -1,7 +1,6 @@
 language: android
 # you MUST mention trusty https://docs.travis-ci.com/user/languages/android/
 dist: trusty
-sudo: required
 jdk: oraclejdk8
 
 env:
@@ -12,9 +11,9 @@ env:
   matrix:
   # API 26+ supports "x86" (ANDROID_ABI=x86) emulators only, which are not supported yet in travis VMs
   # so API 24 is the highest level we can run with emulator for now
-  - EMULATOR_API=19 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a    # API-16 build fails in travis
-  - EMULATOR_API=21 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a
-  - EMULATOR_API=24 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a
+  - EMULATOR_API=19 ANDROID_TAG=google_apis ANDROID_ABI=armeabi-v7a    # API-16 build fails in travis
+  - EMULATOR_API=21 ANDROID_TAG=google_apis ANDROID_ABI=armeabi-v7a
+  - EMULATOR_API=24 ANDROID_TAG=google_apis ANDROID_ABI=armeabi-v7a
   
 android:
   components:
@@ -23,6 +22,17 @@ android:
     - build-tools-$ANDROID_BUILD_TOOLS
     - android-$ANDROID_API
     - android-$EMULATOR_API
+    # For Google APIs
+    - addon-google_apis-google-$ANDROID_API
+    - addon-google_apis-google-$EMULATOR_API
+    # Google Play Services
+    - extra-google-google_play_services
+    # Support library
+    - extra-android-support
+    # Latest artifacts in local repository
+    - extra-google-m2repository
+    - extra-android-m2repository
+    # Emulator
     - sys-img-$ANDROID_ABI-android-$EMULATOR_API
 
 before_install:
@@ -31,7 +41,7 @@ before_install:
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
-  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI
+  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI --tag $ANDROID_TAG
   - emulator -avd test -no-window &
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
