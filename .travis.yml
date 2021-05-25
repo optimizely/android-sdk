@@ -15,7 +15,7 @@ env:
   # so API 25 is the highest level we can run with emulator for now
   - EMULATOR_API=19 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a    # API-16 build fails in travis
   - EMULATOR_API=21 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a
-  - EMULATOR_API=25 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a
+  - EMULATOR_API=24 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a
   
 android:
   components:
