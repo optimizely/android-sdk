@@ -48,3 +48,58 @@ before_script:
 script:
   - ./gradlew cleanAllModules
   - ./gradlew testAllModulesTravis
+
+# Integration tests need to run first to reset the PR build status to pending
+stages:
+  - 'Source Clear'
+  - 'Lint markdown files'
+  - 'Integration tests'
+  - 'Test'
+  - 'Publish'
+
+jobs:
+  include:
+    - stage: 'Lint markdown files'
+      os: linux
+      language: generic
+      install: gem install awesome_bot
+      before_script: skip
+      script:
+        - find . -type f -name '*.md' -exec awesome_bot {} \;
+      notifications:
+        email: false
+
+    - stage: 'Integration tests'
+      env:
+        - SDK=android
+        - BUILD_NUMBER=${TRAVIS_JOB_NUMBER/.}
+        - SDK_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
+        - TESTAPP_BRANCH=master
+      cache: false
+      language: minimal
+      before_install: skip
+      install: skip
+      before_script:
+        - mkdir $HOME/travisci-tools && pushd $HOME/travisci-tools && git init && git pull https://$CI_USER_TOKEN@github.com/optimizely/travisci-tools.git && popd
+      script:
+        - $HOME/travisci-tools/trigger-script-with-status-update.sh
+      after_success: travis_terminate 0
+
+    - stage: 'Source Clear'
+      if: type = cron
+      addons:
+        srcclr: true
+      before_install: skip
+      install: skip
+      before_script: skip
+      script: skip
+      after_script: skip
+      after_success: skip
+
+    - stage: 'Publish'
+      if: tag IS present
+      script:
+        - ./gradlew ship
+      after_script: skip
+      after_success: skip
+      
