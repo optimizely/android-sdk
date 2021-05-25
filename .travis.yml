@@ -24,9 +24,6 @@ android:
     - build-tools-$ANDROID_BUILD_TOOLS
     - android-$ANDROID_API
     - android-$EMULATOR_API
-    - addon-google_apis-google-19 # google play services
-    - sys-img-armeabi-v7a-addon-google_apis-google-$ANDROID_API
-    - sys-img-armeabi-v7a-addon-google_apis-google-$EMULATOR_API
     - sys-img-armeabi-v7a-android-$EMULATOR_API
 
 before_install:
@@ -38,10 +35,8 @@ before_install:
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
-  #- echo no | avdmanager --verbose create avd --force --name "emulator-$EMULATOR_API" --package "system-images;android-$EMULATOR_API;$EMULATOR_TAG;$ANDROID_ABI" --tag "$EMULATOR_TAG"
-  #- $ANDROID_HOME/emulator/emulator -avd "emulator-$EMULATOR_API" -no-audio -no-window &
   - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI
-  - emulator -avd test -no-audio -no-window &
+  - emulator -avd test -no-window &
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
 script:
