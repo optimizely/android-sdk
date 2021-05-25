@@ -36,7 +36,7 @@ android:
     - sys-img-$ANDROID_ABI-android-$EMULATOR_API
 
 before_install:
-  - touch $HOME/.android/repositories.cfg
+  #- touch $HOME/.android/repositories.cfg
 
 before_script:
   - echo $TRAVIS_BRANCH
