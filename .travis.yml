@@ -6,13 +6,12 @@ jdk: oraclejdk8
 
 env:
   global:
-  # These parameters should match the parameters for build tools and sdk versions in the gradle file
-  - ANDROID_BUILD_TOOLS=29.0.3 # should match gradle
-  - ADB_INSTALL_TIMEOUT=5 # minutes
-  - ANDROID_API=29 # api is same as gradle file
+  - ANDROID_API=29              # api is same as gradle file
+  - ANDROID_BUILD_TOOLS=29.0.3  # should match gradle
+  - ADB_INSTALL_TIMEOUT=5       # minutes
   matrix:
-  # API 26+ supports x86 (ANDROID_ABI=x86) emulators only, which are not supported yet in travis VMs
-  # so API 25 is the highest level we can run with emulator for now
+  # API 26+ supports "x86" (ANDROID_ABI=x86) emulators only, which are not supported yet in travis VMs
+  # so API 24 is the highest level we can run with emulator for now
   - EMULATOR_API=19 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a    # API-16 build fails in travis
   - EMULATOR_API=21 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a
   - EMULATOR_API=24 EMULATOR_TAG=google_apis ANDROID_ABI=armeabi-v7a
@@ -24,13 +23,10 @@ android:
     - build-tools-$ANDROID_BUILD_TOOLS
     - android-$ANDROID_API
     - android-$EMULATOR_API
-    - sys-img-armeabi-v7a-android-$EMULATOR_API
+    - sys-img-$ANDROID_ABI-android-$EMULATOR_API
 
 before_install:
   - touch $HOME/.android/repositories.cfg
-  # needed to install "avdmanager"
-  #- echo yes | sdkmanager tools
-  #- echo yes | sdkmanager "system-images;android-$EMULATOR_API;$EMULATOR_TAG;$ANDROID_ABI"
 
 before_script:
   - echo $TRAVIS_BRANCH
