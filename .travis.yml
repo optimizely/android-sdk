@@ -41,7 +41,7 @@ before_install:
 before_script:
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
-  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI --tag $ANDROID_TAG
+  - echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $ANDROID_ABI
   - emulator -avd test -no-window &
   - scripts/android-wait-for-emulator.sh
   - adb shell input keyevent 82 &
