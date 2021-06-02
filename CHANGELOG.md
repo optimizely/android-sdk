@@ -1,5 +1,12 @@
 # Optimizely Android X SDK Changelog
 
+## 3.10.2
+June 2nd, 2021
+
+### Bug Fixes
+* Android devices with API-19 and lower are set to use TLS1.2 for both datafile download and event upload ([373](https://github.com/optimizely/android-sdk/pull/373)).
+
+
 ## 3.10.1
 March 8th, 2021
 
