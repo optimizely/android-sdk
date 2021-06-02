@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -18,7 +18,6 @@ package com.optimizely.ab.android.sdk;
 
 import android.app.Activity;
 import android.os.Build;
-import androidx.annotation.RequiresApi;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,13 +37,11 @@ public class OptimizelyManagerOptlyActivityLifecycleCallbacksTest {
     @Mock Activity activity;
     private OptimizelyManager.OptlyActivityLifecycleCallbacks optlyActivityLifecycleCallbacks;
 
-    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Before
     public void setup() {
         optlyActivityLifecycleCallbacks = new OptimizelyManager.OptlyActivityLifecycleCallbacks(optimizelyManager);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Test
     public void onActivityStopped() {
         optlyActivityLifecycleCallbacks.onActivityStopped(activity);

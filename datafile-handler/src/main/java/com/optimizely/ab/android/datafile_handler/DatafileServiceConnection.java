@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017, Optimizely, Inc. and contributors                        *
+ * Copyright 2017,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -62,7 +62,6 @@ public class DatafileServiceConnection implements ServiceConnection {
      *
      * @see ServiceConnection#onServiceConnected(ComponentName, IBinder)
      */
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onServiceConnected(ComponentName className,
                                    IBinder service) {

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -60,7 +60,6 @@ class EventDAO {
      * @param logger where to log errors and warnings.
      * @return a new instance of EventDAO.
      */
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     static EventDAO getInstance(@NonNull Context context, @NonNull String projectId, @NonNull Logger logger) {
         EventSQLiteOpenHelper sqLiteOpenHelper = new EventSQLiteOpenHelper(context, projectId, null, EventSQLiteOpenHelper.VERSION, LoggerFactory.getLogger(EventSQLiteOpenHelper.class));
         return new EventDAO(sqLiteOpenHelper, logger);

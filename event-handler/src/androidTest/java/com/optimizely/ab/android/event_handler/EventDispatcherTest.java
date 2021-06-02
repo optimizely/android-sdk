@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -62,7 +63,6 @@ public class EventDispatcherTest {
     private Context context;
     private Client client;
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Before
     public void setup() {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -82,6 +82,7 @@ public class EventDispatcherTest {
     }
 
     @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void handleIntentSchedulesWhenEventsLeftInStorage() throws IOException {
         Event event1 = new Event(new URL("http://www.foo1.com"), "");
         Event event2 = new Event(new URL("http://www.foo2.com"), "");
@@ -108,6 +109,7 @@ public class EventDispatcherTest {
     }
 
     @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void handleIntentSchedulesWhenNewEventFailsToSend() throws IOException {
         Event event = new Event(new URL("http://www.foo.com"), "");
 
@@ -127,6 +129,7 @@ public class EventDispatcherTest {
     }
 
     @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void unschedulesServiceWhenNoEventsToFlush() {
         Intent mockIntent = mock(Intent.class);
         eventDispatcher.dispatch(mockIntent);
@@ -135,6 +138,7 @@ public class EventDispatcherTest {
     }
 
     @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void handleMalformedURL() throws MalformedURLException {
         String url= "foo";
 

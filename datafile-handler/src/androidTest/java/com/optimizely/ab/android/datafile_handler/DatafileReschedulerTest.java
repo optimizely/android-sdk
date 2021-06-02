@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -81,7 +81,6 @@ public class DatafileReschedulerTest {
         verify(logger).info("Received intent with action {}", Intent.ACTION_BOOT_COMPLETED);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     @Test
     public void receivedActionMyPackageReplaced() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();

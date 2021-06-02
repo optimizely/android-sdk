@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -49,7 +49,6 @@ public class EventDAOTest {
     private Logger logger;
     private Context context;
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Before
     public void setupEventDAO() {
         logger = mock(Logger.class);

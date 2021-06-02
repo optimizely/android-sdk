@@ -80,7 +80,6 @@ public class DatafileLoader {
         storage.saveLong(url + datafileDownloadTime, time);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     public void getDatafile(@NonNull String datafileUrl, @Nullable DatafileLoadedListener datafileLoadedListener) {
         if (!allowDownload(datafileUrl, datafileLoadedListener)) {
             return;

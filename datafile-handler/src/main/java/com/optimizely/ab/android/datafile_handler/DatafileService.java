@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2017, Optimizely, Inc. and contributors                   *
+ * Copyright 2016-2017,2021, Optimizely, Inc. and contributors              *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -54,7 +54,6 @@ public class DatafileService extends Service {
      * @hide
      * @see Service#onStartCommand(Intent, int, int)
      */
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
@@ -111,7 +110,6 @@ public class DatafileService extends Service {
         stopSelf();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     public void getDatafile(String datafileUrl, DatafileLoader datafileLoader, DatafileLoadedListener loadedListener) {
         datafileLoader.getDatafile(datafileUrl, loadedListener);
     }

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017, Optimizely, Inc. and contributors                        *
+ * Copyright 2017,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -34,7 +34,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class OptimizelyClientEngineTest {
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR2)
     @Test
     public void testGetClientEngineFromContextAndroidTV() {
         Context context = mock(Context.class);
@@ -44,7 +43,6 @@ public class OptimizelyClientEngineTest {
         assertEquals(EventBatch.ClientEngine.ANDROID_TV_SDK, OptimizelyClientEngine.getClientEngineFromContext(context));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR2)
     @Test
     public void testGetClientEngineFromContextAndroid() {
         Context context = mock(Context.class);

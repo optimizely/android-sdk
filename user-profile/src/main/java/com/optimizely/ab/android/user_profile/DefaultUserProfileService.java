@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017, Optimizely, Inc. and contributors                        *
+ * Copyright 2017,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -79,7 +79,6 @@ public class DefaultUserProfileService implements UserProfileService {
         void onStartComplete(UserProfileService userProfileService);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void startInBackground(final StartCallback callback) {
                 final DefaultUserProfileService userProfileService = this;
 

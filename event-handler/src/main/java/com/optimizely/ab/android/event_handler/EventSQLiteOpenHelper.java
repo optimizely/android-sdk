@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -48,7 +48,6 @@ class EventSQLiteOpenHelper extends SQLiteOpenHelper {
     @NonNull private final String projectId;
     @NonNull private final Context context;
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     EventSQLiteOpenHelper(@NonNull Context context, @NonNull String projectId, @Nullable SQLiteDatabase.CursorFactory factory, int version, @NonNull Logger logger) {
         super(context, String.format(DB_NAME, projectId), factory, version);
         this.logger = logger;

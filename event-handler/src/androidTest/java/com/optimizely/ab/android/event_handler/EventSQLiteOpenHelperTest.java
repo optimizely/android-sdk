@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -54,7 +54,6 @@ public class EventSQLiteOpenHelperTest {
         context.deleteDatabase(String.format(EventSQLiteOpenHelper.DB_NAME, "1"));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onCreateMakesTables() {
         EventSQLiteOpenHelper eventSQLiteOpenHelper =

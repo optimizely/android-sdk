@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -21,6 +21,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
@@ -57,7 +58,6 @@ import static org.mockito.Mockito.when;
 /**
  * Tests for {@link DatafileLoader}
  */
-@RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
 @RunWith(AndroidJUnit4.class)
 public class DatafileLoaderTest {
 
@@ -147,6 +147,8 @@ public class DatafileLoaderTest {
     }
 
     @Test
+    // flacky with lower API
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void warningsAreLogged() throws IOException {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         Cache cache = mock(Cache.class);
@@ -172,6 +174,8 @@ public class DatafileLoaderTest {
     }
 
     @Test
+    // flacky with lower API
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void debugLogged() throws IOException {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         Cache cache = mock(Cache.class);

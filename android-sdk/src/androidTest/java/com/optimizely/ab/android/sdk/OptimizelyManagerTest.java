@@ -23,8 +23,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
@@ -356,7 +356,6 @@ public class OptimizelyManagerTest {
         assertNull(optimizelyManager.getOptimizelyStartListener());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void injectOptimizely() {
         Context context = mock(Context.class);
@@ -377,7 +376,6 @@ public class OptimizelyManagerTest {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void injectOptimizelyWithDatafileLisener() {
         Context context = mock(Context.class);
@@ -398,7 +396,7 @@ public class OptimizelyManagerTest {
     }
 
     @Test
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void injectOptimizelyNullListener() {
         Context context = mock(Context.class);
         PackageManager packageManager = mock(PackageManager.class);
@@ -442,7 +440,6 @@ public class OptimizelyManagerTest {
         assertEquals(optimizelyManager.getDatafileConfig().toJSONString(), intent2.getStringExtra(DatafileService.EXTRA_DATAFILE_CONFIG));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void injectOptimizelyHandlesInvalidDatafile() {
         Context context = mock(Context.class);
@@ -472,7 +469,6 @@ public class OptimizelyManagerTest {
         assertFalse(optimizelyManager.getOptimizely().isValid());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void injectOptimizelyDoesNotDuplicateCallback() {
         Context context = mock(Context.class);

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -82,7 +82,6 @@ public class EventReschedulerTest {
         verify(logger).info("Rescheduling event flushing if necessary");
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR1)
     @Test
     public void onReceiveValidPackageReplaced() {
         when(intent.getAction()).thenReturn(Intent.ACTION_MY_PACKAGE_REPLACED);

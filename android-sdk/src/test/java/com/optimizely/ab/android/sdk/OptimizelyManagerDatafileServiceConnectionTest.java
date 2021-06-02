@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
+ * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -18,7 +18,6 @@ package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
 import android.os.Build;
-import androidx.annotation.RequiresApi;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +54,6 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
         datafileServiceConnection = new DatafileServiceConnection(optimizelyManager.getDatafileConfig(), context, optimizelyManager.getDatafileLoadedListener(context,null));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnected() {
         DatafileService.LocalBinder binder = mock(DatafileService.LocalBinder.class);
@@ -72,7 +70,6 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
         verify(service).getDatafile(eq(sameString), any(DatafileLoader.class), any(DatafileLoadedListener.class));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void onServiceConnectedNullServiceFromBinder() {
         DatafileService.LocalBinder binder = mock(DatafileService.LocalBinder.class);
