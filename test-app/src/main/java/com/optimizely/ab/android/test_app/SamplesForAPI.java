@@ -25,6 +25,15 @@ import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.JsonParseException;
+import com.optimizely.ab.notification.UpdateConfigNotification;
+import com.optimizely.ab.optimizelyconfig.OptimizelyAttribute;
+import com.optimizely.ab.optimizelyconfig.OptimizelyAudience;
+import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
+import com.optimizely.ab.optimizelyconfig.OptimizelyEvent;
+import com.optimizely.ab.optimizelyconfig.OptimizelyExperiment;
+import com.optimizely.ab.optimizelyconfig.OptimizelyFeature;
+import com.optimizely.ab.optimizelyconfig.OptimizelyVariable;
+import com.optimizely.ab.optimizelyconfig.OptimizelyVariation;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecision;
 import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
@@ -175,6 +184,78 @@ public class SamplesForAPI {
             Variation variation2 = client.activate("<Experiment_Key>", "<User_ID>");
         });
 
+    }
+
+    static public void samplesForOptimizelyConfig(Context context) {
+
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("FCnSegiEkRry9rhVMroit4")
+                .build(context);
+        optimizelyManager.initialize(context, R.raw.datafile, optimizelyClient -> {
+
+            OptimizelyConfig config = optimizelyClient.getOptimizelyConfig();
+
+            System.out.println("[OptimizelyConfig] revision = " + config.getRevision());
+            System.out.println("[OptimizelyConfig] sdkKey = " + config.getSdkKey());
+            System.out.println("[OptimizelyConfig] environmentKey = " + config.getEnvironmentKey());
+
+            System.out.println("[OptimizelyConfig] attributes:");
+            for (OptimizelyAttribute attribute: config.getAttributes()) {
+                System.out.println("[OptimizelyAttribute]  -- (id, key) = " + attribute.getId() + ", " + attribute.getKey());
+            }
+
+            System.out.println("[OptimizelyConfig] audiences:");
+            for (OptimizelyAudience audience: config.getAudiences()) {
+                System.out.println("[OptimizelyAudience]  -- (id, name, conditions) = " + audience.getId() + ", " +  audience.getName() + ", " + audience.getConditions());
+            }
+
+            System.out.println("[OptimizelyConfig] events:");
+            for (OptimizelyEvent event: config.getEvents()) {
+                System.out.println("[OptimizelyEvent]  -- (id, key, experimentIds) = " + event.getId() + ", "  + event.getKey() + ", "  + Arrays.toString(event.getExperimentIds().toArray()));
+            }
+
+            // all features
+            for (String flagKey: config.getFeaturesMap().keySet()) {
+                OptimizelyFeature flag = config.getFeaturesMap().get(flagKey);
+
+                for (OptimizelyExperiment experiment: flag.getExperimentRules()) {
+                    System.out.println("[OptimizelyExperiment]  -- Experiment Rule Key: " + experiment.getKey());
+                    System.out.println("[OptimizelyExperiment]  -- Experiment Audiences: " + experiment.getAudiences());
+
+                    Map<String, OptimizelyVariation> variationsMap = experiment.getVariationsMap();
+                    for (String variationKey: variationsMap.keySet()) {
+                        OptimizelyVariation variation = variationsMap.get(variationKey);
+                        System.out.println("[OptimizelyVariation]    -- variation = { key: " + variationKey + ", id: " + variation.getId() + ", featureEnabled: " + variation.getFeatureEnabled() + " }");
+                        // use variation data here...
+
+                        Map<String, OptimizelyVariable> optimizelyVariableMap = variation.getVariablesMap();
+                        for (String variableKey: optimizelyVariableMap.keySet()) {
+                            OptimizelyVariable variable = optimizelyVariableMap.get(variableKey);
+                            System.out.println("[OptimizelyVariable]      -- variable = key: " + variableKey + ", value: " + variable.getValue());
+                            // use variable data here...
+
+                        }
+                    }
+
+                }
+
+                for (OptimizelyExperiment delivery: flag.getDeliveryRules()) {
+                    System.out.println("[OptimizelyExperiment]  -- Delivery Rule Key: " + delivery.getKey());
+                    System.out.println("[OptimizelyExperiment]  -- Delivery Audiences: " + delivery.getAudiences());
+                }
+                Map<String, OptimizelyExperiment> experimentsMap = flag.getExperimentsMap();
+                // feature flag experiments
+                Set<String> experimentKeys = experimentsMap.keySet();
+
+                // use experiments and other feature flag data here...
+
+            }
+
+            // listen to OPTIMIZELY_CONFIG_UPDATE to get updated data
+            optimizelyClient.getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, handler -> {
+                OptimizelyConfig newConfig = optimizelyClient.getOptimizelyConfig();
+            });
+        });
     }
 
 }
