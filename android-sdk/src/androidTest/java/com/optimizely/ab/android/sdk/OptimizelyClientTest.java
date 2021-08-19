@@ -2034,6 +2034,11 @@ public class OptimizelyClientTest {
         assertNotNull(optimizelyConfig.getExperimentsMap());
         assertNotNull(optimizelyConfig.getFeaturesMap());
         assertNotNull(optimizelyConfig.getRevision());
+        assertNotNull(optimizelyConfig.getSdkKey());
+        assertNotNull(optimizelyConfig.getEnvironmentKey());
+        assertNotNull(optimizelyConfig.getAttributes());
+        assertNotNull(optimizelyConfig.getAudiences());
+        assertNotNull(optimizelyConfig.getEvents());
     }
 
     @Test
