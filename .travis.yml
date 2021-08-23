@@ -56,7 +56,8 @@ stages:
   - 'Integration tests'
   - 'Test'
   - 'Publish'
-
+  - 'Snapshot'
+  
 jobs:
   include:
     - stage: 'Lint markdown files'
@@ -103,3 +104,8 @@ jobs:
       after_script: skip
       after_success: skip
       
+    - stage: 'Snapshot'
+      if: env(SNAPSHOT) = true and type = api
+      script:
+        - TRAVIS_TAG=BB-SNAPSHOT ./gradlew ship
+      after_success: skip
