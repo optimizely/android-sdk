@@ -23,8 +23,10 @@ buildscript {
     if (version_name != null) {
         rootProject.ext.version_name = version_name
     } else {
-        rootProject.ext.version_name= 'debugVersion'
+        rootProject.ext.version_name = 'debugVersion'
     }
+    ext.is_release_version = !rootProject.ext.version_name.endsWith("SNAPSHOT")
+
     repositories {
         jcenter()
         google()
@@ -191,7 +193,9 @@ configure(publishedProjects) {
             }
             repositories {
                 maven {
-                    url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                    def releaseUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                    def snapshotUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+                    url = is_release_version ? releaseUrl : snapshotUrl
                     credentials {
                         username System.getenv('MAVEN_CENTRAL_USERNAME')
                         password System.getenv('MAVEN_CENTRAL_PASSWORD')
