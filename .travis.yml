@@ -4,18 +4,12 @@ dist: trusty
 jdk: oraclejdk8
 
 env:
-  global:
-  - ANDROID_API=29              # api is same as gradle file
-  - ANDROID_BUILD_TOOLS=29.0.3  # should match gradle
-  - ADB_INSTALL_TIMEOUT=5       # minutes
-  - ANDROID_TAG=google_apis
-  - ANDROID_ABI=armeabi-v7a
-  jobs:
   # API 26+ supports "x86" (ANDROID_ABI=x86) emulators only, which are not supported yet in travis VMs
   # so API 24 is the highest level we can run with emulator for now
-  - EMULATOR_API=19    # API-16 build fails in travis
-  - EMULATOR_API=21
-  - EMULATOR_API=24
+  # API-16 build fails in travis
+  - EMULATOR_API=19 ANDROID_ABI=armeabi-v7a ANDROID_API=29 ANDROID_BUILD_TOOLS=29.0.3
+  - EMULATOR_API=21 ANDROID_ABI=armeabi-v7a ANDROID_API=29 ANDROID_BUILD_TOOLS=29.0.3
+  - EMULATOR_API=24 ANDROID_ABI=armeabi-v7a ANDROID_API=29 ANDROID_BUILD_TOOLS=29.0.3
   
 android:
   components:
@@ -53,13 +47,17 @@ script:
 
 # Integration tests need to run first to reset the PR build status to pending
 stages:
-  - 'Source Clear'
-  - 'Lint markdown files'
-  - 'Integration tests'
-  - 'Test'
-  - 'Publish'
-  - 'Snapshot'
-  
+  - name: 'Source Clear'
+    if: type = cron
+  - name: 'Lint markdown files'
+  - name: 'Integration tests'
+  - name: 'Test'
+    if: env(SNAPSHOT) IS NOT present
+  - name: 'Publish'
+    if: tag IS present
+  - name: 'Snapshot'
+    if: env(SNAPSHOT) = true and type = api
+
 jobs:
   include:
     - stage: 'Lint markdown files'
@@ -89,7 +87,6 @@ jobs:
       after_success: travis_terminate 0
 
     - stage: 'Source Clear'
-      if: type = cron
       addons:
         srcclr: true
       before_install: skip
@@ -100,14 +97,17 @@ jobs:
       after_success: skip
 
     - stage: 'Publish'
-      if: tag IS present
       script:
         - ./gradlew ship
       after_script: skip
       after_success: skip
       
     - stage: 'Snapshot'
-      if: env(SNAPSHOT) = true and type = api
+      before_install:
+        # required to accept Android licenses before install
+        - yes | sdkmanager "platforms;android-29"
+      before_script: skip
       script:
         - TRAVIS_TAG=BB-SNAPSHOT ./gradlew ship
+      after_script: skip
       after_success: skip
