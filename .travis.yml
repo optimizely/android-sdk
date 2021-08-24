@@ -103,6 +103,8 @@ jobs:
       after_success: skip
       
     - stage: 'Snapshot'
+      before_install:
+        - yes | sdkmanager --licenses
       before_script: skip
       script:
         - TRAVIS_TAG=BB-SNAPSHOT ./gradlew ship
