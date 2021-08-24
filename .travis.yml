@@ -103,8 +103,6 @@ jobs:
       after_success: skip
       
     - stage: 'Snapshot'
-      before_install: skip
-      install: skip
       before_script: skip
       script:
         - TRAVIS_TAG=BB-SNAPSHOT ./gradlew ship
