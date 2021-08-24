@@ -104,7 +104,7 @@ jobs:
       
     - stage: 'Snapshot'
       before_install:
-        - yes | sdkmanager "platforms;android-$ANDROID_API"
+        - yes | sdkmanager "platforms;android-29"
       before_script: skip
       script:
         - TRAVIS_TAG=BB-SNAPSHOT ./gradlew ship
