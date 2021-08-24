@@ -52,7 +52,7 @@ stages:
   - name: 'Lint markdown files'
   - name: 'Integration tests'
   - name: 'Test'
-    if: env(SNAPSHOT) = false
+    if: env(SNAPSHOT) IS NOT present
   - name: 'Publish'
     if: tag IS present
   - name: 'Snapshot'
