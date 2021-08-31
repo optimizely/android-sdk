@@ -29,6 +29,7 @@ android {
         versionName version_name
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
+        // these rules will be merged to app's proguard rules
         consumerProguardFiles '../proguard-rules.txt'
     }
     testOptions {
@@ -37,7 +38,6 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             testCoverageEnabled true
