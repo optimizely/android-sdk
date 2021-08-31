@@ -50,10 +50,10 @@ dependencies {
     // implementation "com.optimizely.ab:android-sdk:1.0.0"
     implementation "androidx.appcompat:appcompat:1.2.0"
     implementation "com.google.android.material:material:1.2.1"
-    // EXAMPLE REPLACE noveogroup android-looger with slf4j-android logger
+    // EXAMPLE - replace noveogroup android-looger with slf4j-android logger
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-android
     //implementation "org.slf4j:slf4j-android:1.7.25"
-    // EXAMPLE REPLACE gson json parsing with jackson-databind json parsing.
+    // EXAMPLE - replace gson with jackson-databind json parser
     implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 
     // required by API-16

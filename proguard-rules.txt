@@ -59,6 +59,7 @@
 
 -optimizations !class/unboxing/enum
 
+-dontwarn com.google.gson.**
 -dontwarn com.optimizely.ab.config.parser.**
 
 # Gson (https://github.com/google/gson/blob/master/examples/android-proguard-example/proguard.cfg)
