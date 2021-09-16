@@ -1,5 +1,30 @@
 # Optimizely Android X SDK Changelog
 
+## 3.11.0
+September 16th, 2021
+
+This release updates the SDK to use the Optimizely Java SDK 3.9.0 which includes the following:
+
+### New Features:
+
+* Add new public properties to `OptimizelyConfig`. ([#379](https://github.com/optimizely/android-sdk/pull/379))
+	- sdkKey
+ 	- environmentKey
+	- attributes
+	- audiences
+	- events
+	- experimentRules and deliveryRules to `OptimizelyFeature`
+	- audiences to `OptimizelyExperiment`
+* For details, refer to our documentation page: [https://docs.developers.optimizely.com/full-stack/v4.0/docs/optimizelyconfig-android](https://docs.developers.optimizely.com/full-stack/v4.0/docs/optimizelyconfig-android).
+
+### Deprecated
+
+* `OptimizelyFeature.experimentsMap` of `OptimizelyConfig` is deprecated as of this release. Please use `OptimizelyFeature.experimentRules` and `OptimizelyFeature.deliveryRules`. ([#379](https://github.com/optimizely/android-sdk/pull/379))
+
+### Bug Fixes
+* Fix proguard rules for GSON to one recommended by the GSON repo. ([#383](https://github.com/optimizely/android-sdk/pull/383))
+
+
 ## 3.10.2
 June 2nd, 2021
 
@@ -40,7 +65,7 @@ The new `OptimizelyUserContext` class is instantiated with `createUserContext` a
 	- decideForKeys
 	- trackEvent
 
-Also related to java sdk release [here]https://github.com/optimizely/java-sdk/releases/tag/3.8.0).
+- Also related to java sdk release [3.8.0](https://github.com/optimizely/java-sdk/releases/tag/3.8.0).
 - For details, refer to our documentation page: [https://docs.developers.optimizely.com/full-stack/v4.0/docs/android-sdk](https://docs.developers.optimizely.com/full-stack/v4.0/docs/android-sdk).
 
 -  Remove erroneous error if project id and sdk key are null. [#358](https://github.com/optimizely/android-sdk/pull/358)
