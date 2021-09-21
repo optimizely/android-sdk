@@ -38,6 +38,7 @@ March 8th, 2021
 * Switch publish repository to MavenCentral (bintray/jcenter sunset).
 
 ### Bug Fixes
+* Fix app crashing when the rollout length is zero (see the Optimizely Java SDK release [3.8.1](https://github.com/optimizely/java-sdk/releases/tag/3.8.1) for details).
 * Remove isValid condition checking from CreateUserContext ([367](https://github.com/optimizely/android-sdk/pull/367)).
 
 
