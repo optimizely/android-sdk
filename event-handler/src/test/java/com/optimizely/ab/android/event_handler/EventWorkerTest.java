@@ -23,6 +23,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
@@ -36,6 +37,7 @@ import androidx.work.WorkerParameters;
 import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -57,10 +59,20 @@ import java.util.HashMap;
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class EventWorkerTest {
 
-    private EventWorker eventWorker = new EventWorker(mock(Context.class), PowerMockito.mock(WorkerParameters.class));
+    private WorkerParameters mockWorkParams = PowerMockito.mock(WorkerParameters.class);
+    private EventWorker eventWorker = new EventWorker(mock(Context.class), mockWorkParams);
 
     private String host = "http://www.foo.com";
-    private LogEvent emptyEvent = new LogEvent(LogEvent.RequestMethod.POST, host, new HashMap<String, String>(), new EventBatch());
+    private LogEvent smallEvent;
+    private String smallEventBody;
+
+    @Before
+    public void setup() {
+        EventBatch batch = new EventBatch();
+        batch.setAccountId("1234");
+        smallEvent = new LogEvent(LogEvent.RequestMethod.POST, host, new HashMap<String, String>(), batch);
+        smallEventBody = "{\"account_id\":\"1234\"}";
+    }
 
     @Test
     public void dataForEvent() {
@@ -69,9 +81,9 @@ public class EventWorkerTest {
         assertEquals(data1.getString("body"), "body-string");
         assertNull(data1.getByteArray("bodyArray"));
 
-        Data data2 = EventWorker.dataForEvent(emptyEvent);
+        Data data2 = EventWorker.dataForEvent(smallEvent);
         assertEquals(data2.getString("url"), host);
-        assertEquals(data2.getString("body"), "{}");
+        assertEquals(data2.getString("body"), smallEventBody);
         assertNull(data1.getByteArray("bodyArray"));
     }
 
@@ -91,7 +103,7 @@ public class EventWorkerTest {
         PowerMockito.mockStatic(EventHandlerUtils.class);
         when(EventHandlerUtils.compress(anyString())).thenReturn(bodyArray);
 
-        Data data = EventWorker.compressEvent(emptyEvent);
+        Data data = EventWorker.compressEvent(smallEvent);
         assertEquals(data.getString("url"), host);
         assertArrayEquals(data.getByteArray("bodyArray"), bodyArray);
         assertNull(data.getString("body"));
@@ -103,9 +115,9 @@ public class EventWorkerTest {
         PowerMockito.doThrow(new IOException()).when(EventHandlerUtils.class);
         EventHandlerUtils.compress(anyString());  // PowerMockito throws exception on this static method
 
-        Data data = EventWorker.compressEvent(emptyEvent);
+        Data data = EventWorker.compressEvent(smallEvent);
         assertEquals(data.getString("url"), host);
-        assertEquals(data.getString("body"), "{}");
+        assertEquals(data.getString("body"), smallEventBody);
         assertNull(data.getByteArray("bodyArray"));
     }
 
@@ -148,41 +160,56 @@ public class EventWorkerTest {
 
     @Test
     public void getEventBodyFromInputData() throws Exception {
-        String orgStr = "any-string";
-        Data data = EventWorker.dataForEvent(host, orgStr);
-        when(eventWorker.getInputData()).thenReturn(data);
-
-        String str = eventWorker.getEventBodyFromInputData();
-        assertEquals(str, orgStr);
+        Data data = EventWorker.dataForEvent(smallEvent);
+        String str = eventWorker.getEventBodyFromInputData(data);
+        assertEquals(str, smallEventBody);
     }
 
     @Test
     public void getEventBodyFromInputDataCompressed() {
-        String orgStr = "any-string";
-        Data data = EventWorker.dataForCompressedEvent(host, orgStr.getBytes());
-        when(eventWorker.getInputData()).thenReturn(data);
-
-        String str = eventWorker.getEventBodyFromInputData();
-        assertEquals(str, orgStr);
+        Data data = EventWorker.compressEvent(smallEvent);
+        String str = eventWorker.getEventBodyFromInputData(data);
+        assertEquals(str, smallEventBody);
     }
 
     @Test
     public void getEventBodyFromInputDataUncompressFailure() throws IOException {
+        Data data = EventWorker.compressEvent(smallEvent);
+
         PowerMockito.mockStatic(EventHandlerUtils.class);
         PowerMockito.doThrow(new IOException()).when(EventHandlerUtils.class);
         EventHandlerUtils.uncompress(any());  // PowerMockito throws exception on this static method
 
-        String orgStr = "any-string";
-        Data data = EventWorker.dataForCompressedEvent(host, orgStr.getBytes());
-        when(eventWorker.getInputData()).thenReturn(data);
-
-        String str = eventWorker.getEventBodyFromInputData();
+        String str = eventWorker.getEventBodyFromInputData(data);
         assertNull(str);
     }
 
     @Test
-    public void doWork() {
+    public void doWork() throws Exception {
+        eventWorker.eventDispatcher = mock(EventDispatcher.class);
 
+        Data data = EventWorker.dataForEvent(host, "any-data");
+        when(mockWorkParams.getInputData()).thenReturn(data);
+
+        eventWorker.doWork();
+
+        verify(eventWorker.eventDispatcher).dispatch(anyString(), anyString());
+    }
+
+    @Test
+    public void doWorkWithNoInputData() throws Exception {
+        eventWorker.eventDispatcher = mock(EventDispatcher.class);
+
+        Data data = EventWorker.compressEvent(smallEvent);
+        when(mockWorkParams.getInputData()).thenReturn(data);
+
+        PowerMockito.mockStatic(EventHandlerUtils.class);
+        PowerMockito.doThrow(new IOException()).when(EventHandlerUtils.class);
+        EventHandlerUtils.uncompress(any());  // PowerMockito throws exception on this static method
+
+        eventWorker.doWork();
+
+        verify(eventWorker.eventDispatcher).dispatch();
     }
 
 }

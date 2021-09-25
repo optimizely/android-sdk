@@ -34,7 +34,8 @@ import org.slf4j.LoggerFactory;
 public class EventWorker extends Worker {
     public static final String workerId = "EventWorker";
 
-    EventDispatcher eventDispatcher;
+    @VisibleForTesting
+    public EventDispatcher eventDispatcher;
 
     public EventWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -53,18 +54,23 @@ public class EventWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        String url = getInputData().getString("url");
-        String body = getEventBodyFromInputData();
+        Data inputData = getInputData();
+        String url = inputData.getString("url");
+        String body = getEventBodyFromInputData(inputData);
         boolean dispatched = true;
 
-        if (url != null && !url.isEmpty() && body != null && !body.isEmpty()) {
+        if (isEventValid(url, body)) {
             dispatched = eventDispatcher.dispatch(url, body);
-        }
-        else {
+        } else {
             dispatched = eventDispatcher.dispatch();
         }
 
         return dispatched ? Result.success() : Result.retry();
+    }
+
+    @VisibleForTesting
+    public boolean isEventValid(String url, String body) {
+        return url != null && !url.isEmpty() && body != null && !body.isEmpty();
     }
 
     public static Data getData(LogEvent event) {
@@ -118,9 +124,7 @@ public class EventWorker extends Worker {
 
     @VisibleForTesting
     @Nullable
-    public String getEventBodyFromInputData() {
-        Data inputData = getInputData();
-
+    public String getEventBodyFromInputData(Data inputData) {
         // check non-compressed data first
 
         String body = inputData.getString("body");
