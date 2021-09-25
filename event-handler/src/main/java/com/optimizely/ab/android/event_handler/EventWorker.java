@@ -18,6 +18,8 @@ package com.optimizely.ab.android.event_handler;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -46,21 +48,13 @@ public class EventWorker extends Worker {
                 new ServiceScheduler.PendingIntentFactory(context),
                 LoggerFactory.getLogger(ServiceScheduler.class));
         eventDispatcher = new EventDispatcher(context, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
-
-    }
-
-    public static Data getData(LogEvent event) {
-        return new Data.Builder()
-                .putString("url", event.getEndpointUrl())
-                .putString("body", event.getBody())
-                .build();
     }
 
     @NonNull
     @Override
     public Result doWork() {
         String url = getInputData().getString("url");
-        String body = getInputData().getString("body");
+        String body = getEventBodyFromInputData();
         boolean dispatched = true;
 
         if (url != null && !url.isEmpty() && body != null && !body.isEmpty()) {
@@ -72,4 +66,74 @@ public class EventWorker extends Worker {
 
         return dispatched ? Result.success() : Result.retry();
     }
+
+    public static Data getData(LogEvent event) {
+        int length = event.getBody().length();
+
+        // androidx.work.Data throws IllegalStateException if total data length is more than MAX_DATA_BYTES
+        // compress larger body and uncompress it before dispatching. The compress rate is very high because of repeated data (20KB -> 1KB, 45KB -> 1.5KB).
+
+        int maxSizeBeforeCompress = Data.MAX_DATA_BYTES - 1000;  // 1000 reserved for other meta data
+
+        if (length < maxSizeBeforeCompress) {
+            return dataForEvent(event);
+        } else {
+            return compressEvent(event);
+        }
+    }
+
+    @VisibleForTesting
+    public static Data compressEvent(LogEvent event) {
+        String url = event.getEndpointUrl();
+        String body = event.getBody();
+
+        try {
+            byte[] bodyArray = EventHandlerUtils.compress(body);
+            return dataForCompressedEvent(url, bodyArray);
+        } catch (Exception e) {
+            return dataForEvent(url, body);
+        }
+    }
+
+    @VisibleForTesting
+    public static Data dataForEvent(LogEvent event) {
+        return dataForEvent(event.getEndpointUrl(), event.getBody());
+    }
+
+    @VisibleForTesting
+    public static Data dataForEvent(String url, String body) {
+        return new Data.Builder()
+                .putString("url", url)
+                .putString("body", body)
+                .build();
+    }
+
+    @VisibleForTesting
+    public static Data dataForCompressedEvent(String url, byte[] bodyArray) {
+        return new Data.Builder()
+                .putString("url", url)
+                .putByteArray("bodyArray", bodyArray)
+                .build();
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public String getEventBodyFromInputData() {
+        Data inputData = getInputData();
+
+        // check non-compressed data first
+
+        String body = inputData.getString("body");
+        if (body != null) return body;
+
+        // check if data compressed
+
+        byte[] byteArray = inputData.getByteArray("bodyArray");
+        try {
+            return EventHandlerUtils.uncompress(byteArray);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }
