@@ -68,42 +68,30 @@ public class EventWorker extends Worker {
         return dispatched ? Result.success() : Result.retry();
     }
 
-    @VisibleForTesting
-    public boolean isEventValid(String url, String body) {
-        return url != null && !url.isEmpty() && body != null && !body.isEmpty();
-    }
-
     public static Data getData(LogEvent event) {
-        int length = event.getBody().length();
+        String url = event.getEndpointUrl();
+        String body = event.getBody();
 
         // androidx.work.Data throws IllegalStateException if total data length is more than MAX_DATA_BYTES
         // compress larger body and uncompress it before dispatching. The compress rate is very high because of repeated data (20KB -> 1KB, 45KB -> 1.5KB).
 
         int maxSizeBeforeCompress = Data.MAX_DATA_BYTES - 1000;  // 1000 reserved for other meta data
 
-        if (length < maxSizeBeforeCompress) {
-            return dataForEvent(event);
+        if (body.length() < maxSizeBeforeCompress) {
+            return dataForEvent(url, body);
         } else {
-            return compressEvent(event);
+            return compressEvent(url, body);
         }
     }
 
     @VisibleForTesting
-    public static Data compressEvent(LogEvent event) {
-        String url = event.getEndpointUrl();
-        String body = event.getBody();
-
+    public static Data compressEvent(String url, String body) {
         try {
             byte[] bodyArray = EventHandlerUtils.compress(body);
             return dataForCompressedEvent(url, bodyArray);
         } catch (Exception e) {
             return dataForEvent(url, body);
         }
-    }
-
-    @VisibleForTesting
-    public static Data dataForEvent(LogEvent event) {
-        return dataForEvent(event.getEndpointUrl(), event.getBody());
     }
 
     @VisibleForTesting
@@ -138,6 +126,11 @@ public class EventWorker extends Worker {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    @VisibleForTesting
+    public boolean isEventValid(String url, String body) {
+        return url != null && !url.isEmpty() && body != null && !body.isEmpty();
     }
 
 }

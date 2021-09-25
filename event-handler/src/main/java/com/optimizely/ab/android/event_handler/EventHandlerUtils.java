@@ -22,7 +22,9 @@ public class EventHandlerUtils {
     }
 
     public static String uncompress(@NonNull byte[] compressed) throws IOException {
-        final int BUFFER_SIZE = 32;
+        //final int BUFFER_SIZE = 32;
+        final int BUFFER_SIZE = 32*1024;
+
         ByteArrayInputStream is = new ByteArrayInputStream(compressed);
         GZIPInputStream gis = new GZIPInputStream(is, BUFFER_SIZE);
         StringBuilder uncompressed = new StringBuilder();
