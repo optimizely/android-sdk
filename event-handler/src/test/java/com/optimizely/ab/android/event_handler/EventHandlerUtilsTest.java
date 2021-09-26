@@ -21,6 +21,33 @@ public class EventHandlerUtilsTest {
         assertEquals(str, uncompressed);
     }
 
+    @Test(timeout=30000)
+    public void measureCompressionDelay() throws Exception {
+        int maxEventSize = 100000;  // 100KB (~100 attributes)
+        int count = 3000;
+
+        String body = EventHandlerUtilsTest.makeRandomString(maxEventSize);
+
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < count; i++) {
+            EventHandlerUtils.compress(body);
+        }
+        long end = System.currentTimeMillis();
+        float delayCompress = ((float)(end - start))/count;
+        System.out.println("Compression Delay: " + String.valueOf(delayCompress) + " millisecs");
+        assert(delayCompress < 10);   // less than 1ms for 100KB (set 10ms upperbound)
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < count; i++) {
+            byte[] byteArray = EventHandlerUtils.compress(body);
+            EventHandlerUtils.decompress(byteArray);
+        }
+        end = System.currentTimeMillis();
+        float delayUncompress = ((float)(end - start))/count - delayCompress;
+        System.out.println("Uncompression Delay: " + String.valueOf(delayUncompress) + " millisecs");
+        assert(delayUncompress < 10);  // less than 1ms for 100KB (set 10ms upperbound)
+    }
+
     public static String makeRandomString(int maxSize) {
         StringBuilder builder = new StringBuilder();
 

@@ -71,7 +71,7 @@ public class EventWorkerTest {
         Data data1 = EventWorker.dataForEvent(host, "body-string");
         assertEquals(data1.getString("url"), host);
         assertEquals(data1.getString("body"), "body-string");
-        assertNull(data1.getByteArray("bodyArray"));
+        assertNull(data1.getByteArray("bodyCompressed"));
     }
 
     @Test
@@ -79,19 +79,19 @@ public class EventWorkerTest {
         byte[] byteArray = "body-string".getBytes();
         Data data = EventWorker.dataForCompressedEvent(host, byteArray);
         assertEquals(data.getString("url"), host);
-        assertArrayEquals(data.getByteArray("bodyArray"), byteArray);
+        assertArrayEquals(data.getByteArray("bodyCompressed"), byteArray);
         assertNull(data.getString("body"));
     }
 
     @Test
     public void compressEvent() throws IOException {
-        byte[] bodyArray = "any-string".getBytes();
+        byte[] bytes = "any-string".getBytes();
         PowerMockito.mockStatic(EventHandlerUtils.class);
-        when(EventHandlerUtils.compress(anyString())).thenReturn(bodyArray);
+        when(EventHandlerUtils.compress(anyString())).thenReturn(bytes);
 
         Data data = EventWorker.compressEvent(host, smallBody);
         assertEquals(data.getString("url"), host);
-        assertArrayEquals(data.getByteArray("bodyArray"), bodyArray);
+        assertArrayEquals(data.getByteArray("bodyCompressed"), bytes);
         assertNull(data.getString("body"));
     }
 
@@ -106,7 +106,7 @@ public class EventWorkerTest {
         Data data = EventWorker.compressEvent(host, smallBody);
         assertEquals(data.getString("url"), host);
         assertEquals(data.getString("body"), smallBody);
-        assertNull(data.getByteArray("bodyArray"));
+        assertNull(data.getByteArray("bodyCompressed"));
     }
 
     @Test
@@ -123,7 +123,7 @@ public class EventWorkerTest {
             Data data = EventWorker.getData(mockEvent);
             assertEquals(data.getString("url"), host);
             assertEquals(data.getString("body"), str);
-            assertNull(data.getByteArray("bodyArray"));
+            assertNull(data.getByteArray("bodyCompressed"));
         }
     }
 
@@ -141,7 +141,7 @@ public class EventWorkerTest {
 
             Data data = EventWorker.getData(mockEvent);
             assertEquals(data.getString("url"), host);
-            assertArrayEquals(data.getByteArray("bodyArray"), compressed);
+            assertArrayEquals(data.getByteArray("bodyCompressed"), compressed);
             assertNull(data.getString("body"));
         }
     }
@@ -181,36 +181,4 @@ public class EventWorkerTest {
         assert(eventWorker.isEventValid("string", "string"));
     }
 
-    @Test(timeout=30000)
-    public void measureCompressionDelay() throws Exception {
-        measureCore(3);
-        measureCore(1);
-        measureCore(2);
-    }
-
-    public void measureCore(int idx) throws Exception {
-        int maxEventSize = 100000;  // 100KB (~100 attributes)
-        int count = 3000;
-
-        String body = EventHandlerUtilsTest.makeRandomString(maxEventSize);
-
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < count; i++) {
-            EventHandlerUtils.compress(body, idx);
-        }
-        long end = System.currentTimeMillis();
-        float delayCompress = ((float)(end - start))/count;
-        System.out.println("Compression Delay: " + String.valueOf(delayCompress) + " millisecs");
-        assert(delayCompress < 10);   // 10ms upperbound
-
-        start = System.currentTimeMillis();
-        for (int i = 0; i < count; i++) {
-            byte[] byteArray = EventHandlerUtils.compress(body, idx);
-            EventHandlerUtils.decompress(byteArray, idx);
-        }
-        end = System.currentTimeMillis();
-        float delayUncompress = ((float)(end - start))/count - delayCompress;
-        System.out.println("Uncompression Delay: " + String.valueOf(delayUncompress) + " millisecs");
-        assert(delayUncompress < 10);  // 10ms upperbound
-    }
 }
