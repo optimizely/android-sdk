@@ -122,7 +122,7 @@ public class EventWorker extends Worker {
 
         byte[] byteArray = inputData.getByteArray("bodyArray");
         try {
-            return EventHandlerUtils.uncompress(byteArray);
+            return EventHandlerUtils.decompress(byteArray);
         } catch (Exception e) {
             return null;
         }

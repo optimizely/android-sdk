@@ -11,13 +11,13 @@ import java.io.IOException;
 public class EventHandlerUtilsTest {
 
     @Test
-    public void compressAndUncompress() throws IOException {
+    public void compressAndUncompress() throws Exception {
         String str = makeRandomString(1000);
 
         byte[] compressed = EventHandlerUtils.compress(str);
         assert(compressed.length < (str.length() * 0.5));
 
-        String uncompressed = EventHandlerUtils.uncompress(compressed);
+        String uncompressed = EventHandlerUtils.decompress(compressed);
         assertEquals(str, uncompressed);
     }
 

@@ -161,12 +161,12 @@ public class EventWorkerTest {
     }
 
     @Test
-    public void getEventBodyFromInputDataUncompressFailure() throws IOException {
+    public void getEventBodyFromInputDataUncompressFailure() throws Exception {
         Data data = EventWorker.compressEvent(host, smallBody);
 
         PowerMockito.mockStatic(EventHandlerUtils.class);
         PowerMockito.doThrow(new IOException()).when(EventHandlerUtils.class);
-        EventHandlerUtils.uncompress(any());  // PowerMockito throws exception on this static method
+        EventHandlerUtils.decompress(any());  // PowerMockito throws exception on this static method
 
         String str = eventWorker.getEventBodyFromInputData(data);
         assertNull(str);
@@ -182,15 +182,21 @@ public class EventWorkerTest {
     }
 
     @Test(timeout=30000)
-    public void measureCompressionDelay() throws IOException {
+    public void measureCompressionDelay() throws Exception {
+        measureCore(3);
+        measureCore(1);
+        measureCore(2);
+    }
+
+    public void measureCore(int idx) throws Exception {
         int maxEventSize = 100000;  // 100KB (~100 attributes)
-        int count = 1000;
+        int count = 3000;
 
         String body = EventHandlerUtilsTest.makeRandomString(maxEventSize);
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
-            EventWorker.compressEvent(host, body);
+            EventHandlerUtils.compress(body, idx);
         }
         long end = System.currentTimeMillis();
         float delayCompress = ((float)(end - start))/count;
@@ -199,9 +205,8 @@ public class EventWorkerTest {
 
         start = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
-            Data data = EventWorker.compressEvent(host, body);
-            byte[] byteArray = data.getByteArray("bodyArray");
-            EventHandlerUtils.uncompress(byteArray);
+            byte[] byteArray = EventHandlerUtils.compress(body, idx);
+            EventHandlerUtils.decompress(byteArray, idx);
         }
         end = System.currentTimeMillis();
         float delayUncompress = ((float)(end - start))/count - delayCompress;
