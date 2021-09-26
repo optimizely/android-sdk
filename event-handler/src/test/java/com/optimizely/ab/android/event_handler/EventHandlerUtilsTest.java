@@ -52,11 +52,11 @@ public class EventHandlerUtilsTest {
         StringBuilder builder = new StringBuilder();
 
         // for high compression rate, pick from a small set
-        int[] randoms = {1000000, 1000001, 1000002};
+        int[] randoms = {100001, 100002, 100003};
 
         int size = 0;
         for(int i=0;; i++) {
-            String str = String.valueOf(randoms[i%3]);
+            String str = String.valueOf(randoms[i%randoms.length]);
             size += str.length();
             if (size > maxSize) {
                 break;

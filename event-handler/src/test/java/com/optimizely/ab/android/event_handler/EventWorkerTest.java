@@ -132,10 +132,11 @@ public class EventWorkerTest {
         LogEvent mockEvent = Mockito.mock(LogEvent.class);
         when(mockEvent.getEndpointUrl()).thenReturn(host);
 
-        int[] sizes = {10000, 20000, 30000};
+        int[] sizes = {10000, 100000, 1000000};
         for (int size : sizes){
             String str = EventHandlerUtilsTest.makeRandomString(size);
             String compressed = EventHandlerUtils.compress(str);
+            System.out.println("compressed: " + size + " -> " + compressed.length());
 
             when(mockEvent.getBody()).thenReturn(str);
 
