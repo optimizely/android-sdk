@@ -41,13 +41,12 @@ public class EventHandlerUtils {
 
             byte[] bytes = outputStream.toByteArray();
             // encoded to Base64 (instead of byte[] since WorkManager.Data size is unexpectedly expanded with byte[]).
-            // - org.apache.commons.Base64 is used (instead of android.util.Base64) for unit testing
-            return Base64.encodeBase64String(bytes);
+            return encodeToBase64(bytes);
         }
     }
 
     public static String decompress(@NonNull String base64) throws Exception {
-        byte[] data = Base64.decodeBase64(base64);
+        byte[] data = decodeFromBase64(base64);
 
         final Inflater inflater = new Inflater();
         inflater.setInput(data);
@@ -61,6 +60,21 @@ public class EventHandlerUtils {
 
             return outputStream.toString();
         }
+    }
+
+    static String encodeToBase64(byte[] bytes) {
+        // - org.apache.commons.Base64 is used (instead of android.util.Base64) for unit testing
+        // - encodeBase64() for backward compatibility (instead of encodeBase64String()).
+        String base64 = "";
+        if (bytes != null) {
+            byte[] encoded = Base64.encodeBase64(bytes);
+            base64= new String(encoded);
+        }
+        return base64;
+    }
+
+    static byte[] decodeFromBase64(String base64) {
+        return Base64.decodeBase64(base64.getBytes());
     }
 
 }
