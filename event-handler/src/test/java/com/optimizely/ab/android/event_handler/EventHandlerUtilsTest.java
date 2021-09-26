@@ -51,17 +51,29 @@ public class EventHandlerUtilsTest {
     public static String makeRandomString(int maxSize) {
         StringBuilder builder = new StringBuilder();
 
-        // for high compression rate, pick from a small set
-        int[] randoms = {100001, 100002, 100003};
+        // for high compression rate, shift repeated string window.
+        int window = 100;
+        int shift = 3;  // adjust (1...10) this for compression rate. smaller for higher rates.
+
+        int start = 0;
+        int end = start + window;
+        int i = 0;
 
         int size = 0;
-        for(int i=0;; i++) {
-            String str = String.valueOf(randoms[i%randoms.length]);
+        while (true) {
+            String str = String.valueOf(i);
             size += str.length();
             if (size > maxSize) {
                 break;
             }
             builder.append(str);
+
+            i++;
+            if (i > end) {
+                start = start + shift;
+                end = start + window;
+                i = start;
+            }
         }
 
         return builder.toString();
