@@ -87,7 +87,7 @@ public class EventWorker extends Worker {
     @VisibleForTesting
     public static Data compressEvent(String url, String body) {
         try {
-            byte[] compressed = EventHandlerUtils.compress(body);
+            String compressed = EventHandlerUtils.compress(body);
             return dataForCompressedEvent(url, compressed);
         } catch (Exception e) {
             return dataForEvent(url, body);
@@ -103,10 +103,10 @@ public class EventWorker extends Worker {
     }
 
     @VisibleForTesting
-    public static Data dataForCompressedEvent(String url, byte[] compressed) {
+    public static Data dataForCompressedEvent(String url, String compressed) {
         return new Data.Builder()
                 .putString("url", url)
-                .putByteArray("bodyCompressed", compressed)
+                .putString("bodyCompressed", compressed)
                 .build();
     }
 
@@ -120,9 +120,9 @@ public class EventWorker extends Worker {
 
         // check if data compressed
 
-        byte[] byteArray = inputData.getByteArray("bodyCompressed");
+        String compressed = inputData.getString("bodyCompressed");
         try {
-            return EventHandlerUtils.decompress(byteArray);
+            return EventHandlerUtils.decompress(compressed);
         } catch (Exception e) {
             return null;
         }

@@ -76,22 +76,22 @@ public class EventWorkerTest {
 
     @Test
     public void dataForCompressedEvent() {
-        byte[] byteArray = "body-string".getBytes();
-        Data data = EventWorker.dataForCompressedEvent(host, byteArray);
+        String base64 = "abc123";
+        Data data = EventWorker.dataForCompressedEvent(host, base64);
         assertEquals(data.getString("url"), host);
-        assertArrayEquals(data.getByteArray("bodyCompressed"), byteArray);
+        assertEquals(data.getString("bodyCompressed"), base64);
         assertNull(data.getString("body"));
     }
 
     @Test
     public void compressEvent() throws IOException {
-        byte[] bytes = "any-string".getBytes();
+        String base64 = "abc123";
         PowerMockito.mockStatic(EventHandlerUtils.class);
-        when(EventHandlerUtils.compress(anyString())).thenReturn(bytes);
+        when(EventHandlerUtils.compress(anyString())).thenReturn(base64);
 
         Data data = EventWorker.compressEvent(host, smallBody);
         assertEquals(data.getString("url"), host);
-        assertArrayEquals(data.getByteArray("bodyCompressed"), bytes);
+        assertEquals(data.getString("bodyCompressed"), base64);
         assertNull(data.getString("body"));
     }
 
@@ -135,13 +135,13 @@ public class EventWorkerTest {
         int[] sizes = {10000, 20000, 30000};
         for (int size : sizes){
             String str = EventHandlerUtilsTest.makeRandomString(size);
-            byte[] compressed = EventHandlerUtils.compress(str);
+            String compressed = EventHandlerUtils.compress(str);
 
             when(mockEvent.getBody()).thenReturn(str);
 
             Data data = EventWorker.getData(mockEvent);
             assertEquals(data.getString("url"), host);
-            assertArrayEquals(data.getByteArray("bodyCompressed"), compressed);
+            assertEquals(data.getString("bodyCompressed"), compressed);
             assertNull(data.getString("body"));
         }
     }

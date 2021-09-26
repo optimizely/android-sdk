@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.apache.commons.codec.binary.Base64;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,7 +24,7 @@ public class EventHandlerUtils {
 
     private static final int BUFFER_SIZE = 32*1024;
 
-    public static byte[] compress(@NonNull String uncompressed) throws IOException {
+    public static String compress(@NonNull String uncompressed) throws IOException {
         byte[] data = uncompressed.getBytes();
 
         final Deflater deflater = new Deflater();
@@ -37,11 +39,16 @@ public class EventHandlerUtils {
                 outputStream.write(buffer, 0, count);
             }
 
-            return outputStream.toByteArray();
+            byte[] bytes = outputStream.toByteArray();
+            // encoded to Base64 (instead of byte[] since WorkManager.Data size is unexpectedly expanded with byte[]).
+            // - org.apache.commons.Base64 is used (instead of android.util.Base64) for unit testing
+            return Base64.encodeBase64String(bytes);
         }
     }
 
-    public static String decompress(@NonNull byte[] data) throws Exception {
+    public static String decompress(@NonNull String base64) throws Exception {
+        byte[] data = Base64.decodeBase64(base64);
+
         final Inflater inflater = new Inflater();
         inflater.setInput(data);
 

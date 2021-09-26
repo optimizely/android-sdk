@@ -14,8 +14,8 @@ public class EventHandlerUtilsTest {
     public void compressAndUncompress() throws Exception {
         String str = makeRandomString(1000);
 
-        byte[] compressed = EventHandlerUtils.compress(str);
-        assert(compressed.length < (str.length() * 0.5));
+        String compressed = EventHandlerUtils.compress(str);
+        assert(compressed.length() < (str.length() * 0.5));
 
         String uncompressed = EventHandlerUtils.decompress(compressed);
         assertEquals(str, uncompressed);
@@ -39,8 +39,8 @@ public class EventHandlerUtilsTest {
 
         start = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
-            byte[] byteArray = EventHandlerUtils.compress(body);
-            EventHandlerUtils.decompress(byteArray);
+            String compressed = EventHandlerUtils.compress(body);
+            EventHandlerUtils.decompress(compressed);
         }
         end = System.currentTimeMillis();
         float delayUncompress = ((float)(end - start))/count - delayCompress;
