@@ -52,7 +52,7 @@ dependencies {
     implementation "androidx.annotation:annotation:$annotations_ver"
     implementation "androidx.work:work-runtime:$work_runtime"
     // Base64
-    implementation "org.apache.commons:commons-collections4:4.1"
+	implementation "commons-codec:commons-codec:1.15"
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
