@@ -11,14 +11,14 @@ import java.io.IOException;
 public class EventHandlerUtilsTest {
 
     @Test
-    public void compressAndUncompress() throws Exception {
+    public void compressAndDecompress() throws Exception {
         String str = makeRandomString(1000);
 
         String compressed = EventHandlerUtils.compress(str);
         assert(compressed.length() < (str.length() * 0.5));
 
-        String uncompressed = EventHandlerUtils.decompress(compressed);
-        assertEquals(str, uncompressed);
+        String decompressed = EventHandlerUtils.decompress(compressed);
+        assertEquals(str, decompressed);
     }
 
     @Test(timeout=30000)
@@ -43,9 +43,9 @@ public class EventHandlerUtilsTest {
             EventHandlerUtils.decompress(compressed);
         }
         end = System.currentTimeMillis();
-        float delayUncompress = ((float)(end - start))/count - delayCompress;
-        System.out.println("Uncompression Delay: " + String.valueOf(delayUncompress) + " millisecs");
-        assert(delayUncompress < 10);  // less than 1ms for 100KB (set 10ms upperbound)
+        float delayDecompress = ((float)(end - start))/count - delayCompress;
+        System.out.println("Decompression Delay: " + String.valueOf(delayDecompress) + " millisecs");
+        assert(delayDecompress < 10);  // less than 1ms for 100KB (set 10ms upperbound)
     }
 
     public static String makeRandomString(int maxSize) {

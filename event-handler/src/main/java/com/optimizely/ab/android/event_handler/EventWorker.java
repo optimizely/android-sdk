@@ -73,7 +73,7 @@ public class EventWorker extends Worker {
         String body = event.getBody();
 
         // androidx.work.Data throws IllegalStateException if total data length is more than MAX_DATA_BYTES
-        // compress larger body and uncompress it before dispatching. The compress rate is very high because of repeated data (20KB -> 1KB, 45KB -> 1.5KB).
+        // compress larger body and decompress it before dispatching. The compress rate is very high because of repeated data (20KB -> 1KB, 45KB -> 1.5KB).
 
         int maxSizeBeforeCompress = Data.MAX_DATA_BYTES - 1000;  // 1000 reserved for other meta data
 

@@ -162,7 +162,7 @@ public class EventWorkerTest {
     }
 
     @Test
-    public void getEventBodyFromInputDataUncompressFailure() throws Exception {
+    public void getEventBodyFromInputDataDecompressFailure() throws Exception {
         Data data = EventWorker.compressEvent(host, smallBody);
 
         PowerMockito.mockStatic(EventHandlerUtils.class);

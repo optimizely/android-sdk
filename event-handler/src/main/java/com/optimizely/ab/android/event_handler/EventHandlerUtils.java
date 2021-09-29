@@ -24,11 +24,10 @@ public class EventHandlerUtils {
 
     private static final int BUFFER_SIZE = 32*1024;
 
-    public static String compress(@NonNull String uncompressed) throws IOException {
-        byte[] data = uncompressed.getBytes();
+    public static String compress(@NonNull String decompressed) throws IOException {
+        byte[] data = decompressed.getBytes();
 
         final Deflater deflater = new Deflater();
-        //deflater.setLevel(BEST_COMPRESSION);
         deflater.setInput(data);
 
         try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length)) {
