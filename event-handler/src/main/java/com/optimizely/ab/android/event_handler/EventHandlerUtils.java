@@ -67,7 +67,7 @@ public class EventHandlerUtils {
         String base64 = "";
         if (bytes != null) {
             byte[] encoded = Base64.encodeBase64(bytes);
-            base64= new String(encoded);
+            base64 = new String(encoded);
         }
         return base64;
     }
