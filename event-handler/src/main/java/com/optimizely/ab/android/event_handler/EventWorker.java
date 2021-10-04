@@ -18,6 +18,8 @@ package com.optimizely.ab.android.event_handler;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -32,7 +34,8 @@ import org.slf4j.LoggerFactory;
 public class EventWorker extends Worker {
     public static final String workerId = "EventWorker";
 
-    EventDispatcher eventDispatcher;
+    @VisibleForTesting
+    public EventDispatcher eventDispatcher;
 
     public EventWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -46,30 +49,88 @@ public class EventWorker extends Worker {
                 new ServiceScheduler.PendingIntentFactory(context),
                 LoggerFactory.getLogger(ServiceScheduler.class));
         eventDispatcher = new EventDispatcher(context, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
-
-    }
-
-    public static Data getData(LogEvent event) {
-        return new Data.Builder()
-                .putString("url", event.getEndpointUrl())
-                .putString("body", event.getBody())
-                .build();
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        String url = getInputData().getString("url");
-        String body = getInputData().getString("body");
+        Data inputData = getInputData();
+        String url = inputData.getString("url");
+        String body = getEventBodyFromInputData(inputData);
         boolean dispatched = true;
 
-        if (url != null && !url.isEmpty() && body != null && !body.isEmpty()) {
+        if (isEventValid(url, body)) {
             dispatched = eventDispatcher.dispatch(url, body);
-        }
-        else {
+        } else {
             dispatched = eventDispatcher.dispatch();
         }
 
         return dispatched ? Result.success() : Result.retry();
     }
+
+    public static Data getData(LogEvent event) {
+        String url = event.getEndpointUrl();
+        String body = event.getBody();
+
+        // androidx.work.Data throws IllegalStateException if total data length is more than MAX_DATA_BYTES
+        // compress larger body and decompress it before dispatching. The compress rate is very high because of repeated data (20KB -> 1KB, 45KB -> 1.5KB).
+
+        int maxSizeBeforeCompress = Data.MAX_DATA_BYTES - 1000;  // 1000 reserved for other meta data
+
+        if (body.length() < maxSizeBeforeCompress) {
+            return dataForEvent(url, body);
+        } else {
+            return compressEvent(url, body);
+        }
+    }
+
+    @VisibleForTesting
+    public static Data compressEvent(String url, String body) {
+        try {
+            String compressed = EventHandlerUtils.compress(body);
+            return dataForCompressedEvent(url, compressed);
+        } catch (Exception e) {
+            return dataForEvent(url, body);
+        }
+    }
+
+    @VisibleForTesting
+    public static Data dataForEvent(String url, String body) {
+        return new Data.Builder()
+                .putString("url", url)
+                .putString("body", body)
+                .build();
+    }
+
+    @VisibleForTesting
+    public static Data dataForCompressedEvent(String url, String compressed) {
+        return new Data.Builder()
+                .putString("url", url)
+                .putString("bodyCompressed", compressed)
+                .build();
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public String getEventBodyFromInputData(Data inputData) {
+        // check non-compressed data first
+
+        String body = inputData.getString("body");
+        if (body != null) return body;
+
+        // check if data compressed
+
+        String compressed = inputData.getString("bodyCompressed");
+        try {
+            return EventHandlerUtils.decompress(compressed);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @VisibleForTesting
+    public boolean isEventValid(String url, String body) {
+        return url != null && !url.isEmpty() && body != null && !body.isEmpty();
+    }
+
 }
