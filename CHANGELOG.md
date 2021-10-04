@@ -1,5 +1,12 @@
 # Optimizely Android X SDK Changelog
 
+## 3.11.1
+October 4th, 2021
+
+### Bug Fixes
+* Support long lists of attributes (> 100) and/or large batch size (> 100) over the WorkManager Data 10KB size limit ([386](https://github.com/optimizely/android-sdk/pull/386)).
+
+
 ## 3.11.0
 September 16th, 2021
 
