@@ -18,7 +18,9 @@ package com.optimizely.ab.android.shared;
 import android.content.Context;
 
 import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
 import androidx.work.Data;
+import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -34,6 +36,10 @@ import java.util.concurrent.TimeUnit;
  * This class eliminates the use of the deprecated Intents and JobSchedulers .
  */
 public class WorkerScheduler {
+
+    // when true, work requested only when connection is available.
+    static private boolean requestOnlyWhenConnected = true;
+
     /**
      * Unschedule a scheduled service for a given worker id
      * @param context current application context
@@ -54,12 +60,21 @@ public class WorkerScheduler {
     public static void scheduleService(Context context, String workerId, Class clazz, Data data, long interval) {
         WorkManager.getInstance(context).cancelAllWorkByTag(workerId);
         long minutes = interval < 15 ? 15 : interval;
-        WorkRequest workRequest =
-                new PeriodicWorkRequest.Builder(clazz, minutes, TimeUnit.MINUTES)
-                        .addTag(workerId)
-                        .setInputData(data)
-                        .setInitialDelay(minutes, TimeUnit.MINUTES)
-                        .build();
+
+        WorkRequest.Builder workRequestBuilder = new PeriodicWorkRequest.Builder(clazz, minutes, TimeUnit.MINUTES)
+                .addTag(workerId)
+                .setInputData(data)
+                .setInitialDelay(minutes, TimeUnit.MINUTES);
+
+        if (requestOnlyWhenConnected) {
+             // requests only when connection is available (to control network connection failures)
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
+            workRequestBuilder.setConstraints(constraints);
+        }
+
+        WorkRequest workRequest = workRequestBuilder.build();
         WorkManager.getInstance(context).enqueue(workRequest);
     }
 
@@ -87,15 +102,23 @@ public class WorkerScheduler {
      */
     public static void startService(Context context, String workerId, Class clazz, Data data, Long retryInterval) {
         // Create a WorkRequest for your Worker and sending it input
-        WorkRequest.Builder workRequestBuilder =
-                new OneTimeWorkRequest.Builder(clazz)
-                        .setInputData(data)
-                        .addTag(workerId);
+        WorkRequest.Builder workRequestBuilder = new OneTimeWorkRequest.Builder(clazz)
+                .setInputData(data)
+                .addTag(workerId);
+
         if (retryInterval > 0) {
             workRequestBuilder.setBackoffCriteria(
                     BackoffPolicy.LINEAR,
                     retryInterval * 1000,
                     TimeUnit.MILLISECONDS);
+        }
+
+        if (requestOnlyWhenConnected) {
+            // requests only when connection is available (to control network connection failures)
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
+            workRequestBuilder.setConstraints(constraints);
         }
 
         WorkRequest wq = workRequestBuilder.build();

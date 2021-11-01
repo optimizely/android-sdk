@@ -68,16 +68,13 @@ class EventClient {
                     if (status >= 200 && status < 300) {
                         InputStream in = new BufferedInputStream(urlConnection.getInputStream());
                         in.close();
+                        logger.info("Successfully dispatched event: {}", event);
                         return Boolean.TRUE;
                     } else {
                         logger.error("Unexpected response from event endpoint, status: " + status);
                         return Boolean.FALSE;
                     }
-                } catch (IOException e) {
-                    logger.error("Unable to send event: {}", event, e);
-                    return Boolean.FALSE;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.error("Unable to send event: {}", event, e);
                     return Boolean.FALSE;
                 }
@@ -98,7 +95,6 @@ class EventClient {
         if (success == null) {
             success = false;
         }
-        logger.info("Successfully dispatched event: {}", event);
         return success;
     }
 }
