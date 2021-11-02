@@ -27,12 +27,17 @@ import androidx.work.WorkerParameters;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
+import com.optimizely.ab.android.shared.WorkerScheduler;
 import com.optimizely.ab.event.LogEvent;
 
 import org.slf4j.LoggerFactory;
 
 public class EventWorker extends Worker {
     public static final String workerId = "EventWorker";
+
+    public static final String KEY_EVENT_URL = "url";
+    public static final String KEY_EVENT_BODY = "body";
+    public static final String KEY_EVENT_BODY_COMPRESSED = "bodyCompressed";
 
     @VisibleForTesting
     public EventDispatcher eventDispatcher;
@@ -55,8 +60,10 @@ public class EventWorker extends Worker {
     @Override
     public Result doWork() {
         Data inputData = getInputData();
-        String url = inputData.getString("url");
+        String url = inputData.getString(KEY_EVENT_URL);
         String body = getEventBodyFromInputData(inputData);
+        long interval = inputData.getLong(WorkerScheduler.KEY_EVENT_RETRY_INTERVAL, -1);
+
         boolean dispatched = true;
 
         if (isEventValid(url, body)) {
@@ -65,7 +72,11 @@ public class EventWorker extends Worker {
             dispatched = eventDispatcher.dispatch();
         }
 
-        return dispatched ? Result.success() : Result.retry();
+        if (interval > 0) {
+            return dispatched ? Result.success() : Result.retry();
+        } else {
+            return Result.success();
+        }
     }
 
     public static Data getData(LogEvent event) {
@@ -97,16 +108,16 @@ public class EventWorker extends Worker {
     @VisibleForTesting
     public static Data dataForEvent(String url, String body) {
         return new Data.Builder()
-                .putString("url", url)
-                .putString("body", body)
+                .putString(KEY_EVENT_URL, url)
+                .putString(KEY_EVENT_BODY, body)
                 .build();
     }
 
     @VisibleForTesting
     public static Data dataForCompressedEvent(String url, String compressed) {
         return new Data.Builder()
-                .putString("url", url)
-                .putString("bodyCompressed", compressed)
+                .putString(KEY_EVENT_URL, url)
+                .putString(KEY_EVENT_BODY_COMPRESSED, compressed)
                 .build();
     }
 
@@ -115,12 +126,12 @@ public class EventWorker extends Worker {
     public String getEventBodyFromInputData(Data inputData) {
         // check non-compressed data first
 
-        String body = inputData.getString("body");
+        String body = inputData.getString(KEY_EVENT_BODY);
         if (body != null) return body;
 
         // check if data compressed
 
-        String compressed = inputData.getString("bodyCompressed");
+        String compressed = inputData.getString(KEY_EVENT_BODY_COMPRESSED);
         try {
             return EventHandlerUtils.decompress(compressed);
         } catch (Exception e) {

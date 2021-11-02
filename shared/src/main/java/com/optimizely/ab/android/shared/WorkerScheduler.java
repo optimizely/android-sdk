@@ -36,9 +36,10 @@ import java.util.concurrent.TimeUnit;
  * This class eliminates the use of the deprecated Intents and JobSchedulers .
  */
 public class WorkerScheduler {
-
     // when true, work requested only when connection is available.
-    static private boolean requestOnlyWhenConnected = true;
+    private static boolean requestOnlyWhenConnected = true;
+
+    public static final String KEY_EVENT_RETRY_INTERVAL = "retryInterval";
 
     /**
      * Unschedule a scheduled service for a given worker id
@@ -101,17 +102,18 @@ public class WorkerScheduler {
      * @param retryInterval - if the service fails, retry on this interval (in seconds).
      */
     public static void startService(Context context, String workerId, Class clazz, Data data, Long retryInterval) {
+        Data modifiedData = data;
+        if (retryInterval > 0) {
+            modifiedData = new Data.Builder()
+                    .putAll(data)
+                    .putLong(KEY_EVENT_RETRY_INTERVAL, retryInterval)
+                    .build();
+        }
+
         // Create a WorkRequest for your Worker and sending it input
         WorkRequest.Builder workRequestBuilder = new OneTimeWorkRequest.Builder(clazz)
-                .setInputData(data)
+                .setInputData(modifiedData)
                 .addTag(workerId);
-
-        if (retryInterval > 0) {
-            workRequestBuilder.setBackoffCriteria(
-                    BackoffPolicy.LINEAR,
-                    retryInterval * 1000,
-                    TimeUnit.MILLISECONDS);
-        }
 
         if (requestOnlyWhenConnected) {
             // requests only when connection is available (to control network connection failures)
