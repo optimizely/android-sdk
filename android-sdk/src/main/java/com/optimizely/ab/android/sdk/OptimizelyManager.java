@@ -832,7 +832,6 @@ public class OptimizelyManager {
         @Deprecated
         public Builder withEventDispatchInterval(long interval) {
             this.eventFlushInterval = interval;
-            this.eventDispatchRetryInterval = interval;
             return this;
         }
 

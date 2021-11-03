@@ -182,4 +182,43 @@ public class EventWorkerTest {
         assert(eventWorker.isEventValid("string", "string"));
     }
 
+    @Test
+    public void getDataWithRetryInterval() {
+        String host = "host-1";
+        String body = "body-1";
+        LogEvent event = Mockito.mock(LogEvent.class);
+        when(event.getEndpointUrl()).thenReturn(host);
+        when(event.getBody()).thenReturn(body);
+
+        Data data = EventWorker.getData(event, 123L);
+        assertEquals(eventWorker.getUrlFromInputData(data), host);
+        assertEquals(eventWorker.getEventBodyFromInputData(data), body);
+        assertEquals(eventWorker.getRetryIntervalFromInputData(data), 123);
+
+        data = EventWorker.getData(event, -1L);
+        assertEquals(eventWorker.getUrlFromInputData(data), host);
+        assertEquals(eventWorker.getEventBodyFromInputData(data), body);
+        assertEquals(eventWorker.getRetryIntervalFromInputData(data), -1);
+
+        // compressed data
+
+        body = EventHandlerUtilsTest.makeRandomString(20000);
+        when(event.getBody()).thenReturn(body);
+
+        data = EventWorker.getData(event, 123L);
+        assertEquals(eventWorker.getUrlFromInputData(data), host);
+        assertEquals(eventWorker.getEventBodyFromInputData(data), body);
+        assertEquals(eventWorker.getRetryIntervalFromInputData(data), 123);
+
+        data = EventWorker.getData(event, 0L);
+        assertEquals(eventWorker.getUrlFromInputData(data), host);
+        assertEquals(eventWorker.getEventBodyFromInputData(data), body);
+        assertEquals(eventWorker.getRetryIntervalFromInputData(data), -1);
+
+        data = EventWorker.getData(event, 0L);
+        assertEquals(eventWorker.getUrlFromInputData(data), host);
+        assertEquals(eventWorker.getEventBodyFromInputData(data), body);
+        assertEquals(eventWorker.getRetryIntervalFromInputData(data), -1);
+    }
+
 }
