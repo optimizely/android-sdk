@@ -60,7 +60,8 @@ public class EventDispatcher {
         this.logger = logger;
     }
 
-    boolean dispatch(String url, String body) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public boolean dispatch(String url, String body) {
         boolean dispatched = false;
 
         Event event = null;
