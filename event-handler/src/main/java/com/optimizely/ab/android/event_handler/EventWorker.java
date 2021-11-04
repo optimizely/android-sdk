@@ -38,6 +38,7 @@ public class EventWorker extends Worker {
     public static final String KEY_EVENT_URL = "url";
     public static final String KEY_EVENT_BODY = "body";
     public static final String KEY_EVENT_BODY_COMPRESSED = "bodyCompressed";
+    public static final String KEY_EVENT_RETRY_INTERVAL = "retryInterval";
 
     @VisibleForTesting
     public EventDispatcher eventDispatcher;
@@ -60,9 +61,9 @@ public class EventWorker extends Worker {
     @Override
     public Result doWork() {
         Data inputData = getInputData();
-        String url = inputData.getString(KEY_EVENT_URL);
+        String url = getUrlFromInputData(inputData);
         String body = getEventBodyFromInputData(inputData);
-        long interval = inputData.getLong(WorkerScheduler.KEY_EVENT_RETRY_INTERVAL, -1);
+        long interval = getRetryIntervalFromInputData(inputData);
 
         boolean dispatched = true;
 
@@ -93,6 +94,19 @@ public class EventWorker extends Worker {
         } else {
             return compressEvent(url, body);
         }
+    }
+
+    @VisibleForTesting
+    public static Data getData(LogEvent event, Long retryInterval) {
+        Data data = getData(event);
+        if (retryInterval > 0) {
+            data = new Data.Builder()
+                    .putAll(data)
+                    .putLong(KEY_EVENT_RETRY_INTERVAL, retryInterval)
+                    .build();
+        }
+
+        return data;
     }
 
     @VisibleForTesting
@@ -137,6 +151,16 @@ public class EventWorker extends Worker {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    @VisibleForTesting
+    public String getUrlFromInputData(Data data) {
+        return data.getString(KEY_EVENT_URL);
+    }
+
+    @VisibleForTesting
+    public long getRetryIntervalFromInputData(Data data) {
+        return data.getLong(KEY_EVENT_RETRY_INTERVAL, -1);
     }
 
     @VisibleForTesting

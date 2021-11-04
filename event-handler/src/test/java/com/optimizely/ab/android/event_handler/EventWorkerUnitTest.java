@@ -58,7 +58,7 @@ import java.util.HashMap;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ EventWorker.class, EventHandlerUtils.class, WorkerParameters.class })
 @PowerMockIgnore("jdk.internal.reflect.*")
-public class EventWorkerTest {
+public class EventWorkerUnitTest {
 
     private WorkerParameters mockWorkParams = PowerMockito.mock(WorkerParameters.class);
     private EventWorker eventWorker = new EventWorker(mock(Context.class), mockWorkParams);

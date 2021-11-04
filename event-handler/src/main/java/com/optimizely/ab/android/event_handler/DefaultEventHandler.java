@@ -19,6 +19,7 @@ package com.optimizely.ab.android.event_handler;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 
 import com.optimizely.ab.android.shared.WorkerScheduler;
 import com.optimizely.ab.event.EventHandler;
@@ -26,6 +27,8 @@ import com.optimizely.ab.event.LogEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import kotlin._Assertions;
 
 /**
  * Reference implementation of {@link EventHandler} for Android.
@@ -92,8 +95,8 @@ public class DefaultEventHandler implements EventHandler {
             logger.error("Event dispatcher received an empty url");
         }
 
-        WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class,
-                EventWorker.getData(logEvent), dispatchInterval);
+        Data inputData = EventWorker.getData(logEvent, dispatchInterval);
+        WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, inputData);
 
         logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
     }

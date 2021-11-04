@@ -39,8 +39,6 @@ public class WorkerScheduler {
     // when true, work requested only when connection is available.
     private static boolean requestOnlyWhenConnected = true;
 
-    public static final String KEY_EVENT_RETRY_INTERVAL = "retryInterval";
-
     /**
      * Unschedule a scheduled service for a given worker id
      * @param context current application context
@@ -88,31 +86,9 @@ public class WorkerScheduler {
      * @param data - input data for the worker
      */
     public static void startService(Context context, String workerId, Class clazz, Data data) {
-        startService(context, workerId, clazz, data, 0L);
-
-    }
-
-    /**
-     * This method should be pulled out to a worker helper class.  This method uses the
-     * WorkManagerRequest
-     * @param context - application context
-     * @param workerId - the tag as well as unique identifier
-     * @param clazz - worker class
-     * @param data - input data for the worker
-     * @param retryInterval - if the service fails, retry on this interval (in seconds).
-     */
-    public static void startService(Context context, String workerId, Class clazz, Data data, Long retryInterval) {
-        Data modifiedData = data;
-        if (retryInterval > 0) {
-            modifiedData = new Data.Builder()
-                    .putAll(data)
-                    .putLong(KEY_EVENT_RETRY_INTERVAL, retryInterval)
-                    .build();
-        }
-
         // Create a WorkRequest for your Worker and sending it input
         WorkRequest.Builder workRequestBuilder = new OneTimeWorkRequest.Builder(clazz)
-                .setInputData(modifiedData)
+                .setInputData(data)
                 .addTag(workerId);
 
         if (requestOnlyWhenConnected) {

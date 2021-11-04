@@ -53,6 +53,7 @@ dependencies {
     implementation "androidx.work:work-runtime:$work_runtime"
     // Base64
     implementation "commons-codec:commons-codec:1.15"
+    implementation 'androidx.work:work-testing:2.5.0'
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
