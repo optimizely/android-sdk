@@ -53,7 +53,6 @@ dependencies {
     implementation "androidx.work:work-runtime:$work_runtime"
     // Base64
     implementation "commons-codec:commons-codec:1.15"
-    implementation 'androidx.work:work-testing:2.5.0'
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
@@ -62,6 +61,7 @@ dependencies {
     testImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
+    androidTestImplementation "androidx.work:work-testing:$work_testing"
     androidTestImplementation "androidx.test.ext:junit:$androidx_test"
     // Set this dependency to use JUnit 4 rules
     androidTestImplementation "androidx.test:rules:$androidx_test"

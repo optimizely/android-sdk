@@ -27,7 +27,6 @@ import androidx.work.WorkerParameters;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.shared.ServiceScheduler;
-import com.optimizely.ab.android.shared.WorkerScheduler;
 import com.optimizely.ab.event.LogEvent;
 
 import org.slf4j.LoggerFactory;

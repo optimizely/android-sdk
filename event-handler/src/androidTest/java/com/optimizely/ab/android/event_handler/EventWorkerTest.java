@@ -109,7 +109,7 @@ public class EventWorkerTest {
 
         ListenableWorker.Result result = worker.doWork();
 
-        assertThat(result, is(ListenableWorker.Result.success()));  // always success (no retry)
+        assertThat(result, is(ListenableWorker.Result.success()));  // always return success (no retry) even with failure
         verify(worker.eventDispatcher).dispatch(host, body);
     }
 

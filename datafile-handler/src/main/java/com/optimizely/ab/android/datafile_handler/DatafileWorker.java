@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public class DatafileWorker extends Worker {
     public static final String workerId = "DatafileWorker";
+
     public DatafileWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
