@@ -39,7 +39,7 @@ public class DatafileLoader {
     private static final String datafileDownloadTime = "optlyDatafileDownloadTime";
     private static Long minTimeBetweenDownloadsMilli = 60 * 1000L;
 
-    @Nullable private final DatafileCache datafileCache;
+    @Nullable private DatafileCache datafileCache;
     @NonNull private final DatafileClient datafileClient;
     @NonNull private final Logger logger;
     @NonNull private final OptlyStorage storage;
@@ -80,7 +80,10 @@ public class DatafileLoader {
     }
 
     public void getDatafile(@NonNull String datafileUrl, @Nullable DatafileLoadedListener datafileLoadedListener) {
-        if (datafileCache == null) return;
+        if (datafileCache == null) {
+            logger.warn("DatafileCache is not set.");
+            return;
+        }
 
         if (!allowDownload(datafileUrl, datafileCache, datafileLoadedListener)) {
             return;
@@ -130,7 +133,7 @@ public class DatafileLoader {
     public void getDatafile(@NonNull String datafileUrl,
                             @NonNull DatafileCache datafileCache,
                             @Nullable DatafileLoadedListener datafileLoadedListener) {
-        datafileCache = datafileCache;
+        this.datafileCache = datafileCache;
         getDatafile(datafileUrl, datafileLoadedListener);
     }
 
