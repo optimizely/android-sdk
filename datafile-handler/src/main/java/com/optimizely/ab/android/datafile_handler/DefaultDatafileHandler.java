@@ -151,7 +151,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
             @Override
             public void onEvent(int event, @Nullable String path) {
 
-                logger.debug("EVENT: " + String.valueOf(event) + path + datafileCache.getFileName());
+                logger.debug("EVENT: " + String.valueOf(event) + " " + path + " (" + datafileCache.getFileName() + ")");
                 if (event == MODIFY && path.equals(datafileCache.getFileName())) {
                     JSONObject newConfig = datafileCache.load();
                     if (newConfig == null) {
