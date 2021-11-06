@@ -39,7 +39,7 @@ public class DatafileLoader {
     private static final String datafileDownloadTime = "optlyDatafileDownloadTime";
     private static Long minTimeBetweenDownloadsMilli = 60 * 1000L;
 
-    @NonNull private final DatafileCache datafileCache;
+    @Nullable private final DatafileCache datafileCache;
     @NonNull private final DatafileClient datafileClient;
     @NonNull private final Logger logger;
     @NonNull private final OptlyStorage storage;
@@ -49,7 +49,7 @@ public class DatafileLoader {
 
     public DatafileLoader(@NonNull Context context,
                           @NonNull DatafileClient datafileClient,
-                          @NonNull DatafileCache datafileCache,
+                          @Nullable DatafileCache datafileCache,
                           @NonNull Logger logger) {
         this.context = context;
         this.logger = logger;
@@ -57,17 +57,16 @@ public class DatafileLoader {
         this.datafileCache = datafileCache;
 
         this.storage = new OptlyStorage(context);
-
     }
 
-    private boolean allowDownload(String url, DatafileLoadedListener datafileLoadedListener) {
+    private boolean allowDownload(String url, DatafileCache cache, DatafileLoadedListener datafileLoadedListener) {
         long time = storage.getLong(url + datafileDownloadTime, 1);
         Date last = new Date(time);
         Date now = new Date();
-        if (now.getTime() - last.getTime() < minTimeBetweenDownloadsMilli && datafileCache.exists()) {
+        if (now.getTime() - last.getTime() < minTimeBetweenDownloadsMilli && cache.exists()) {
             logger.debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
             if (datafileLoadedListener != null) {
-                notifyListener(datafileLoadedListener, getCachedDatafile());
+                notifyListener(datafileLoadedListener, getCachedDatafile(cache));
             }
             return false;
         }
@@ -81,7 +80,9 @@ public class DatafileLoader {
     }
 
     public void getDatafile(@NonNull String datafileUrl, @Nullable DatafileLoadedListener datafileLoadedListener) {
-        if (!allowDownload(datafileUrl, datafileLoadedListener)) {
+        if (datafileCache == null) return;
+
+        if (!allowDownload(datafileUrl, datafileCache, datafileLoadedListener)) {
             return;
         }
 
@@ -108,7 +109,7 @@ public class DatafileLoader {
                     }
                 }
                 else {
-                    String cachedDatafile = getCachedDatafile();
+                    String cachedDatafile = getCachedDatafile(datafileCache);
                     if (cachedDatafile != null) {
                         dataFile = cachedDatafile;
                     }
@@ -125,6 +126,14 @@ public class DatafileLoader {
         });
     }
 
+    // Inject datafileCache for DatafileWorker testing
+    public void getDatafile(@NonNull String datafileUrl,
+                            @NonNull DatafileCache datafileCache,
+                            @Nullable DatafileLoadedListener datafileLoadedListener) {
+        datafileCache = datafileCache;
+        getDatafile(datafileUrl, datafileLoadedListener);
+    }
+
     private void notifyListener(@Nullable DatafileLoadedListener datafileLoadedListener, @Nullable String dataFile) {
         // The listener should be notified ONCE and ONLY ONCE with a valid datafile or null
         // If there are no activities bound there is no need to notify
@@ -134,10 +143,10 @@ public class DatafileLoader {
         }
     }
 
-    private String getCachedDatafile() {
+    private String getCachedDatafile(DatafileCache cache) {
         String dataFile = null;
 
-        JSONObject jsonFile = datafileCache.load();
+        JSONObject jsonFile = cache.load();
         if (jsonFile != null) {
             dataFile = jsonFile.toString();
         }

@@ -18,6 +18,7 @@ package com.optimizely.ab.android.datafile_handler;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -32,8 +33,18 @@ import org.slf4j.LoggerFactory;
 public class DatafileWorker extends Worker {
     public static final String workerId = "DatafileWorker";
 
+    @VisibleForTesting
+    public DatafileLoader datafileLoader;
+
     public DatafileWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+
+        DatafileClient datafileClient = new DatafileClient(
+                new Client(new OptlyStorage(context), LoggerFactory.getLogger(OptlyStorage.class)),
+                LoggerFactory.getLogger(DatafileClient.class));
+        DatafileCache datafileCache = null;
+
+        datafileLoader = new DatafileLoader(context, datafileClient, datafileCache, LoggerFactory.getLogger(DatafileLoader.class));
     }
 
     public static Data getData(DatafileConfig datafileConfig) {
@@ -49,18 +60,14 @@ public class DatafileWorker extends Worker {
     @Override
     public Result doWork() {
         DatafileConfig datafileConfig = getDataConfig(getInputData());
-        DatafileClient datafileClient = new DatafileClient(
-                new Client(new OptlyStorage(this.getApplicationContext()), LoggerFactory.getLogger(OptlyStorage.class)),
-                LoggerFactory.getLogger(DatafileClient.class));
+        String datafileUrl = datafileConfig.getUrl();
+
         DatafileCache datafileCache = new DatafileCache(
                 datafileConfig.getKey(),
                 new Cache(this.getApplicationContext(), LoggerFactory.getLogger(Cache.class)),
                 LoggerFactory.getLogger(DatafileCache.class));
 
-        String datafileUrl = datafileConfig.getUrl();
-
-        DatafileLoader datafileLoader = new DatafileLoader(this.getApplicationContext(), datafileClient, datafileCache, LoggerFactory.getLogger(DatafileLoader.class));
-        datafileLoader.getDatafile(datafileUrl, null);
+        datafileLoader.getDatafile(datafileUrl, datafileCache, null);
 
         return Result.success();
     }
