@@ -26,6 +26,7 @@ import com.optimizely.ab.event.LogEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executor;
@@ -39,6 +40,7 @@ public class DatafileWorkerTest {
     private Context context;
     private Executor executor;
     private String sdkKey = "sdkKey";
+    private Logger logger = LoggerFactory.getLogger("test");
 
     @Before
     public void setUp() {
@@ -60,12 +62,13 @@ public class DatafileWorkerTest {
         DatafileWorker worker = mockDatafileWorker(sdkKey);
         worker.datafileLoader = mock(DatafileLoader.class);
 
-        DatafileConfig datafileConfig = new DatafileConfig(null, sdkKey);
-        String datafileUrl = datafileConfig.getUrl();
-
         ListenableWorker.Result result = worker.doWork();
 
-        verify(worker.datafileLoader).getDatafile(eq(datafileUrl), any(DatafileCache.class), eq(null));
+        DatafileConfig datafileConfig = new DatafileConfig(null, sdkKey);
+        String datafileUrl = datafileConfig.getUrl();
+        DatafileCache datafileCache = new DatafileCache(datafileConfig.getKey(), new Cache(context, logger), logger);
+
+        verify(worker.datafileLoader).getDatafile(eq(datafileUrl), eq(datafileCache), eq(null));
         assertThat(result, is(ListenableWorker.Result.success()));  // success
     }
 
