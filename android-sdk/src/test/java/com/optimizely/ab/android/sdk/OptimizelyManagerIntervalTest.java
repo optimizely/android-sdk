@@ -31,6 +31,7 @@ import com.optimizely.ab.notification.NotificationCenter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class})
 public class OptimizelyManagerIntervalTest {
 
@@ -230,7 +232,7 @@ public class OptimizelyManagerIntervalTest {
                 anyLong(),
                 any(DatafileHandler.class),
                 any(ErrorHandler.class),
-                eq(goodNumber),                             // milliseconds
+                eq(-1L),                             // deprecated api not change default retryInterval
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),

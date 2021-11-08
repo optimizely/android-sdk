@@ -95,6 +95,7 @@ class EventClient {
         if (success == null) {
             success = false;
         }
+        logger.debug("SendEvent completed: {}", event);
         return success;
     }
 }
