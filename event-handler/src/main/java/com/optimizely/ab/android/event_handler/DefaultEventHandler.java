@@ -28,8 +28,6 @@ import com.optimizely.ab.event.LogEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kotlin._Assertions;
-
 /**
  * Reference implementation of {@link EventHandler} for Android.
  * <p>
@@ -62,13 +60,13 @@ public class DefaultEventHandler implements EventHandler {
     }
 
     /**
-     * Sets event dispatch interval
+     * Sets event dispatch retry interval
      * <p>
      * Events will only be scheduled to dispatch as long as events remain in storage.
      * <p>
      * Events are put into storage when they fail to send over network.
      *
-     * @param dispatchInterval the interval in seconds
+     * @param dispatchInterval the interval in milliseconds
      */
     public void setDispatchInterval(long dispatchInterval) {
         if (dispatchInterval <= 0) {
@@ -95,8 +93,11 @@ public class DefaultEventHandler implements EventHandler {
             logger.error("Event dispatcher received an empty url");
         }
 
+        // NOTE: retryInterval (dispatchInterval) is passed to WorkManager:
+        // - in InputData to enable/disable retries
+        // - in BackOffCriteria to change retry interval
         Data inputData = EventWorker.getData(logEvent, dispatchInterval);
-        WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, inputData);
+        WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, inputData, dispatchInterval);
 
         logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
     }

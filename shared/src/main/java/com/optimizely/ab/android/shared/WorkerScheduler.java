@@ -17,6 +17,7 @@ package com.optimizely.ab.android.shared;
 
 import android.content.Context;
 
+import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.NetworkType;
@@ -27,8 +28,6 @@ import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
 import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -91,9 +90,10 @@ public class WorkerScheduler {
      * @param workerId - the tag as well as unique identifier
      * @param clazz - worker class
      * @param data - input data for the worker
+     * @param retryInterval - the dispatch retry interval in milli-seconds
      * @return An <WorkRequest, Operation> that can be used for tracing work state
      */
-    public static AbstractMap.SimpleEntry<WorkRequest, Operation> startService(Context context, String workerId, Class clazz, Data data) {
+    public static AbstractMap.SimpleEntry<WorkRequest, Operation> startService(Context context, String workerId, Class clazz, Data data, Long retryInterval) {
         // Create a WorkRequest for your Worker and sending it input
         WorkRequest.Builder workRequestBuilder = new OneTimeWorkRequest.Builder(clazz)
                 .setInputData(data)
@@ -105,6 +105,14 @@ public class WorkerScheduler {
                     .setRequiredNetworkType(NetworkType.CONNECTED)
                     .build();
             workRequestBuilder.setConstraints(constraints);
+        }
+
+        if (retryInterval > 0) {
+            // NOTE: retry still enabled by default (LINEAR, 30secs) even when setBackoffCriteria is not called.
+            workRequestBuilder.setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    retryInterval,
+                    TimeUnit.MILLISECONDS);
         }
 
         WorkRequest workRequest = workRequestBuilder.build();

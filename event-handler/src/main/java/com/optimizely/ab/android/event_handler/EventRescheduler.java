@@ -85,12 +85,12 @@ public class EventRescheduler extends BroadcastReceiver {
     void reschedule(@NonNull Context context, @NonNull Intent broadcastIntent, @NonNull Intent eventServiceIntent, @NonNull ServiceScheduler serviceScheduler) {
         if (broadcastIntent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
                 broadcastIntent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
-            WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY);
+            WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY, -1L);
             logger.info("Rescheduling event flushing if necessary");
         } else if (broadcastIntent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
             NetworkInfo info = broadcastIntent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
             if(info != null && info.isConnected()) {
-                WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY);
+                WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY, -1L);
                 logger.info("Preemptively flushing events since wifi became available");
             }
         } else {

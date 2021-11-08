@@ -134,7 +134,7 @@ public class WorkerSchedulerTest {
     public void startService() throws Exception {
         WorkerScheduler.requestOnlyWhenConnected = false;   // do not add Connected constraint
 
-        enqueResult = WorkerScheduler.startService(context, TestWorker.workerId, TestWorker.class, inputData);
+        enqueResult = WorkerScheduler.startService(context, TestWorker.workerId, TestWorker.class, inputData, -1L);
         WorkRequest workRequest = (WorkRequest) enqueResult.getKey();
         Operation operation = (Operation) enqueResult.getValue();
         UUID workId = workRequest.getId();
@@ -155,7 +155,7 @@ public class WorkerSchedulerTest {
     public void startService_connectionDown() throws Exception {
         WorkerScheduler.requestOnlyWhenConnected = true;   // add Connected constraint
 
-        enqueResult = WorkerScheduler.startService(context, TestWorker.workerId, TestWorker.class, inputData);
+        enqueResult = WorkerScheduler.startService(context, TestWorker.workerId, TestWorker.class, inputData, -1L);
         WorkRequest workRequest = (WorkRequest) enqueResult.getKey();
         Operation operation = (Operation) enqueResult.getValue();
         UUID workId = workRequest.getId();
