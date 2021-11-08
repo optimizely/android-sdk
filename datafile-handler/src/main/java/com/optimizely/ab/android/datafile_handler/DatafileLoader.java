@@ -57,16 +57,17 @@ public class DatafileLoader {
         this.datafileCache = datafileCache;
 
         this.storage = new OptlyStorage(context);
+
     }
 
-    private boolean allowDownload(String url, DatafileCache cache, DatafileLoadedListener datafileLoadedListener) {
+    private boolean allowDownload(String url, DatafileLoadedListener datafileLoadedListener) {
         long time = storage.getLong(url + datafileDownloadTime, 1);
         Date last = new Date(time);
         Date now = new Date();
-        if (now.getTime() - last.getTime() < minTimeBetweenDownloadsMilli && cache.exists()) {
+        if (now.getTime() - last.getTime() < minTimeBetweenDownloadsMilli && datafileCache.exists()) {
             logger.debug("Last download happened under 1 minute ago. Throttled to be at least 1 minute apart.");
             if (datafileLoadedListener != null) {
-                notifyListener(datafileLoadedListener, getCachedDatafile(cache));
+                notifyListener(datafileLoadedListener, getCachedDatafile());
             }
             return false;
         }
@@ -85,7 +86,7 @@ public class DatafileLoader {
             return;
         }
 
-        if (!allowDownload(datafileUrl, datafileCache, datafileLoadedListener)) {
+        if (!allowDownload(datafileUrl, datafileLoadedListener)) {
             return;
         }
 
@@ -112,7 +113,7 @@ public class DatafileLoader {
                     }
                 }
                 else {
-                    String cachedDatafile = getCachedDatafile(datafileCache);
+                    String cachedDatafile = getCachedDatafile();
                     if (cachedDatafile != null) {
                         dataFile = cachedDatafile;
                     }
@@ -129,10 +130,10 @@ public class DatafileLoader {
         });
     }
 
-    // Inject datafileCache for DatafileWorker testing
     public void getDatafile(@NonNull String datafileUrl,
                             @NonNull DatafileCache datafileCache,
                             @Nullable DatafileLoadedListener datafileLoadedListener) {
+        // Inject datafileCache for DatafileWorker testing
         this.datafileCache = datafileCache;
         getDatafile(datafileUrl, datafileLoadedListener);
     }
@@ -146,10 +147,10 @@ public class DatafileLoader {
         }
     }
 
-    private String getCachedDatafile(DatafileCache cache) {
+    private String getCachedDatafile() {
         String dataFile = null;
 
-        JSONObject jsonFile = cache.load();
+        JSONObject jsonFile = datafileCache.load();
         if (jsonFile != null) {
             dataFile = jsonFile.toString();
         }
