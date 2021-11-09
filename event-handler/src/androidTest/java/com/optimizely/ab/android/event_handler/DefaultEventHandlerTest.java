@@ -52,8 +52,6 @@ public class DefaultEventHandlerTest {
         logger = mock(Logger.class);
         eventHandler = DefaultEventHandler.getInstance(context);
         eventHandler.logger = logger;
-
-        eventHandler.setDispatchInterval(60L);
     }
 
     @Test
@@ -70,9 +68,11 @@ public class DefaultEventHandlerTest {
 
     @Test
     public void dispatchEmptyParams() {
+        eventHandler.setDispatchInterval(60L * 1000L);
+
         eventHandler.dispatchEvent(new LogEvent(LogEvent.RequestMethod.POST, url, new HashMap<String, String>(), new EventBatch()));
         //verify(context).startService(any(Intent.class));
-        verify(logger).info("Sent url {} to the event handler service", "http://www.foo.com");
+        verify(logger).info("Sent url {} to the event handler service (with retry interval of {} seconds)", "http://www.foo.com", 60L);
     }
 
 }

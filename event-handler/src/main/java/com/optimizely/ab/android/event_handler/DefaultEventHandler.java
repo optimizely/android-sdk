@@ -99,6 +99,11 @@ public class DefaultEventHandler implements EventHandler {
         Data inputData = EventWorker.getData(logEvent, dispatchInterval);
         WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, inputData, dispatchInterval);
 
-        logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
+        if (dispatchInterval < 0) {
+            logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
+        } else {
+            logger.info("Sent url {} to the event handler service (with retry interval of {} seconds)",
+                    logEvent.getEndpointUrl(), dispatchInterval/1000);
+        }
     }
 }

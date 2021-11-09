@@ -19,6 +19,7 @@ package com.optimizely.ab.android.sdk;
 import android.content.Context;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
+import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -31,6 +32,7 @@ import com.optimizely.ab.notification.NotificationCenter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -55,13 +57,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyNew;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("jdk.internal.reflect.*")
-@PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class})
+@PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class, DefaultEventHandler.class})
 public class OptimizelyManagerIntervalTest {
 
     private Logger logger;
@@ -132,6 +135,10 @@ public class OptimizelyManagerIntervalTest {
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
 
+        DefaultEventHandler mockEventHandler = mock(DefaultEventHandler.class);
+        mockStatic(DefaultEventHandler.class);
+        when(DefaultEventHandler.getInstance(any())).thenReturn(mockEventHandler);
+
         long goodNumber = 100L;
         OptimizelyManager manager = OptimizelyManager.builder("1")
                 .withLogger(logger)
@@ -147,6 +154,8 @@ public class OptimizelyManagerIntervalTest {
                 any(NotificationCenter.class),
                 any(Object.class));
 
+        verify(mockEventHandler).setDispatchInterval(-1L);  // default
+
         verifyNew(OptimizelyManager.class).withArguments(anyString(),
                 anyString(),
                 any(DatafileConfig.class),
@@ -154,7 +163,7 @@ public class OptimizelyManagerIntervalTest {
                 anyLong(),
                 any(DatafileHandler.class),
                 any(ErrorHandler.class),
-                eq(-1L),                        // milliseconds
+                eq(-1L),                        // default
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
@@ -170,12 +179,17 @@ public class OptimizelyManagerIntervalTest {
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
 
+        DefaultEventHandler mockEventHandler = mock(DefaultEventHandler.class);
+        mockStatic(DefaultEventHandler.class);
+        when(DefaultEventHandler.getInstance(any())).thenReturn(mockEventHandler);
+
         long goodNumber = 100L;
-        long defaultEventFlushInterval = 30L;
+        TimeUnit timeUnit =  TimeUnit.MINUTES;
+        long defaultEventFlushInterval = 30L;   // seconds
 
         OptimizelyManager manager = OptimizelyManager.builder("1")
                 .withLogger(logger)
-                .withEventDispatchRetryInterval(goodNumber, TimeUnit.MINUTES)
+                .withEventDispatchRetryInterval(goodNumber, timeUnit)
                 .build(appContext);
 
         verifyNew(BatchEventProcessor.class).withArguments(any(BlockingQueue.class),
@@ -186,6 +200,8 @@ public class OptimizelyManagerIntervalTest {
                 any(ExecutorService.class),
                 any(NotificationCenter.class),
                 any(Object.class));
+
+        verify(mockEventHandler).setDispatchInterval(timeUnit.toMillis(goodNumber));  // milli-seconds
 
         verifyNew(OptimizelyManager.class).withArguments(anyString(),
                 anyString(),
@@ -210,6 +226,10 @@ public class OptimizelyManagerIntervalTest {
         Context appContext = mock(Context.class);
         when(appContext.getApplicationContext()).thenReturn(appContext);
 
+        DefaultEventHandler mockEventHandler = mock(DefaultEventHandler.class);
+        mockStatic(DefaultEventHandler.class);
+        when(DefaultEventHandler.getInstance(any())).thenReturn(mockEventHandler);
+
         long goodNumber = 1234L;
         OptimizelyManager manager = OptimizelyManager.builder("1")
                 .withLogger(logger)
@@ -224,6 +244,8 @@ public class OptimizelyManagerIntervalTest {
                 any(ExecutorService.class),
                 any(NotificationCenter.class),
                 any(Object.class));
+
+        verify(mockEventHandler).setDispatchInterval(-1L);  // deprecated api not change default retryInterval
 
         verifyNew(OptimizelyManager.class).withArguments(anyString(),
                 anyString(),
