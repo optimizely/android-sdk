@@ -61,7 +61,7 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$mockito_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
-    androidTestImplementation "androidx.work:work-testing:$work_testing"
+    androidTestImplementation "androidx.work:work-testing:$work_runtime"
     androidTestImplementation "androidx.test.ext:junit:$androidx_test"
     // Set this dependency to use JUnit 4 rules
     androidTestImplementation "androidx.test:rules:$androidx_test"

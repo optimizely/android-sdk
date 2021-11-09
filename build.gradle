@@ -69,7 +69,6 @@ ext {
     group_id = "com.optimizely.ab"
     androidx_test = "1.1.1"
     work_runtime = "2.5.0"
-    work_testing = "2.5.0"
 }
 
 task clean(type: Delete) {
