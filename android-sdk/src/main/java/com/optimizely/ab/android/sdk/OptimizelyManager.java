@@ -19,6 +19,7 @@ package com.optimizely.ab.android.sdk;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
+import android.app.job.JobInfo;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
@@ -897,9 +898,14 @@ public class OptimizelyManager {
 
             if (datafileDownloadInterval > 0) {
                 // JobScheduler API doesn't allow intervals less than 15 minutes
-                if (datafileDownloadInterval < 900) {
-                    datafileDownloadInterval = 900;
-                    logger.warn("Minimum datafile polling interval is 15 minutes. Defaulting to 15 minutes.");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    long minIntervalSecs = TimeUnit.MILLISECONDS.toSeconds(JobInfo.getMinPeriodMillis());
+                    long minIntervalMins = TimeUnit.SECONDS.toMinutes(minIntervalSecs);
+
+                    if (datafileDownloadInterval < minIntervalSecs) {
+                        datafileDownloadInterval = minIntervalSecs;
+                        logger.warn("Minimum datafile polling interval is {} minutes. Defaulting to the minimum.", minIntervalMins);
+                    }
                 }
             }
 
