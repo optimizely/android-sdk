@@ -125,6 +125,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
 
         // save the project id background start is set.  If we get a reboot or a replace, we can restart via the
         // DatafileRescheduler
+        logger.info("Datafile background polling scheduled (period interval: " + String.valueOf(updateIntervalInMinutes) + " minutes)");
         WorkerScheduler.scheduleService(context, DatafileWorker.workerId + datafileConfig.getKey(), DatafileWorker.class,
                 DatafileWorker.getData(datafileConfig), updateIntervalInMinutes);
         enableBackgroundCache(context, datafileConfig);
@@ -151,7 +152,7 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
             @Override
             public void onEvent(int event, @Nullable String path) {
 
-                logger.debug("EVENT: " + String.valueOf(event) + path + datafileCache.getFileName());
+                logger.debug("EVENT: " + String.valueOf(event) + " " + path + " (" + datafileCache.getFileName() + ")");
                 if (event == MODIFY && path.equals(datafileCache.getFileName())) {
                     JSONObject newConfig = datafileCache.load();
                     if (newConfig == null) {
