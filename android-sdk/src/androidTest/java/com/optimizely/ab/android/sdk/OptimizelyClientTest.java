@@ -23,6 +23,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.OptimizelyDecisionContext;
+import com.optimizely.ab.OptimizelyForcedDecision;
 import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.bucketing.Bucketer;
@@ -2255,6 +2257,92 @@ public class OptimizelyClientTest {
         OptimizelyDecision decision = userContext.decide(INTEGER_FEATURE_KEY);
 
         assertTrue(decision.getReasons().size() > 0);
+    }
+
+    // ForcedDecision
+    @Test
+    // this should be enough to validate connection to the core java-sdk
+    public void testForcedDecisionDecide() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        String flagKey = INTEGER_FEATURE_KEY;
+        Map<String, Object> attributes = Collections.singletonMap("house", "Gryffindor");
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(GENERIC_USER_ID, attributes);
+        userContext.setForcedDecision(new OptimizelyDecisionContext(flagKey, FEATURE_MULTI_VARIATE_EXPERIMENT_KEY),
+                new OptimizelyForcedDecision("Gred"));
+        OptimizelyDecision decision = userContext.decide(flagKey);
+
+        OptimizelyJSON variablesExpected = new OptimizelyJSON(Collections.singletonMap("integer_variable", 7));
+
+        assertEquals(decision.getVariationKey(), "Gred");
+        assertFalse(decision.getEnabled());
+        assertEquals(decision.getVariables().toMap(), variablesExpected.toMap());
+        assertEquals(decision.getRuleKey(), FEATURE_MULTI_VARIATE_EXPERIMENT_KEY);
+        assertEquals(decision.getFlagKey(), flagKey);
+        assertEquals(decision.getUserContext(), userContext);
+        assertTrue(decision.getReasons().isEmpty());
+    }
+
+    @Test
+    // this should be enough to validate connection to the core java-sdk
+    public void testForcedDecisionSetRemoveDecide() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        String flagKey = INTEGER_FEATURE_KEY;
+        Map<String, Object> attributes = Collections.singletonMap("house", "Gryffindor");
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(GENERIC_USER_ID, attributes);
+        userContext.setForcedDecision(new OptimizelyDecisionContext(flagKey, FEATURE_MULTI_VARIATE_EXPERIMENT_KEY),
+                new OptimizelyForcedDecision("Gred"));
+        OptimizelyDecision decision = userContext.decide(flagKey);
+
+        OptimizelyJSON variablesExpected = new OptimizelyJSON(Collections.singletonMap("integer_variable", 7));
+
+        assertEquals(decision.getVariationKey(), "Gred");
+        assertFalse(decision.getEnabled());
+        assertEquals(decision.getVariables().toMap(), variablesExpected.toMap());
+        assertEquals(decision.getRuleKey(), FEATURE_MULTI_VARIATE_EXPERIMENT_KEY);
+        assertEquals(decision.getFlagKey(), flagKey);
+        assertEquals(decision.getUserContext(), userContext);
+        assertTrue(decision.getReasons().isEmpty());
+
+        userContext.removeForcedDecision(new OptimizelyDecisionContext(flagKey, FEATURE_MULTI_VARIATE_EXPERIMENT_KEY));
+        variablesExpected = new OptimizelyJSON(Collections.singletonMap("integer_variable", 2));
+        decision = userContext.decide(flagKey);
+        assertEquals(decision.getVariationKey(), "Feorge");
+        assertTrue(decision.getEnabled());
+        assertEquals(decision.getVariables().toMap(), variablesExpected.toMap());
+        assertEquals(decision.getRuleKey(), FEATURE_MULTI_VARIATE_EXPERIMENT_KEY);
+        assertEquals(decision.getFlagKey(), flagKey);
+        assertEquals(decision.getUserContext(), userContext);
+        assertTrue(decision.getReasons().isEmpty());
+    }
+
+    @Test
+    public void testForcedDecisionDecideRollout() {
+        assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
+
+        String flagKey = "string_single_variable_feature";
+        Map<String, Object> attributes = Collections.singletonMap("house", "Gryffindor");
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(GENERIC_USER_ID, attributes);
+        userContext.setForcedDecision(new OptimizelyDecisionContext(flagKey, "1785077004"),
+                new OptimizelyForcedDecision("1566407342"));
+        OptimizelyDecision decision = userContext.decide(flagKey);
+
+        OptimizelyJSON variablesExpected = new OptimizelyJSON(Collections.singletonMap("string_variable", "lumos"));
+
+        assertEquals(decision.getVariationKey(), "1566407342");
+        assertTrue(decision.getEnabled());
+        assertEquals(decision.getVariables().toMap(), variablesExpected.toMap());
+        assertEquals(decision.getRuleKey(), "1785077004");
+        assertEquals(decision.getFlagKey(), flagKey);
+        assertEquals(decision.getUserContext(), userContext);
+        assertTrue(decision.getReasons().isEmpty());
     }
 
     // Utils
