@@ -34,6 +34,11 @@ import org.slf4j.LoggerFactory;
 public class EventWorker extends Worker {
     public static final String workerId = "EventWorker";
 
+    public static final String KEY_EVENT_URL = "url";
+    public static final String KEY_EVENT_BODY = "body";
+    public static final String KEY_EVENT_BODY_COMPRESSED = "bodyCompressed";
+    public static final String KEY_EVENT_RETRY_INTERVAL = "retryInterval";
+
     @VisibleForTesting
     public EventDispatcher eventDispatcher;
 
@@ -55,8 +60,10 @@ public class EventWorker extends Worker {
     @Override
     public Result doWork() {
         Data inputData = getInputData();
-        String url = inputData.getString("url");
+        String url = getUrlFromInputData(inputData);
         String body = getEventBodyFromInputData(inputData);
+        long interval = getRetryIntervalFromInputData(inputData);
+
         boolean dispatched = true;
 
         if (isEventValid(url, body)) {
@@ -65,7 +72,11 @@ public class EventWorker extends Worker {
             dispatched = eventDispatcher.dispatch();
         }
 
-        return dispatched ? Result.success() : Result.retry();
+        if (interval > 0) {
+            return dispatched ? Result.success() : Result.retry();
+        } else {
+            return Result.success();
+        }
     }
 
     public static Data getData(LogEvent event) {
@@ -85,6 +96,19 @@ public class EventWorker extends Worker {
     }
 
     @VisibleForTesting
+    public static Data getData(LogEvent event, Long retryInterval) {
+        Data data = getData(event);
+        if (retryInterval > 0) {
+            data = new Data.Builder()
+                    .putAll(data)
+                    .putLong(KEY_EVENT_RETRY_INTERVAL, retryInterval)
+                    .build();
+        }
+
+        return data;
+    }
+
+    @VisibleForTesting
     public static Data compressEvent(String url, String body) {
         try {
             String compressed = EventHandlerUtils.compress(body);
@@ -97,16 +121,16 @@ public class EventWorker extends Worker {
     @VisibleForTesting
     public static Data dataForEvent(String url, String body) {
         return new Data.Builder()
-                .putString("url", url)
-                .putString("body", body)
+                .putString(KEY_EVENT_URL, url)
+                .putString(KEY_EVENT_BODY, body)
                 .build();
     }
 
     @VisibleForTesting
     public static Data dataForCompressedEvent(String url, String compressed) {
         return new Data.Builder()
-                .putString("url", url)
-                .putString("bodyCompressed", compressed)
+                .putString(KEY_EVENT_URL, url)
+                .putString(KEY_EVENT_BODY_COMPRESSED, compressed)
                 .build();
     }
 
@@ -115,17 +139,27 @@ public class EventWorker extends Worker {
     public String getEventBodyFromInputData(Data inputData) {
         // check non-compressed data first
 
-        String body = inputData.getString("body");
+        String body = inputData.getString(KEY_EVENT_BODY);
         if (body != null) return body;
 
         // check if data compressed
 
-        String compressed = inputData.getString("bodyCompressed");
+        String compressed = inputData.getString(KEY_EVENT_BODY_COMPRESSED);
         try {
             return EventHandlerUtils.decompress(compressed);
         } catch (Exception e) {
             return null;
         }
+    }
+
+    @VisibleForTesting
+    public String getUrlFromInputData(Data data) {
+        return data.getString(KEY_EVENT_URL);
+    }
+
+    @VisibleForTesting
+    public long getRetryIntervalFromInputData(Data data) {
+        return data.getLong(KEY_EVENT_RETRY_INTERVAL, -1);
     }
 
     @VisibleForTesting

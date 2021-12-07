@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.OptlyStorage;
@@ -40,7 +41,8 @@ import java.util.List;
  *
  * This abstraction makes unit testing much simpler
  */
-class EventDispatcher {
+@VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+public class EventDispatcher {
 
     @NonNull private final Context context;
     @NonNull private final ServiceScheduler serviceScheduler;
@@ -58,7 +60,8 @@ class EventDispatcher {
         this.logger = logger;
     }
 
-    boolean dispatch(String url, String body) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public boolean dispatch(String url, String body) {
         boolean dispatched = false;
 
         Event event = null;

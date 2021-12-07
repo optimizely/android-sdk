@@ -147,6 +147,33 @@ public class DatafileLoaderTest {
     }
 
     @Test
+    public void getDatafile_datafileCacheInjected() {
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        // datafileCache initially null, and passed with getDatafile()
+        DatafileLoader datafileLoader = new DatafileLoader(context, datafileClient, null, logger);
+        datafileCache.save("{}");
+        when(client.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn("");
+
+        // skip if datafileCache is not provided
+        datafileLoader.getDatafile("1", datafileLoadedListener);
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail();
+        }
+        verify(datafileLoadedListener, never()).onDatafileLoaded("{}");
+
+        datafileLoader.getDatafile("1", datafileCache, datafileLoadedListener);
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail();
+        }
+        verify(datafileLoadedListener, atLeast(1)).onDatafileLoaded("{}");
+    }
+
+    @Test
     // flacky with lower API
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
     public void warningsAreLogged() throws IOException {

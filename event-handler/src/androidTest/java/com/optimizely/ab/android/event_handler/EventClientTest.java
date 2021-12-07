@@ -69,7 +69,6 @@ public class EventClientTest {
     public void testEventClient() {
         eventClient.sendEvent(event);
 
-        verify(logger).info("Successfully dispatched event: {}",
-                event);
+        verify(logger).debug("SendEvent completed: {}", event);
     }
 }

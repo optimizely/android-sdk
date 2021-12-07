@@ -19,6 +19,7 @@ package com.optimizely.ab.android.event_handler;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 
 import com.optimizely.ab.android.shared.WorkerScheduler;
 import com.optimizely.ab.event.EventHandler;
@@ -59,13 +60,13 @@ public class DefaultEventHandler implements EventHandler {
     }
 
     /**
-     * Sets event dispatch interval
+     * Sets event dispatch retry interval
      * <p>
      * Events will only be scheduled to dispatch as long as events remain in storage.
      * <p>
      * Events are put into storage when they fail to send over network.
      *
-     * @param dispatchInterval the interval in seconds
+     * @param dispatchInterval the interval in milliseconds
      */
     public void setDispatchInterval(long dispatchInterval) {
         if (dispatchInterval <= 0) {
@@ -92,9 +93,17 @@ public class DefaultEventHandler implements EventHandler {
             logger.error("Event dispatcher received an empty url");
         }
 
-        WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class,
-                EventWorker.getData(logEvent), dispatchInterval);
+        // NOTE: retryInterval (dispatchInterval) is passed to WorkManager:
+        // - in InputData to enable/disable retries
+        // - in BackOffCriteria to change retry interval
+        Data inputData = EventWorker.getData(logEvent, dispatchInterval);
+        WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, inputData, dispatchInterval);
 
-        logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
+        if (dispatchInterval < 0) {
+            logger.info("Sent url {} to the event handler service", logEvent.getEndpointUrl());
+        } else {
+            logger.info("Sent url {} to the event handler service (with retry interval of {} seconds)",
+                    logEvent.getEndpointUrl(), dispatchInterval/1000);
+        }
     }
 }
