@@ -18,12 +18,16 @@ package com.optimizely.ab.android.shared;
 import android.content.Context;
 
 import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
 import androidx.work.Data;
+import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.Operation;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
+import java.util.AbstractMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,10 +38,14 @@ import java.util.concurrent.TimeUnit;
  * This class eliminates the use of the deprecated Intents and JobSchedulers .
  */
 public class WorkerScheduler {
+    // when true, work requested only when connection is available.
+    public static boolean requestOnlyWhenConnected = true;
+
     /**
      * Unschedule a scheduled service for a given worker id
      * @param context current application context
      * @param workerId work id to cancel
+     * @return An {@link Operation} that can be used to determine when the cancelAllWorkByTag has completed
      */
     public static void unscheduleService(Context context, String workerId) {
         WorkManager.getInstance(context).cancelAllWorkByTag(workerId);
@@ -50,17 +58,29 @@ public class WorkerScheduler {
      * @param clazz class based on ListenableWorker
      * @param data androidx.work.Data
      * @param interval the interval for the repeated service
+     * @return An <WorkRequest, Operation> that can be used for tracing work state
      */
-    public static void scheduleService(Context context, String workerId, Class clazz, Data data, long interval) {
+    public static AbstractMap.SimpleEntry<WorkRequest, Operation> scheduleService(Context context, String workerId, Class clazz, Data data, long interval) {
         WorkManager.getInstance(context).cancelAllWorkByTag(workerId);
         long minutes = interval < 15 ? 15 : interval;
-        WorkRequest workRequest =
-                new PeriodicWorkRequest.Builder(clazz, minutes, TimeUnit.MINUTES)
-                        .addTag(workerId)
-                        .setInputData(data)
-                        .setInitialDelay(minutes, TimeUnit.MINUTES)
-                        .build();
-        WorkManager.getInstance(context).enqueue(workRequest);
+
+        WorkRequest.Builder workRequestBuilder = new PeriodicWorkRequest.Builder(clazz, minutes, TimeUnit.MINUTES)
+                .addTag(workerId)
+                .setInputData(data)
+                .setInitialDelay(minutes, TimeUnit.MINUTES);
+
+        if (requestOnlyWhenConnected) {
+             // requests only when connection is available (to control network connection failures)
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
+            workRequestBuilder.setConstraints(constraints);
+        }
+
+        WorkRequest workRequest = workRequestBuilder.build();
+        Operation operation = WorkManager.getInstance(context).enqueue(workRequest);
+
+        return new AbstractMap.SimpleEntry<>(workRequest, operation);
     }
 
     /**
@@ -70,36 +90,35 @@ public class WorkerScheduler {
      * @param workerId - the tag as well as unique identifier
      * @param clazz - worker class
      * @param data - input data for the worker
+     * @param retryInterval - the dispatch retry interval in milli-seconds
+     * @return An <WorkRequest, Operation> that can be used for tracing work state
      */
-    public static void startService(Context context, String workerId, Class clazz, Data data) {
-        startService(context, workerId, clazz, data, 0L);
-
-    }
-
-    /**
-     * This method should be pulled out to a worker helper class.  This method uses the
-     * WorkManagerRequest
-     * @param context - application context
-     * @param workerId - the tag as well as unique identifier
-     * @param clazz - worker class
-     * @param data - input data for the worker
-     * @param retryInterval - if the service fails, retry on this interval (in seconds).
-     */
-    public static void startService(Context context, String workerId, Class clazz, Data data, Long retryInterval) {
+    public static AbstractMap.SimpleEntry<WorkRequest, Operation> startService(Context context, String workerId, Class clazz, Data data, Long retryInterval) {
         // Create a WorkRequest for your Worker and sending it input
-        WorkRequest.Builder workRequestBuilder =
-                new OneTimeWorkRequest.Builder(clazz)
-                        .setInputData(data)
-                        .addTag(workerId);
+        WorkRequest.Builder workRequestBuilder = new OneTimeWorkRequest.Builder(clazz)
+                .setInputData(data)
+                .addTag(workerId);
+
+        if (requestOnlyWhenConnected) {
+            // requests only when connection is available (to control network connection failures)
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
+            workRequestBuilder.setConstraints(constraints);
+        }
+
         if (retryInterval > 0) {
+            // NOTE: retry still enabled by default (LINEAR, 30secs) even when setBackoffCriteria is not called.
             workRequestBuilder.setBackoffCriteria(
                     BackoffPolicy.LINEAR,
-                    retryInterval * 1000,
+                    retryInterval,
                     TimeUnit.MILLISECONDS);
         }
 
-        WorkRequest wq = workRequestBuilder.build();
-        WorkManager.getInstance(context).enqueue(wq);
+        WorkRequest workRequest = workRequestBuilder.build();
+        Operation operation = WorkManager.getInstance(context).enqueue(workRequest);
+
+        return new AbstractMap.SimpleEntry<>(workRequest, operation);
     }
 
 }

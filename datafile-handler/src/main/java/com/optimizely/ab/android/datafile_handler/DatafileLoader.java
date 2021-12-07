@@ -39,7 +39,7 @@ public class DatafileLoader {
     private static final String datafileDownloadTime = "optlyDatafileDownloadTime";
     private static Long minTimeBetweenDownloadsMilli = 60 * 1000L;
 
-    @NonNull private final DatafileCache datafileCache;
+    @Nullable private DatafileCache datafileCache;
     @NonNull private final DatafileClient datafileClient;
     @NonNull private final Logger logger;
     @NonNull private final OptlyStorage storage;
@@ -49,7 +49,7 @@ public class DatafileLoader {
 
     public DatafileLoader(@NonNull Context context,
                           @NonNull DatafileClient datafileClient,
-                          @NonNull DatafileCache datafileCache,
+                          @Nullable DatafileCache datafileCache,
                           @NonNull Logger logger) {
         this.context = context;
         this.logger = logger;
@@ -81,6 +81,11 @@ public class DatafileLoader {
     }
 
     public void getDatafile(@NonNull String datafileUrl, @Nullable DatafileLoadedListener datafileLoadedListener) {
+        if (datafileCache == null) {
+            logger.warn("DatafileCache is not set.");
+            return;
+        }
+
         if (!allowDownload(datafileUrl, datafileLoadedListener)) {
             return;
         }
@@ -123,6 +128,14 @@ public class DatafileLoader {
                 logger.info("Refreshing data file");
             }
         });
+    }
+
+    public void getDatafile(@NonNull String datafileUrl,
+                            @NonNull DatafileCache datafileCache,
+                            @Nullable DatafileLoadedListener datafileLoadedListener) {
+        // Inject datafileCache for DatafileWorker testing
+        this.datafileCache = datafileCache;
+        getDatafile(datafileUrl, datafileLoadedListener);
     }
 
     private void notifyListener(@Nullable DatafileLoadedListener datafileLoadedListener, @Nullable String dataFile) {

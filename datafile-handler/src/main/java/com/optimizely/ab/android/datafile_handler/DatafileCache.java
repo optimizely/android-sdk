@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.optimizely.ab.android.shared.Cache;
+import com.optimizely.ab.android.shared.DatafileConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -101,4 +102,16 @@ public class DatafileCache {
     public boolean save(String dataFile) {
         return cache.save(filename, dataFile);
     }
+
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof DatafileCache)) {
+            return false;
+        }
+        DatafileCache p = (DatafileCache) o;
+        return this.filename.equals(p.filename);
+    }
+
 }
