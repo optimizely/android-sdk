@@ -1,5 +1,13 @@
 # Optimizely Android X SDK Changelog
 
+## 3.12.0
+December 9th, 2021
+
+Add reachability checking for datafile-fetch and event-dispatch ([#389](https://github.com/optimizely/android-sdk/pull/389)).
+
+* Add connection constraints to WorkManager requests for datafile-fetch and event-dispatch.
+* Fix event-dispatch retry to disabled by default (configurable).
+
 ## 3.11.1
 October 4th, 2021
 
