@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2021, Optimizely, Inc. and contributors                   *
+ * Copyright 2021, Optimizely, Inc. and contributors                        *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -45,7 +45,6 @@ public class WorkerScheduler {
      * Unschedule a scheduled service for a given worker id
      * @param context current application context
      * @param workerId work id to cancel
-     * @return An {@link Operation} that can be used to determine when the cancelAllWorkByTag has completed
      */
     public static void unscheduleService(Context context, String workerId) {
         WorkManager.getInstance(context).cancelAllWorkByTag(workerId);
@@ -58,7 +57,7 @@ public class WorkerScheduler {
      * @param clazz class based on ListenableWorker
      * @param data androidx.work.Data
      * @param interval the interval for the repeated service
-     * @return An <WorkRequest, Operation> that can be used for tracing work state
+     * @return An (WorkRequest, Operation) that can be used for tracing work state
      */
     public static AbstractMap.SimpleEntry<WorkRequest, Operation> scheduleService(Context context, String workerId, Class clazz, Data data, long interval) {
         WorkManager.getInstance(context).cancelAllWorkByTag(workerId);
@@ -91,7 +90,7 @@ public class WorkerScheduler {
      * @param clazz - worker class
      * @param data - input data for the worker
      * @param retryInterval - the dispatch retry interval in milli-seconds
-     * @return An <WorkRequest, Operation> that can be used for tracing work state
+     * @return An (WorkRequest, Operation) that can be used for tracing work state
      */
     public static AbstractMap.SimpleEntry<WorkRequest, Operation> startService(Context context, String workerId, Class clazz, Data data, Long retryInterval) {
         // Create a WorkRequest for your Worker and sending it input
