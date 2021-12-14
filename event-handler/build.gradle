@@ -54,8 +54,6 @@ dependencies {
     // Base64
     implementation "commons-codec:commons-codec:1.15"
 
-    compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
-
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
     testImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"

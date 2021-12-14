@@ -51,8 +51,6 @@ dependencies {
     implementation "androidx.annotation:annotation:$annotations_ver"
     implementation "androidx.work:work-runtime:$work_runtime"
 
-    compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
-
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
