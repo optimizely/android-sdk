@@ -118,9 +118,6 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
      * @param updateInterval frequency of updates in seconds
      */
     public void startBackgroundUpdates(Context context, DatafileConfig datafileConfig, Long updateInterval, DatafileLoadedListener listener) {
-        // if already running, stop it
-        stopBackgroundUpdates(context, datafileConfig);
-
         long updateIntervalInMinutes = updateInterval / 60;
 
         // save the project id background start is set.  If we get a reboot or a replace, we can restart via the

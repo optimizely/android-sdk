@@ -501,6 +501,9 @@ public class OptimizelyManager {
     }
 
     private void startDatafileHandler(Context context) {
+        // if already running, stop it first.
+        datafileHandler.stopBackgroundUpdates(context, datafileConfig);
+
         if (!datafileDownloadEnabled()) {
             logger.debug("Invalid download interval, ignoring background updates.");
             return;
@@ -612,7 +615,7 @@ public class OptimizelyManager {
         return errorHandler;
     }
 
-    private boolean isAndroidVersionSupported() {
+    protected boolean isAndroidVersionSupported() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             return true;
         } else {

@@ -218,7 +218,7 @@ public class OptimizelyManagerTest {
         assertNotNull(optimizelyManager.getDatafileHandler());
     }
 
-        @Test
+    @Test
     public void initializeAsyncWithEnvironment() {
         Logger logger = mock(Logger.class);
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
@@ -377,7 +377,7 @@ public class OptimizelyManagerTest {
     }
 
     @Test
-    public void injectOptimizelyWithDatafileLisener() {
+    public void injectOptimizelyWithDatafileListener() {
         Context context = mock(Context.class);
         UserProfileService userProfileService = mock(UserProfileService.class);
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
