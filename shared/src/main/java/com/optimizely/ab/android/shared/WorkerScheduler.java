@@ -60,7 +60,8 @@ public class WorkerScheduler {
      * @return An (WorkRequest, Operation) that can be used for tracing work state
      */
     public static AbstractMap.SimpleEntry<WorkRequest, Operation> scheduleService(Context context, String workerId, Class clazz, Data data, long interval) {
-        WorkManager.getInstance(context).cancelAllWorkByTag(workerId);
+        unscheduleService(context, workerId);
+
         long minutes = interval < 15 ? 15 : interval;
 
         WorkRequest.Builder workRequestBuilder = new PeriodicWorkRequest.Builder(clazz, minutes, TimeUnit.MINUTES)
