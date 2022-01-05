@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.test_app;
+package com.optimizely.ab.android.test_app.Samples;
 
 import android.content.Context;
 import android.util.Log;
@@ -23,6 +23,7 @@ import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.sdk.OptimizelyStartListener;
+import com.optimizely.ab.android.test_app.R;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.JsonParseException;
 import com.optimizely.ab.notification.UpdateConfigNotification;
@@ -47,7 +48,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-public class SamplesForAPI {
+public class APISamplesInJava {
 
     static public void samplesForDecide(Context context) {
         List<OptimizelyDecideOption> defaultDecideOptions = Arrays.asList(OptimizelyDecideOption.DISABLE_DECISION_EVENT);
