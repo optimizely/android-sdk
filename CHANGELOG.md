@@ -16,7 +16,7 @@ This release updates the SDK to use the Optimizely [Java SDK 3.10.0](https://git
 - For details, refer to our documentation pages: [OptimizelyUserContext](https://docs.developers.optimizely.com/full-stack/v4.0/docs/optimizelyusercontext-android) and [Forced Decision methods](https://docs.developers.optimizely.com/full-stack/v4.0/docs/forced-decision-methods-android).
 
 ### Bug Fixes
-* Unschedule background polling worker when interval is not set. This fixes the bug that a polling worker scheduled before is not disabled when Optimizely is initialized again with polling disabled. ([397](https://github.com/optimizely/android-sdk/pull/397)).
+* Unschedule background polling worker when interval is not set. This fixes the bug that a polling worker scheduled before is not disabled when Optimizely is initialized again with polling disabled. ([#397](https://github.com/optimizely/android-sdk/pull/397)).
 
 
 ## 3.12.0
