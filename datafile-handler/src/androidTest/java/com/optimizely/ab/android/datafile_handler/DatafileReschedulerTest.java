@@ -119,18 +119,12 @@ public class DatafileReschedulerTest {
 
     @Test
     @SdkSuppress(maxSdkVersion = Build.VERSION_CODES.N)
-    public void dispatchingOneWithoutEnvironment() {
+    public void dispatchingOneWithoutEnvironment() throws InterruptedException {
         // projectId: number string
         // sdkKey: alphabet string
         backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), true);
-
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
         dispatcher.dispatch();
-        try {
-            executor.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            fail();
-        }
+        TimeUnit.SECONDS.sleep(1);
 
         verify(dispatcher).rescheduleService(captor.capture());
         assertEquals(new DatafileConfig("1", null), captor.getValue());
@@ -138,18 +132,12 @@ public class DatafileReschedulerTest {
 
     @Test
     @SdkSuppress(maxSdkVersion = Build.VERSION_CODES.N)
-    public void dispatchingOneWithEnvironment() {
+    public void dispatchingOneWithEnvironment() throws InterruptedException {
         // projectId: number string
         // sdkKey: alphabet string
         backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "A"), true);
-
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
         dispatcher.dispatch();
-        try {
-            executor.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            fail();
-        }
+        TimeUnit.SECONDS.sleep(1);
 
         verify(dispatcher).rescheduleService(captor.capture());
         assertEquals(new DatafileConfig(null, "A"), captor.getValue());
@@ -157,19 +145,13 @@ public class DatafileReschedulerTest {
 
     @Test
     @SdkSuppress(maxSdkVersion = Build.VERSION_CODES.N)
-    public void dispatchingManyForLegacy() {
+    public void dispatchingManyForLegacy() throws InterruptedException {
         backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), true);
         backgroundWatchersCache.setIsWatching(new DatafileConfig("2", "A"), true);
         backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "B"), true);
         backgroundWatchersCache.setIsWatching(new DatafileConfig("3", null), true);
-
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
         dispatcher.dispatch();
-        try {
-            executor.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            fail();
-        }
+        TimeUnit.SECONDS.sleep(1);
 
         verify(dispatcher, times(4)).rescheduleService(captor.capture());
         List array = new ArrayList<String>();
@@ -184,17 +166,11 @@ public class DatafileReschedulerTest {
 
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.O)
-    public void dispatchingManyForJobScheduler() {
+    public void dispatchingManyForJobScheduler() throws InterruptedException {
         backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), true);
         backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "A"), true);
-
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
         dispatcher.dispatch();
-        try {
-            executor.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            fail();
-        }
+        TimeUnit.SECONDS.sleep(1);
 
         verify(dispatcher, never()).rescheduleService(captor.capture());
     }
