@@ -66,8 +66,6 @@ public class DatafileRescheduler extends BroadcastReceiver {
                     LoggerFactory.getLogger(BackgroundWatchersCache.class));
             Dispatcher dispatcher = new Dispatcher(context, backgroundWatchersCache, LoggerFactory.getLogger(Dispatcher.class));
             dispatcher.dispatch();
-
-
         }  else {
             logger.warn("Received invalid broadcast to data file rescheduler");
         }
@@ -78,7 +76,7 @@ public class DatafileRescheduler extends BroadcastReceiver {
      *
      * This abstraction mostly makes unit testing easier
      */
-    static class Dispatcher {
+    public static class Dispatcher {
 
         @NonNull private final Context context;
         @NonNull private final BackgroundWatchersCache backgroundWatchersCache;
@@ -91,21 +89,34 @@ public class DatafileRescheduler extends BroadcastReceiver {
         }
 
         void dispatch() {
-            List<DatafileConfig> datafileConfigs = backgroundWatchersCache.getWatchingDatafileConfigs();
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    // read config file in background thread
+                    List<DatafileConfig> datafileConfigs = backgroundWatchersCache.getWatchingDatafileConfigs();
 
-            for (DatafileConfig datafileConfig : datafileConfigs) {
-                // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
-                // so, we don't need to do anything.
-               if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                   WorkerScheduler.scheduleService(context,
-                           DatafileWorker.workerId + datafileConfig.getKey(),
-                           DatafileWorker.class,
-                           DatafileWorker.getData(datafileConfig),
-                           DefaultDatafileHandler.getUpdateInterval(context));
-                    logger.info("Rescheduled data file watching for project {}", datafileConfig);
+                    for (DatafileConfig datafileConfig : datafileConfigs) {
+                        // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
+                        // so, we don't need to do anything.
+                        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                            rescheduleService(datafileConfig);
+                            logger.info("Rescheduled datafile watching for project {}", datafileConfig);
+                        } else {
+                            logger.debug("Rescheduling datafile will be done by JobScheduler");
+                        }
+                    }
                 }
-            }
+            };
 
+            thread.start();
+        }
+
+        public void rescheduleService(DatafileConfig datafileConfig) {
+            WorkerScheduler.scheduleService(context,
+                    DatafileWorker.workerId + datafileConfig.getKey(),
+                    DatafileWorker.class,
+                    DatafileWorker.getData(datafileConfig),
+                    DefaultDatafileHandler.getUpdateInterval(context));
         }
     }
 }
