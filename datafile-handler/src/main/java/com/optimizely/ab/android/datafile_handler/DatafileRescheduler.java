@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2021, Optimizely, Inc. and contributors                   *
+ * Copyright 2016-2022, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.DatafileConfig;
@@ -76,6 +77,7 @@ public class DatafileRescheduler extends BroadcastReceiver {
      *
      * This abstraction mostly makes unit testing easier
      */
+    @VisibleForTesting
     public static class Dispatcher {
 
         @NonNull private final Context context;
@@ -111,6 +113,7 @@ public class DatafileRescheduler extends BroadcastReceiver {
             thread.start();
         }
 
+        @VisibleForTesting
         public void rescheduleService(DatafileConfig datafileConfig) {
             WorkerScheduler.scheduleService(context,
                     DatafileWorker.workerId + datafileConfig.getKey(),

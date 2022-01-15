@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016,2021, Optimizely, Inc. and contributors                   *
+ * Copyright 2016,2021-2022, Optimizely, Inc. and contributors              *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
+import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.Cache;
@@ -28,7 +29,6 @@ import com.optimizely.ab.android.shared.DatafileConfig;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -40,6 +40,7 @@ import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -117,6 +118,7 @@ public class DatafileReschedulerTest {
     }
 
     @Test
+    @SdkSuppress(maxSdkVersion = Build.VERSION_CODES.N)
     public void dispatchingOneWithoutEnvironment() {
         // projectId: number string
         // sdkKey: alphabet string
@@ -135,6 +137,7 @@ public class DatafileReschedulerTest {
     }
 
     @Test
+    @SdkSuppress(maxSdkVersion = Build.VERSION_CODES.N)
     public void dispatchingOneWithEnvironment() {
         // projectId: number string
         // sdkKey: alphabet string
@@ -153,7 +156,8 @@ public class DatafileReschedulerTest {
     }
 
     @Test
-    public void dispatchingMany() {
+    @SdkSuppress(maxSdkVersion = Build.VERSION_CODES.N)
+    public void dispatchingManyForLegacy() {
         backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), true);
         backgroundWatchersCache.setIsWatching(new DatafileConfig("2", "A"), true);
         backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "B"), true);
@@ -177,4 +181,22 @@ public class DatafileReschedulerTest {
         assert(array.contains(new DatafileConfig(null, "B").toString()));
         assert(array.contains(new DatafileConfig("3", null).toString()));
     }
+
+    @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.O)
+    public void dispatchingManyForJobScheduler() {
+        backgroundWatchersCache.setIsWatching(new DatafileConfig("1", null), true);
+        backgroundWatchersCache.setIsWatching(new DatafileConfig(null, "A"), true);
+
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        dispatcher.dispatch();
+        try {
+            executor.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        verify(dispatcher, never()).rescheduleService(captor.capture());
+    }
+
 }
