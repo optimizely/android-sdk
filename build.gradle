@@ -59,10 +59,10 @@ allprojects {
 }
 
 ext {
-    compile_sdk_version = 29
-    build_tools_version = "29.0.3"
+    compile_sdk_version = 32
+    build_tools_version = "30.0.2"
     min_sdk_version = 14
-    target_sdk_version = 29
+    target_sdk_version = 32
     java_core_ver = "3.10.0"
     android_logger_ver = "1.3.6"
     jacksonversion= "2.11.2"
@@ -76,7 +76,7 @@ ext {
     gson_ver = "2.8.6"
     group_id = "com.optimizely.ab"
     androidx_test = "1.1.1"
-    work_runtime = "2.5.0"
+    work_runtime = "2.7.1"
 }
 
 task clean(type: Delete) {
