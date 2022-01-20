@@ -94,18 +94,18 @@ public class DatafileRescheduler extends BroadcastReceiver {
             Thread thread = new Thread() {
                 @Override
                 public void run() {
+                    // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
+                    // so, we don't need to do anything.
+                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        logger.debug("Rescheduling datafile will be done by JobScheduler");
+                        return;
+                    }
+
                     // read config file in background thread
                     List<DatafileConfig> datafileConfigs = backgroundWatchersCache.getWatchingDatafileConfigs();
-
                     for (DatafileConfig datafileConfig : datafileConfigs) {
-                        // for scheduled jobs Android O and above, we use the JobScheduler and persistent periodic jobs
-                        // so, we don't need to do anything.
-                        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                            rescheduleService(datafileConfig);
-                            logger.info("Rescheduled datafile watching for project {}", datafileConfig);
-                        } else {
-                            logger.debug("Rescheduling datafile will be done by JobScheduler");
-                        }
+                        rescheduleService(datafileConfig);
+                        logger.info("Rescheduled datafile watching for project {}", datafileConfig);
                     }
                 }
             };
