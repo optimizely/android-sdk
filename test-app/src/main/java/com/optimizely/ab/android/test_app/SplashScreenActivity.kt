@@ -25,6 +25,7 @@ import com.optimizely.ab.android.event_handler.EventRescheduler
 import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.android.sdk.OptimizelyManager
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager
+import com.optimizely.ab.android.test_app.Samples.APISamplesInJava
 import com.optimizely.ab.notification.DecisionNotification
 import com.optimizely.ab.notification.TrackNotification
 import com.optimizely.ab.notification.UpdateConfigNotification
@@ -62,6 +63,15 @@ class SplashScreenActivity : AppCompatActivity() {
             startVariation()
         }
 
+//        APISamplesInJava.samplesForDoc_InitializeSDK(applicationContext)
+//        APISamplesInJava.samplesForDoc_GetClient(applicationContext)
+//        APISamplesInJava.samplesForDoc_DatafilePolling(applicationContext)
+//        APISamplesInJava.samplesForDoc_BundledDatafile(applicationContext)
+//
+//        APISamplesInKotlin.samplesForDoc_InitializeSDK(applicationContext)
+//        APISamplesInKotlin.samplesForDoc_GetClient(applicationContext)
+//        APISamplesInKotlin.samplesForDoc_DatafilePolling(applicationContext)
+//        APISamplesInKotlin.samplesForDoc_BundledDatafile(applicationContext)
     }
 
     private fun addNotificationListeners() {

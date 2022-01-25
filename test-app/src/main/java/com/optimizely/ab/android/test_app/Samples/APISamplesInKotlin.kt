@@ -17,78 +17,72 @@ package com.optimizely.ab.android.test_app
 
 import android.content.Context
 import android.util.Log
-import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption
-import com.optimizely.ab.android.sdk.OptimizelyManager
-import com.optimizely.ab.android.test_app.R
-import com.optimizely.ab.android.sdk.OptimizelyStartListener
-import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.OptimizelyUserContext
-import com.optimizely.ab.optimizelydecision.OptimizelyDecision
-import com.optimizely.ab.optimizelyjson.OptimizelyJSON
-import com.optimizely.ab.config.Variation
+import com.optimizely.ab.android.sdk.OptimizelyClient
+import com.optimizely.ab.android.sdk.OptimizelyManager
 import com.optimizely.ab.config.parser.JsonParseException
 import com.optimizely.ab.notification.NotificationHandler
-import com.optimizely.ab.optimizelyconfig.OptimizelyConfig
-import com.optimizely.ab.optimizelyconfig.OptimizelyAttribute
-import com.optimizely.ab.optimizelyconfig.OptimizelyAudience
-import com.optimizely.ab.optimizelyconfig.OptimizelyEvent
-import com.optimizely.ab.optimizelyconfig.OptimizelyFeature
-import com.optimizely.ab.optimizelyconfig.OptimizelyExperiment
-import com.optimizely.ab.optimizelyconfig.OptimizelyVariation
-import com.optimizely.ab.optimizelyconfig.OptimizelyVariable
 import com.optimizely.ab.notification.UpdateConfigNotification
+import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption
+import com.optimizely.ab.optimizelydecision.OptimizelyDecision
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 object APISamplesInKotlin {
-    fun samplesForDecide(context: Context?) {
+    fun samplesForDecide(context: Context) {
         val defaultDecideOptions = Arrays.asList(OptimizelyDecideOption.DISABLE_DECISION_EVENT)
         val optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("FCnSegiEkRry9rhVMroit4")
                 .withDefaultDecideOptions(defaultDecideOptions)
                 .build(context)
-        optimizelyManager.initialize(context!!, R.raw.datafile) { optimizelyClient: OptimizelyClient ->
+        optimizelyManager.initialize(context, R.raw.datafile) { optimizelyClient: OptimizelyClient ->
 
             // createUserContext
+
             val userId = "user_123"
             val attributes: MutableMap<String, Any> = HashMap()
             attributes["is_logged_in"] = false
             attributes["app_version"] = "1.3.2"
             val user = optimizelyClient.createUserContext(userId, attributes)
+            if (user == null) return@initialize
             // attributes can be set in this way too
-            user!!.setAttribute("location", "NY")
+            user.setAttribute("location", "NY")
 
             // decide
+
             val options = Arrays.asList(OptimizelyDecideOption.INCLUDE_REASONS)
             val decision = user.decide("show_coupon", options)
             // or can be called without options
             //OptimizelyDecision decision = user.decide("show_coupon");
+
             val variationKey = decision.variationKey
             val enabled = decision.enabled
             val variables = decision.variables
             var vs: String? = null
             try {
                 vs = variables.getValue("text_color", String::class.java)
-                val a = variables.getValue("price", Int::class.java)!!
             } catch (e: JsonParseException) {
                 e.printStackTrace()
             }
-            val vb = variables.toMap()!!["discount"] as Int
+            val vb = variables.toMap()?.get("discount") as Int
             val ruleKey = decision.ruleKey
             val flagKey = decision.flagKey
             val userContext = decision.userContext
             val reasons = decision.reasons
+
             Log.d("Samples", "decision: $decision")
             Log.d("Samples", "items: $variationKey $enabled $vs $vb $ruleKey $flagKey $userContext $reasons")
 
             // decideForKeys
+
             val keys = Arrays.asList("show_coupon", "bg-feature")
             val decisionsMultiple = user.decideForKeys(keys)
-            val decision1 = decisionsMultiple[keys[0]]
-            val decision2 = decisionsMultiple[keys[1]]
+            val decision1 = decisionsMultiple.get(keys[0])
+            val decision2 = decisionsMultiple.get(keys[1])
             Log.d("Samples", "decisionsMultiple: $keys $decision1 $decision2")
 
             // decideAll
+
             val options2 = Arrays.asList(OptimizelyDecideOption.ENABLED_FLAGS_ONLY)
             val decisionsAll = user.decideAll(options2)
             val allKeys: Set<String> = decisionsAll.keys
@@ -101,12 +95,13 @@ object APISamplesInKotlin {
         }
     }
 
-    fun samplesForInitialization(context: Context?) {
+    fun samplesForInitialization(context: Context) {
         var optimizelyManager: OptimizelyManager
         var optimizelyClient: OptimizelyClient
-        var variation: Variation?
+        var user: OptimizelyUserContext
+        var decision: OptimizelyDecision
 
-        // These are sample codes for synchronous and asynchronous SDK initializations with multiple options
+        // Here are more sample codes for synchronous and asynchronous SDK initializations with multiple options
 
         // [Synchronous]
 
@@ -117,8 +112,9 @@ object APISamplesInKotlin {
         optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("<Your_SDK_Key>")
                 .build(context)
-        optimizelyClient = optimizelyManager.initialize(context!!, R.raw.datafile)
-        variation = optimizelyClient.activate("<Experiment_Key>", "<User_ID>")
+        optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile)
+        user = optimizelyClient.createUserContext("<User_ID>")!!
+        decision = user.decide("<Flag_Key>")
 
         // [S2] Synchronous initialization
         //      1. SDK is initialized instantly with a cached (or bundled) datafile
@@ -128,7 +124,8 @@ object APISamplesInKotlin {
                 .withSDKKey("<Your_SDK_Key>")
                 .build(context)
         optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile, true, true)
-        variation = optimizelyClient.activate("<Experiment_Key>", "<User_ID>")
+        user = optimizelyClient.createUserContext("<User_ID>")!!
+        decision = user.decide("<Flag_Key>")
 
         // [S3] Synchronous initialization
         //      1. SDK is initialized instantly with a cached (or bundled) datafile
@@ -138,10 +135,11 @@ object APISamplesInKotlin {
         //         The cached datafile is used immediately to update the SDK project config.
         optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("<Your_SDK_Key>")
-                .withDatafileDownloadInterval(TimeUnit.MINUTES.toSeconds(15))
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .build(context)
         optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile, true, true)
-        variation = optimizelyClient.activate("<Experiment_Key>", "<User_ID>")
+        user = optimizelyClient.createUserContext("<User_ID>")!!
+        decision = user.decide("<Flag_Key>")
 
         // [Asynchronous]
 
@@ -150,7 +148,11 @@ object APISamplesInKotlin {
         optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("<Your_SDK_Key>")
                 .build(context)
-        optimizelyManager.initialize(context, null) { client: OptimizelyClient -> val variation2 = client.activate("<Experiment_Key>", "<User_ID>") }
+        optimizelyManager.initialize(context, null) { client: OptimizelyClient ->
+            val user = client.createUserContext("<User_ID>")!!
+            val decision = user.decide("<Flag_Key>")
+        }
+
 
         // [A2] Asynchronous initialization
         //      1. A datafile is downloaded from the server and the SDK is initialized with the datafile
@@ -158,18 +160,22 @@ object APISamplesInKotlin {
         //         The cached datafile is used immediately to update the SDK project config.
         optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("<Your_SDK_Key>")
-                .withDatafileDownloadInterval(TimeUnit.MINUTES.toSeconds(15))
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .build(context)
-        optimizelyManager.initialize(context, null) { client: OptimizelyClient -> val variation2 = client.activate("<Experiment_Key>", "<User_ID>") }
+        optimizelyManager.initialize(context, null) { client: OptimizelyClient ->
+            val user = client.createUserContext("<User_ID>")!!
+            val decision = user.decide("<Flag_Key>")
+        }
     }
 
-    fun samplesForOptimizelyConfig(context: Context?) {
+    fun samplesForOptimizelyConfig(context: Context) {
         val optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("FCnSegiEkRry9rhVMroit4")
                 .build(context)
-        optimizelyManager.initialize(context!!, R.raw.datafile) { optimizelyClient: OptimizelyClient ->
+        optimizelyManager.initialize(context, R.raw.datafile) { optimizelyClient: OptimizelyClient ->
             val config = optimizelyClient.optimizelyConfig
-            println("[OptimizelyConfig] revision = " + config!!.revision)
+            if (config == null) return@initialize
+            println("[OptimizelyConfig] revision = " + config.revision)
             println("[OptimizelyConfig] sdkKey = " + config.sdkKey)
             println("[OptimizelyConfig] environmentKey = " + config.environmentKey)
             println("[OptimizelyConfig] attributes:")
@@ -187,19 +193,19 @@ object APISamplesInKotlin {
 
             // all features
             for (flagKey in config.featuresMap.keys) {
-                val flag = config.featuresMap[flagKey]
-                for (experiment in flag!!.experimentRules) {
+                val flag = config.featuresMap.get(flagKey)!!
+                for (experiment in flag.experimentRules) {
                     println("[OptimizelyExperiment]  -- Experiment Rule Key: " + experiment.key)
                     println("[OptimizelyExperiment]  -- Experiment Audiences: " + experiment.audiences)
                     val variationsMap = experiment.variationsMap
                     for (variationKey in variationsMap.keys) {
-                        val variation = variationsMap[variationKey]
-                        println("[OptimizelyVariation]    -- variation = { key: " + variationKey + ", id: " + variation!!.id + ", featureEnabled: " + variation.featureEnabled + " }")
+                        val variation = variationsMap.get(variationKey)!!
+                        println("[OptimizelyVariation]    -- variation = { key: " + variationKey + ", id: " + variation.id + ", featureEnabled: " + variation.featureEnabled + " }")
                         // use variation data here...
                         val optimizelyVariableMap = variation.variablesMap
                         for (variableKey in optimizelyVariableMap.keys) {
-                            val variable = optimizelyVariableMap[variableKey]
-                            println("[OptimizelyVariable]      -- variable = key: " + variableKey + ", value: " + variable!!.value)
+                            val variable = optimizelyVariableMap.get(variableKey)!!
+                            println("[OptimizelyVariable]      -- variable = key: " + variableKey + ", value: " + variable.value)
                             // use variable data here...
                         }
                     }
@@ -208,15 +214,85 @@ object APISamplesInKotlin {
                     println("[OptimizelyExperiment]  -- Delivery Rule Key: " + delivery.key)
                     println("[OptimizelyExperiment]  -- Delivery Audiences: " + delivery.audiences)
                 }
-                val experimentsMap = flag.experimentsMap
-                // feature flag experiments
-                val experimentKeys: Set<String> = experimentsMap.keys
 
                 // use experiments and other feature flag data here...
             }
 
             // listen to OPTIMIZELY_CONFIG_UPDATE to get updated data
-            optimizelyClient.notificationCenter!!.addNotificationHandler(UpdateConfigNotification::class.java, NotificationHandler { handler: UpdateConfigNotification? -> val newConfig = optimizelyClient.optimizelyConfig })
+            optimizelyClient.notificationCenter?.addNotificationHandler(
+                    UpdateConfigNotification::class.java,
+                    NotificationHandler { handler: UpdateConfigNotification? ->
+                        val newConfig = optimizelyClient.optimizelyConfig
+                    }
+            )
         }
     }
+
+    fun samplesForDoc_InitializeSDK(context: Context) {
+        // -- sample starts here
+
+        // Build a manager
+        val optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
+                .withEventDispatchInterval(30, TimeUnit.SECONDS)
+                .build(context)
+
+        // Instantiate a client synchronously with a bundled datafile
+        val datafile = "REPLACE_WITH_YOUR_DATAFILE"
+        val optimizelyClient = optimizelyManager.initialize(context, datafile)
+
+        // Or, instantiate it asynchronously with a callback
+        optimizelyManager.initialize(context, null) { client: OptimizelyClient ->
+            // flag decision
+            val user = client.createUserContext("USER_ID_HERE")
+            val decision = user.decide("FLAG_KEY_HERE")
+        }
+    }
+
+    fun samplesForDoc_GetClient(context: Context) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+
+        // -- sample starts here
+        val optimizelyClient = optimizelyManager.optimizely
+    }
+
+    fun samplesForDoc_DatafilePolling(context: Context) {
+        // -- sample starts here
+
+        // Poll every 15 minutes
+        val optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
+                .build(context)
+
+        val optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile)
+        optimizelyClient.notificationCenter?.addNotificationHandler(UpdateConfigNotification::class.java) { notification: UpdateConfigNotification? -> println("got datafile change") }
+    }
+
+    fun samplesForDoc_BundledDatafile(context: Context) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+
+        // -- sample starts here
+        /**
+         * Initialize Optimizely asynchronously with a datafile.
+         * If it is not able to download a new datafile, it will
+         * initialize an OptimizelyClient with the one provided.
+         */
+        optimizelyManager.initialize(context, R.raw.datafile) { optimizelyClient: OptimizelyClient ->
+            val user = optimizelyClient.createUserContext("USER_ID_HERE")
+            val decision = user.decide("FLAG_KEY_HERE")
+        }
+        /**
+         * Initialize Optimizely synchronously
+         * This will immediately instantiate and return an
+         * OptimizelyClient with the datafile that was passed in.
+         * It'll also download a new datafile from the CDN and
+         * persist it to local storage.
+         * The newly downloaded datafile will be used the next
+         * time the SDK is initialized.
+         */
+        optimizelyManager.initialize(context, R.raw.datafile)
+    }
+
 }

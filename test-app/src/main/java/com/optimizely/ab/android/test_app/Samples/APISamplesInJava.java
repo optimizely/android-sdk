@@ -18,13 +18,10 @@ package com.optimizely.ab.android.test_app.Samples;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
-import com.optimizely.ab.android.sdk.OptimizelyStartListener;
 import com.optimizely.ab.android.test_app.R;
-import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.JsonParseException;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.optimizelyconfig.OptimizelyAttribute;
@@ -41,7 +38,6 @@ import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +78,6 @@ public class APISamplesInJava {
             String vs = null;
             try {
                 vs = variables.getValue("text_color", String.class);
-                int a = variables.getValue("price", Integer.class);
             } catch (JsonParseException e) {
                 e.printStackTrace();
             }
@@ -99,7 +94,6 @@ public class APISamplesInJava {
 
             List<String> keys = Arrays.asList("show_coupon", "bg-feature");
             Map<String, OptimizelyDecision> decisionsMultiple = user.decideForKeys(keys);
-
             OptimizelyDecision decision1 = decisionsMultiple.get(keys.get(0));
             OptimizelyDecision decision2 = decisionsMultiple.get(keys.get(1));
             Log.d("Samples", "decisionsMultiple: " + keys + " " + decision1 + " " + decision2);
@@ -123,9 +117,10 @@ public class APISamplesInJava {
     static public void samplesForInitialization(Context context) {
         OptimizelyManager optimizelyManager;
         OptimizelyClient optimizelyClient;
-        Variation variation;
+        OptimizelyUserContext user;
+        OptimizelyDecision decision;
 
-        // These are sample codes for synchronous and asynchronous SDK initializations with multiple options
+        // Here are more sample codes for synchronous and asynchronous SDK initializations with multiple options
 
         // [Synchronous]
 
@@ -133,21 +128,23 @@ public class APISamplesInJava {
         //      1. SDK is initialized instantly with a cached (or bundled) datafile
         //      2. A new datafile can be downloaded in background and cached after the SDK is initialized.
         //         The cached datafile will be used only when the SDK re-starts in the next session.
-        optimizelyManager =  OptimizelyManager.builder()
+        optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("<Your_SDK_Key>")
                 .build(context);
         optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
-        variation = optimizelyClient.activate("<Experiment_Key>", "<User_ID>");
+        user = optimizelyClient.createUserContext("<User_ID>");
+        decision = user.decide("<Flag_Key>");
 
         // [S2] Synchronous initialization
         //      1. SDK is initialized instantly with a cached (or bundled) datafile
         //      2. A new datafile can be downloaded in background and cached after the SDK is initialized.
         //         The cached datafile is used immediately to update the SDK project config.
-        optimizelyManager =  OptimizelyManager.builder()
+        optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("<Your_SDK_Key>")
                 .build(context);
         optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile, true, true);
-        variation = optimizelyClient.activate("<Experiment_Key>", "<User_ID>");
+        user = optimizelyClient.createUserContext("<User_ID>");
+        decision = user.decide("<Flag_Key>");
 
         // [S3] Synchronous initialization
         //      1. SDK is initialized instantly with a cached (or bundled) datafile
@@ -155,36 +152,38 @@ public class APISamplesInJava {
         //         The cached datafile is used immediately to update the SDK project config.
         //      3. Polling datafile periodically.
         //         The cached datafile is used immediately to update the SDK project config.
-        optimizelyManager =  OptimizelyManager.builder()
+        optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("<Your_SDK_Key>")
-                .withDatafileDownloadInterval(TimeUnit.MINUTES.toSeconds(15))
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .build(context);
         optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile, true, true);
-        variation = optimizelyClient.activate("<Experiment_Key>", "<User_ID>");
+        user = optimizelyClient.createUserContext("<User_ID>");
+        decision = user.decide("<Flag_Key>");
 
         // [Asynchronous]
 
         // [A1] Asynchronous initialization
         //      1. A datafile is downloaded from the server and the SDK is initialized with the datafile
-        optimizelyManager =  OptimizelyManager.builder()
+        optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("<Your_SDK_Key>")
                 .build(context);
         optimizelyManager.initialize(context, null, (OptimizelyClient client) -> {
-            Variation variation2 = client.activate("<Experiment_Key>", "<User_ID>");
+            OptimizelyUserContext userContext = client.createUserContext("<User_ID>");
+            OptimizelyDecision optDecision = userContext.decide("<Flag_Key>");
         });
 
         // [A2] Asynchronous initialization
         //      1. A datafile is downloaded from the server and the SDK is initialized with the datafile
         //      2. Polling datafile periodically.
         //         The cached datafile is used immediately to update the SDK project config.
-        optimizelyManager =  OptimizelyManager.builder()
+        optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("<Your_SDK_Key>")
-                .withDatafileDownloadInterval(TimeUnit.MINUTES.toSeconds(15))
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .build(context);
         optimizelyManager.initialize(context, null, (OptimizelyClient client) -> {
-            Variation variation2 = client.activate("<Experiment_Key>", "<User_ID>");
+            OptimizelyUserContext userContext = client.createUserContext("<User_ID>");
+            OptimizelyDecision optDecision = userContext.decide("<Flag_Key>");
         });
-
     }
 
     static public void samplesForOptimizelyConfig(Context context) {
@@ -201,36 +200,36 @@ public class APISamplesInJava {
             System.out.println("[OptimizelyConfig] environmentKey = " + config.getEnvironmentKey());
 
             System.out.println("[OptimizelyConfig] attributes:");
-            for (OptimizelyAttribute attribute: config.getAttributes()) {
+            for (OptimizelyAttribute attribute : config.getAttributes()) {
                 System.out.println("[OptimizelyAttribute]  -- (id, key) = " + attribute.getId() + ", " + attribute.getKey());
             }
 
             System.out.println("[OptimizelyConfig] audiences:");
-            for (OptimizelyAudience audience: config.getAudiences()) {
-                System.out.println("[OptimizelyAudience]  -- (id, name, conditions) = " + audience.getId() + ", " +  audience.getName() + ", " + audience.getConditions());
+            for (OptimizelyAudience audience : config.getAudiences()) {
+                System.out.println("[OptimizelyAudience]  -- (id, name, conditions) = " + audience.getId() + ", " + audience.getName() + ", " + audience.getConditions());
             }
 
             System.out.println("[OptimizelyConfig] events:");
-            for (OptimizelyEvent event: config.getEvents()) {
-                System.out.println("[OptimizelyEvent]  -- (id, key, experimentIds) = " + event.getId() + ", "  + event.getKey() + ", "  + Arrays.toString(event.getExperimentIds().toArray()));
+            for (OptimizelyEvent event : config.getEvents()) {
+                System.out.println("[OptimizelyEvent]  -- (id, key, experimentIds) = " + event.getId() + ", " + event.getKey() + ", " + Arrays.toString(event.getExperimentIds().toArray()));
             }
 
             // all features
-            for (String flagKey: config.getFeaturesMap().keySet()) {
+            for (String flagKey : config.getFeaturesMap().keySet()) {
                 OptimizelyFeature flag = config.getFeaturesMap().get(flagKey);
 
-                for (OptimizelyExperiment experiment: flag.getExperimentRules()) {
+                for (OptimizelyExperiment experiment : flag.getExperimentRules()) {
                     System.out.println("[OptimizelyExperiment]  -- Experiment Rule Key: " + experiment.getKey());
                     System.out.println("[OptimizelyExperiment]  -- Experiment Audiences: " + experiment.getAudiences());
 
                     Map<String, OptimizelyVariation> variationsMap = experiment.getVariationsMap();
-                    for (String variationKey: variationsMap.keySet()) {
+                    for (String variationKey : variationsMap.keySet()) {
                         OptimizelyVariation variation = variationsMap.get(variationKey);
                         System.out.println("[OptimizelyVariation]    -- variation = { key: " + variationKey + ", id: " + variation.getId() + ", featureEnabled: " + variation.getFeatureEnabled() + " }");
                         // use variation data here...
 
                         Map<String, OptimizelyVariable> optimizelyVariableMap = variation.getVariablesMap();
-                        for (String variableKey: optimizelyVariableMap.keySet()) {
+                        for (String variableKey : optimizelyVariableMap.keySet()) {
                             OptimizelyVariable variable = optimizelyVariableMap.get(variableKey);
                             System.out.println("[OptimizelyVariable]      -- variable = key: " + variableKey + ", value: " + variable.getValue());
                             // use variable data here...
@@ -240,23 +239,93 @@ public class APISamplesInJava {
 
                 }
 
-                for (OptimizelyExperiment delivery: flag.getDeliveryRules()) {
+                for (OptimizelyExperiment delivery : flag.getDeliveryRules()) {
                     System.out.println("[OptimizelyExperiment]  -- Delivery Rule Key: " + delivery.getKey());
                     System.out.println("[OptimizelyExperiment]  -- Delivery Audiences: " + delivery.getAudiences());
                 }
-                Map<String, OptimizelyExperiment> experimentsMap = flag.getExperimentsMap();
-                // feature flag experiments
-                Set<String> experimentKeys = experimentsMap.keySet();
 
                 // use experiments and other feature flag data here...
 
             }
 
             // listen to OPTIMIZELY_CONFIG_UPDATE to get updated data
-            optimizelyClient.getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, handler -> {
-                OptimizelyConfig newConfig = optimizelyClient.getOptimizelyConfig();
-            });
+            optimizelyClient.getNotificationCenter().addNotificationHandler(
+                    UpdateConfigNotification.class,
+                    handler -> {
+                        OptimizelyConfig newConfig = optimizelyClient.getOptimizelyConfig();
+                    });
         });
     }
 
+    static public void samplesForDoc_InitializeSDK(Context context) {
+        // -- sample starts here
+
+        // Build a manager
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
+                .withEventDispatchInterval(30, TimeUnit.SECONDS)
+                .build(context);
+
+        // Instantiate a client synchronously with a bundled datafile
+        String datafile = "REPLACE_WITH_YOUR_DATAFILE";
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, datafile);
+
+        // Or, instantiate it asynchronously with a callback
+        optimizelyManager.initialize(context, null, (OptimizelyClient client) -> {
+            // flag decision
+            OptimizelyUserContext user = client.createUserContext("USER_ID_HERE");
+            OptimizelyDecision decision = user.decide("FLAG_KEY_HERE");
+        });
+    }
+
+    static public void samplesForDoc_GetClient(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+
+        // -- sample starts here
+
+        OptimizelyClient optimizelyClient = optimizelyManager.getOptimizely();
+    }
+
+    static public void samplesForDoc_DatafilePolling(Context context) {
+        // -- sample starts here
+
+        // Poll every 15 minutes
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
+                .build(context);
+
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+        optimizelyClient.getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, (UpdateConfigNotification notification) -> {
+            System.out.println("got datafile change");
+        });
+    }
+
+    static public void samplesForDoc_BundledDatafile(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+
+        // -- sample starts here
+
+        /**
+        * Initialize Optimizely asynchronously with a datafile.
+        *  If it is not able to download a new datafile, it will
+        *  initialize an OptimizelyClient with the one provided.
+        */
+        optimizelyManager.initialize(context, R.raw.datafile, (OptimizelyClient optimizelyClient) -> {
+            OptimizelyUserContext user = optimizelyClient.createUserContext("USER_ID_HERE");
+            OptimizelyDecision decision = user.decide("FLAG_KEY_HERE");
+        });
+
+        /**
+        * Initialize Optimizely synchronously
+        *  This will immediately instantiate and return an
+        *  OptimizelyClient with the datafile that was passed in.
+        *  It'll also download a new datafile from the CDN and
+        *  persist it to local storage.
+        *  The newly downloaded datafile will be used the next
+        *  time the SDK is initialized.
+        */
+        optimizelyManager.initialize(context, R.raw.datafile);
+    }
 }
