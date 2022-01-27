@@ -7,6 +7,19 @@ on:
     branches: [ master ]
 
 jobs:
+  lint_markdown_files:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.6'
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Install gem
+      run: gem install awesome_bot
+    - name: Run tests
+      run: find . -type f -name '*.md' -exec awesome_bot {} \;
   build:
     runs-on: ubuntu-latest
     steps:
