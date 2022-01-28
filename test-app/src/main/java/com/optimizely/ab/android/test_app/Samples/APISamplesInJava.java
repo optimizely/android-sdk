@@ -46,6 +46,23 @@ import java.util.concurrent.TimeUnit;
 
 public class APISamplesInJava {
 
+    static public void samplesAll(Context context) {
+//        samplesForDecide(context);
+//        samplesForInitialization(context);
+//        samplesForOptimizelyConfig(context);
+//        samplesForDoc_InitializeSDK(context);
+//        samplesForDoc_GetClient(context);
+//        samplesForDoc_DatafilePolling(context);
+//        samplesForDoc_BundledDatafile(context);
+//        samplesForDoc_ExampleUsage(context);
+//        samplesForDoc_CreateUserContext(context);
+//        samplesForDoc_DecideOptions(context);
+//        samplesForDoc_Decide(context);
+//        samplesForDoc_DecideAll(context);
+//        samplesForDoc_DecideForKeys(context);
+        samplesForDoc_TrackEvent(context);
+    }
+
     static public void samplesForDecide(Context context) {
         List<OptimizelyDecideOption> defaultDecideOptions = Arrays.asList(OptimizelyDecideOption.DISABLE_DECISION_EVENT);
 
@@ -307,25 +324,208 @@ public class APISamplesInJava {
 
         // -- sample starts here
 
-        /**
-        * Initialize Optimizely asynchronously with a datafile.
-        *  If it is not able to download a new datafile, it will
-        *  initialize an OptimizelyClient with the one provided.
-        */
+        // Initialize Optimizely asynchronously with a datafile.
+        //  If it is not able to download a new datafile, it will
+        //  initialize an OptimizelyClient with the one provided.
+
         optimizelyManager.initialize(context, R.raw.datafile, (OptimizelyClient optimizelyClient) -> {
             OptimizelyUserContext user = optimizelyClient.createUserContext("USER_ID_HERE");
             OptimizelyDecision decision = user.decide("FLAG_KEY_HERE");
         });
 
-        /**
-        * Initialize Optimizely synchronously
-        *  This will immediately instantiate and return an
-        *  OptimizelyClient with the datafile that was passed in.
-        *  It'll also download a new datafile from the CDN and
-        *  persist it to local storage.
-        *  The newly downloaded datafile will be used the next
-        *  time the SDK is initialized.
-        */
+        // Initialize Optimizely synchronously
+        //  This will immediately instantiate and return an
+        //  OptimizelyClient with the datafile that was passed in.
+        //  It'll also download a new datafile from the CDN and
+        //  persist it to local storage.
+        //  The newly downloaded datafile will be used the next
+        //  time the SDK is initialized.
+
         optimizelyManager.initialize(context, R.raw.datafile);
     }
+
+    static public void samplesForDoc_ExampleUsage(Context context) {
+        // Build a manager
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .build(context);
+        // Instantiate a client synchronously with a bundled datafile
+        // copy datafile JSON from URL accessible in app>settings
+        String datafile = "REPLACE_WITH_YOUR_DATAFILE";
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, datafile);
+
+        // Create a user-context
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("logged_in", true);
+        OptimizelyUserContext user = optimizelyClient.createUserContext("user123", attributes);
+
+        // Call the decide method
+        OptimizelyDecision decision = user.decide("product_sort");
+
+        // did the decision fail with a critical error?
+        String variationKey = decision.getVariationKey();
+        if (variationKey == null) {
+            List<String> reasons = decision.getReasons();
+            System.out.println("decision error: " + reasons);
+            return;
+        }
+
+        // execute code based on flag enabled state
+        boolean enabled = decision.getEnabled();
+        OptimizelyJSON variables = decision.getVariables();
+        if (enabled) {
+            String vs = null;
+            try {
+                vs = variables.getValue("sort_method", String.class);
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // or execute code based on flag variation:
+        if (variationKey.equals("control")) {
+            // Execute code for control variation
+        } else if (variationKey.equals("treatment")) {
+            // Execute code for treatment variation
+        }
+
+        // Track an event
+        user.trackEvent("purchased");
+    }
+
+    static public void samplesForDoc_CreateUserContext(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+
+        // -- sample starts here
+
+        // option 1: create a user, then set attributes
+
+        OptimizelyUserContext user;
+        user = optimizelyClient.createUserContext("user123");
+        user.setAttribute("is_logged_in", false);
+        user.setAttribute("app_version", "1.3.2");
+
+        // option 2: pass attributes when creating the user
+
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("is_logged_in", false);
+        attributes.put("app_version", "1.3.2");
+        user = optimizelyClient.createUserContext("user123", attributes);
+    }
+
+    static public void samplesForDoc_DecideOptions(Context context) {
+        // set global default decide options when initializing the client
+
+        List<OptimizelyDecideOption> options;
+        options = Arrays.asList(OptimizelyDecideOption.DISABLE_DECISION_EVENT);
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("FCnSegiEkRry9rhVMroit4")
+                .withDefaultDecideOptions(options)
+                .build(context);
+
+        // set additional options in a decide call
+
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+        OptimizelyUserContext user = optimizelyClient.createUserContext("user123");
+        options = Arrays.asList(OptimizelyDecideOption.DISABLE_DECISION_EVENT, OptimizelyDecideOption.DISABLE_DECISION_EVENT);
+
+        Map<String, OptimizelyDecision> decisions = user.decideAll(options);
+    }
+
+    static public void samplesForDoc_Decide(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+
+        // -- sample starts here
+
+        // create the user and decide which flag rule & variation they bucket into
+
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("logged_in", true);
+        OptimizelyUserContext user = optimizelyClient.createUserContext("user123", attributes);
+
+        OptimizelyDecision decision = user.decide("product_sort");
+
+        // variation. if null, decision fail with a critical error
+        String variationKey = decision.getVariationKey();
+
+        // flag enabled state:
+        boolean enabled = decision.getEnabled();
+
+        // all variable values
+        OptimizelyJSON variables = decision.getVariables();
+
+        // String variable value
+        String vs = null;
+        try {
+            vs = variables.getValue("sort_method", String.class);
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        }
+
+        // Boolean variable value
+        Boolean vb = (Boolean) variables.toMap().get("k_boolean");
+
+        // flag key for which decision was made
+        String flagKey = decision.getFlagKey();
+
+        // user for which the decision was made
+        OptimizelyUserContext userContext = decision.getUserContext();
+
+        // reasons for the decision
+        List<String> reasons = decision.getReasons();
+    }
+
+    static public void samplesForDoc_DecideAll(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("logged_in", true);
+        OptimizelyUserContext user = optimizelyClient.createUserContext("user123", attributes);
+
+        // -- sample starts here
+
+        // make decisions for all active (unarchived) flags in the project for a user
+        List<OptimizelyDecideOption> options = Arrays.asList(OptimizelyDecideOption.ENABLED_FLAGS_ONLY);
+        Map<String, OptimizelyDecision> decisions = user.decideAll(options);
+
+        Set<String> allKeys = decisions.keySet();
+        OptimizelyDecision decisionForFlag1 = decisions.get("flag_1");
+    }
+
+    static public void samplesForDoc_DecideForKeys(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("logged_in", true);
+        OptimizelyUserContext user = optimizelyClient.createUserContext("user123", attributes);
+
+        // -- sample starts here
+
+        // make decisions for specific flags
+        List<String> keys = Arrays.asList("flag-1", "flag-2");
+        Map<String, OptimizelyDecision> decisions = user.decideForKeys(keys);
+
+        OptimizelyDecision decision1 = decisions.get("flag-1");
+        OptimizelyDecision decision2 = decisions.get("flag-2");
+    }
+
+    static public void samplesForDoc_TrackEvent(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+
+        // -- sample starts here
+
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("logged_in", true);
+        OptimizelyUserContext user = optimizelyClient.createUserContext("user123", attributes);
+
+        Map<String, Object> tags = new HashMap<>();
+        tags.put("category", "shoes");
+        tags.put("purchase_count", 2);
+
+        user.trackEvent("my_purchase_event_key", tags);
+    }
+
 }

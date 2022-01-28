@@ -52,26 +52,19 @@ class SplashScreenActivity : AppCompatActivity() {
         val eventRescheduler = EventRescheduler()
         applicationContext.registerReceiver(eventRescheduler, IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION))
 
-        if (INITIALIZE_ASYNCHRONOUSLY) {
-            optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->
-                addNotificationListeners()
-                startVariation()
-            }
-        } else {
-            optimizelyManager!!.initialize(this, R.raw.datafile)
-            addNotificationListeners()
-            startVariation()
-        }
+//        if (INITIALIZE_ASYNCHRONOUSLY) {
+//            optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->
+//                addNotificationListeners()
+//                startVariation()
+//            }
+//        } else {
+//            optimizelyManager!!.initialize(this, R.raw.datafile)
+//            addNotificationListeners()
+//            startVariation()
+//        }
 
-//        APISamplesInJava.samplesForDoc_InitializeSDK(applicationContext)
-//        APISamplesInJava.samplesForDoc_GetClient(applicationContext)
-//        APISamplesInJava.samplesForDoc_DatafilePolling(applicationContext)
-//        APISamplesInJava.samplesForDoc_BundledDatafile(applicationContext)
-//
-//        APISamplesInKotlin.samplesForDoc_InitializeSDK(applicationContext)
-//        APISamplesInKotlin.samplesForDoc_GetClient(applicationContext)
-//        APISamplesInKotlin.samplesForDoc_DatafilePolling(applicationContext)
-//        APISamplesInKotlin.samplesForDoc_BundledDatafile(applicationContext)
+        APISamplesInKotlin.samplesAll(applicationContext)
+        APISamplesInJava.samplesAll(applicationContext)
     }
 
     private fun addNotificationListeners() {

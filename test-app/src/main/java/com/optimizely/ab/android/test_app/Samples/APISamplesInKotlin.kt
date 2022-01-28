@@ -29,6 +29,24 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 object APISamplesInKotlin {
+
+    fun samplesAll(context: Context) {
+//        samplesForDecide(context)
+//        samplesForInitialization(context)
+//        samplesForOptimizelyConfig(context)
+//        samplesForDoc_InitializeSDK(context)
+//        samplesForDoc_GetClient(context)
+//        samplesForDoc_DatafilePolling(context)
+//        samplesForDoc_BundledDatafile(context)
+//        samplesForDoc_ExampleUsage(context)
+//        samplesForDoc_CreateUserContext(context)
+//        samplesForDoc_DecideOptions(context)
+//        samplesForDoc_Decide(context)
+//        samplesForDoc_DecideAll(context)
+//        samplesForDoc_DecideForKeys(context)
+        samplesForDoc_TrackEvent(context)
+    }
+
     fun samplesForDecide(context: Context) {
         val defaultDecideOptions = Arrays.asList(OptimizelyDecideOption.DISABLE_DECISION_EVENT)
         val optimizelyManager = OptimizelyManager.builder()
@@ -245,7 +263,7 @@ object APISamplesInKotlin {
         // Or, instantiate it asynchronously with a callback
         optimizelyManager.initialize(context, null) { client: OptimizelyClient ->
             // flag decision
-            val user = client.createUserContext("USER_ID_HERE")
+            val user = client.createUserContext("USER_ID_HERE")!!
             val decision = user.decide("FLAG_KEY_HERE")
         }
     }
@@ -274,25 +292,199 @@ object APISamplesInKotlin {
         val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
 
         // -- sample starts here
-        /**
-         * Initialize Optimizely asynchronously with a datafile.
-         * If it is not able to download a new datafile, it will
-         * initialize an OptimizelyClient with the one provided.
-         */
+
+        // Initialize Optimizely asynchronously with a datafile.
+        //  If it is not able to download a new datafile, it will
+        //  initialize an OptimizelyClient with the one provided.
+
         optimizelyManager.initialize(context, R.raw.datafile) { optimizelyClient: OptimizelyClient ->
-            val user = optimizelyClient.createUserContext("USER_ID_HERE")
+            val user = optimizelyClient.createUserContext("USER_ID_HERE")!!
             val decision = user.decide("FLAG_KEY_HERE")
         }
-        /**
-         * Initialize Optimizely synchronously
-         * This will immediately instantiate and return an
-         * OptimizelyClient with the datafile that was passed in.
-         * It'll also download a new datafile from the CDN and
-         * persist it to local storage.
-         * The newly downloaded datafile will be used the next
-         * time the SDK is initialized.
-         */
+
+        // Initialize Optimizely synchronously
+        //  This will immediately instantiate and return an
+        //  OptimizelyClient with the datafile that was passed in.
+        //  It'll also download a new datafile from the CDN and
+        //  persist it to local storage.
+        //  The newly downloaded datafile will be used the next
+        //  time the SDK is initialized.
+
         optimizelyManager.initialize(context, R.raw.datafile)
+    }
+
+    fun samplesForDoc_ExampleUsage(context: Context) {
+        // Build a manager
+        val optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .build(context)
+        // Instantiate a client synchronously with a bundled datafile
+        // copy datafile JSON from URL accessible in app>settings
+        val datafile = "REPLACE_WITH_YOUR_DATAFILE"
+        val optimizelyClient = optimizelyManager.initialize(context, datafile)
+
+        // Create a user-context
+        val attributes: MutableMap<String, Any> = HashMap()
+        attributes["logged_in"] = true
+        val user = optimizelyClient.createUserContext("user123", attributes)!!
+
+        // Call the decide method
+        val decision = user.decide("product_sort")
+
+        // did the decision fail with a critical error?
+        val variationKey = decision.variationKey
+        if (variationKey == null) {
+            val reasons = decision.reasons
+            println("decision error: $reasons")
+            return
+        }
+
+        // execute code based on flag enabled state
+        val enabled = decision.enabled
+        val variables = decision.variables
+        if (enabled) {
+            var vs: String? = null
+            try {
+                vs = variables.getValue("sort_method", String::class.java)
+            } catch (e: JsonParseException) {
+                e.printStackTrace()
+            }
+        }
+
+        // or execute code based on flag variation:
+        if (variationKey == "control") {
+            // Execute code for control variation
+        } else if (variationKey == "treatment") {
+            // Execute code for treatment variation
+        }
+
+        // Track an event
+        user.trackEvent("purchased")
+    }
+
+    fun samplesForDoc_CreateUserContext(context: Context) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile)
+
+        // -- sample starts here
+
+        // option 1: create a user, then set attributes
+        var user: OptimizelyUserContext?
+        user = optimizelyClient.createUserContext("user123")!!
+        user.setAttribute("is_logged_in", false)
+        user.setAttribute("app_version", "1.3.2")
+
+        // option 2: pass attributes when creating the user
+
+        val attributes: MutableMap<String, Any> = HashMap()
+        attributes["is_logged_in"] = false
+        attributes["app_version"] = "1.3.2"
+        user = optimizelyClient.createUserContext("user123", attributes)
+    }
+
+    fun samplesForDoc_DecideOptions(context: Context) {
+        // set global default decide options when initializing the client
+
+        var options: List<OptimizelyDecideOption>
+        options = Arrays.asList(OptimizelyDecideOption.DISABLE_DECISION_EVENT)
+        val optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("FCnSegiEkRry9rhVMroit4")
+                .withDefaultDecideOptions(options)
+                .build(context)
+
+        // set additional options in a decide call
+
+        val optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile)
+        val user = optimizelyClient.createUserContext("user123")
+        options = Arrays.asList(OptimizelyDecideOption.DISABLE_DECISION_EVENT, OptimizelyDecideOption.DISABLE_DECISION_EVENT)
+        val decisions = user!!.decideAll(options)
+    }
+
+    fun samplesForDoc_Decide(context: Context?) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyClient = optimizelyManager.initialize(context!!, R.raw.datafile)
+
+        // -- sample starts here
+
+        // create the user and decide which flag rule & variation they bucket into
+        val attributes: MutableMap<String, Any> = HashMap()
+        attributes["logged_in"] = true
+        val user = optimizelyClient.createUserContext("user123", attributes)
+        val decision = user!!.decide("product_sort")
+
+        // variation. if null, decision fail with a critical error
+        val variationKey = decision.variationKey
+
+        // flag enabled state:
+        val enabled = decision.enabled
+
+        // all variable values
+        val variables = decision.variables
+
+        // String variable value
+        var vs: String? = null
+        try {
+            vs = variables.getValue("sort_method", String::class.java)
+        } catch (e: JsonParseException) {
+            e.printStackTrace()
+        }
+
+        // Boolean variable value
+        val vb = variables.toMap()!!["k_boolean"] as Boolean?
+
+        // flag key for which decision was made
+        val flagKey = decision.flagKey
+
+        // user for which the decision was made
+        val userContext = decision.userContext
+
+        // reasons for the decision
+        val reasons = decision.reasons
+    }
+
+    fun samplesForDoc_DecideAll(context: Context?) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyClient = optimizelyManager.initialize(context!!, R.raw.datafile)
+        val attributes: MutableMap<String, Any> = HashMap()
+        attributes["logged_in"] = true
+        val user = optimizelyClient.createUserContext("user123", attributes)
+
+        // -- sample starts here
+
+        // make decisions for all active (unarchived) flags in the project for a user
+        val options = Arrays.asList(OptimizelyDecideOption.ENABLED_FLAGS_ONLY)
+        val decisions = user!!.decideAll(options)
+        val allKeys: Set<String> = decisions.keys
+        val decisionForFlag1 = decisions["flag_1"]
+    }
+
+    fun samplesForDoc_DecideForKeys(context: Context?) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyClient = optimizelyManager.initialize(context!!, R.raw.datafile)
+        val attributes: MutableMap<String, Any> = HashMap()
+        attributes["logged_in"] = true
+        val user = optimizelyClient.createUserContext("user123", attributes)
+
+        // -- sample starts here
+
+        // make decisions for specific flags
+        val keys = Arrays.asList("flag-1", "flag-2")
+        val decisions = user!!.decideForKeys(keys)
+        val decision1 = decisions["flag-1"]
+        val decision2 = decisions["flag-2"]
+    }
+
+    fun samplesForDoc_TrackEvent(context: Context) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyClient = optimizelyManager.initialize(context!!, R.raw.datafile)
+
+        // -- sample starts here
+
+        val attributes = hashMapOf<String, Any>("logged_in" to true)
+        val user = optimizelyClient.createUserContext("user123", attributes)
+
+        val tags = hashMapOf<String, Any?>("category" to "shoes", "purchase_count" to 2)
+        user?.trackEvent("my_purchase_event_key", tags)
     }
 
 }
