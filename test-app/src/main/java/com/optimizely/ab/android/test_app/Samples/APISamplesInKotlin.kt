@@ -16,15 +16,25 @@
 package com.optimizely.ab.android.test_app
 
 import android.content.Context
+import android.content.IntentFilter
+import android.net.wifi.WifiManager
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import com.optimizely.ab.OptimizelyUserContext
+import com.optimizely.ab.android.event_handler.EventRescheduler
 import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.android.sdk.OptimizelyManager
+import com.optimizely.ab.bucketing.UserProfileService
 import com.optimizely.ab.config.parser.JsonParseException
+import com.optimizely.ab.event.EventHandler
+import com.optimizely.ab.event.LogEvent
 import com.optimizely.ab.notification.NotificationHandler
 import com.optimizely.ab.notification.UpdateConfigNotification
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption
 import com.optimizely.ab.optimizelydecision.OptimizelyDecision
+import com.optimizely.ab.optimizelyjson.OptimizelyJSON
+import java.lang.Exception
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -44,7 +54,11 @@ object APISamplesInKotlin {
 //        samplesForDoc_Decide(context)
 //        samplesForDoc_DecideAll(context)
 //        samplesForDoc_DecideForKeys(context)
-        samplesForDoc_TrackEvent(context)
+//        samplesForDoc_TrackEvent(context)
+//        samplesForDoc_OptimizelyJSON(context)
+//        samplesForDoc_CustomUserProfileService(context)
+        samplesForDoc_EventDispatcher(context)
+
     }
 
     fun samplesForDecide(context: Context) {
@@ -191,19 +205,25 @@ object APISamplesInKotlin {
                 .withSDKKey("FCnSegiEkRry9rhVMroit4")
                 .build(context)
         optimizelyManager.initialize(context, R.raw.datafile) { optimizelyClient: OptimizelyClient ->
+
+            // -- sample starts here
+
             val config = optimizelyClient.optimizelyConfig
-            if (config == null) return@initialize
-            println("[OptimizelyConfig] revision = " + config.revision)
+
+            println("[OptimizelyConfig] revision = " + config!!.revision)
             println("[OptimizelyConfig] sdkKey = " + config.sdkKey)
             println("[OptimizelyConfig] environmentKey = " + config.environmentKey)
+
             println("[OptimizelyConfig] attributes:")
             for (attribute in config.attributes) {
                 println("[OptimizelyAttribute]  -- (id, key) = " + attribute.id + ", " + attribute.key)
             }
+
             println("[OptimizelyConfig] audiences:")
             for (audience in config.audiences) {
                 println("[OptimizelyAudience]  -- (id, name, conditions) = " + audience.id + ", " + audience.name + ", " + audience.conditions)
             }
+
             println("[OptimizelyConfig] events:")
             for (event in config.events) {
                 println("[OptimizelyEvent]  -- (id, key, experimentIds) = " + event.id + ", " + event.key + ", " + Arrays.toString(event.experimentIds.toTypedArray()))
@@ -212,28 +232,34 @@ object APISamplesInKotlin {
             // all features
             for (flagKey in config.featuresMap.keys) {
                 val flag = config.featuresMap.get(flagKey)!!
+
                 for (experiment in flag.experimentRules) {
                     println("[OptimizelyExperiment]  -- Experiment Rule Key: " + experiment.key)
                     println("[OptimizelyExperiment]  -- Experiment Audiences: " + experiment.audiences)
+
                     val variationsMap = experiment.variationsMap
                     for (variationKey in variationsMap.keys) {
                         val variation = variationsMap.get(variationKey)!!
                         println("[OptimizelyVariation]    -- variation = { key: " + variationKey + ", id: " + variation.id + ", featureEnabled: " + variation.featureEnabled + " }")
                         // use variation data here...
+
                         val optimizelyVariableMap = variation.variablesMap
                         for (variableKey in optimizelyVariableMap.keys) {
                             val variable = optimizelyVariableMap.get(variableKey)!!
                             println("[OptimizelyVariable]      -- variable = key: " + variableKey + ", value: " + variable.value)
                             // use variable data here...
+
                         }
                     }
                 }
+
                 for (delivery in flag.deliveryRules) {
                     println("[OptimizelyExperiment]  -- Delivery Rule Key: " + delivery.key)
                     println("[OptimizelyExperiment]  -- Delivery Audiences: " + delivery.audiences)
                 }
 
                 // use experiments and other feature flag data here...
+
             }
 
             // listen to OPTIMIZELY_CONFIG_UPDATE to get updated data
@@ -269,7 +295,7 @@ object APISamplesInKotlin {
     }
 
     fun samplesForDoc_GetClient(context: Context) {
-        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
 
         // -- sample starts here
         val optimizelyClient = optimizelyManager.optimizely
@@ -289,7 +315,7 @@ object APISamplesInKotlin {
     }
 
     fun samplesForDoc_BundledDatafile(context: Context) {
-        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
 
         // -- sample starts here
 
@@ -363,7 +389,7 @@ object APISamplesInKotlin {
     }
 
     fun samplesForDoc_CreateUserContext(context: Context) {
-        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
         val optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile)
 
         // -- sample starts here
@@ -401,7 +427,7 @@ object APISamplesInKotlin {
     }
 
     fun samplesForDoc_Decide(context: Context?) {
-        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
         val optimizelyClient = optimizelyManager.initialize(context!!, R.raw.datafile)
 
         // -- sample starts here
@@ -443,7 +469,7 @@ object APISamplesInKotlin {
     }
 
     fun samplesForDoc_DecideAll(context: Context?) {
-        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
         val optimizelyClient = optimizelyManager.initialize(context!!, R.raw.datafile)
         val attributes: MutableMap<String, Any> = HashMap()
         attributes["logged_in"] = true
@@ -459,7 +485,7 @@ object APISamplesInKotlin {
     }
 
     fun samplesForDoc_DecideForKeys(context: Context?) {
-        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
         val optimizelyClient = optimizelyManager.initialize(context!!, R.raw.datafile)
         val attributes: MutableMap<String, Any> = HashMap()
         attributes["logged_in"] = true
@@ -475,7 +501,7 @@ object APISamplesInKotlin {
     }
 
     fun samplesForDoc_TrackEvent(context: Context) {
-        val optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context)
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
         val optimizelyClient = optimizelyManager.initialize(context!!, R.raw.datafile)
 
         // -- sample starts here
@@ -483,8 +509,89 @@ object APISamplesInKotlin {
         val attributes = hashMapOf<String, Any>("logged_in" to true)
         val user = optimizelyClient.createUserContext("user123", attributes)
 
-        val tags = hashMapOf<String, Any?>("category" to "shoes", "purchase_count" to 2)
+        val tags = hashMapOf<String, Any>("category" to "shoes", "purchase_count" to 2)
         user?.trackEvent("my_purchase_event_key", tags)
     }
 
+    fun samplesForDoc_OptimizelyJSON(context: Context) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
+        val optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile)
+        val user = optimizelyClient.createUserContext("user123")
+        val decision = user!!.decide("product_sort")
+        val optlyJSON = decision.variables
+
+        // -- sample starts here
+
+        //declare a schema object into which you want to unmarshal OptimizelyJson content:
+        data class SSub(var field: String)
+
+        data class SObj(
+                var field1: Int,
+                var field2: Double,
+                var field3: String,
+                var field4: SSub
+        )
+
+        try {
+            //parse all json key/value pairs into your schema, sObj
+            val robj = optlyJSON.getValue(null, SObj::class.java)
+
+            //or, parse the specified key/value pair with an integer value
+            val rint = optlyJSON.getValue("field1", Int::class.java)
+
+            //or, parse the specified key/value pair with a string value
+            val rstr = optlyJSON.getValue("field4.field", String::class.java)
+        } catch (e: JsonParseException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun samplesForDoc_CustomUserProfileService(context: Context?) {
+        // -- sample starts here
+
+        class CustomUserProfileService : UserProfileService {
+            @Throws(Exception::class)
+            override fun lookup(userId: String): Map<String, Any>? {
+                return null
+            }
+
+            @Throws(Exception::class)
+            override fun save(userProfile: Map<String, Any>) {
+            }
+        }
+
+        val customUserProfileService = CustomUserProfileService()
+        val optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("<Your_SDK_Key>")
+                .withUserProfileService(customUserProfileService)
+                .build(context)
+    }
+
+    fun samplesForDoc_EventDispatcher(context: Context) {
+        // -- sample starts here
+
+        // Using an anonymous class here to implement the EventHandler interface.
+        // Feel free to create an explicit class that implements the interface instead.
+        val eventHandler = object : EventHandler {
+            override fun dispatchEvent(logEvent: LogEvent) {
+                // Send event to our log endpoint as documented in
+                // https://developers.optimizely.com/x/events/api/index.html
+            }
+        }
+
+        // Build a manager
+        val optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withEventDispatchInterval(60, TimeUnit.SECONDS)
+                .withEventHandler(eventHandler)
+                .build(context)
+
+        // With the new Android O differences, you need to register the
+        // service for the intent filter you desire in code instead of in the manifest.
+        val eventRescheduler = EventRescheduler()
+        context.registerReceiver(eventRescheduler,
+                IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION))
+    }
+
 }
+

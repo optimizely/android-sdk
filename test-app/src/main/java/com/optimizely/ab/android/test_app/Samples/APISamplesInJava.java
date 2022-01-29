@@ -17,12 +17,18 @@
 package com.optimizely.ab.android.test_app.Samples;
 
 import android.content.Context;
+import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 import com.optimizely.ab.OptimizelyUserContext;
+import com.optimizely.ab.android.event_handler.EventRescheduler;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.test_app.R;
+import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.parser.JsonParseException;
+import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.event.LogEvent;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.optimizelyconfig.OptimizelyAttribute;
 import com.optimizely.ab.optimizelyconfig.OptimizelyAudience;
@@ -60,7 +66,10 @@ public class APISamplesInJava {
 //        samplesForDoc_Decide(context);
 //        samplesForDoc_DecideAll(context);
 //        samplesForDoc_DecideForKeys(context);
-        samplesForDoc_TrackEvent(context);
+//        samplesForDoc_TrackEvent(context);
+//        samplesForDoc_OptimizelyJSON(context);
+        samplesForDoc_CustomUserProfileService(context);
+
     }
 
     static public void samplesForDecide(Context context) {
@@ -210,6 +219,8 @@ public class APISamplesInJava {
                 .build(context);
         optimizelyManager.initialize(context, R.raw.datafile, optimizelyClient -> {
 
+            // -- sample starts here
+
             OptimizelyConfig config = optimizelyClient.getOptimizelyConfig();
 
             System.out.println("[OptimizelyConfig] revision = " + config.getRevision());
@@ -297,7 +308,7 @@ public class APISamplesInJava {
     }
 
     static public void samplesForDoc_GetClient(Context context) {
-        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
 
         // -- sample starts here
 
@@ -320,7 +331,7 @@ public class APISamplesInJava {
     }
 
     static public void samplesForDoc_BundledDatafile(Context context) {
-        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
 
         // -- sample starts here
 
@@ -394,7 +405,7 @@ public class APISamplesInJava {
     }
 
     static public void samplesForDoc_CreateUserContext(Context context) {
-        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
         OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
 
         // -- sample starts here
@@ -434,7 +445,7 @@ public class APISamplesInJava {
     }
 
     static public void samplesForDoc_Decide(Context context) {
-        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
         OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
 
         // -- sample starts here
@@ -478,7 +489,7 @@ public class APISamplesInJava {
     }
 
     static public void samplesForDoc_DecideAll(Context context) {
-        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
         OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("logged_in", true);
@@ -495,7 +506,7 @@ public class APISamplesInJava {
     }
 
     static public void samplesForDoc_DecideForKeys(Context context) {
-        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
         OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("logged_in", true);
@@ -512,7 +523,7 @@ public class APISamplesInJava {
     }
 
     static public void samplesForDoc_TrackEvent(Context context) {
-        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("SDK_KEY_HERE").build(context);
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
         OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
 
         // -- sample starts here
@@ -526,6 +537,91 @@ public class APISamplesInJava {
         tags.put("purchase_count", 2);
 
         user.trackEvent("my_purchase_event_key", tags);
+    }
+
+    static public void samplesForDoc_OptimizelyJSON(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+        OptimizelyUserContext user = optimizelyClient.createUserContext("user123");
+        OptimizelyDecision decision = user.decide("product_sort");
+        OptimizelyJSON optlyJSON = decision.getVariables();
+
+        // -- sample starts here
+
+        //declare a schema object into which you want to unmarshal OptimizelyJson content:
+        class SSub {
+            String field;
+        }
+
+        class SObj {
+            int field1;
+            double field2;
+            String field3;
+            SSub field4;
+        }
+
+        try {
+            //parse all json key/value pairs into your schema, sObj
+            SObj robj = optlyJSON.getValue(null, SObj.class);
+
+            //or, parse the specified key/value pair with an integer value
+            Integer rint = optlyJSON.getValue("field1", Integer.class);
+
+            //or, parse the specified key/value pair with a string value
+            String rstr = optlyJSON.getValue("field4.field", String.class);
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static public void samplesForDoc_CustomUserProfileService(Context context) {
+        // -- sample starts here
+
+        class CustomUserProfileService implements UserProfileService {
+
+            public Map<String, Object> lookup(String userId) throws Exception {
+                return null;
+            }
+
+            public void save(Map<String, Object> userProfile) throws Exception {
+            }
+
+        }
+
+        CustomUserProfileService customUserProfileService = new CustomUserProfileService();
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withUserProfileService(customUserProfileService)
+                .build(context);
+    }
+
+    static public void samplesForDoc_EventDispatcher(Context context) {
+        // -- sample starts here
+
+        // Using an anonymous class here to implement the EventHandler interface.
+        // Feel free to create an explicit class that implements the interface instead.
+        EventHandler eventHandler = new EventHandler() {
+            @Override
+            public void dispatchEvent(LogEvent logEvent) throws Exception {
+                // Send event to our log endpoint as documented in
+                // https://developers.optimizely.com/x/events/api/index.html
+            }
+        };
+
+        // Build a manager
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withEventDispatchInterval(60, TimeUnit.SECONDS)
+                .withEventHandler(eventHandler)
+                .build(context);
+
+
+        // With the new Android O differences, you need to register the
+        // service for the intent filter you desire in code instead of in the manifest.
+        EventRescheduler eventRescheduler = new EventRescheduler();
+
+        context.registerReceiver(eventRescheduler,
+                new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
     }
 
 }
