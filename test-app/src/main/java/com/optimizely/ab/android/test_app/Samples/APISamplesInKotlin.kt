@@ -21,19 +21,30 @@ import android.net.wifi.WifiManager
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
+import com.optimizely.ab.OptimizelyDecisionContext
+import com.optimizely.ab.OptimizelyForcedDecision
 import com.optimizely.ab.OptimizelyUserContext
+import com.optimizely.ab.android.event_handler.DefaultEventHandler
 import com.optimizely.ab.android.event_handler.EventRescheduler
 import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.android.sdk.OptimizelyManager
 import com.optimizely.ab.bucketing.UserProfileService
+import com.optimizely.ab.config.Variation
 import com.optimizely.ab.config.parser.JsonParseException
+import com.optimizely.ab.error.ErrorHandler
+import com.optimizely.ab.error.RaiseExceptionErrorHandler
+import com.optimizely.ab.event.BatchEventProcessor
 import com.optimizely.ab.event.EventHandler
 import com.optimizely.ab.event.LogEvent
+import com.optimizely.ab.notification.DecisionNotification
 import com.optimizely.ab.notification.NotificationHandler
+import com.optimizely.ab.notification.TrackNotification
 import com.optimizely.ab.notification.UpdateConfigNotification
+import com.optimizely.ab.optimizelyconfig.OptimizelyConfig
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption
 import com.optimizely.ab.optimizelydecision.OptimizelyDecision
 import com.optimizely.ab.optimizelyjson.OptimizelyJSON
+import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -41,24 +52,30 @@ import java.util.concurrent.TimeUnit
 object APISamplesInKotlin {
 
     fun samplesAll(context: Context) {
-//        samplesForDecide(context)
-//        samplesForInitialization(context)
-//        samplesForOptimizelyConfig(context)
-//        samplesForDoc_InitializeSDK(context)
-//        samplesForDoc_GetClient(context)
-//        samplesForDoc_DatafilePolling(context)
-//        samplesForDoc_BundledDatafile(context)
-//        samplesForDoc_ExampleUsage(context)
-//        samplesForDoc_CreateUserContext(context)
-//        samplesForDoc_DecideOptions(context)
-//        samplesForDoc_Decide(context)
-//        samplesForDoc_DecideAll(context)
-//        samplesForDoc_DecideForKeys(context)
-//        samplesForDoc_TrackEvent(context)
-//        samplesForDoc_OptimizelyJSON(context)
-//        samplesForDoc_CustomUserProfileService(context)
+        samplesForDecide(context)
+        samplesForInitialization(context)
+        samplesForOptimizelyConfig(context)
+        samplesForDoc_InitializeSDK(context)
+        samplesForDoc_GetClient(context)
+        samplesForDoc_DatafilePolling(context)
+        samplesForDoc_BundledDatafile(context)
+        samplesForDoc_ExampleUsage(context)
+        samplesForDoc_CreateUserContext(context)
+        samplesForDoc_DecideOptions(context)
+        samplesForDoc_Decide(context)
+        samplesForDoc_DecideAll(context)
+        samplesForDoc_DecideForKeys(context)
+        samplesForDoc_TrackEvent(context)
+        samplesForDoc_OptimizelyJSON(context)
+        samplesForDoc_CustomUserProfileService(context)
         samplesForDoc_EventDispatcher(context)
-
+        samplesForDoc_EventBatchingDefault(context)
+        samplesForDoc_EventBatchingAdvanced(context)
+        samplesForDoc_ErrorHandler(context)
+        samplesForDoc_AudienceAttributes(context)
+        samplesForDoc_NotificatonListener(context)
+        samplesForDoc_OlderVersions(context)
+        samplesForDoc_ForcedDecision(context)
     }
 
     fun samplesForDecide(context: Context) {
@@ -310,8 +327,13 @@ object APISamplesInKotlin {
                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .build(context)
 
+        // datafile notifiation
         val optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile)
-        optimizelyClient.notificationCenter?.addNotificationHandler(UpdateConfigNotification::class.java) { notification: UpdateConfigNotification? -> println("got datafile change") }
+        // -- sample starts here
+
+        optimizelyClient.addUpdateConfigNotificationHandler { notification ->
+            println("got datafile change")
+        }
     }
 
     fun samplesForDoc_BundledDatafile(context: Context) {
@@ -593,5 +615,217 @@ object APISamplesInKotlin {
                 IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION))
     }
 
+    fun samplesForDoc_EventBatchingDefault(context: Context) {
+        // -- sample starts here
+
+        val optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .build(context)
+        val optimizely = optimizelyManager.initialize(context, R.raw.datafile)
+    }
+
+    fun samplesForDoc_EventBatchingAdvanced(context: Context) {
+        // -- sample starts here
+
+        val eventHandler: EventHandler = DefaultEventHandler.getInstance(context)
+
+        // Here we are using the builder options to set batch size
+        // to 5 events and flush interval to a minute.
+        val batchProcessor = BatchEventProcessor.builder()
+                .withBatchSize(5)
+                .withEventHandler(eventHandler)
+                .withFlushInterval(TimeUnit.MINUTES.toMillis(1L))
+                .build()
+        val optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withEventHandler(eventHandler)
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
+                .withEventProcessor(batchProcessor)
+                .build(context)
+        val optimizely = optimizelyManager.initialize(context, R.raw.datafile)
+
+        // log event
+        // -- sample starts here
+
+
+        // log event
+        // -- sample starts here
+        optimizely.addLogEventNotificationHandler { logEvent: LogEvent ->
+            println("event dispatched: $logEvent")
+        }
+    }
+
+    fun samplesForDoc_ErrorHandler(context: Context) {
+        // -- sample starts here
+
+        // Error handler that raises exceptions
+        val errorHandler: ErrorHandler = RaiseExceptionErrorHandler()
+
+        val optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withErrorHandler(errorHandler)
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
+                .build(context)
+    }
+
+    fun samplesForDoc_AudienceAttributes(context: Context) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
+        val optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile)
+
+        // -- sample starts here
+
+        val attributes: MutableMap<String, Any> = HashMap()
+        attributes["device"] = "iPhone"
+        attributes["lifetime"] = 24738388
+        attributes["is_logged_in"] = true
+        attributes["application_version"] = "4.3.0-beta"
+
+        val user = optimizelyClient.createUserContext("user123", attributes)
+        val decision = user!!.decide("FLAG_KEY_HERE")
+    }
+
+    fun samplesForDoc_NotificatonListener(context: Context) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
+        val optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile)
+
+        // -- sample starts here
+
+        // Add Notification Listener (LogEvent)
+        val notificationId = optimizelyClient.addLogEventNotificationHandler { logEvent: LogEvent ->
+            println("event dispatched: $logEvent")
+        }
+
+        // Remove Notification Listener
+        optimizelyClient.notificationCenter?.removeNotificationListener(notificationId)
+
+        // Remove all Notification Listeners
+        optimizelyClient.notificationCenter?.clearAllNotificationListeners()
+
+        // Remove all Notification Listeners of a certain type
+        optimizelyClient.notificationCenter?.clearNotificationListeners(DecisionNotification::class.java)
+
+
+        // notification listener types
+        // -- sample starts here
+
+        // SET UP DECISION NOTIFICATION LISTENER
+        val notificationId1 = optimizelyClient.addDecisionNotificationHandler { notification: DecisionNotification ->
+            // Access type on decisionObject to get type of decision
+            val decisionType = notification.type
+            if (decisionType === "flag") {
+                val flagDecisionInfo = notification.decisionInfo
+                val flagKey = flagDecisionInfo["flagKey"] as? String
+                val enabled = flagDecisionInfo["enabled"] as? Boolean
+                val decisionEventDispatched = flagDecisionInfo["decisionEventDispatched"] as? Boolean
+                // Send data to analytics provider here
+            }
+        }
+
+        // SET UP LOG EVENT NOTIFICATION LISTENER
+        val notificationId2 = optimizelyClient.addLogEventNotificationHandler { notification: LogEvent ->
+            // process the logEvent object here (send to analytics provider, audit/inspect data)
+        }
+
+        // SET UP OPTIMIZELY CONFIG NOTIFICATION LISTENER
+        val notificationId3 = optimizelyClient.addUpdateConfigNotificationHandler { notification: UpdateConfigNotification ->
+            val optimizelyConfig = optimizelyClient.optimizelyConfig
+        }
+
+        // SET UP TRACK LISTENER
+        val notificationId4 = optimizelyClient.addTrackNotificationHandler { notification: TrackNotification ->
+            // process the event here (send to analytics provider, audit/inspect data)
+        }
+    }
+
+    fun samplesForDoc_OlderVersions(context: Context) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
+        val optimizelyClient = optimizelyManager.initialize(context!!, R.raw.datafile)
+
+        // -- sample starts here
+
+        // Prereq for new methods: create a user
+        val attributes: MutableMap<String, Any?> = HashMap()
+        attributes["is_logged_in"] = true
+        val user = optimizelyClient.createUserContext("user123", attributes)
+
+        // Is Feature Enabled
+
+        // old method
+        var enabled = optimizelyClient.isFeatureEnabled("flag_1", "user123", attributes)
+        // new method
+        val decision = user!!.decide("flag_1")
+        enabled = decision.enabled
+
+        // Activate & Get Variation
+
+        // old method
+        val variation = optimizelyClient.activate("experiment_1", "user123", attributes)
+        // new method
+        val variationKey = decision.variationKey
+
+        // Get All Feature Variables
+
+        // old method
+        var json = optimizelyClient.getAllFeatureVariables("flag_1", "user123", attributes)
+        // new method
+        json = decision.variables
+
+        // Get Enabled Features
+
+        // old method
+        val enabledFlags = optimizelyClient.getEnabledFeatures("user123", attributes)
+        // new method
+        val options = Arrays.asList(OptimizelyDecideOption.ENABLED_FLAGS_ONLY)
+        val decisions = user.decideAll(options)
+        val enabledFlagsSet: Set<String> = decisions.keys
+
+        // Track
+
+        // old method
+        val tags: Map<String, Any?> = HashMap()
+        attributes["purchase_count"] = 2
+        optimizelyClient.track("my_purchase_event_key", "user123", attributes, tags)
+        // new method
+        user.trackEvent("my_purchase_event_key", tags)
+    }
+
+    fun samplesForDoc_ForcedDecision(context: Context) {
+        val optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context)
+        val optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile)
+
+        // -- sample starts here
+
+        // Create the OptimizelyUserContext, passing in the UserId and Attributes
+        val user = optimizelyClient.createUserContext("user-id")
+
+        val flagContext = OptimizelyDecisionContext("flag-1", null)
+        val flagAndABTestContext = OptimizelyDecisionContext("flag-1", "exp-1")
+        val flagAndDeliveryRuleContext = OptimizelyDecisionContext("flag-1", "delivery-1")
+        val variationAForcedDecision = OptimizelyForcedDecision("variation-a")
+        val variationBForcedDecision = OptimizelyForcedDecision("variation-b")
+        val variationOnForcedDecision = OptimizelyForcedDecision("on")
+
+        // set a forced decision for a flag
+        var success = user!!.setForcedDecision(flagContext, variationAForcedDecision)
+        var decision = user.decide("flag-1")
+
+        // set a forced decision for an ab-test rule
+        success = user.setForcedDecision(flagAndABTestContext, variationBForcedDecision)
+        decision = user.decide("flag-1")
+
+        // set a forced variation for a delivery rule
+        success = user.setForcedDecision(flagAndDeliveryRuleContext, variationOnForcedDecision)
+        decision = user.decide("flag-1")
+
+        // get forced variations
+        val forcedDecision = user.getForcedDecision(flagContext)
+        println("[ForcedDecision] variationKey = " + forcedDecision!!.variationKey)
+
+        // remove forced variations
+        success = user.removeForcedDecision(flagAndABTestContext)
+        success = user.removeAllForcedDecisions()
+    }
+
 }
+
 

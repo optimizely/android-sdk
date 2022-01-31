@@ -25,7 +25,6 @@ import com.optimizely.ab.android.event_handler.EventRescheduler
 import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.android.sdk.OptimizelyManager
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager
-import com.optimizely.ab.android.test_app.Samples.APISamplesInJava
 import com.optimizely.ab.notification.DecisionNotification
 import com.optimizely.ab.notification.TrackNotification
 import com.optimizely.ab.notification.UpdateConfigNotification
@@ -52,19 +51,17 @@ class SplashScreenActivity : AppCompatActivity() {
         val eventRescheduler = EventRescheduler()
         applicationContext.registerReceiver(eventRescheduler, IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION))
 
-//        if (INITIALIZE_ASYNCHRONOUSLY) {
-//            optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->
-//                addNotificationListeners()
-//                startVariation()
-//            }
-//        } else {
-//            optimizelyManager!!.initialize(this, R.raw.datafile)
-//            addNotificationListeners()
-//            startVariation()
-//        }
+        if (INITIALIZE_ASYNCHRONOUSLY) {
+            optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->
+                addNotificationListeners()
+                startVariation()
+            }
+        } else {
+            optimizelyManager!!.initialize(this, R.raw.datafile)
+            addNotificationListeners()
+            startVariation()
+        }
 
-        APISamplesInKotlin.samplesAll(applicationContext)
-        APISamplesInJava.samplesAll(applicationContext)
     }
 
     private fun addNotificationListeners() {

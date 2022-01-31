@@ -20,15 +20,25 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.util.Log;
+
+import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.OptimizelyDecisionContext;
+import com.optimizely.ab.OptimizelyForcedDecision;
 import com.optimizely.ab.OptimizelyUserContext;
+import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.event_handler.EventRescheduler;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
 import com.optimizely.ab.android.test_app.R;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.JsonParseException;
+import com.optimizely.ab.error.ErrorHandler;
+import com.optimizely.ab.error.RaiseExceptionErrorHandler;
+import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.notification.DecisionNotification;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.optimizelyconfig.OptimizelyAttribute;
 import com.optimizely.ab.optimizelyconfig.OptimizelyAudience;
@@ -42,8 +52,12 @@ import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecision;
 import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,23 +67,29 @@ import java.util.concurrent.TimeUnit;
 public class APISamplesInJava {
 
     static public void samplesAll(Context context) {
-//        samplesForDecide(context);
-//        samplesForInitialization(context);
-//        samplesForOptimizelyConfig(context);
-//        samplesForDoc_InitializeSDK(context);
-//        samplesForDoc_GetClient(context);
-//        samplesForDoc_DatafilePolling(context);
-//        samplesForDoc_BundledDatafile(context);
-//        samplesForDoc_ExampleUsage(context);
-//        samplesForDoc_CreateUserContext(context);
-//        samplesForDoc_DecideOptions(context);
-//        samplesForDoc_Decide(context);
-//        samplesForDoc_DecideAll(context);
-//        samplesForDoc_DecideForKeys(context);
-//        samplesForDoc_TrackEvent(context);
-//        samplesForDoc_OptimizelyJSON(context);
+        samplesForDecide(context);
+        samplesForInitialization(context);
+        samplesForOptimizelyConfig(context);
+        samplesForDoc_InitializeSDK(context);
+        samplesForDoc_GetClient(context);
+        samplesForDoc_DatafilePolling(context);
+        samplesForDoc_BundledDatafile(context);
+        samplesForDoc_ExampleUsage(context);
+        samplesForDoc_CreateUserContext(context);
+        samplesForDoc_DecideOptions(context);
+        samplesForDoc_Decide(context);
+        samplesForDoc_DecideAll(context);
+        samplesForDoc_DecideForKeys(context);
+        samplesForDoc_TrackEvent(context);
+        samplesForDoc_OptimizelyJSON(context);
         samplesForDoc_CustomUserProfileService(context);
-
+        samplesForDoc_EventBatchingDefault(context);
+        samplesForDoc_EventBatchingAdvanced(context);
+        samplesForDoc_ErrorHandler(context);
+        samplesForDoc_AudienceAttributes(context);
+        samplesForDoc_NotificatonListener(context);
+        samplesForDoc_OlderVersions(context);
+        samplesForDoc_ForcedDecision(context);
     }
 
     static public void samplesForDecide(Context context) {
@@ -324,8 +344,11 @@ public class APISamplesInJava {
                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .build(context);
 
+        // datafile notifiation
         OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
-        optimizelyClient.getNotificationCenter().addNotificationHandler(UpdateConfigNotification.class, (UpdateConfigNotification notification) -> {
+        // -- sample starts here
+
+        optimizelyClient.addUpdateConfigNotificationHandler(notification -> {
             System.out.println("got datafile change");
         });
     }
@@ -622,6 +645,216 @@ public class APISamplesInJava {
 
         context.registerReceiver(eventRescheduler,
                 new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+    }
+
+    static public void samplesForDoc_EventBatchingDefault(Context context) {
+        // -- sample starts here
+
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .build(context);
+        OptimizelyClient optimizely = optimizelyManager.initialize(context, R.raw.datafile);
+    }
+
+    static public void samplesForDoc_EventBatchingAdvanced(Context context) {
+        // -- sample starts here
+
+        EventHandler eventHandler = DefaultEventHandler.getInstance(context);
+
+        // Here we are using the builder options to set batch size
+        // to 5 events and flush interval to a minute.
+        BatchEventProcessor batchProcessor = BatchEventProcessor.builder()
+                .withBatchSize(5)
+                .withEventHandler(eventHandler)
+                .withFlushInterval(TimeUnit.MINUTES.toMillis(1L))
+                .build();
+
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withEventHandler(eventHandler)
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
+                .withEventProcessor(batchProcessor)
+                .build(context);
+
+        OptimizelyClient optimizely = optimizelyManager.initialize(context, R.raw.datafile);
+
+        // log event
+        // -- sample starts here
+
+        optimizely.addLogEventNotificationHandler(logEvent -> {
+            System.out.println("event dispatched: " + logEvent);
+        });
+    }
+
+    static public void samplesForDoc_ErrorHandler(Context context) {
+        // -- sample starts here
+
+        // Error handler that raises exceptions
+        ErrorHandler errorHandler = new RaiseExceptionErrorHandler();
+
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+                .withSDKKey("SDK_KEY_HERE")
+                .withErrorHandler(errorHandler)
+                .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
+                .build(context);
+    }
+
+    static public void samplesForDoc_AudienceAttributes(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+
+        // -- sample starts here
+
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("device", "iPhone");
+        attributes.put("lifetime", 24738388);
+        attributes.put("is_logged_in", true);
+        attributes.put("application_version", "4.3.0-beta");
+
+        OptimizelyUserContext user = optimizelyClient.createUserContext("user123", attributes);
+        OptimizelyDecision decision = user.decide("FLAG_KEY_HERE");
+    }
+
+    static public void samplesForDoc_NotificatonListener(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+
+        // -- sample starts here
+
+        // Add Notification Listener (LogEvent)
+        int notificationId = optimizelyClient.addLogEventNotificationHandler(logEvent -> {
+            System.out.println("event dispatched: " + logEvent);
+        });
+
+        // Remove Notification Listener
+        optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId);
+
+        // Remove all Notification Listeners
+        optimizelyClient.getNotificationCenter().clearAllNotificationListeners();
+
+        // Remove all Notification Listeners of a certain type
+        optimizelyClient.getNotificationCenter().clearNotificationListeners(DecisionNotification.class);
+
+
+        // notification listener types
+        // -- sample starts here
+
+        // SET UP DECISION NOTIFICATION LISTENER
+        int notificationId1 = optimizelyClient.addDecisionNotificationHandler(notification -> {
+            // Access type on decisionObject to get type of decision
+            String decisionType = notification.getType();
+            if (decisionType == "flag") {
+                Map<String, ?> flagDecisionInfo = notification.getDecisionInfo();
+                String flagKey = (String) flagDecisionInfo.get("flagKey");
+                Boolean enabled = (Boolean) flagDecisionInfo.get("enabled");
+                Boolean decisionEventDispatched = (Boolean) flagDecisionInfo.get("decisionEventDispatched");
+                // Send data to analytics provider here
+            }
+        });
+
+        // SET UP LOG EVENT NOTIFICATION LISTENER
+        int notificationId2 = optimizelyClient.addLogEventNotificationHandler(notification -> {
+            // process the logEvent object here (send to analytics provider, audit/inspect data)
+        });
+
+        // SET UP OPTIMIZELY CONFIG NOTIFICATION LISTENER
+        int notificationId3 = optimizelyClient.addUpdateConfigNotificationHandler(notification -> {
+            OptimizelyConfig optimizelyConfig = optimizelyClient.getOptimizelyConfig();
+        });
+
+        // SET UP TRACK LISTENER
+        int notificationId4 = optimizelyClient.addTrackNotificationHandler(notification -> {
+            // process the event here (send to analytics provider, audit/inspect data)
+        });
+    }
+
+    static public void samplesForDoc_OlderVersions(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+
+        // -- sample starts here
+
+        // Prereq for new methods: create a user
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("is_logged_in", true);
+        OptimizelyUserContext user = optimizelyClient.createUserContext("user123", attributes);
+
+        // Is Feature Enabled
+
+        // old method
+        boolean enabled = optimizelyClient.isFeatureEnabled("flag_1", "user123", attributes);
+        // new method
+        OptimizelyDecision decision = user.decide("flag_1");
+        enabled = decision.getEnabled();
+
+        // Activate & Get Variation
+
+        // old method
+        Variation variation = optimizelyClient.activate("experiment_1", "user123", attributes);
+        // new method
+        String variationKey = decision.getVariationKey();
+
+        // Get All Feature Variables
+
+        // old method
+        OptimizelyJSON json = optimizelyClient.getAllFeatureVariables("flag_1", "user123", attributes);
+        // new method
+        json = decision.getVariables();
+
+        // Get Enabled Features
+
+        // old method
+        List<String> enabledFlags = optimizelyClient.getEnabledFeatures("user123", attributes);
+        // new method
+        List<OptimizelyDecideOption> options = Arrays.asList(OptimizelyDecideOption.ENABLED_FLAGS_ONLY);
+        Map<String, OptimizelyDecision> decisions = user.decideAll(options);
+        Set<String> enabledFlagsSet = decisions.keySet();
+
+        // Track
+
+        // old method
+        Map<String, Object> tags = new HashMap<>();
+        attributes.put("purchase_count", 2);
+        optimizelyClient.track("my_purchase_event_key", "user123", attributes, tags);
+        // new method
+        user.trackEvent("my_purchase_event_key", tags);
+    }
+
+    static public void samplesForDoc_ForcedDecision(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("FCnSegiEkRry9rhVMroit4").build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile);
+
+        // -- sample starts here
+
+        // Create the OptimizelyUserContext, passing in the UserId and Attributes
+        OptimizelyUserContext user = optimizelyClient.createUserContext("user-id");
+
+        OptimizelyDecisionContext flagContext = new OptimizelyDecisionContext("flag-1", null);
+        OptimizelyDecisionContext flagAndABTestContext = new OptimizelyDecisionContext("flag-1", "exp-1");
+        OptimizelyDecisionContext flagAndDeliveryRuleContext = new OptimizelyDecisionContext("flag-1", "delivery-1");
+        OptimizelyForcedDecision variationAForcedDecision = new OptimizelyForcedDecision("variation-a");
+        OptimizelyForcedDecision variationBForcedDecision = new OptimizelyForcedDecision("variation-b");
+        OptimizelyForcedDecision variationOnForcedDecision = new OptimizelyForcedDecision("on");
+
+        // set a forced decision for a flag
+        Boolean success = user.setForcedDecision(flagContext, variationAForcedDecision);
+        OptimizelyDecision decision = user.decide("flag-1");
+
+        // set a forced decision for an ab-test rule
+        success = user.setForcedDecision(flagAndABTestContext, variationBForcedDecision);
+        decision = user.decide("flag-1");
+
+        // set a forced variation for a delivery rule
+        success = user.setForcedDecision(flagAndDeliveryRuleContext, variationOnForcedDecision);
+        decision = user.decide("flag-1");
+
+        // get forced variations
+        OptimizelyForcedDecision forcedDecision = user.getForcedDecision(flagContext);
+        System.out.println("[ForcedDecision] variationKey = " + forcedDecision.getVariationKey());
+
+        // remove forced variations
+        success = user.removeForcedDecision(flagAndABTestContext);
+        success = user.removeAllForcedDecisions();
     }
 
 }
