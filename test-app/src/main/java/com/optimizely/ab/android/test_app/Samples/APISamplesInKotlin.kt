@@ -79,7 +79,9 @@ object APISamplesInKotlin {
     }
 
     fun samplesForDecide(context: Context) {
+        // this default-options will be applied to all following decide calls.
         val defaultDecideOptions = Arrays.asList(OptimizelyDecideOption.DISABLE_DECISION_EVENT)
+
         val optimizelyManager = OptimizelyManager.builder()
                 .withSDKKey("FCnSegiEkRry9rhVMroit4")
                 .withDefaultDecideOptions(defaultDecideOptions)
@@ -107,20 +109,20 @@ object APISamplesInKotlin {
             val variationKey = decision.variationKey
             val enabled = decision.enabled
             val variables = decision.variables
-            var vs: String? = null
+            var varStr: String? = null
             try {
-                vs = variables.getValue("text_color", String::class.java)
+                varStr = variables.getValue("text_color", String::class.java)
             } catch (e: JsonParseException) {
                 e.printStackTrace()
             }
-            val vb = variables.toMap()?.get("discount") as Int
+            val varInt = variables.toMap()?.get("discount") as Int
             val ruleKey = decision.ruleKey
             val flagKey = decision.flagKey
             val userContext = decision.userContext
             val reasons = decision.reasons
 
             Log.d("Samples", "decision: $decision")
-            Log.d("Samples", "items: $variationKey $enabled $vs $vb $ruleKey $flagKey $userContext $reasons")
+            Log.d("Samples", "items: $variationKey $enabled $varStr $varInt $ruleKey $flagKey $userContext $reasons")
 
             // decideForKeys
 
@@ -227,23 +229,23 @@ object APISamplesInKotlin {
 
             val config = optimizelyClient.optimizelyConfig
 
-            println("[OptimizelyConfig] revision = " + config!!.revision)
-            println("[OptimizelyConfig] sdkKey = " + config.sdkKey)
-            println("[OptimizelyConfig] environmentKey = " + config.environmentKey)
+            Log.d("Optimizely", "[OptimizelyConfig] revision = " + config!!.revision)
+            Log.d("Optimizely", "[OptimizelyConfig] sdkKey = " + config.sdkKey)
+            Log.d("Optimizely", "[OptimizelyConfig] environmentKey = " + config.environmentKey)
 
-            println("[OptimizelyConfig] attributes:")
+            Log.d("Optimizely", "[OptimizelyConfig] attributes:")
             for (attribute in config.attributes) {
-                println("[OptimizelyAttribute]  -- (id, key) = " + attribute.id + ", " + attribute.key)
+                Log.d("Optimizely", "[OptimizelyAttribute]  -- (id, key) = " + attribute.id + ", " + attribute.key)
             }
 
-            println("[OptimizelyConfig] audiences:")
+            Log.d("Optimizely", "[OptimizelyConfig] audiences:")
             for (audience in config.audiences) {
-                println("[OptimizelyAudience]  -- (id, name, conditions) = " + audience.id + ", " + audience.name + ", " + audience.conditions)
+                Log.d("Optimizely", "[OptimizelyAudience]  -- (id, name, conditions) = " + audience.id + ", " + audience.name + ", " + audience.conditions)
             }
 
-            println("[OptimizelyConfig] events:")
+            Log.d("Optimizely", "[OptimizelyConfig] events:")
             for (event in config.events) {
-                println("[OptimizelyEvent]  -- (id, key, experimentIds) = " + event.id + ", " + event.key + ", " + Arrays.toString(event.experimentIds.toTypedArray()))
+                Log.d("Optimizely", "[OptimizelyEvent]  -- (id, key, experimentIds) = " + event.id + ", " + event.key + ", " + Arrays.toString(event.experimentIds.toTypedArray()))
             }
 
             // all features
@@ -251,19 +253,19 @@ object APISamplesInKotlin {
                 val flag = config.featuresMap.get(flagKey)!!
 
                 for (experiment in flag.experimentRules) {
-                    println("[OptimizelyExperiment]  -- Experiment Rule Key: " + experiment.key)
-                    println("[OptimizelyExperiment]  -- Experiment Audiences: " + experiment.audiences)
+                    Log.d("Optimizely", "[OptimizelyExperiment]  -- Experiment Rule Key: " + experiment.key)
+                    Log.d("Optimizely", "[OptimizelyExperiment]  -- Experiment Audiences: " + experiment.audiences)
 
                     val variationsMap = experiment.variationsMap
                     for (variationKey in variationsMap.keys) {
                         val variation = variationsMap.get(variationKey)!!
-                        println("[OptimizelyVariation]    -- variation = { key: " + variationKey + ", id: " + variation.id + ", featureEnabled: " + variation.featureEnabled + " }")
+                        Log.d("Optimizely", "[OptimizelyVariation]    -- variation = { key: " + variationKey + ", id: " + variation.id + ", featureEnabled: " + variation.featureEnabled + " }")
                         // use variation data here...
 
                         val optimizelyVariableMap = variation.variablesMap
                         for (variableKey in optimizelyVariableMap.keys) {
                             val variable = optimizelyVariableMap.get(variableKey)!!
-                            println("[OptimizelyVariable]      -- variable = key: " + variableKey + ", value: " + variable.value)
+                            Log.d("Optimizely", "[OptimizelyVariable]      -- variable = key: " + variableKey + ", value: " + variable.value)
                             // use variable data here...
 
                         }
@@ -271,8 +273,8 @@ object APISamplesInKotlin {
                 }
 
                 for (delivery in flag.deliveryRules) {
-                    println("[OptimizelyExperiment]  -- Delivery Rule Key: " + delivery.key)
-                    println("[OptimizelyExperiment]  -- Delivery Audiences: " + delivery.audiences)
+                    Log.d("Optimizely", "[OptimizelyExperiment]  -- Delivery Rule Key: " + delivery.key)
+                    Log.d("Optimizely", "[OptimizelyExperiment]  -- Delivery Audiences: " + delivery.audiences)
                 }
 
                 // use experiments and other feature flag data here...
@@ -294,7 +296,7 @@ object APISamplesInKotlin {
 
         // Build a manager
         val optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .withEventDispatchInterval(30, TimeUnit.SECONDS)
                 .build(context)
@@ -306,8 +308,8 @@ object APISamplesInKotlin {
         // Or, instantiate it asynchronously with a callback
         optimizelyManager.initialize(context, null) { client: OptimizelyClient ->
             // flag decision
-            val user = client.createUserContext("USER_ID_HERE")!!
-            val decision = user.decide("FLAG_KEY_HERE")
+            val user = client.createUserContext("<User_ID>")!!
+            val decision = user.decide("<Flag_Key>")
         }
     }
 
@@ -323,7 +325,7 @@ object APISamplesInKotlin {
 
         // Poll every 15 minutes
         val optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .build(context)
 
@@ -332,7 +334,7 @@ object APISamplesInKotlin {
         // -- sample starts here
 
         optimizelyClient.addUpdateConfigNotificationHandler { notification ->
-            println("got datafile change")
+            Log.d("Optimizely", "got datafile change")
         }
     }
 
@@ -346,8 +348,8 @@ object APISamplesInKotlin {
         //  initialize an OptimizelyClient with the one provided.
 
         optimizelyManager.initialize(context, R.raw.datafile) { optimizelyClient: OptimizelyClient ->
-            val user = optimizelyClient.createUserContext("USER_ID_HERE")!!
-            val decision = user.decide("FLAG_KEY_HERE")
+            val user = optimizelyClient.createUserContext("<User_ID>")!!
+            val decision = user.decide("<Flag_Key>")
         }
 
         // Initialize Optimizely synchronously
@@ -364,7 +366,7 @@ object APISamplesInKotlin {
     fun samplesForDoc_ExampleUsage(context: Context) {
         // Build a manager
         val optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .build(context)
         // Instantiate a client synchronously with a bundled datafile
         // copy datafile JSON from URL accessible in app>settings
@@ -383,7 +385,7 @@ object APISamplesInKotlin {
         val variationKey = decision.variationKey
         if (variationKey == null) {
             val reasons = decision.reasons
-            println("decision error: $reasons")
+            Log.d("Optimizely", "decision error: $reasons")
             return
         }
 
@@ -391,9 +393,9 @@ object APISamplesInKotlin {
         val enabled = decision.enabled
         val variables = decision.variables
         if (enabled) {
-            var vs: String? = null
+            var varStr: String? = null
             try {
-                vs = variables.getValue("sort_method", String::class.java)
+                varStr = variables.getValue("sort_method", String::class.java)
             } catch (e: JsonParseException) {
                 e.printStackTrace()
             }
@@ -470,15 +472,15 @@ object APISamplesInKotlin {
         val variables = decision.variables
 
         // String variable value
-        var vs: String? = null
+        var varStr: String? = null
         try {
-            vs = variables.getValue("sort_method", String::class.java)
+            varStr = variables.getValue("sort_method", String::class.java)
         } catch (e: JsonParseException) {
             e.printStackTrace()
         }
 
         // Boolean variable value
-        val vb = variables.toMap()!!["k_boolean"] as Boolean?
+        val varBool = variables.toMap()!!["k_boolean"] as Boolean?
 
         // flag key for which decision was made
         val flagKey = decision.flagKey
@@ -603,7 +605,7 @@ object APISamplesInKotlin {
 
         // Build a manager
         val optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withEventDispatchInterval(60, TimeUnit.SECONDS)
                 .withEventHandler(eventHandler)
                 .build(context)
@@ -619,7 +621,7 @@ object APISamplesInKotlin {
         // -- sample starts here
 
         val optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .build(context)
         val optimizely = optimizelyManager.initialize(context, R.raw.datafile)
     }
@@ -637,7 +639,7 @@ object APISamplesInKotlin {
                 .withFlushInterval(TimeUnit.MINUTES.toMillis(1L))
                 .build()
         val optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withEventHandler(eventHandler)
                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .withEventProcessor(batchProcessor)
@@ -651,7 +653,7 @@ object APISamplesInKotlin {
         // log event
         // -- sample starts here
         optimizely.addLogEventNotificationHandler { logEvent: LogEvent ->
-            println("event dispatched: $logEvent")
+            Log.d("Optimizely", "event dispatched: $logEvent")
         }
     }
 
@@ -662,7 +664,7 @@ object APISamplesInKotlin {
         val errorHandler: ErrorHandler = RaiseExceptionErrorHandler()
 
         val optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withErrorHandler(errorHandler)
                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .build(context)
@@ -681,7 +683,7 @@ object APISamplesInKotlin {
         attributes["application_version"] = "4.3.0-beta"
 
         val user = optimizelyClient.createUserContext("user123", attributes)
-        val decision = user!!.decide("FLAG_KEY_HERE")
+        val decision = user!!.decide("<Flag_Key>")
     }
 
     fun samplesForDoc_NotificatonListener(context: Context) {
@@ -692,7 +694,7 @@ object APISamplesInKotlin {
 
         // Add Notification Listener (LogEvent)
         val notificationId = optimizelyClient.addLogEventNotificationHandler { logEvent: LogEvent ->
-            println("event dispatched: $logEvent")
+            Log.d("Optimizely", "event dispatched: $logEvent")
         }
 
         // Remove Notification Listener
@@ -819,7 +821,7 @@ object APISamplesInKotlin {
 
         // get forced variations
         val forcedDecision = user.getForcedDecision(flagContext)
-        println("[ForcedDecision] variationKey = " + forcedDecision!!.variationKey)
+        Log.d("Optimizely", "[ForcedDecision] variationKey = " + forcedDecision!!.variationKey)
 
         // remove forced variations
         success = user.removeForcedDecision(flagAndABTestContext)

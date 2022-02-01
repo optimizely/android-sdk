@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2020, Optimizely, Inc. and contributors                   *
+ * Copyright 2020, 2022, Optimizely, Inc. and contributors                  *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -92,7 +92,9 @@ public class APISamplesInJava {
         samplesForDoc_ForcedDecision(context);
     }
 
+
     static public void samplesForDecide(Context context) {
+        // this default-options will be applied to all following decide calls.
         List<OptimizelyDecideOption> defaultDecideOptions = Arrays.asList(OptimizelyDecideOption.DISABLE_DECISION_EVENT);
 
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
@@ -121,20 +123,20 @@ public class APISamplesInJava {
             String variationKey = decision.getVariationKey();
             boolean enabled = decision.getEnabled();
             OptimizelyJSON variables = decision.getVariables();
-            String vs = null;
+            String varStr = null;
             try {
-                vs = variables.getValue("text_color", String.class);
+                varStr = variables.getValue("text_color", String.class);
             } catch (JsonParseException e) {
                 e.printStackTrace();
             }
-            int vb = (int) variables.toMap().get("discount");
+            int varInt = (int) variables.toMap().get("discount");
             String ruleKey = decision.getRuleKey();
             String flagKey = decision.getFlagKey();
             OptimizelyUserContext userContext = decision.getUserContext();
             List<String> reasons = decision.getReasons();
 
-            Log.d("Samples", "decision: " + decision);
-            Log.d("Samples", "items: " + variationKey + " " + String.valueOf(enabled) + " " + vs + " " + String.valueOf(vb) + " " + ruleKey + " " + flagKey + " " + userContext + " " + reasons);
+            Log.d("Samples", "decision: " + decision.toString());
+            Log.d("Samples", "items: " + variationKey + " " + String.valueOf(enabled) + " " + varStr + " " + String.valueOf(varInt) + " " + ruleKey + " " + flagKey + " " + userContext + " " + reasons);
 
             // decideForKeys
 
@@ -142,7 +144,7 @@ public class APISamplesInJava {
             Map<String, OptimizelyDecision> decisionsMultiple = user.decideForKeys(keys);
             OptimizelyDecision decision1 = decisionsMultiple.get(keys.get(0));
             OptimizelyDecision decision2 = decisionsMultiple.get(keys.get(1));
-            Log.d("Samples", "decisionsMultiple: " + keys + " " + decision1 + " " + decision2);
+            Log.d("Samples", "decisionsMultiple: " + keys + " " + decision1.toString() + " " + decision2.toString());
 
             // decideAll
 
@@ -243,23 +245,23 @@ public class APISamplesInJava {
 
             OptimizelyConfig config = optimizelyClient.getOptimizelyConfig();
 
-            System.out.println("[OptimizelyConfig] revision = " + config.getRevision());
-            System.out.println("[OptimizelyConfig] sdkKey = " + config.getSdkKey());
-            System.out.println("[OptimizelyConfig] environmentKey = " + config.getEnvironmentKey());
+            Log.d("Optimizely", "[OptimizelyConfig] revision = " + config.getRevision());
+            Log.d("Optimizely", "[OptimizelyConfig] sdkKey = " + config.getSdkKey());
+            Log.d("Optimizely", "[OptimizelyConfig] environmentKey = " + config.getEnvironmentKey());
 
-            System.out.println("[OptimizelyConfig] attributes:");
+            Log.d("Optimizely", "[OptimizelyConfig] attributes:");
             for (OptimizelyAttribute attribute : config.getAttributes()) {
-                System.out.println("[OptimizelyAttribute]  -- (id, key) = " + attribute.getId() + ", " + attribute.getKey());
+                Log.d("Optimizely", "[OptimizelyAttribute]  -- (id, key) = " + attribute.getId() + ", " + attribute.getKey());
             }
 
-            System.out.println("[OptimizelyConfig] audiences:");
+            Log.d("Optimizely", "[OptimizelyConfig] audiences:");
             for (OptimizelyAudience audience : config.getAudiences()) {
-                System.out.println("[OptimizelyAudience]  -- (id, name, conditions) = " + audience.getId() + ", " + audience.getName() + ", " + audience.getConditions());
+                Log.d("Optimizely", "[OptimizelyAudience]  -- (id, name, conditions) = " + audience.getId() + ", " + audience.getName() + ", " + audience.getConditions());
             }
 
-            System.out.println("[OptimizelyConfig] events:");
+            Log.d("Optimizely", "[OptimizelyConfig] events:");
             for (OptimizelyEvent event : config.getEvents()) {
-                System.out.println("[OptimizelyEvent]  -- (id, key, experimentIds) = " + event.getId() + ", " + event.getKey() + ", " + Arrays.toString(event.getExperimentIds().toArray()));
+                Log.d("Optimizely", "[OptimizelyEvent]  -- (id, key, experimentIds) = " + event.getId() + ", " + event.getKey() + ", " + Arrays.toString(event.getExperimentIds().toArray()));
             }
 
             // all features
@@ -267,19 +269,19 @@ public class APISamplesInJava {
                 OptimizelyFeature flag = config.getFeaturesMap().get(flagKey);
 
                 for (OptimizelyExperiment experiment : flag.getExperimentRules()) {
-                    System.out.println("[OptimizelyExperiment]  -- Experiment Rule Key: " + experiment.getKey());
-                    System.out.println("[OptimizelyExperiment]  -- Experiment Audiences: " + experiment.getAudiences());
+                    Log.d("Optimizely", "[OptimizelyExperiment]  -- Experiment Rule Key: " + experiment.getKey());
+                    Log.d("Optimizely", "[OptimizelyExperiment]  -- Experiment Audiences: " + experiment.getAudiences());
 
                     Map<String, OptimizelyVariation> variationsMap = experiment.getVariationsMap();
                     for (String variationKey : variationsMap.keySet()) {
                         OptimizelyVariation variation = variationsMap.get(variationKey);
-                        System.out.println("[OptimizelyVariation]    -- variation = { key: " + variationKey + ", id: " + variation.getId() + ", featureEnabled: " + variation.getFeatureEnabled() + " }");
+                        Log.d("Optimizely", "[OptimizelyVariation]    -- variation = { key: " + variationKey + ", id: " + variation.getId() + ", featureEnabled: " + variation.getFeatureEnabled() + " }");
                         // use variation data here...
 
                         Map<String, OptimizelyVariable> optimizelyVariableMap = variation.getVariablesMap();
                         for (String variableKey : optimizelyVariableMap.keySet()) {
                             OptimizelyVariable variable = optimizelyVariableMap.get(variableKey);
-                            System.out.println("[OptimizelyVariable]      -- variable = key: " + variableKey + ", value: " + variable.getValue());
+                            Log.d("Optimizely", "[OptimizelyVariable]      -- variable = key: " + variableKey + ", value: " + variable.getValue());
                             // use variable data here...
 
                         }
@@ -288,8 +290,8 @@ public class APISamplesInJava {
                 }
 
                 for (OptimizelyExperiment delivery : flag.getDeliveryRules()) {
-                    System.out.println("[OptimizelyExperiment]  -- Delivery Rule Key: " + delivery.getKey());
-                    System.out.println("[OptimizelyExperiment]  -- Delivery Audiences: " + delivery.getAudiences());
+                    Log.d("Optimizely", "[OptimizelyExperiment]  -- Delivery Rule Key: " + delivery.getKey());
+                    Log.d("Optimizely", "[OptimizelyExperiment]  -- Delivery Audiences: " + delivery.getAudiences());
                 }
 
                 // use experiments and other feature flag data here...
@@ -310,7 +312,7 @@ public class APISamplesInJava {
 
         // Build a manager
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .withEventDispatchInterval(30, TimeUnit.SECONDS)
                 .build(context);
@@ -322,8 +324,8 @@ public class APISamplesInJava {
         // Or, instantiate it asynchronously with a callback
         optimizelyManager.initialize(context, null, (OptimizelyClient client) -> {
             // flag decision
-            OptimizelyUserContext user = client.createUserContext("USER_ID_HERE");
-            OptimizelyDecision decision = user.decide("FLAG_KEY_HERE");
+            OptimizelyUserContext user = client.createUserContext("<User_ID>");
+            OptimizelyDecision decision = user.decide("<Flag_Key>");
         });
     }
 
@@ -340,7 +342,7 @@ public class APISamplesInJava {
 
         // Poll every 15 minutes
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .build(context);
 
@@ -349,7 +351,7 @@ public class APISamplesInJava {
         // -- sample starts here
 
         optimizelyClient.addUpdateConfigNotificationHandler(notification -> {
-            System.out.println("got datafile change");
+            Log.d("Optimizely", "got datafile change");
         });
     }
 
@@ -363,8 +365,8 @@ public class APISamplesInJava {
         //  initialize an OptimizelyClient with the one provided.
 
         optimizelyManager.initialize(context, R.raw.datafile, (OptimizelyClient optimizelyClient) -> {
-            OptimizelyUserContext user = optimizelyClient.createUserContext("USER_ID_HERE");
-            OptimizelyDecision decision = user.decide("FLAG_KEY_HERE");
+            OptimizelyUserContext user = optimizelyClient.createUserContext("<User_ID>");
+            OptimizelyDecision decision = user.decide("<Flag_Key>");
         });
 
         // Initialize Optimizely synchronously
@@ -381,7 +383,7 @@ public class APISamplesInJava {
     static public void samplesForDoc_ExampleUsage(Context context) {
         // Build a manager
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .build(context);
         // Instantiate a client synchronously with a bundled datafile
         // copy datafile JSON from URL accessible in app>settings
@@ -400,7 +402,7 @@ public class APISamplesInJava {
         String variationKey = decision.getVariationKey();
         if (variationKey == null) {
             List<String> reasons = decision.getReasons();
-            System.out.println("decision error: " + reasons);
+            Log.d("Optimizely", "decision error: " + reasons);
             return;
         }
 
@@ -408,9 +410,9 @@ public class APISamplesInJava {
         boolean enabled = decision.getEnabled();
         OptimizelyJSON variables = decision.getVariables();
         if (enabled) {
-            String vs = null;
+            String varStr = null;
             try {
-                vs = variables.getValue("sort_method", String.class);
+                varStr = variables.getValue("sort_method", String.class);
             } catch (JsonParseException e) {
                 e.printStackTrace();
             }
@@ -491,15 +493,15 @@ public class APISamplesInJava {
         OptimizelyJSON variables = decision.getVariables();
 
         // String variable value
-        String vs = null;
+        String varStr = null;
         try {
-            vs = variables.getValue("sort_method", String.class);
+            varStr = variables.getValue("sort_method", String.class);
         } catch (JsonParseException e) {
             e.printStackTrace();
         }
 
         // Boolean variable value
-        Boolean vb = (Boolean) variables.toMap().get("k_boolean");
+        Boolean varBool = (Boolean) variables.toMap().get("k_boolean");
 
         // flag key for which decision was made
         String flagKey = decision.getFlagKey();
@@ -613,7 +615,7 @@ public class APISamplesInJava {
 
         CustomUserProfileService customUserProfileService = new CustomUserProfileService();
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withUserProfileService(customUserProfileService)
                 .build(context);
     }
@@ -633,7 +635,7 @@ public class APISamplesInJava {
 
         // Build a manager
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withEventDispatchInterval(60, TimeUnit.SECONDS)
                 .withEventHandler(eventHandler)
                 .build(context);
@@ -651,7 +653,7 @@ public class APISamplesInJava {
         // -- sample starts here
 
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .build(context);
         OptimizelyClient optimizely = optimizelyManager.initialize(context, R.raw.datafile);
     }
@@ -670,7 +672,7 @@ public class APISamplesInJava {
                 .build();
 
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withEventHandler(eventHandler)
                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .withEventProcessor(batchProcessor)
@@ -682,7 +684,7 @@ public class APISamplesInJava {
         // -- sample starts here
 
         optimizely.addLogEventNotificationHandler(logEvent -> {
-            System.out.println("event dispatched: " + logEvent);
+            Log.d("Optimizely", "event dispatched: " + logEvent);
         });
     }
 
@@ -693,7 +695,7 @@ public class APISamplesInJava {
         ErrorHandler errorHandler = new RaiseExceptionErrorHandler();
 
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
-                .withSDKKey("SDK_KEY_HERE")
+                .withSDKKey("<Your_SDK_Key>")
                 .withErrorHandler(errorHandler)
                 .withDatafileDownloadInterval(15, TimeUnit.MINUTES)
                 .build(context);
@@ -712,7 +714,7 @@ public class APISamplesInJava {
         attributes.put("application_version", "4.3.0-beta");
 
         OptimizelyUserContext user = optimizelyClient.createUserContext("user123", attributes);
-        OptimizelyDecision decision = user.decide("FLAG_KEY_HERE");
+        OptimizelyDecision decision = user.decide("<Flag_Key>");
     }
 
     static public void samplesForDoc_NotificatonListener(Context context) {
@@ -723,7 +725,7 @@ public class APISamplesInJava {
 
         // Add Notification Listener (LogEvent)
         int notificationId = optimizelyClient.addLogEventNotificationHandler(logEvent -> {
-            System.out.println("event dispatched: " + logEvent);
+            Log.d("Optimizely", "event dispatched: " + logEvent);
         });
 
         // Remove Notification Listener
@@ -850,7 +852,7 @@ public class APISamplesInJava {
 
         // get forced variations
         OptimizelyForcedDecision forcedDecision = user.getForcedDecision(flagContext);
-        System.out.println("[ForcedDecision] variationKey = " + forcedDecision.getVariationKey());
+        Log.d("Optimizely", "[ForcedDecision] variationKey = " + forcedDecision.getVariationKey());
 
         // remove forced variations
         success = user.removeForcedDecision(flagAndABTestContext);
