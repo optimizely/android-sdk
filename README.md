@@ -25,7 +25,7 @@ To add the android-sdk and all modules to your project, include the following in
 ---
 **NOTE**
 
-[Bintray/JCenter will be shut down](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/). The publish repository has been migrated to MavenCentral for the SDK version 3.10.1 or later. Older versions will be available in JCenter until February 1st, 2022.
+[Bintray/JCenter will be shut down](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/). The publish repository has been migrated to MavenCentral for the SDK version 3.10.1 or later. Older versions will be available in JCenter.
 
 ---
 
