@@ -239,7 +239,7 @@ public class ServiceScheduler {
             // FLAG_NO_CREATE will cause null to be returned if this Intent hasn't been created yet.
             // It does matter if you send a new instance or not the equality check is done via
             // the data, action, and component of an Intent.  Ours will always match.
-            return getPendingIntent(intent, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE) != null;
+            return getPendingIntent(intent, PendingIntent.FLAG_NO_CREATE) != null;
         }
 
         /**
@@ -248,11 +248,12 @@ public class ServiceScheduler {
          * @return a {@link PendingIntent}
          */
         public PendingIntent getPendingIntent(Intent intent) {
-            return getPendingIntent(intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            return getPendingIntent(intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         private PendingIntent getPendingIntent(Intent intent, int flag) {
-            return PendingIntent.getService(context, 0, intent, flag);
+            // Android 31+ requires FLAG_IMMUTABLE explicitly
+            return PendingIntent.getService(context, 0, intent, flag | PendingIntent.FLAG_IMMUTABLE);
         }
     }
 
