@@ -802,6 +802,7 @@ public class OptimizelyClient {
         }
     }
 
+    @Nullable
     public OptimizelyUserContext createUserContext(@NonNull String userId) {
         return createUserContext(userId, null);
     }
