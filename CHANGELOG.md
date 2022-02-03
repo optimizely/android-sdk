@@ -1,5 +1,14 @@
 # Optimizely Android X SDK Changelog
 
+## 3.13.1
+February 3rd, 2022
+
+### Bug Fixes
+* Move background-watchers file read to a background thread when DatafileRescheduler is invoked.
+This will fix a potential source of ANRs ([#401](https://github.com/optimizely/android-sdk/pull/401)).
+* Fix NotificationManager to be thread-safe (add-handler and send-notifications can happen concurrently). See the Optimizely Java SDK release [3.10.1](https://github.com/optimizely/java-sdk/releases/tag/3.10.1) for details.
+
+
 ## 3.13.0
 January 11th, 2022
 
