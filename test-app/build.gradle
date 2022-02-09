@@ -40,14 +40,11 @@ android {
 }
 
 dependencies {
-    // Includes the Optimizely X Full Stack Java SDK, event handler, and user profile
     implementation (project(':android-sdk')) {
         exclude group: 'com.google.code.gson', module:'gson'
-        // exclude group: 'com.noveogroup.android', module:'android-logger'
     }
 
     implementation "com.noveogroup.android:android-logger:$android_logger_ver"
-    // implementation "com.optimizely.ab:android-sdk:1.0.0"
     implementation "androidx.appcompat:appcompat:1.2.0"
     implementation "com.google.android.material:material:1.2.1"
     // EXAMPLE - replace noveogroup android-looger with slf4j-android logger
