@@ -580,8 +580,8 @@ public class OptimizelyManager {
             builder.withDatafile(datafile);
         }
 
-        builder.withClientEngine(clientEngine)
-                .withClientVersion(BuildConfig.CLIENT_VERSION);
+        // override client sdk name/version to be included in events
+        builder.withClientInfo(clientEngine, BuildConfig.CLIENT_VERSION);
 
         if (errorHandler != null) {
             builder.withErrorHandler(errorHandler);
