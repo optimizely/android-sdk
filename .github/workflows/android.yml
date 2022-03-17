@@ -1,11 +1,15 @@
 name: Android CI
-
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
+  workflow_dispatch:
+    inputs:
+      SNAPSHOT:
+        type: boolean
+        description: Set SNAPSHOT true to publish
+    
 jobs:
   lint_markdown_files:
     runs-on: ubuntu-latest
@@ -17,9 +21,53 @@ jobs:
         ruby-version: '2.6'
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Install gem
+
       run: gem install awesome_bot
     - name: Run tests
       run: find . -type f -name '*.md' -exec awesome_bot {} \;
+  integration_tests:
+    if: ${{ github.event.inputs.SNAPSHOT != 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        # You should create a personal access token and store it in your repository
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        repository: 'optimizely/travisci-tools'
+        path: 'home/runner/travisci-tools'
+        ref: 'master'
+      
+    - name: set SDK Branch if PR
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+        echo "SDK_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "TRAVIS_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+    - name: set SDK Branch if not pull request
+      if: ${{ github.event_name != 'pull_request' }}
+      run: |
+        echo "SDK_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+        echo "TRAVIS_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+    - name: Trigger build
+      env:
+        SDK: android
+        BUILD_NUMBER: ${{ github.run_id }}
+        TESTAPP_BRANCH: master
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TRAVIS_EVENT_TYPE: ${{ github.event_name }}
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+        TRAVIS_REPO_SLUG: ${{ github.repository }}
+        TRAVIS_PULL_REQUEST_SLUG: ${{ github.repository }}
+        UPSTREAM_REPO: ${{ github.repository }}
+        TRAVIS_COMMIT: ${{ github.sha }}
+        TRAVIS_PULL_REQUEST_SHA: ${{ github.event.pull_request.head.sha }}
+        TRAVIS_PULL_REQUEST: ${{ github.event.pull_request.number }}
+        UPSTREAM_SHA: ${{ github.sha }}
+        TRAVIS_COM_TOKEN: ${{ secrets.TRAVIS_COM_TOKEN }}
+        EVENT_MESSAGE: ${{ github.event.message }}
+        HOME: 'home/runner'
+      run: |
+        echo "$GITHUB_CONTEXT"
+        home/runner/travisci-tools/trigger-script-with-status-update.sh
   build:
     runs-on: ubuntu-latest
     steps:
@@ -87,3 +135,46 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: ./gradlew testAllModulesTravis
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set env
+      run: echo "TRAVIS_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    - name: set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: gradle
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Ship
+      env:
+        MAVEN_SIGNING_KEY_BASE64: ${{ secrets.MAVEN_SIGNING_KEY_BASE64 }}
+        MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
+        MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+        MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+      run: TRAVIS_TAG=${{ env.TRAVIS_TAG }} ./gradlew ship
+      
+  snapshot:
+    if: ${{ github.event.inputs.SNAPSHOT == 'true' && github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: gradle
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Ship
+      env:
+        MAVEN_SIGNING_KEY_BASE64: ${{ secrets.MAVEN_SIGNING_KEY_BASE64 }}
+        MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
+        MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+        MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+      run: TRAVIS_TAG=BB-SNAPSHOT ./gradlew ship
