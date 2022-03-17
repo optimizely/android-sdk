@@ -32,7 +32,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         # You should create a personal access token and store it in your repository
-        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         repository: 'optimizely/travisci-tools'
         path: 'home/runner/travisci-tools'
         ref: 'master'
