@@ -122,6 +122,11 @@ public class OptimizelyManager {
         this.userProfileService = userProfileService;
         this.notificationCenter = notificationCenter;
         this.defaultDecideOptions = defaultDecideOptions;
+
+        String sdkVersion = BuildConfig.CLIENT_VERSION;
+        if (sdkVersion != null && !sdkVersion.isEmpty()) {
+            logger.info("SDK Version: {}", sdkVersion);
+        }
     }
 
     @VisibleForTesting
