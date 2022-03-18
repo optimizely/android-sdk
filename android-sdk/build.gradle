@@ -31,6 +31,7 @@ android {
         buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
         // these rules will be merged to app's proguard rules
         consumerProguardFiles '../proguard-rules.txt'
+        multiDexEnabled true
     }
     testOptions {
         unitTests.returnDefaultValues = true
@@ -68,7 +69,8 @@ dependencies {
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
-    testImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"
+    testImplementation "org.powermock:powermock-module-junit4:$powermock_ver"
+    testImplementation "org.powermock:powermock-api-mockito2:$powermock_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
     androidTestImplementation "androidx.test.ext:junit:$androidx_test"
@@ -77,9 +79,7 @@ dependencies {
     // Set this dependency to build and run Espresso tests
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_ver"
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
+    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.google.code.gson:gson:$gson_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"

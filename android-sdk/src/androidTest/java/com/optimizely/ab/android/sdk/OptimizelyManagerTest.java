@@ -61,6 +61,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -553,7 +554,7 @@ public class OptimizelyManagerTest {
                         datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
                         return null;
                     }
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), nullable(DatafileConfig.class), nullable(DatafileLoadedListener.class));
 
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 
@@ -617,7 +618,7 @@ public class OptimizelyManagerTest {
                     String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
                     datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
                     return null;
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), nullable(DatafileConfig.class), nullable(DatafileLoadedListener.class));
 
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 
@@ -651,7 +652,7 @@ public class OptimizelyManagerTest {
                         datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
                         return null;
                     }
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), nullable(DatafileConfig.class), nullable(DatafileLoadedListener.class));
 
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 
@@ -718,7 +719,7 @@ public class OptimizelyManagerTest {
                         datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
                         return null;
                     }
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), nullable(DatafileConfig.class), nullable(DatafileLoadedListener.class));
 
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 

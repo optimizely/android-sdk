@@ -107,7 +107,6 @@ public class EventClientTest {
         when(client.openConnection(event.getURL())).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(300);
         InputStream inputStream = mock(InputStream.class);
-        when(urlConnection.getInputStream()).thenReturn(inputStream);
 
         eventClient.sendEvent(event);
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
@@ -146,8 +145,6 @@ public class EventClientTest {
     @SuppressWarnings("unchecked")
     @Test()
     public void sendEventsIoExceptionOpenConnection() throws IOException {
-        when(client.openConnection(event.getURL())).thenThrow(IOException.class);
-
         eventClient.sendEvent(event);
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
         ArgumentCaptor<Integer> captor2 = ArgumentCaptor.forClass(Integer.class);

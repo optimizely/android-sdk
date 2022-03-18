@@ -73,9 +73,7 @@ dependencies {
     // Set this dependency to build and run Espresso tests
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_ver"
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
+    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexmaker_ver"
     // androidTestImplementation 'com.optimizely.ab:android-sdk:1.0.0'
     androidTestImplementation project(':android-sdk')
     androidTestImplementation project(path: ':shared')

@@ -59,7 +59,6 @@ public class OptimizelyManagerDatafileServiceConnectionTest {
         DatafileService.LocalBinder binder = mock(DatafileService.LocalBinder.class);
         DatafileService service = mock(DatafileService.class);
         Context context = mock(Context.class);
-        when(service.getApplicationContext()).thenReturn(context);
         when(binder.getService()).thenReturn(service);
         when(optimizelyManager.getDatafileConfig()).thenReturn(new DatafileConfig("1", (String)null));
         when(optimizelyManager.getDatafileLoadedListener(context,null)).thenReturn(mock(DatafileLoadedListener.class));

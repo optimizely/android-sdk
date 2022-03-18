@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyList;
@@ -96,18 +97,18 @@ public class OptimizelyManagerIntervalTest {
                 .build(mockContext);
 
         verifyNew(OptimizelyManager.class).withArguments(anyString(),
-                anyString(),
+                nullable(String.class),
                 any(DatafileConfig.class),
                 any(Logger.class),
                 eq(goodNumber * 60L),                   // seconds
                 any(DatafileHandler.class),
-                any(ErrorHandler.class),
+                nullable(ErrorHandler.class),
                 anyLong(),
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                anyList());
+                nullable(List.class));
     }
 
     @Test
@@ -119,18 +120,18 @@ public class OptimizelyManagerIntervalTest {
                 .build(mockContext);
 
         verifyNew(OptimizelyManager.class).withArguments(anyString(),
-                anyString(),
+                nullable(String.class),
                 any(DatafileConfig.class),
                 any(Logger.class),
                 eq(goodNumber),                             // seconds
                 any(DatafileHandler.class),
-                any(ErrorHandler.class),
+                nullable(ErrorHandler.class),
                 anyLong(),
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                anyList());
+                nullable(List.class));
     }
 
     @Test
@@ -148,23 +149,23 @@ public class OptimizelyManagerIntervalTest {
                 anyLong(),
                 any(ExecutorService.class),
                 any(NotificationCenter.class),
-                any(Object.class));
+                nullable(Object.class));
 
         verify(mockEventHandler).setDispatchInterval(-1L);  // default
 
         verifyNew(OptimizelyManager.class).withArguments(anyString(),
-                anyString(),
+                nullable(String.class),
                 any(DatafileConfig.class),
                 any(Logger.class),
                 anyLong(),
                 any(DatafileHandler.class),
-                any(ErrorHandler.class),
+                nullable(ErrorHandler.class),
                 eq(-1L),                        // default
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                anyList());
+                nullable(List.class));
     }
 
     @Test
@@ -185,23 +186,23 @@ public class OptimizelyManagerIntervalTest {
                 anyLong(),
                 any(ExecutorService.class),
                 any(NotificationCenter.class),
-                any(Object.class));
+                nullable(Object.class));
 
         verify(mockEventHandler).setDispatchInterval(timeUnit.toMillis(goodNumber));  // milli-seconds
 
         verifyNew(OptimizelyManager.class).withArguments(anyString(),
-                anyString(),
+                nullable(String.class),
                 any(DatafileConfig.class),
                 any(Logger.class),
                 anyLong(),
                 any(DatafileHandler.class),
-                any(ErrorHandler.class),
+                nullable(ErrorHandler.class),
                 eq(goodNumber * 1000L * 60L),     // milliseconds
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                anyList());
+                nullable(List.class));
     }
 
     @Test
@@ -219,23 +220,23 @@ public class OptimizelyManagerIntervalTest {
                 anyLong(),
                 any(ExecutorService.class),
                 any(NotificationCenter.class),
-                any(Object.class));
+                nullable(Object.class));
 
         verify(mockEventHandler).setDispatchInterval(-1L);  // deprecated api not change default retryInterval
 
         verifyNew(OptimizelyManager.class).withArguments(anyString(),
-                anyString(),
+                nullable(String.class),
                 any(DatafileConfig.class),
                 any(Logger.class),
                 anyLong(),
                 any(DatafileHandler.class),
-                any(ErrorHandler.class),
+                nullable(ErrorHandler.class),
                 eq(-1L),                             // deprecated api not change default retryInterval
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                anyList());
+                nullable(List.class));
     }
 
 }
