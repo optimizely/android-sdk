@@ -50,6 +50,7 @@ import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
+import static com.optimizely.ab.android.sdk.BuildConfig.CLIENT_VERSION;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +124,7 @@ public class OptimizelyManager {
         this.notificationCenter = notificationCenter;
         this.defaultDecideOptions = defaultDecideOptions;
 
-        String sdkVersion = BuildConfig.CLIENT_VERSION;
+        String sdkVersion = CLIENT_VERSION;
         if (sdkVersion != null && !sdkVersion.isEmpty()) {
             logger.info("SDK Version: {}", sdkVersion);
         }
@@ -586,7 +587,7 @@ public class OptimizelyManager {
         }
 
         // override client sdk name/version to be included in events
-        builder.withClientInfo(clientEngine, BuildConfig.CLIENT_VERSION);
+        builder.withClientInfo(clientEngine, CLIENT_VERSION);
 
         if (errorHandler != null) {
             builder.withErrorHandler(errorHandler);
