@@ -68,7 +68,7 @@ ext {
     jacksonversion= "2.11.2"
     annotations_ver = "1.0.0"
     junit_ver = "4.12"
-    mockito_ver = "3.2.4"
+    mockito_ver = "3.12.4"
     powermock_ver = "2.0.2"
     support_test_runner_ver = "0.5"
     dexmaker_ver = "2.28.1"
