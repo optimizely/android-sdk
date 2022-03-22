@@ -50,7 +50,6 @@ import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
-import com.optimizely.ab.android.sdk.BuildConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +125,7 @@ public class OptimizelyManager {
         this.defaultDecideOptions = defaultDecideOptions;
 
         try {
-            sdkVersion = BuildConfig.CLIENT_VERSION;
+            sdkVersion = com.optimizely.ab.android.sdk.BuildConfig.CLIENT_VERSION;
             logger.info("SDK Version: {}", sdkVersion);
         } catch (Exception e) {
             logger.warn("Error getting BuildConfig version");
