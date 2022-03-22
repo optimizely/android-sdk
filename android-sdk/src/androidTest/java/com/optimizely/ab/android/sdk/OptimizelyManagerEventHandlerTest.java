@@ -62,6 +62,8 @@ public class OptimizelyManagerEventHandlerTest {
         ArgumentCaptor<LogEvent> argument = ArgumentCaptor.forClass(LogEvent.class);
         verify(mockEventHandler, timeout(5000)).dispatchEvent(argument.capture());
         assertEquals(argument.getValue().getEventBatch().getClientName(), "android-sdk");
+
+        assertEquals(argument.getValue().getEventBatch().getClientVersion(), BuildConfig.LIBRARY_PACKAGE_NAME);
         assertEquals(argument.getValue().getEventBatch().getClientVersion(), BuildConfig.CLIENT_VERSION);
     }
 
