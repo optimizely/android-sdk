@@ -19,13 +19,13 @@
 buildscript {
     ext.kotlin_version = '1.4.0'
     
-    def version_name = System.getenv('TRAVIS_TAG')
-    if (version_name != null) {
-        rootProject.ext.version_name = version_name
+    def tag_name = System.getenv('TRAVIS_TAG')
+    if (tag_name != null) {
+        ext.version_name = tag_name
     } else {
-        rootProject.ext.version_name = 'debugVersion'
+        ext.version_name = 'debugVersion'
     }
-    ext.is_release_version = !rootProject.ext.version_name.endsWith("SNAPSHOT")
+    ext.is_release_version = !version_name.endsWith("SNAPSHOT")
 
     repositories {
         jcenter()

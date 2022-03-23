@@ -28,9 +28,7 @@ android {
         versionCode 1
         versionName version_name
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-
-    //    buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
-        buildConfigField "String", "CLIENT_VERSION", "\"1.2.3\""
+        buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
 
         // these rules will be merged to app's proguard rules
         consumerProguardFiles '../proguard-rules.txt'
