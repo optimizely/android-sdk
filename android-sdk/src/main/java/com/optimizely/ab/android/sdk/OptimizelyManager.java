@@ -125,7 +125,7 @@ public class OptimizelyManager {
         this.defaultDecideOptions = defaultDecideOptions;
 
         try {
-            sdkVersion = com.optimizely.ab.android.sdk.BuildConfig.CLIENT_VERSION;
+            sdkVersion = BuildConfig.CLIENT_VERSION;
             logger.info("SDK Version: {}", sdkVersion);
         } catch (Exception e) {
             logger.warn("Error getting BuildConfig version");
