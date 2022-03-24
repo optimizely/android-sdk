@@ -252,8 +252,7 @@ public class ServiceScheduler {
         }
 
         private PendingIntent getPendingIntent(Intent intent, int flag) {
-            // Android 31+ requires FLAG_IMMUTABLE explicitly
-            return PendingIntent.getService(context, 0, intent, flag | PendingIntent.FLAG_IMMUTABLE);
+            return PendingIntent.getService(context, 0, intent, flag);
         }
     }
 
