@@ -19,10 +19,13 @@
 buildscript {
     ext.kotlin_version = '1.4.0'
 
-    ext.version_name = System.getenv('TRAVIS_TAG')
-    if (version_name == null) {
-        ext.version_name = 'debugVersion'
-    }
+//    ext.version_name = System.getenv('TRAVIS_TAG')
+//    if (version_name == null) {
+//        ext.version_name = 'debugVersion'
+//    }
+    ext.version_name = '12345'
+
+
     ext.is_release_version = !version_name.endsWith("SNAPSHOT")
 
     repositories {
