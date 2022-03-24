@@ -20,7 +20,7 @@ buildscript {
     ext.kotlin_version = '1.4.0'
 
     ext.version_name = System.getenv('TRAVIS_TAG')
-    if (version_name == null) {
+    if (version_name == null || version_name.isEmpty()) {
         //ext.version_name = 'debugVersion'
         ext.version_name = '111'
     } else if (ext.version_name == null) {
