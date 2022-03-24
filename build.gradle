@@ -21,12 +21,7 @@ buildscript {
 
     ext.version_name = System.getenv('TRAVIS_TAG')
     if (version_name == null || version_name.isEmpty()) {
-        //ext.version_name = 'debugVersion'
-        ext.version_name = '111'
-    } else if (ext.version_name == null) {
-        ext.version_name = '222'
-    } else {
-        ext.version_name = '333'
+        ext.version_name = 'debugVersion'
     }
 
 
