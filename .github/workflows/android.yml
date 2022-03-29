@@ -69,21 +69,9 @@ jobs:
         echo "$GITHUB_CONTEXT"
         home/runner/travisci-tools/trigger-script-with-status-update.sh
   build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: gradle
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Clean all modules
-      run: ./gradlew cleanAllModules
-    - name: Build with Gradle
-      run: ./gradlew build
+    uses: optimizely/android-sdk/.github/workflows/build.yml@master
+    with:
+      action: build
   test:
     runs-on: macos-latest
     strategy:
@@ -93,15 +81,12 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      
       - name: set up JDK 11
         uses: actions/setup-java@v1
         with:
           java-version: 11
-          
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-          
       - name: Gradle cache
         uses: actions/cache@v2
         with:
@@ -109,7 +94,6 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/**/*.kt') }}
-
       - name: AVD cache
         uses: actions/cache@v2
         id: avd-cache
@@ -140,44 +124,24 @@ jobs:
           script: ./gradlew testAllModulesTravis
   publish:
     if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set env
-      run: echo "TRAVIS_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-    - name: set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: gradle
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Ship
-      env:
-        MAVEN_SIGNING_KEY_BASE64: ${{ secrets.MAVEN_SIGNING_KEY_BASE64 }}
-        MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
-        MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-        MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-      run: TRAVIS_TAG=${{ env.TRAVIS_TAG }} ./gradlew ship
+    uses: optimizely/android-sdk/.github/workflows/build.yml@master
+    with:
+      action: ship
+      travis_tag: ${GITHUB_REF#refs/*/}
+    secrets:
+      MAVEN_SIGNING_KEY_BASE64: ${{ secrets.MAVEN_SIGNING_KEY_BASE64 }}
+      MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
+      MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
       
   snapshot:
     if: ${{ github.event.inputs.SNAPSHOT == 'true' && github.event_name == 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: gradle
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Ship
-      env:
-        MAVEN_SIGNING_KEY_BASE64: ${{ secrets.MAVEN_SIGNING_KEY_BASE64 }}
-        MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
-        MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-        MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-      run: TRAVIS_TAG=BB-SNAPSHOT ./gradlew ship
+    uses: optimizely/android-sdk/.github/workflows/build.yml@master
+    with:
+      action: ship
+      travis_tag: BB-SNAPSHOT
+    secrets:
+      MAVEN_SIGNING_KEY_BASE64: ${{ secrets.MAVEN_SIGNING_KEY_BASE64 }}
+      MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
+      MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
