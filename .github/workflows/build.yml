@@ -11,13 +11,13 @@ on:
         type: string
     secrets:
       MAVEN_SIGNING_KEY_BASE64:
-        required: true
+        required: false
       MAVEN_SIGNING_PASSPHRASE:
-        required: true
+        required: false
       MAVEN_CENTRAL_USERNAME:
-        required: true
+        required: false
       MAVEN_CENTRAL_PASSWORD:
-        required: true
+        required: false
 jobs:
   run_build:
     runs-on: ubuntu-latest
