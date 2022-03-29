@@ -72,7 +72,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: set up JDK 11
+    - &setup_jdk 
+      name: set up JDK 11 
       uses: actions/setup-java@v2
       with:
         java-version: '11'
@@ -94,10 +95,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       
-      - name: set up JDK 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
+      - <<: *setup_jdk
           
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -145,12 +143,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Set env
       run: echo "TRAVIS_TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-    - name: set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: gradle
+    - <<: *setup_jdk
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Ship
@@ -166,12 +159,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: gradle
+    - <<: *setup_jdk
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Ship
