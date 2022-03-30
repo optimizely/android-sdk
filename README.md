@@ -13,8 +13,8 @@ Optimizely Rollouts is free feature flags for development teams. Easily roll out
 ## Getting Started
 
 ### Using the SDK
-See the [Mobile developer documentation](https://docs.developers.optimizely.com/full-stack/docs/install-sdk-android) to learn how to set
-up an Optimizely X project and start using the SDK.
+See the [Android SDK developer documentation](https://docs.developers.optimizely.com/full-stack/docs/install-sdk-android) to learn how to set
+up an Optimizely project and start using the SDK.
 
 ### Requirements
 * Android API 14 or higher
@@ -25,7 +25,7 @@ To add the android-sdk and all modules to your project, include the following in
 ---
 **NOTE**
 
-[Bintray/JCenter will be shut down](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/). The publish repository has been migrated to MavenCentral for the SDK version 3.10.1 or later. Older versions will be available in JCenter.
+Optimizely previously distributed the Android SDK through Bintray/JCenter. But, as of April 27, 2021, [Bintray/JCenter will become a read-only repository indefinitely](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/) and the publish repository has been migrated to [MavenCentral](https://mvnrepository.com/artifact/com.optimizely.ab/android-sdk) for the SDK version 3.10.1 and later. Older versions will still be available in JCenter.
 
 ---
 

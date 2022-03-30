@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2021, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2022, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -86,6 +86,7 @@ public class OptimizelyManager {
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
     @NonNull private final List<OptimizelyDecideOption> defaultDecideOptions;
+    private String sdkVersion = null;
 
     OptimizelyManager(@Nullable String projectId,
                       @Nullable String sdkKey,
@@ -122,6 +123,13 @@ public class OptimizelyManager {
         this.userProfileService = userProfileService;
         this.notificationCenter = notificationCenter;
         this.defaultDecideOptions = defaultDecideOptions;
+
+        try {
+            sdkVersion = BuildConfig.CLIENT_VERSION;
+            logger.info("SDK Version: {}", sdkVersion);
+        } catch (Exception e) {
+            logger.warn("Error getting BuildConfig version");
+        }
     }
 
     @VisibleForTesting
@@ -580,8 +588,8 @@ public class OptimizelyManager {
             builder.withDatafile(datafile);
         }
 
-        builder.withClientEngine(clientEngine)
-                .withClientVersion(BuildConfig.CLIENT_VERSION);
+        // override client sdk name/version to be included in events
+        builder.withClientInfo(clientEngine, sdkVersion);
 
         if (errorHandler != null) {
             builder.withErrorHandler(errorHandler);

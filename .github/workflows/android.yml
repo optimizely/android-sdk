@@ -1,0 +1,147 @@
+name: Android CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      SNAPSHOT:
+        type: boolean
+        description: Set SNAPSHOT true to publish
+    
+jobs:
+  lint_markdown_files:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.6'
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Install gem
+      run: |
+        gem install awesome_bot
+    - name: Run tests
+      run: find . -type f -name '*.md' -exec awesome_bot {} \;
+  integration_tests:
+    if: ${{ github.event.inputs.SNAPSHOT != 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        # You should create a personal access token and store it in your repository
+        token: ${{ secrets.CI_USER_TOKEN }}
+        repository: 'optimizely/travisci-tools'
+        path: 'home/runner/travisci-tools'
+        ref: 'master'
+      
+    - name: set SDK Branch if PR
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+        echo "SDK_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "TRAVIS_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+    - name: set SDK Branch if not pull request
+      if: ${{ github.event_name != 'pull_request' }}
+      run: |
+        echo "SDK_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+        echo "TRAVIS_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+    - name: Trigger build
+      env:
+        SDK: android
+        BUILD_NUMBER: ${{ github.run_id }}
+        TESTAPP_BRANCH: master
+        GITHUB_TOKEN: ${{ secrets.CI_USER_TOKEN }}
+        TRAVIS_EVENT_TYPE: ${{ github.event_name }}
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+        TRAVIS_REPO_SLUG: ${{ github.repository }}
+        TRAVIS_PULL_REQUEST_SLUG: ${{ github.repository }}
+        UPSTREAM_REPO: ${{ github.repository }}
+        TRAVIS_COMMIT: ${{ github.sha }}
+        TRAVIS_PULL_REQUEST_SHA: ${{ github.event.pull_request.head.sha }}
+        TRAVIS_PULL_REQUEST: ${{ github.event.pull_request.number }}
+        UPSTREAM_SHA: ${{ github.sha }}
+        TRAVIS_COM_TOKEN: ${{ secrets.TRAVIS_COM_TOKEN }}
+        EVENT_MESSAGE: ${{ github.event.message }}
+        HOME: 'home/runner'
+      run: |
+        echo "$GITHUB_CONTEXT"
+        home/runner/travisci-tools/trigger-script-with-status-update.sh
+  build:
+    uses: optimizely/android-sdk/.github/workflows/build.yml@master
+    with:
+      action: build
+  test:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level: [21, 25, 26, 29]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Gradle cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/**/*.kt') }}
+      - name: AVD cache
+        uses: actions/cache@v2
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+            ~/.android/debug.keystore
+          key: avd-${{ matrix.api-level }}
+
+      - name: create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: ./gradlew testAllModulesTravis
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    uses: optimizely/android-sdk/.github/workflows/build.yml@master
+    with:
+      action: ship
+      travis_tag: ${GITHUB_REF#refs/*/}
+    secrets:
+      MAVEN_SIGNING_KEY_BASE64: ${{ secrets.MAVEN_SIGNING_KEY_BASE64 }}
+      MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
+      MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+      
+  snapshot:
+    if: ${{ github.event.inputs.SNAPSHOT == 'true' && github.event_name == 'workflow_dispatch' }}
+    uses: optimizely/android-sdk/.github/workflows/build.yml@master
+    with:
+      action: ship
+      travis_tag: BB-SNAPSHOT
+    secrets:
+      MAVEN_SIGNING_KEY_BASE64: ${{ secrets.MAVEN_SIGNING_KEY_BASE64 }}
+      MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
+      MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
