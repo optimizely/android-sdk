@@ -41,20 +41,22 @@ android {
 
 dependencies {
     // Includes the Optimizely X Full Stack Java SDK, event handler, and user profile
+    //implementation "com.optimizely.ab:android-sdk:1.0.0"
     implementation (project(':android-sdk')) {
         exclude group: 'com.google.code.gson', module:'gson'
-        // exclude group: 'com.noveogroup.android', module:'android-logger'
     }
 
-    implementation "com.noveogroup.android:android-logger:$android_logger_ver"
-    // implementation "com.optimizely.ab:android-sdk:1.0.0"
-    implementation "androidx.appcompat:appcompat:1.2.0"
-    implementation "com.google.android.material:material:1.2.1"
-    // EXAMPLE - replace noveogroup android-looger with slf4j-android logger
-    // https://mvnrepository.com/artifact/org.slf4j/slf4j-android
-    //implementation "org.slf4j:slf4j-android:1.7.25"
     // EXAMPLE - replace gson with jackson-databind json parser
     implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
+
+    // SLF4J logger
+    // https://github.com/noveogroup/android-logger (resources/android-logger.properties)
+    implementation "com.noveogroup.android:android-logger:$android_logger_ver"
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-android
+    //implementation "org.slf4j:slf4j-android:1.7.25"
+
+    implementation "androidx.appcompat:appcompat:1.2.0"
+    implementation "com.google.android.material:material:1.2.1"
 
     // required by API-16
     implementation "com.google.code.gson:gson:$gson_ver"
