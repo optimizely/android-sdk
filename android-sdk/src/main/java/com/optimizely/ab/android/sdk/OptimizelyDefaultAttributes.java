@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2021, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2022, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -74,10 +74,9 @@ public class OptimizelyDefaultAttributes {
         Map<String, String> attrMap = new HashMap<>();
 
         attrMap.put(DEVICE_MODEL_KEY, androidDeviceModel);
-        attrMap.put(SDK_VERSION_KEY, androidSdkVersionName);
+        attrMap.put(SDK_VERSION_KEY, androidSdkVersion);
         attrMap.put(OS_VERSION_KEY, androidOSVersion);
-        String appVersion = androidAppVersionName + Integer.toString(androidAppVersion);
-        attrMap.put(APP_VERSION_KEY, appVersion);
+        attrMap.put(APP_VERSION_KEY, androidAppVersionName);
 
         return attrMap;
     }
