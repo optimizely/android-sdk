@@ -72,11 +72,14 @@ dependencies {
     testImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
-    androidTestImplementation "androidx.test.ext:junit:$androidx_test"
-    // Set this dependency to use JUnit 4 rules
-    androidTestImplementation "androidx.test:rules:$androidx_test"
-    // Set this dependency to build and run Espresso tests
+    androidTestImplementation "androidx.work:work-testing:$work_runtime"
+    androidTestImplementation "androidx.test.ext:junit:$androidx_test_junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_ver"
+    // Set this dependency to use JUnit 4 rules
+    androidTestImplementation "androidx.test:rules:$androidx_test_rules"
+    androidTestImplementation "androidx.test:core:$androidx_test_core"
+    androidTestImplementation "androidx.test:core-ktx:$androidx_test_core"
+
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
