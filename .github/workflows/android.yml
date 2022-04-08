@@ -2,6 +2,8 @@ name: Android CI
 on:
   push:
     branches: [ master ]
+    tags:
+      - '*'
   pull_request:
     branches: [ master ]
   workflow_dispatch:
@@ -123,7 +125,7 @@ jobs:
           disable-animations: true
           script: ./gradlew testAllModulesTravis
   publish:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/')
     uses: optimizely/android-sdk/.github/workflows/build.yml@master
     with:
       action: ship

@@ -1,5 +1,13 @@
 # Optimizely Android X SDK Changelog
 
+## 3.13.2
+April 7th, 2022
+
+### Bug Fixes
+* Fix for Android 12 support (PendingIntent flag requirement when built with targetSdkVersion=31+) ([#400](https://github.com/optimizely/android-sdk/pull/400)).
+* OptimizelyManager overrides the client name/version (to be included in events) ([#410](https://github.com/optimizely/android-sdk/pull/410)).
+* Change default attributes to more meaningful values ([#415](https://github.com/optimizely/android-sdk/pull/415)).
+
 ## 3.13.1
 February 3rd, 2022
 
