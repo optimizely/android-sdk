@@ -42,6 +42,9 @@ public class EventHandlerUtils {
             // encoded to Base64 (instead of byte[] since WorkManager.Data size is unexpectedly expanded with byte[]).
             return encodeToBase64(bytes);
         }
+        finally {
+            deflater.end();
+        }
     }
 
     public static String decompress(@NonNull String base64) throws Exception {
@@ -58,6 +61,9 @@ public class EventHandlerUtils {
             }
 
             return outputStream.toString();
+        }
+        finally {
+            inflater.end();
         }
     }
 
