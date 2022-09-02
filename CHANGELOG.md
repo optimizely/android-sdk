@@ -1,5 +1,12 @@
 # Optimizely Android X SDK Changelog
 
+
+## [Unpublished]
+* Upgrade gradle to 7.5
+* minSdkVersion to 21 (from 14)
+* add ODP module
+
+
 ## 3.13.2
 April 7th, 2022
 
