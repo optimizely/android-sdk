@@ -30,7 +30,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.2'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -146,7 +146,7 @@ configure(publishedProjects) {
 
     android.libraryVariants.all { variant ->
         task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
-            source = variant.javaCompile.source
+            source = variant.javaCompileProvider.get().source
 
             title = docTitle
 
@@ -178,9 +178,18 @@ configure(publishedProjects) {
     android.libraryVariants.all { variant ->
         task("${variant.name}SourcesJar", type: Jar) {
             classifier = 'sources'
-            from variant.javaCompile.source
+            from variant.javaCompileProvider.get().source
         }
         project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
+    }
+
+    android {
+        publishing {
+            singleVariant("release") {
+                withSourcesJar()
+                withJavadocJar()
+            }
+        }
     }
 
     afterEvaluate {
@@ -196,8 +205,6 @@ configure(publishedProjects) {
                     pom.description = 'The Android SDK for Optimizely Full Stack (feature flag management for product development teams)'
 
                     from components.release
-                    artifact releaseSourcesJar
-                    artifact releaseJavadocJar
                 }
             }
             repositories {
