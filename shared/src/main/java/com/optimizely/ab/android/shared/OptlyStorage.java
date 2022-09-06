@@ -62,6 +62,28 @@ public class OptlyStorage {
         return getReadablePrefs().getLong(key, defaultValue);
     }
 
+    /**
+     * Save a string value
+     *
+     * @param key   a String key
+     * @param value a string value
+     * @hide
+     */
+    public void saveString(String key, String value) {
+        getWritablePrefs().putString(key, value).apply();
+    }
+
+    /**
+     * Get a string value
+     * @param key a String key
+     * @param defaultValue the value to return if the key isn't stored
+     * @return the string value
+     * @hide
+     */
+    public String getString(String key, String defaultValue) {
+        return getReadablePrefs().getString(key, defaultValue);
+    }
+
     private SharedPreferences.Editor getWritablePrefs() {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit();
     }
