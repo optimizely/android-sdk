@@ -29,16 +29,21 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class VuidManagerTest {
     lateinit var vuidManager: VuidManager
+    val context = getInstrumentation().getTargetContext()
 
     @Before
     fun setUp() {
+        // remove vuid storage
         cleanSheredPrefs()
-        vuidManager = VuidManager.getShared(getInstrumentation().getTargetContext())
+        // remove a singlton instance
+        VuidManager.removeSharedForTesting()
+
+        vuidManager = VuidManager.getShared(context)
     }
 
     @After
     fun cleanSheredPrefs() {
-        val sharedPreferences: SharedPreferences = getInstrumentation().getTargetContext().getSharedPreferences("optly", Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences("optly", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear()
         editor.commit()
@@ -48,12 +53,14 @@ class VuidManagerTest {
     fun makeVuid() {
         val vuid = vuidManager.makeVuid()
         assertTrue(vuid.length == 32)
-        assertTrue(vuid.startsWith("vuid_"))
+        assertTrue(vuid.startsWith("vuid_", ignoreCase = false))
+        assertTrue("generated vuids should be all lowercased", vuid.toLowerCase().equals(vuid, ignoreCase = false))
     }
 
     @Test
     fun isVuid() {
         assertTrue(VuidManager.isVuid("vuid_1234"))
+        assertTrue(VuidManager.isVuid("VUID_1234"))
         assertFalse(VuidManager.isVuid("vuid1234"))
         assertFalse(VuidManager.isVuid("1234"))
         assertFalse(VuidManager.isVuid(""))
@@ -78,17 +85,25 @@ class VuidManagerTest {
 
     @Test
     fun autoLoaded() {
-        val context = getInstrumentation().getTargetContext()
-
         val vuid1 = VuidManager.getShared(context).vuid
         assertTrue("vuid should be auto loaded when constructed", vuid1.startsWith("vuid_"))
 
         val vuid2 = VuidManager.getShared(context).vuid
-        assertEquals("the saved vuid should be returned when re-instantiated", vuid1, vuid2)
+        assertEquals("the same vuid should be returned when getting a singleton", vuid1, vuid2)
 
-        cleanSheredPrefs()
+        // remove shared instance, so will be re-instantiated
+        VuidManager.removeSharedForTesting()
+
         val vuid3 = VuidManager.getShared(context).vuid
-        assertNotEquals("a new vuid should be returned when storage cleared and re-instantiated", vuid2, vuid3)
-        assertTrue(vuid3.startsWith("vuid_"))
+        assertEquals("the saved vuid should be returned when instantiated again", vuid2, vuid3)
+
+        // remove saved vuid
+        cleanSheredPrefs()
+        // remove shared instance, so will be re-instantiated
+        VuidManager.removeSharedForTesting()
+
+        val vuid4 = VuidManager.getShared(context).vuid
+        assertNotEquals("a new vuid should be returned when storage cleared and re-instantiated", vuid3, vuid4)
+        assertTrue(vuid4.startsWith("vuid_"))
     }
 }

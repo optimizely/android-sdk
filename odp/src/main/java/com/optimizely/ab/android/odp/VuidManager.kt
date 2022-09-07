@@ -38,7 +38,12 @@ class VuidManager private constructor(private val context: Context) {
         fun getShared(context: Context): VuidManager = INSTANCE ?: VuidManager(context).also { INSTANCE = it }
 
         fun isVuid(visitorId: String): Boolean {
-            return visitorId.startsWith("vuid_")
+            return visitorId.startsWith("vuid_", ignoreCase = true)
+        }
+
+        @VisibleForTesting
+        fun removeSharedForTesting() {
+            INSTANCE = null
         }
     }
 
