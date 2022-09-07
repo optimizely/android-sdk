@@ -16,10 +16,13 @@
 
 package com.optimizely.ab.android.odp
 
+import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.optimizely.ab.android.shared.OptlyStorage
+import org.jetbrains.annotations.TestOnly
 import java.util.*
 
-object VuidManager {
+class VuidManager private constructor(private val context: Context) {
     var vuid = ""
     private val keyForVuid = "vuid"  // stored in the private "optly" storage
 
@@ -27,11 +30,20 @@ object VuidManager {
         this.vuid = load()
     }
 
-    fun isVuid(visitorId: String): Boolean {
-        return visitorId.startsWith("vuid_")
+    companion object {
+        @Volatile
+        private var INSTANCE: VuidManager? = null
+
+        @Synchronized
+        fun getShared(context: Context): VuidManager = INSTANCE ?: VuidManager(context).also { INSTANCE = it }
+
+        fun isVuid(visitorId: String): Boolean {
+            return visitorId.startsWith("vuid_")
+        }
     }
 
-    private fun makeVuid(): String {
+    @VisibleForTesting
+    fun makeVuid(): String {
         val maxLength = 32    // required by ODP server
 
         // make sure UUIDv4 is used (not UUIDv1 or UUIDv6) since the trailing 5 chars will be truncated. See TDD for details.
@@ -40,8 +52,9 @@ object VuidManager {
         return vuid
     }
 
-    private fun load(): String {
-        val storage = OptlyStorage()
+    @VisibleForTesting
+    fun load(): String {
+        val storage = OptlyStorage(context)
         val oldVuid = storage.getString(keyForVuid, null)
         if (oldVuid != null) return oldVuid
 
@@ -50,8 +63,9 @@ object VuidManager {
         return vuid
     }
 
-    private fun save(vuid: String) {
-        val storage = OptlyStorage()
+    @VisibleForTesting
+    fun save(vuid: String) {
+        val storage = OptlyStorage(context)
         storage.saveString(keyForVuid, vuid)
     }
 }

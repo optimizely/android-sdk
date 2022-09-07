@@ -1,0 +1,94 @@
+//
+// Copyright 2022, Optimizely, Inc. and contributors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+package com.optimizely.ab.android.odp
+
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import org.junit.After
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class VuidManagerTest {
+    lateinit var vuidManager: VuidManager
+
+    @Before
+    fun setUp() {
+        cleanSheredPrefs()
+        vuidManager = VuidManager.getShared(getInstrumentation().getTargetContext())
+    }
+
+    @After
+    fun cleanSheredPrefs() {
+        val sharedPreferences: SharedPreferences = getInstrumentation().getTargetContext().getSharedPreferences("optly", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.clear()
+        editor.commit()
+    }
+
+    @Test
+    fun makeVuid() {
+        val vuid = vuidManager.makeVuid()
+        assertTrue(vuid.length == 32)
+        assertTrue(vuid.startsWith("vuid_"))
+    }
+
+    @Test
+    fun isVuid() {
+        assertTrue(VuidManager.isVuid("vuid_1234"))
+        assertFalse(VuidManager.isVuid("vuid1234"))
+        assertFalse(VuidManager.isVuid("1234"))
+        assertFalse(VuidManager.isVuid(""))
+    }
+
+    @Test
+    fun loadBeforeSave() {
+        val vuid1 = vuidManager.load()
+        assertTrue("new vuid is created", VuidManager.isVuid(vuid1))
+        val vuid2 = vuidManager.load()
+        assertEquals("old vuid should be returned since load will save a created vuid", vuid1, vuid2)
+    }
+
+    @Test
+    fun loadAfterSave() {
+        vuidManager.save("vuid_1234")
+        val vuidLoaded = vuidManager.load()
+        assertEquals("saved vuid should be returned", vuidLoaded,"vuid_1234")
+        val vuidLoaded2 = vuidManager.load()
+        assertEquals("the same vuid should be returned", vuidLoaded2,"vuid_1234")
+    }
+
+    @Test
+    fun autoLoaded() {
+        val context = getInstrumentation().getTargetContext()
+
+        val vuid1 = VuidManager.getShared(context).vuid
+        assertTrue("vuid should be auto loaded when constructed", vuid1.startsWith("vuid_"))
+
+        val vuid2 = VuidManager.getShared(context).vuid
+        assertEquals("the saved vuid should be returned when re-instantiated", vuid1, vuid2)
+
+        cleanSheredPrefs()
+        val vuid3 = VuidManager.getShared(context).vuid
+        assertNotEquals("a new vuid should be returned when storage cleared and re-instantiated", vuid2, vuid3)
+        assertTrue(vuid3.startsWith("vuid_"))
+    }
+}

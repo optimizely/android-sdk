@@ -26,6 +26,7 @@ android {
         targetSdkVersion target_sdk_version
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     testOptions {
