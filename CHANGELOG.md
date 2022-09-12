@@ -3,7 +3,6 @@
 
 ## [Unpublished]
 * Upgrade gradle to 7.5
-* minSdkVersion to 21 (from 14)
 * add ODP module
 
 
