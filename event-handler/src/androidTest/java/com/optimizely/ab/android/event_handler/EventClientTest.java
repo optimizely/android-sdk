@@ -24,6 +24,7 @@ import com.optimizely.ab.android.shared.Client;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.slf4j.Logger;
 
@@ -33,10 +34,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.contains;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,5 +71,24 @@ public class EventClientTest {
         eventClient.sendEvent(event);
 
         verify(logger).debug("SendEvent completed: {}", event);
+    }
+
+    @Test
+    public void testConnectionAndReadTimeout() throws IOException {
+        when(client.openConnection(event.getURL())).thenReturn(urlConnection);
+        when(urlConnection.getResponseCode()).thenReturn(200);
+        doThrow(new IOException()).when(urlConnection).getOutputStream();
+
+        eventClient.sendEvent(event);
+
+
+        ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
+        verify(client).execute(captor1.capture(), anyInt(), anyInt());
+        Object response = captor1.getValue().execute();
+
+        verify(logger).error(contains("Unable to send event"), any(Event.class), any(IOException.class));
+        verify(urlConnection).setConnectTimeout(10*1000);
+        verify(urlConnection).setReadTimeout(60*1000);
+        verify(urlConnection).disconnect();
     }
 }
