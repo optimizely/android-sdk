@@ -83,6 +83,7 @@ public class DatafileClient {
                     }
 
                     client.setIfModifiedSince(urlConnection);
+                    // set timeouts for releasing failed connections (default is 0 = no timeout).
                     urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
                     urlConnection.setReadTimeout(READ_TIMEOUT);
 
