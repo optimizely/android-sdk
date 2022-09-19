@@ -33,7 +33,9 @@ import java.net.URL;
  */
 public class DatafileClient {
     // easy way to set the connection timeout
-    public static int CONNECTION_TIMEOUT = 5 * 1000;
+    public static int CONNECTION_TIMEOUT = 10 * 1000;
+    public static int READ_TIMEOUT = 60 * 1000;
+
     // the numerical base for the exponential backoff
     public static final int REQUEST_BACKOFF_TIMEOUT = 2;
     // power the number of retries
@@ -81,8 +83,10 @@ public class DatafileClient {
                     }
 
                     client.setIfModifiedSince(urlConnection);
-
+                    // set timeouts for releasing failed connections (default is 0 = no timeout).
                     urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
+                    urlConnection.setReadTimeout(READ_TIMEOUT);
+
                     urlConnection.connect();
 
                     int status = urlConnection.getResponseCode();

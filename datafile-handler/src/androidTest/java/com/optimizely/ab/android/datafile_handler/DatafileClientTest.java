@@ -37,6 +37,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -193,8 +194,6 @@ public class DatafileClientTest {
         verify(client).saveLastModified(urlConnection2);
         verify(client).readStream(urlConnection2);
         verify(urlConnection2).disconnect();
-
-
     }
 
 
@@ -303,4 +302,23 @@ public class DatafileClientTest {
         when(client.execute(any(Client.Request.class), eq(DatafileClient.REQUEST_BACKOFF_TIMEOUT), eq(DatafileClient.REQUEST_RETRIES_POWER))).thenReturn("");
         assertEquals("", datafileClient.request(url.toString()));
     }
+
+    @Test
+    public void handlesConnectionAndReadTimeout() throws IOException {
+        URL url = new URL(new DatafileConfig("1", null).getUrl());
+        when(client.openConnection(url)).thenReturn(urlConnection);
+        when(urlConnection.getResponseCode()).thenReturn(200);
+        doThrow(new IOException()).when(urlConnection).connect();
+
+        datafileClient.request(url.toString());
+        ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
+        verify(client).execute(captor1.capture(), anyInt(), anyInt());
+        Object response = captor1.getValue().execute();
+
+        verify(logger).error(contains("Error making request"), any(IOException.class));
+        verify(urlConnection).setConnectTimeout(10*1000);
+        verify(urlConnection).setReadTimeout(60*1000);
+        verify(urlConnection).disconnect();
+    }
+
 }
