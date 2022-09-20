@@ -30,7 +30,6 @@ import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.shared.OptlyStorage;
-import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.junit.Before;
 import org.junit.Ignore;

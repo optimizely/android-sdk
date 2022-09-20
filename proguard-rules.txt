@@ -24,10 +24,6 @@
 -keepclassmembers class  com.optimizely.ab.android.datafile_handler.DatafileService {
     public *;    
 }
--keep class com.optimizely.ab.android.event_handler.EventIntentService
--keepclassmembers class  com.optimizely.ab.android.event_handler.EventIntentService {
-    public *;    
-}
 -keep class com.optimizely.ab.config.**
 -keepclassmembers class  com.optimizely.ab.config.** {
     *;    

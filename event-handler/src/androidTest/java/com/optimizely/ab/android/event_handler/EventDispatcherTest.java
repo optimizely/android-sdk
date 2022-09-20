@@ -20,14 +20,13 @@ import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import androidx.annotation.RequiresApi;
+
 import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
-import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.junit.After;
 import org.junit.Before;

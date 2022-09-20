@@ -19,17 +19,14 @@ package com.optimizely.ab.android.datafile_handler;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ServiceTestRule;
 
 import com.optimizely.ab.android.shared.Cache;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.DatafileConfig;
-import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.junit.Before;
 import org.junit.Ignore;

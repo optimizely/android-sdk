@@ -33,7 +33,6 @@ import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.shared.DatafileConfig;
-import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.DatafileProjectConfig;

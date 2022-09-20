@@ -36,7 +36,7 @@ import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
-import com.optimizely.ab.android.event_handler.EventIntentService;
+import com.optimizely.ab.android.event_handler.EventDispatcher;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -822,7 +822,7 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which {@link EventIntentService} will retry event dispatch periodically.
+         * Sets the interval which {@link EventDispatcher} will retry event dispatch periodically.
          * If you don't set this value or set this to -1, periodic retries on event dispatch failures will be disabled (but still queued and retried on next event dispatch request)
          *
          * @param interval the interval
@@ -835,7 +835,7 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which {@link EventIntentService} will retry event dispatch periodically.
+         * Sets the interval which {@link EventDispatcher} will retry event dispatch periodically.
          * If you don't set this value or set this to -1, periodic retries on event dispatch failures will be disabled (but still queued and retried on next event dispatch request)
          *
          * @param interval the interval in milliseconds

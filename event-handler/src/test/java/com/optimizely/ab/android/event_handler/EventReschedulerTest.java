@@ -19,10 +19,6 @@ package com.optimizely.ab.android.event_handler;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
-import android.os.Build;
-import androidx.annotation.RequiresApi;
-
-import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.junit.Before;
 import org.junit.Ignore;
