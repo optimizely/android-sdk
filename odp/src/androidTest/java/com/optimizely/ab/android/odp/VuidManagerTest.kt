@@ -32,7 +32,7 @@ class VuidManagerTest {
     @Before
     fun setUp() {
         // remove vuid storage
-        cleanSheredPrefs()
+        cleanSharedPrefs()
         // remove a singlton instance
         VuidManager.removeSharedForTesting()
 
@@ -40,7 +40,7 @@ class VuidManagerTest {
     }
 
     @After
-    fun cleanSheredPrefs() {
+    fun cleanSharedPrefs() {
         val sharedPreferences: SharedPreferences = context.getSharedPreferences("optly", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear()
@@ -96,7 +96,7 @@ class VuidManagerTest {
         assertEquals("the saved vuid should be returned when instantiated again", vuid2, vuid3)
 
         // remove saved vuid
-        cleanSheredPrefs()
+        cleanSharedPrefs()
         // remove shared instance, so will be re-instantiated
         VuidManager.removeSharedForTesting()
 
