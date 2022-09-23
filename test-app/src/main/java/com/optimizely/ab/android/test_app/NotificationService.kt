@@ -20,8 +20,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager
 
-class
-NotificationService : IntentService("NotificationService") {
+class NotificationService : IntentService("NotificationService") {
     override fun onHandleIntent(intent: Intent?) {
         if (intent != null) {
             showNotification()

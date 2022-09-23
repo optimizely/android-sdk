@@ -53,8 +53,9 @@ public class EventDAOTest {
     public void setupEventDAO() {
         logger = mock(Logger.class);
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        eventDAO = EventDAO.getInstance(context, "1", logger);
+        
         tearDownEventDAO();
+        eventDAO = EventDAO.getInstance(context, "1", logger);
     }
 
     @After
