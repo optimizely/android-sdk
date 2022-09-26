@@ -30,6 +30,10 @@ import java.net.HttpURLConnection;
  * Makes network requests related to events
  */
 class EventClient {
+    // easy way to set the connection timeout
+    public static int CONNECTION_TIMEOUT = 10 * 1000;
+    public static int READ_TIMEOUT = 60 * 1000;
+
     private final Client client;
     // Package private and non final so it can easily be mocked for tests
     private final Logger logger;
@@ -56,6 +60,10 @@ class EventClient {
                     if (urlConnection == null) {
                         return Boolean.FALSE;
                     }
+
+                    // set timeouts for releasing failed connections (default is 0 = no timeout).
+                    urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
+                    urlConnection.setReadTimeout(READ_TIMEOUT);
 
                     urlConnection.setRequestMethod("POST");
                     urlConnection.setRequestProperty("Content-Type", "application/json");
