@@ -44,7 +44,6 @@ import java.io.File;
 public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigManager {
     private static final Logger logger = LoggerFactory.getLogger(DefaultDatafileHandler.class);
     private ProjectConfig currentProjectConfig;
-    private DatafileServiceConnection datafileServiceConnection;
     private FileObserver fileObserver;
 
     /**
@@ -68,8 +67,6 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
     /**
      * Asynchronous download data file.
      * <p>
-     * We create a DatafileService intent, create a DataService connection, and bind it to the application context.
-     * After we receive the datafile, we unbind the service and cleanup the service connection.
      * This gets the project file from the Optimizely CDN.
      *
      * @param context   application context
@@ -96,9 +93,6 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
                 }
             }
         });
-
-
-
     }
 
     public void downloadDatafileToCache(final Context context, DatafileConfig datafileConfig, boolean updateConfigOnNewDatafile) {
