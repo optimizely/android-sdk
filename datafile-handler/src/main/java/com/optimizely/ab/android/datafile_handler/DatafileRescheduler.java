@@ -35,7 +35,7 @@ import java.util.List;
 
 /**
  * Broadcast Receiver that handles app upgrade and phone restart broadcasts in order
- * to reschedule {@link DatafileService}
+ * to reschedule {@link DatafileWorker}
  * In order to use this class you must include the declaration in your AndroidManifest.xml.
  * <pre>
  * {@code
@@ -73,7 +73,7 @@ public class DatafileRescheduler extends BroadcastReceiver {
     }
 
     /**
-     * Handles building sending Intents to {@link DatafileService}
+     * Handles building sending Intents to {@link DatafileWorker}
      *
      * This abstraction mostly makes unit testing easier
      */

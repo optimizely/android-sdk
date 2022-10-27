@@ -16,7 +16,6 @@
 
 package com.optimizely.ab.android.sdk;
 
-import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -29,11 +28,9 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
-import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.shared.DatafileConfig;
-import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.config.DatafileProjectConfig;
@@ -104,9 +101,9 @@ public class OptimizelyManagerTest {
         EventProcessor eventProcessor = mock(EventProcessor.class);
         optimizelyManager = OptimizelyManager.builder(testProjectId)
                 .withLogger(logger)
-                .withDatafileDownloadInterval(3600L)
+                .withDatafileDownloadInterval(3600L, TimeUnit.SECONDS)
                 .withDatafileHandler(defaultDatafileHandler)
-                .withEventDispatchInterval(3600L)
+                .withEventDispatchInterval(3600L, TimeUnit.SECONDS)
                 .withEventHandler(eventHandler)
                 .withEventProcessor(eventProcessor)
                 .build(InstrumentationRegistry.getInstrumentation().getTargetContext());
@@ -322,7 +319,7 @@ public class OptimizelyManagerTest {
 
     @Test
     public void initializeAsyncWithNullDatafile() {
-        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getContext(), new OptimizelyStartListener() {
+        optimizelyManager.initialize(InstrumentationRegistry.getInstrumentation().getContext(), null, new OptimizelyStartListener() {
             @Override
             public void onStart(OptimizelyClient optimizely) {
                 assertNotNull(optimizely);
@@ -410,21 +407,12 @@ public class OptimizelyManagerTest {
             e.printStackTrace();
         }
         UserProfileService userProfileService = mock(UserProfileService.class);
-        ServiceScheduler serviceScheduler = mock(ServiceScheduler.class);
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<DefaultUserProfileService.StartCallback> callbackArgumentCaptor =
                 ArgumentCaptor.forClass(DefaultUserProfileService.StartCallback.class);
         optimizelyManager.setOptimizelyStartListener(null);
 
         optimizelyManager.injectOptimizely(context, userProfileService, minDatafile);
-        AlarmManager alarmManager = (AlarmManager) context
-                .getSystemService(Context.ALARM_SERVICE);
-        ServiceScheduler.PendingIntentFactory pendingIntentFactory = new ServiceScheduler
-                .PendingIntentFactory(context);
-
-        Intent intent = new Intent(context, DatafileService.class);
-        intent.putExtra(DatafileService.EXTRA_DATAFILE_CONFIG, optimizelyManager.getDatafileConfig().toJSONString());
-        serviceScheduler.schedule(intent, optimizelyManager.getDatafileDownloadInterval() * 1000);
 
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
@@ -433,11 +421,6 @@ public class OptimizelyManagerTest {
         }
 
         verify(logger).info("No listener to send Optimizely to");
-        verify(serviceScheduler).schedule(captor.capture(), eq(TimeUnit.HOURS.toMillis(1L)));
-
-        Intent intent2 = captor.getValue();
-        assertTrue(intent2.getComponent().getShortClassName().contains("DatafileService"));
-        assertEquals(optimizelyManager.getDatafileConfig().toJSONString(), intent2.getStringExtra(DatafileService.EXTRA_DATAFILE_CONFIG));
     }
 
     @Test

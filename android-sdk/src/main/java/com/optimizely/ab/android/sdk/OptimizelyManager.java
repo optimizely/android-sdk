@@ -32,11 +32,11 @@ import androidx.annotation.VisibleForTesting;
 
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
+import com.optimizely.ab.android.datafile_handler.DatafileWorker;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
-import com.optimizely.ab.android.datafile_handler.DatafileService;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
-import com.optimizely.ab.android.event_handler.EventIntentService;
+import com.optimizely.ab.android.event_handler.EventDispatcher;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -425,13 +425,6 @@ public class OptimizelyManager {
         activity.getApplication().unregisterActivityLifecycleCallbacks(optlyActivityLifecycleCallbacks);
     }
 
-    /**
-     * Called after the {@link DatafileService} is unbound.
-     * <p>
-     * Here we just cancel the start listener.
-     *
-     * @param context any {@link Context} instance
-     */
     public void stop(@NonNull Context context) {
         if (!isAndroidVersionSupported()) {
             return;
@@ -779,7 +772,7 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
+         * Sets the interval which {@link DatafileWorker} will attempt to update the
          * cached datafile.  If you set this to -1, you disable background updates.  If you don't set
          * a download interval (or set to less than 0), then no background updates will be scheduled or occur.
          * The minimum interval is 15 minutes (enforced by the Android JobScheduler API. See {@link android.app.job.JobInfo})
@@ -794,7 +787,7 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which {@link DatafileService} through the {@link DatafileHandler} will attempt to update the
+         * Sets the interval which {@link DatafileWorker} will attempt to update the
          * cached datafile.  If you set this to -1, you disable background updates.  If you don't set
          * a download interval (or set to less than 0), then no background updates will be scheduled or occur.
          * The minimum interval is 900 secs (15 minutes) (enforced by the Android JobScheduler API. See {@link android.app.job.JobInfo})
@@ -822,7 +815,7 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which {@link EventIntentService} will retry event dispatch periodically.
+         * Sets the interval which {@link EventDispatcher} will retry event dispatch periodically.
          * If you don't set this value or set this to -1, periodic retries on event dispatch failures will be disabled (but still queued and retried on next event dispatch request)
          *
          * @param interval the interval
@@ -835,7 +828,7 @@ public class OptimizelyManager {
         }
 
         /**
-         * Sets the interval which {@link EventIntentService} will retry event dispatch periodically.
+         * Sets the interval which {@link EventDispatcher} will retry event dispatch periodically.
          * If you don't set this value or set this to -1, periodic retries on event dispatch failures will be disabled (but still queued and retried on next event dispatch request)
          *
          * @param interval the interval in milliseconds
