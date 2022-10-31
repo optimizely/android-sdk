@@ -26,7 +26,6 @@ import androidx.work.WorkerParameters;
 
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.OptlyStorage;
-import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.event.LogEvent;
 
 import org.slf4j.LoggerFactory;
@@ -49,11 +48,7 @@ public class EventWorker extends Worker {
         EventClient eventClient = new EventClient(new Client(optlyStorage,
                 LoggerFactory.getLogger(Client.class)), LoggerFactory.getLogger(EventClient.class));
         EventDAO eventDAO = EventDAO.getInstance(context, "1", LoggerFactory.getLogger(EventDAO.class));
-        ServiceScheduler serviceScheduler = new ServiceScheduler(
-                context,
-                new ServiceScheduler.PendingIntentFactory(context),
-                LoggerFactory.getLogger(ServiceScheduler.class));
-        eventDispatcher = new EventDispatcher(context, optlyStorage, eventDAO, eventClient, serviceScheduler, LoggerFactory.getLogger(EventDispatcher.class));
+        eventDispatcher = new EventDispatcher(context, optlyStorage, eventDAO, eventClient, LoggerFactory.getLogger(EventDispatcher.class));
     }
 
     @NonNull

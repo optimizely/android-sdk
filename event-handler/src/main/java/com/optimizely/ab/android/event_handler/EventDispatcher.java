@@ -17,7 +17,6 @@
 package com.optimizely.ab.android.event_handler;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -25,7 +24,6 @@ import androidx.annotation.VisibleForTesting;
 
 import com.optimizely.ab.android.shared.CountingIdlingResourceManager;
 import com.optimizely.ab.android.shared.OptlyStorage;
-import com.optimizely.ab.android.shared.ServiceScheduler;
 
 import org.slf4j.Logger;
 
@@ -35,7 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Dispatches {@link Event} instances sent to {@link EventIntentService}
+ * Dispatches {@link Event} instances.
  *
  * If sending events to the network fails they will be stored and dispatched again.
  *
@@ -45,18 +43,16 @@ import java.util.List;
 public class EventDispatcher {
 
     @NonNull private final Context context;
-    @NonNull private final ServiceScheduler serviceScheduler;
     @NonNull private final EventDAO eventDAO;
     @NonNull private final EventClient eventClient;
     @NonNull private final Logger logger;
     @NonNull private final OptlyStorage optlyStorage;
 
-    EventDispatcher(@NonNull Context context, @NonNull OptlyStorage optlyStorage, @NonNull EventDAO eventDAO, @NonNull EventClient eventClient, @NonNull ServiceScheduler serviceScheduler, @NonNull Logger logger) {
+    EventDispatcher(@NonNull Context context, @NonNull OptlyStorage optlyStorage, @NonNull EventDAO eventDAO, @NonNull EventClient eventClient, @NonNull Logger logger) {
         this.context = context;
         this.optlyStorage = optlyStorage;
         this.eventDAO = eventDAO;
         this.eventClient = eventClient;
-        this.serviceScheduler = serviceScheduler;
         this.logger = logger;
     }
 
@@ -77,59 +73,6 @@ public class EventDispatcher {
         }
 
         return dispatched;
-    }
-
-    @Deprecated
-    void dispatch(@NonNull Intent intent) {
-        // Dispatch events still in storage
-        boolean dispatched = dispatch();
-
-        if (intent.hasExtra(EventIntentService.EXTRA_URL)) {
-            try {
-                String urlExtra = intent.getStringExtra(EventIntentService.EXTRA_URL);
-                String requestBody = intent.getStringExtra(EventIntentService.EXTRA_REQUEST_BODY);
-                Event event = new Event(new URL(urlExtra), requestBody);
-                // Send the event that triggered this run of the service for store it if sending fails
-                dispatched = dispatch(event);
-            } catch (MalformedURLException e) {
-                logger.error("Received a malformed URL in event handler service", e);
-            } catch (Exception e) {
-                logger.warn("Failed to dispatch event.", e);
-            }
-        }
-
-
-        try {
-            if (!dispatched) {
-                long interval = getInterval(intent);
-                serviceScheduler.schedule(intent, interval);
-                saveInterval(interval);
-                logger.info("Scheduled events to be dispatched");
-            } else {
-                // Quit trying to dispatch events because their aren't any in storage
-                serviceScheduler.unschedule(intent);
-                logger.info("Unscheduled event dispatch");
-            }
-        } catch (Exception e) {
-            logger.warn("Failed to schedule event dispatch.", e);
-        }
-        finally {
-            eventDAO.closeDb();
-        }
-    }
-
-    // Either grab the interval for the first time from Intent or from storage
-    // The extra won't exist if we are being restarted after a reboot or app update
-    @Deprecated
-    private long getInterval(@NonNull Intent intent) {
-        long duration = intent.getLongExtra(EventIntentService.EXTRA_INTERVAL, -1);
-        // We are either scheduling for the first time or rescheduling after our alarms were cancelled
-        return duration;
-    }
-
-    @Deprecated
-    private void saveInterval(long interval) {
-        optlyStorage.saveLong(EventIntentService.EXTRA_INTERVAL, interval);
     }
 
     /**

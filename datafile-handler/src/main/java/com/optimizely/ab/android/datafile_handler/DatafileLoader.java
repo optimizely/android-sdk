@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Handles intents and bindings in {@link DatafileService}
+ * Manage datafile download, caching, and notification
  */
 public class DatafileLoader {
     private static final String datafileDownloadTime = "optlyDatafileDownloadTime";

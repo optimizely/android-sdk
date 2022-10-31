@@ -25,7 +25,6 @@ import android.net.wifi.WifiManager;
 import androidx.annotation.NonNull;
 import androidx.work.Data;
 
-import com.optimizely.ab.android.shared.ServiceScheduler;
 import com.optimizely.ab.android.shared.WorkerScheduler;
 
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * Reschedules event flushing after package updates and reboots
  * <p>
  * After the app is updated or the phone is rebooted the event flushing
- * jobs scheduled by {@link ServiceScheduler} are cancelled.
+ * jobs scheduled by {@link WorkerScheduler} are cancelled.
  * <p>
  * This code is called by the Android Framework.  The Intent Filters are registered
  * AndroidManifest.xml.
@@ -64,12 +63,7 @@ public class EventRescheduler extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (context != null && intent != null) {
-            ServiceScheduler serviceScheduler = new ServiceScheduler(
-                    context,
-                    new ServiceScheduler.PendingIntentFactory(context),
-                    LoggerFactory.getLogger(ServiceScheduler.class));
-            Intent eventServiceIntent = new Intent(context, EventIntentService.class);
-            reschedule(context, intent, eventServiceIntent, serviceScheduler);
+            reschedule(context, intent);
         } else {
             logger.warn("Received invalid broadcast to event rescheduler");
         }
@@ -79,10 +73,8 @@ public class EventRescheduler extends BroadcastReceiver {
      * Actually reschedule the service
      * @param context current context
      * @param broadcastIntent broadcast intent (reboot, wifi change, reinstall)
-     * @param eventServiceIntent event service intent
-     * @param serviceScheduler scheduler for rescheduling.
      */
-    void reschedule(@NonNull Context context, @NonNull Intent broadcastIntent, @NonNull Intent eventServiceIntent, @NonNull ServiceScheduler serviceScheduler) {
+    void reschedule(@NonNull Context context, @NonNull Intent broadcastIntent) {
         if (broadcastIntent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
                 broadcastIntent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
             WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY, -1L);
