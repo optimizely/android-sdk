@@ -17,7 +17,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.4.0'
+    ext.kotlin_version = '1.7.0'
     
     ext.version_name = System.getenv('TRAVIS_TAG')
     if (version_name == null || version_name.isEmpty()) {
