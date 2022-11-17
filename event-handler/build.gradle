@@ -25,8 +25,7 @@ android {
     defaultConfig {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode 1
-        versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     testOptions {
@@ -45,6 +44,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildToolsVersion build_tools_version
+    namespace 'com.optimizely.ab.android.event_handler'
 }
 
 dependencies {
@@ -54,11 +54,14 @@ dependencies {
     // Base64
     implementation "commons-codec:commons-codec:1.15"
 
+    testImplementation project(path: ':shared')
+
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
-    testImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"
+    testImplementation "org.powermock:powermock-module-junit4:$powermock_ver"
+    testImplementation "org.powermock:powermock-api-mockito2:$powermock_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
     androidTestImplementation "androidx.work:work-testing:$work_runtime"

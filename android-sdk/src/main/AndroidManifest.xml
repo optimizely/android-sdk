@@ -17,8 +17,7 @@
  ***************************************************************************/
 -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.optimizely.ab.android.sdk">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 

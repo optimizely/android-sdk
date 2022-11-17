@@ -16,32 +16,23 @@
 
 package com.optimizely.ab.android.event_handler;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
-import android.app.Instrumentation;
 import android.content.Context;
 
 import androidx.work.Data;
 import androidx.work.WorkerParameters;
 
 import com.optimizely.ab.event.LogEvent;
-import com.optimizely.ab.event.internal.payload.EventBatch;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -49,8 +40,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 
 /**
  * Tests {@link EventWorker}
@@ -116,7 +105,7 @@ public class EventWorkerUnitTest {
 
         int[] sizes = {100, 8000, 9000};
         for (int size : sizes){
-            String str = EventHandlerUtilsTest.makeRandomString(size);
+            String str = makeLongString(size);
 
             when(mockEvent.getBody()).thenReturn(str);
 
@@ -134,7 +123,7 @@ public class EventWorkerUnitTest {
 
         int[] sizes = {10000, 100000};
         for (int size : sizes){
-            String str = EventHandlerUtilsTest.makeRandomString(size);
+            String str = makeLongString(size);
             String compressed = EventHandlerUtils.compress(str);
             System.out.println("compressed: " + size + " -> " + compressed.length());
 
@@ -202,7 +191,7 @@ public class EventWorkerUnitTest {
 
         // compressed data
 
-        body = EventHandlerUtilsTest.makeRandomString(20000);
+        body = makeLongString(20000);
         when(event.getBody()).thenReturn(body);
 
         data = EventWorker.getData(event, 123L);
@@ -219,6 +208,16 @@ public class EventWorkerUnitTest {
         assertEquals(eventWorker.getUrlFromInputData(data), host);
         assertEquals(eventWorker.getEventBodyFromInputData(data), body);
         assertEquals(eventWorker.getRetryIntervalFromInputData(data), -1);
+    }
+
+    // Helpers
+
+    private String makeLongString(int maxSize) {
+        StringBuilder builder = new StringBuilder();
+        String str = "random-string";
+        int repeat = (maxSize / str.length()) + 1;
+        for (int i=0; i<repeat; i++) builder.append(str);
+        return builder.toString();
     }
 
 }

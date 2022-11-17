@@ -85,7 +85,7 @@ public class OptimizelyManager {
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
-    @NonNull private final List<OptimizelyDecideOption> defaultDecideOptions;
+    @Nullable private final List<OptimizelyDecideOption> defaultDecideOptions;
     private String sdkVersion = null;
 
     OptimizelyManager(@Nullable String projectId,
@@ -100,7 +100,7 @@ public class OptimizelyManager {
                       @Nullable EventProcessor eventProcessor,
                       @NonNull UserProfileService userProfileService,
                       @NonNull NotificationCenter notificationCenter,
-                      @NonNull List<OptimizelyDecideOption> defaultDecideOptions) {
+                      @Nullable List<OptimizelyDecideOption> defaultDecideOptions) {
 
         if (projectId == null && sdkKey == null) {
             logger.error("projectId and sdkKey are both null!");

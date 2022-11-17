@@ -16,12 +16,24 @@
 
 package com.optimizely.ab.android.sdk;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.verifyNew;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
+
 import android.content.Context;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.shared.DatafileConfig;
-import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.BatchEventProcessor;
@@ -32,35 +44,16 @@ import com.optimizely.ab.notification.NotificationCenter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.PowerMockUtils;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
 import org.slf4j.Logger;
 
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.verifyNew;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 
 @RunWith(PowerMockRunner.class)
@@ -75,7 +68,6 @@ public class OptimizelyManagerIntervalTest {
     @Before
     public void setup() throws Exception {
         mockContext = mock(Context.class);
-        when(mockContext.getApplicationContext()).thenReturn(mockContext);
 
         whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
         whenNew(BatchEventProcessor.class).withAnyArguments().thenReturn(mock(BatchEventProcessor.class));
@@ -95,19 +87,20 @@ public class OptimizelyManagerIntervalTest {
                 .withDatafileDownloadInterval(goodNumber, TimeUnit.MINUTES)
                 .build(mockContext);
 
-        verifyNew(OptimizelyManager.class).withArguments(anyString(),
+        verifyNew(OptimizelyManager.class).withArguments(
                 anyString(),
+                any(),                          // nullable (String)
                 any(DatafileConfig.class),
                 any(Logger.class),
                 eq(goodNumber * 60L),                   // seconds
                 any(DatafileHandler.class),
-                any(ErrorHandler.class),
+                any(),                          // nullable (ErrorHandler)
                 anyLong(),
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                anyList());
+                any());                         // nullable (DefaultDecideOptions)
     }
 
     @Test
@@ -118,19 +111,20 @@ public class OptimizelyManagerIntervalTest {
                 .withDatafileDownloadInterval(goodNumber)      // deprecated
                 .build(mockContext);
 
-        verifyNew(OptimizelyManager.class).withArguments(anyString(),
+        verifyNew(OptimizelyManager.class).withArguments(
                 anyString(),
+                any(),                          // nullable (String)
                 any(DatafileConfig.class),
                 any(Logger.class),
-                eq(goodNumber),                             // seconds
+                eq(goodNumber),                   // seconds
                 any(DatafileHandler.class),
-                any(ErrorHandler.class),
+                any(),                          // nullable (ErrorHandler)
                 anyLong(),
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                anyList());
+                any());                         // nullable (DefaultDecideOptions)
     }
 
     @Test
@@ -141,30 +135,32 @@ public class OptimizelyManagerIntervalTest {
                 .withEventDispatchInterval(goodNumber, TimeUnit.SECONDS)
                 .build(mockContext);
 
-        verifyNew(BatchEventProcessor.class).withArguments(any(BlockingQueue.class),
+        verifyNew(BatchEventProcessor.class).withArguments(
+                any(BlockingQueue.class),
                 any(EventHandler.class),
                 anyInt(),
                 eq(goodNumber * 1000L),         // milliseconds
                 anyLong(),
                 any(ExecutorService.class),
                 any(NotificationCenter.class),
-                any(Object.class));
+                any());                                 // PowerMock bug? requires an extra null at the end
 
         verify(mockEventHandler).setDispatchInterval(-1L);  // default
 
-        verifyNew(OptimizelyManager.class).withArguments(anyString(),
+        verifyNew(OptimizelyManager.class).withArguments(
                 anyString(),
+                any(),                          // nullable (String)
                 any(DatafileConfig.class),
                 any(Logger.class),
                 anyLong(),
                 any(DatafileHandler.class),
-                any(ErrorHandler.class),
+                any(),                          // nullable (ErrorHandler)
                 eq(-1L),                        // default
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                anyList());
+                any());                         // nullable (DefaultDecideOptions)
     }
 
     @Test
@@ -178,30 +174,32 @@ public class OptimizelyManagerIntervalTest {
                 .withEventDispatchRetryInterval(goodNumber, timeUnit)
                 .build(mockContext);
 
-        verifyNew(BatchEventProcessor.class).withArguments(any(BlockingQueue.class),
+        verifyNew(BatchEventProcessor.class).withArguments(
+                any(BlockingQueue.class),
                 any(EventHandler.class),
                 anyInt(),
                 eq(defaultEventFlushInterval * 1000L),   // milliseconds
                 anyLong(),
                 any(ExecutorService.class),
                 any(NotificationCenter.class),
-                any(Object.class));
+                any());                                 // PowerMock bug? requires an extra null at the end
 
         verify(mockEventHandler).setDispatchInterval(timeUnit.toMillis(goodNumber));  // milli-seconds
 
-        verifyNew(OptimizelyManager.class).withArguments(anyString(),
+        verifyNew(OptimizelyManager.class).withArguments(
                 anyString(),
+                any(),                          // nullable (String)
                 any(DatafileConfig.class),
                 any(Logger.class),
                 anyLong(),
                 any(DatafileHandler.class),
-                any(ErrorHandler.class),
+                any(),                          // nullable (ErrorHandler)
                 eq(goodNumber * 1000L * 60L),     // milliseconds
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                anyList());
+                any());                         // nullable (DefaultDecideOptions)
     }
 
     @Test
@@ -219,23 +217,24 @@ public class OptimizelyManagerIntervalTest {
                 anyLong(),
                 any(ExecutorService.class),
                 any(NotificationCenter.class),
-                any(Object.class));
+                any());                                 // PowerMock bug? requires an extra null at the end
 
         verify(mockEventHandler).setDispatchInterval(-1L);  // deprecated api not change default retryInterval
 
-        verifyNew(OptimizelyManager.class).withArguments(anyString(),
+        verifyNew(OptimizelyManager.class).withArguments(
                 anyString(),
+                any(),                          // nullable (String)
                 any(DatafileConfig.class),
                 any(Logger.class),
                 anyLong(),
                 any(DatafileHandler.class),
-                any(ErrorHandler.class),
+                any(),                          // nullable (ErrorHandler)
                 eq(-1L),                             // deprecated api not change default retryInterval
                 any(EventHandler.class),
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                anyList());
+                any());                         // nullable (DefaultDecideOptions)
     }
 
 }
