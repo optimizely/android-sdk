@@ -54,8 +54,6 @@ dependencies {
     // Base64
     implementation "commons-codec:commons-codec:1.15"
 
-    testImplementation project(path: ':shared')
-
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
     testImplementation "junit:junit:$junit_ver"

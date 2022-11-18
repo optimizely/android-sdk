@@ -42,9 +42,7 @@ android {
 dependencies {
     // Includes the Optimizely X Full Stack Java SDK, event handler, and user profile
     //implementation "com.optimizely.ab:android-sdk:1.0.0"
-    implementation (project(':android-sdk')) {
-        exclude group: 'com.google.code.gson', module:'gson'
-    }
+    implementation (project(':android-sdk'))
 
     // EXAMPLE - replace gson with jackson-databind json parser
     implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"

@@ -52,7 +52,6 @@ dependencies {
         exclude group: 'com.google.code.findbugs'
     }
     implementation "androidx.annotation:annotation:$annotations_ver"
-    implementation "com.google.code.gson:gson:$gson_ver"
     implementation "androidx.work:work-runtime:$work_runtime"
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
