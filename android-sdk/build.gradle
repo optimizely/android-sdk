@@ -52,7 +52,6 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
-    namespace 'com.optimizely.ab.android.sdk'
 }
 
 dependencies {

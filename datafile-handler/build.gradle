@@ -43,7 +43,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    namespace 'com.optimizely.ab.android.datafile_handler'
 }
 
 dependencies {
