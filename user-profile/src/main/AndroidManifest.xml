@@ -16,5 +16,6 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest package="com.optimizely.ab.android.user_profile"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 </manifest>

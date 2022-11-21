@@ -44,7 +44,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildToolsVersion build_tools_version
-    namespace 'com.optimizely.ab.android.event_handler'
 }
 
 dependencies {

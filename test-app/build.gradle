@@ -36,7 +36,6 @@ android {
     lint {
         abortOnError false
     }
-    namespace 'com.optimizely.ab.android.test_app'
 }
 
 dependencies {
