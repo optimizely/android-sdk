@@ -25,8 +25,7 @@ android {
     defaultConfig {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode 1
-        versionName version_name
+        multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
 
@@ -69,7 +68,8 @@ dependencies {
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
-    testImplementation "org.powermock:powermock-mockito-release-full:$powermock_ver"
+    testImplementation "org.powermock:powermock-module-junit4:$powermock_ver"
+    testImplementation "org.powermock:powermock-api-mockito2:$powermock_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
     androidTestImplementation "androidx.work:work-testing:$work_runtime"

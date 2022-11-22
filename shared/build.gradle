@@ -25,8 +25,7 @@ android {
     defaultConfig {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode 1
-        versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     testOptions {
@@ -52,8 +51,9 @@ dependencies {
         exclude group: 'com.google.code.findbugs'
     }
     implementation "androidx.annotation:annotation:$annotations_ver"
-    implementation "com.google.code.gson:gson:$gson_ver"
     implementation "androidx.work:work-runtime:$work_runtime"
+    // the default json parser for java-sdk core-api (app can exclude it to replace with other parsers)
+    implementation "com.google.code.gson:gson:$gson_ver"
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 

@@ -6,9 +6,6 @@ android {
     compileSdkVersion compile_sdk_version
     buildToolsVersion build_tools_version
 
-    lintOptions {
-        abortOnError false
-    }
 
     defaultConfig {
         minSdkVersion 14
@@ -30,12 +27,14 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
     packagingOptions {
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
+        resources {
+            excludes += ['META-INF/LICENSE.txt', 'META-INF/NOTICE.txt', 'META-INF/LICENSE', 'META-INF/NOTICE']
+        }
+    }
+
+    lint {
+        abortOnError false
     }
 }
 
