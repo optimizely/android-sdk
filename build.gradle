@@ -30,7 +30,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -67,11 +67,11 @@ ext {
     target_sdk_version = 33
     java_core_ver = "3.10.2"
     android_logger_ver = "1.3.6"
-    jacksonversion= "2.13.4.2"
+    jacksonversion= "2.11.2"
     annotations_ver = "1.2.0"
     junit_ver = "4.12"
     mockito_ver = "1.10.19"
-    powermock_ver = "1.6.4"
+    powermock_ver = "2.0.9"
     support_test_runner_ver = "0.5"
     dexmaker_ver = "1.4"
     gson_ver = "2.8.9"
@@ -155,7 +155,7 @@ configure(publishedProjects) {
 
     android.libraryVariants.all { variant ->
         task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
-            source = variant.javaCompileProvider.get().source
+            source = variant.javaCompile.source
 
             title = docTitle
 
@@ -187,7 +187,7 @@ configure(publishedProjects) {
     android.libraryVariants.all { variant ->
         task("${variant.name}SourcesJar", type: Jar) {
             classifier = 'sources'
-            from variant.javaCompileProvider.get().source
+            from variant.javaCompile.source
         }
         project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
     }
