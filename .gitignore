@@ -1,7 +1,11 @@
 *.iml
 .gradle
 /local.properties
-.idea
+
+# selectively ignored (copyright must not be ignored)
+/.idea/*
+!/.idea/copyright
+
 .DS_Store
 /build
 /captures
