@@ -37,6 +37,7 @@ import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.event_handler.EventDispatcher;
+import com.optimizely.ab.android.odp.DefaultODPApiManager;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -85,7 +86,7 @@ public class OptimizelyManager {
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
-    @Nullable private final List<OptimizelyDecideOption> defaultDecideOptions;
+    @NonNull private final List<OptimizelyDecideOption> defaultDecideOptions;
     private String sdkVersion = null;
 
     OptimizelyManager(@Nullable String projectId,
@@ -100,7 +101,7 @@ public class OptimizelyManager {
                       @Nullable EventProcessor eventProcessor,
                       @NonNull UserProfileService userProfileService,
                       @NonNull NotificationCenter notificationCenter,
-                      @Nullable List<OptimizelyDecideOption> defaultDecideOptions) {
+                      @NonNull List<OptimizelyDecideOption> defaultDecideOptions) {
 
         if (projectId == null && sdkKey == null) {
             logger.error("projectId and sdkKey are both null!");
@@ -591,8 +592,20 @@ public class OptimizelyManager {
         builder.withUserProfileService(userProfileService);
         builder.withNotificationCenter(notificationCenter);
         builder.withDefaultDecideOptions(defaultDecideOptions);
+
+        // ODPManager
+
+        ODPManager odpManager = ODPManager.builder()
+                .withApiManager(new DefaultODPApiManager(context))
+                        .withSegmentCacheSize(100)
+                                .withSegmentCacheTimeout(10, TimeUnit.MINUTES)
+                .withEventQueueSize(100)
+                                        .build();
+
+        builder.withODPManager(odpManager);
         Optimizely optimizely = builder.build();
-        return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
+
+        return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class), context);
     }
 
     @NonNull

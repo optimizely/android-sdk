@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.UnknownEventTypeException;
+import com.optimizely.ab.android.odp.VuidManager;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
@@ -58,8 +59,13 @@ public class OptimizelyClient {
 
     @Nullable private Optimizely optimizely;
     @NonNull private Map<String, ?> defaultAttributes = new HashMap<>();
+    @NonNull private String vuid = "";
 
     OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
+        this(optimizely, logger, null);
+    }
+
+    OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger, @Nullable Context context) {
         this.optimizely = optimizely;
         this.logger = logger;
         /*
@@ -69,6 +75,24 @@ public class OptimizelyClient {
         the public methods here were called before initialize.
         So, we start with an empty map of default attributes until the manager is initialized.
         */
+
+        // ODP VUID registration
+
+        if (context == null) {
+            return;
+        }
+
+        this.vuid = VuidManager.Companion.getShared(context).getVuid();
+
+        if (isValid()) {
+            optimizely.sendODPEvent(
+                    "fullstack",
+                    "client_initialized",
+                    new HashMap<String, String>() {{
+                        put("vuid", vuid);
+                    }},
+                    null);
+        }
     }
 
     /**
@@ -805,6 +829,16 @@ public class OptimizelyClient {
     @Nullable
     public OptimizelyUserContext createUserContext(@NonNull String userId) {
         return createUserContext(userId, null);
+    }
+
+    @Nullable
+    public OptimizelyUserContext createUserContext() {
+        return createUserContext(vuid, null);
+    }
+
+    @Nullable
+    public OptimizelyUserContext createUserContext(@NonNull Map<String, Object> attributes) {
+        return createUserContext(vuid, attributes);
     }
 
     //======== Notification APIs ========//
