@@ -100,6 +100,14 @@ public class OptimizelyClient {
         return this.defaultAttributes;
     }
 
+    public @NonNull String getVuid() {
+        return this.vuid;
+    }
+
+    public @Nullable ODPManager getODPManager() {
+        return optimizely.getODPManager();
+    }
+
     /**
      * Get the default attributes and combine them with the attributes passed in.
      * The attributes passed in take precedence over the default attributes. So, you can override default attributes.

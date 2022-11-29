@@ -2202,7 +2202,7 @@ public class OptimizelyClientTest {
         String vuid = "tester";
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger, vuid);
         OptimizelyUserContext userContext = optimizelyClient.createUserContext();
-        assertEquals(userContext.getUserId(), vuid);
+        assertEquals(userContext.getUserId(), optimizelyClient.getVuid());
         assert(userContext.getAttributes().isEmpty());
     }
 
@@ -2213,7 +2213,7 @@ public class OptimizelyClientTest {
 
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger, vuid);
         OptimizelyUserContext userContext = optimizelyClient.createUserContext(attributes);
-        assertEquals(userContext.getUserId(), vuid);
+        assertEquals(userContext.getUserId(), optimizelyClient.getVuid());
         assertEquals(userContext.getAttributes(), attributes);
     }
 

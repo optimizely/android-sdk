@@ -20,18 +20,24 @@ import android.content.Context;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
+import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.shared.WorkerScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.error.ErrorHandler;
+import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -40,11 +46,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PowerMockIgnore("jdk.internal.reflect.*")
+@PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class, DefaultEventHandler.class})
 public class OptimizelyManagerBuilderTest {
 
     private String testProjectId = "7595190003";
@@ -200,7 +210,10 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager spyManager = spy(manager);
         spyManager.initialize(mockContext, "");
 
-        ODPManager odpManager = spyManager.getOptimizely().getOPDManager();
+        ODPManager odpManager = spyManager.getOptimizely().getODPManager();
+        ODPManager spyODPManager = spy(odpManager);
+        String vuid = spyManager.getOptimizely().getVuid();
+
         // validate
         // - enabled
         // - default odpAPIManager
@@ -211,6 +224,7 @@ public class OptimizelyManagerBuilderTest {
         // - common identifiers
 
 
+        assertEquals(vuid, VuidManager.Companion.getShared(mockContext).getVuid());
     }
 
     @Test
