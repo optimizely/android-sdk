@@ -19,14 +19,8 @@ import androidx.annotation.VisibleForTesting
 import com.optimizely.ab.android.shared.Client
 import com.optimizely.ab.android.shared.OptlyStorage
 import com.optimizely.ab.android.shared.WorkerScheduler
+import com.optimizely.ab.odp.ODPApiManager
 import org.slf4j.LoggerFactory
-
-
-// TODO: remove when integrated with java-sdk (replace with one in java-core)
-public interface ODPApiManager {
-    fun fetchQualifiedSegments(apiKey: String, apiEndpoint: String, userKey: String, userValue: String, segmentsToCheck: Set<String>): String?
-    fun sendEvents(apiKey: String, apiEndpoint: String, payload: String): Int
-}
 
 class DefaultODPApiManager(private val context: Context) : ODPApiManager {
 
