@@ -63,4 +63,17 @@ public class OptimizelyDefaultAttributesTest {
         assertEquals(defaultAttributes.size(), 4);
     }
 
+    @Test
+    public void buildODPCommonData() throws Exception {
+        Context context = mock(Context.class);
+        Map<String, Object> commonData = OptimizelyDefaultAttributes.buildODPCommonData(context, logger);
+
+        assertEquals(commonData.size(), 4);
+
+        assertEquals(commonData.get("os"), "Android");
+        assertEquals(commonData.get("device_type"), "Phone");
+        assertTrue(commonData.get("os_version").toString().length() > 2);
+        assertTrue(commonData.get("model").toString().length() > 2);
+    }
+
 }

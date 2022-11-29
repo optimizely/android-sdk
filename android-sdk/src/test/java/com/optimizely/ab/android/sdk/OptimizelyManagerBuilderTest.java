@@ -32,6 +32,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -189,6 +190,68 @@ public class OptimizelyManagerBuilderTest {
 
         verify(mockDatafileHandler).stopBackgroundUpdates(any(), any());
         verify(mockDatafileHandler, never()).startBackgroundUpdates(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testBuildWithDefaultODP() throws Exception {
+        OptimizelyManager manager = OptimizelyManager.builder()
+                .withSDKKey(testSdkKey)
+                .build(mockContext);
+        OptimizelyManager spyManager = spy(manager);
+        spyManager.initialize(mockContext, "");
+
+        ODPManager odpManager = spyManager.getOptimizely().getOPDManager();
+        // validate
+        // - enabled
+        // - default odpAPIManager
+        // - default size
+        // - default timeout
+        // - default queue size
+        // - common data
+        // - common identifiers
+
+
+    }
+
+    @Test
+    public void testBuildWithODPSegmentCacheSize() throws Exception {
+        OptimizelyManager manager = OptimizelyManager.builder()
+                .withSDKKey(testSdkKey)
+                .withODPSegmentCacheSize(123)
+                .build(mockContext);
+        OptimizelyManager spyManager = spy(manager);
+        spyManager.initialize(mockContext, "");
+
+        ODPSegmentManager segmentManager = spyManager.getOptimizely().getOPDManager().getSegmentManager();
+        // validate custom cache size
+
+    }
+
+    @Test
+    public void testBuildWithODPSegmentTimeout() throws Exception {
+        OptimizelyManager manager = OptimizelyManager.builder()
+                .withSDKKey(testSdkKey)
+                .withODPSegmentTimeout(1234, TimeUnit.SECONDS)
+                .build(mockContext);
+        OptimizelyManager spyManager = spy(manager);
+        spyManager.initialize(mockContext, "");
+
+        ODPSegmentManager segmentManager = spyManager.getOptimizely().getOPDManager().getSegmentManager();
+        // validate custom cache timeout
+
+    }
+
+    @Test
+    public void testBuildWithODPDisabled() throws Exception {
+        OptimizelyManager manager = OptimizelyManager.builder()
+                .withSDKKey(testSdkKey)
+                .withODPDisabled()
+                .build(mockContext);
+        OptimizelyManager spyManager = spy(manager);
+        spyManager.initialize(mockContext, "");
+
+        ODPManager odpManager = spyManager.getOptimizely().getOPDManager();
+        assertNull(odpManager);
     }
 
 }

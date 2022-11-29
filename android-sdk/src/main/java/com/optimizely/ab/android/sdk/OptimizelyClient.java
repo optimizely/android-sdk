@@ -59,30 +59,16 @@ public class OptimizelyClient {
 
     @Nullable private Optimizely optimizely;
     @NonNull private Map<String, ?> defaultAttributes = new HashMap<>();
-    @NonNull private String vuid = "";
+    @NonNull private String vuid;
 
     OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
-        this(optimizely, logger, null);
+        this(optimizely, logger, "");
     }
 
-    OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger, @Nullable Context context) {
+    OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger, @NonNull String vuid) {
         this.optimizely = optimizely;
         this.logger = logger;
-        /*
-        OptimizelyManager is initialized with an OptimizelyClient with a null optimizely property:
-        https://github.com/optimizely/android-sdk/blob/master/android-sdk/src/main/java/com/optimizely/ab/android/sdk/OptimizelyManager.java#L63
-        optimizely will remain null until OptimizelyManager#initialize has been called, so isValid checks for that. Otherwise apps would crash if
-        the public methods here were called before initialize.
-        So, we start with an empty map of default attributes until the manager is initialized.
-        */
-
-        // ODP VUID registration
-
-        if (context == null) {
-            return;
-        }
-
-        this.vuid = VuidManager.Companion.getShared(context).getVuid();
+        this.vuid = vuid;
 
         if (isValid()) {
             optimizely.sendODPEvent(
@@ -839,6 +825,28 @@ public class OptimizelyClient {
     @Nullable
     public OptimizelyUserContext createUserContext(@NonNull Map<String, Object> attributes) {
         return createUserContext(vuid, attributes);
+    }
+
+    //======== ODP APIs ========//
+
+    /**
+     * Send an event to the ODP server.
+     *
+     * @param type  the event type. If set to null, the default type ("fullstack") will be used.
+     * @param action the event action name.
+     * @param identifiers  a map for identifiers.
+     * @param data  a map for associated data. The default event data will be added to this data before sending to the ODP server.
+     */
+    public void sendODPEvent(@Nullable String type,
+                             @NonNull String action,
+                             @Nullable Map<String, String> identifiers,
+                             @Nullable Map<String, Object> data) {
+        if (!isValid()) {
+            logger.warn("Optimizely is not initialized. The ODP event cannot be sent.");
+            return;
+        }
+
+        return optimizely.sendODPEvent(type, action, identifiers, data);
     }
 
     //======== Notification APIs ========//

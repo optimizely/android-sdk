@@ -47,6 +47,8 @@ import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
+import com.optimizely.ab.event.internal.BuildVersionInfo;
+import com.optimizely.ab.event.internal.ClientEngineInfo;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
@@ -57,8 +59,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
@@ -83,6 +88,8 @@ public class OptimizelyManager {
     @NonNull private final DatafileConfig datafileConfig;
 
     @NonNull private UserProfileService userProfileService;
+    @NonNull private final String vuid;
+    @Nullable private ODPManager odpManager;
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
@@ -101,7 +108,9 @@ public class OptimizelyManager {
                       @Nullable EventProcessor eventProcessor,
                       @NonNull UserProfileService userProfileService,
                       @NonNull NotificationCenter notificationCenter,
-                      @NonNull List<OptimizelyDecideOption> defaultDecideOptions) {
+                      @NonNull List<OptimizelyDecideOption> defaultDecideOptions,
+                      @NonNull String vuid,
+                      @Nullable ODPManager odpManager) {
 
         if (projectId == null && sdkKey == null) {
             logger.error("projectId and sdkKey are both null!");
@@ -122,6 +131,8 @@ public class OptimizelyManager {
         this.eventProcessor = eventProcessor;
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
+        this.vuid = vuid;
+        this.odpManager = odpManager;
         this.notificationCenter = notificationCenter;
         this.defaultDecideOptions = defaultDecideOptions;
 
@@ -592,20 +603,10 @@ public class OptimizelyManager {
         builder.withUserProfileService(userProfileService);
         builder.withNotificationCenter(notificationCenter);
         builder.withDefaultDecideOptions(defaultDecideOptions);
-
-        // ODPManager
-
-        ODPManager odpManager = ODPManager.builder()
-                .withApiManager(new DefaultODPApiManager(context))
-                        .withSegmentCacheSize(100)
-                                .withSegmentCacheTimeout(10, TimeUnit.MINUTES)
-                .withEventQueueSize(100)
-                                        .build();
-
         builder.withODPManager(odpManager);
         Optimizely optimizely = builder.build();
 
-        return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class), context);
+        return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class), vuid);
     }
 
     @NonNull
@@ -736,6 +737,11 @@ public class OptimizelyManager {
         @Nullable private String sdkKey = null;
         @Nullable private DatafileConfig datafileConfig = null;
         @Nullable private List<OptimizelyDecideOption> defaultDecideOptions = null;
+
+        private long odpSegmentCacheSize = 100L;
+        private long odpSegmentCacheTimeoutInSecs = 600L;
+        private long odpEventQueueSize = 100L;
+        private boolean odpEnabled = true;
 
         @Deprecated
         /**
@@ -896,6 +902,36 @@ public class OptimizelyManager {
         }
 
         /**
+         * Override the default ODP segment cache size (100).
+         * @param size the size
+         * @return this {@link Builder} instance
+         */
+        public Builder withODPSegmentCacheSize(long size) {
+            this.odpSegmentCacheSize = size;
+            return this;
+        }
+
+        /**
+         * Override the default ODP segment cache timeout (10 minutes).
+         * @param interval the interval
+         * @param timeUnit the time unit of the timeout argument
+         * @return this {@link Builder} instance
+         */
+        public Builder withODPSegmentTimeout(long interval, TimeUnit timeUnit) {
+            this.odpSegmentCacheTimeoutInSecs = timeUnit.toSeconds(interval);
+            return this;
+        }
+
+        /**
+         * Disable ODP integration.
+         * @return this {@link Builder} instance
+         */
+        public Builder withODPDisabled() {
+            this.odpEnabled = false;
+            return this;
+        }
+
+        /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          * @param  context the application context used to create default service if not provided.
          * @return a {@link Builder} instance
@@ -962,6 +998,27 @@ public class OptimizelyManager {
 
             }
 
+            ODPManager odpManager = null;
+            String vuid = VuidManager.Companion.getShared(context).getVuid();
+
+            if (odpEnabled) {
+                // Pass common data for android-sdk only to java-core sdk. All ODP events will include these data.
+                Map<String, Object> commonData = OptimizelyDefaultAttributes.buildODPCommonData(context, logger);
+
+                // Pass common identifiers for android-sdk only to java-core sdk. All ODP events will include these identifiers.
+                Map<String, Object> commonIdentifiers = new HashMap<>();
+                commonIdentifiers.put("vuid", vuid);
+
+                odpManager = ODPManager.builder()
+                        .withApiManager(new DefaultODPApiManager(context))
+                        .withSegmentCacheSize(odpSegmentCacheSize)
+                        .withSegmentCacheTimeout(odpSegmentCacheTimeoutInSecs, TimeUnit.SECONDS)
+                        .withEventQueueSize(odpEventQueueSize)
+                        .withExtraCommonData(commonData)
+                        .withExtraCommonIdentifiers(commonIdentifiers)
+                        .build();
+            }
+
             return new OptimizelyManager(projectId, sdkKey,
                     datafileConfig,
                     logger,
@@ -973,7 +1030,9 @@ public class OptimizelyManager {
                     eventProcessor,
                     userProfileService,
                     notificationCenter,
-                    defaultDecideOptions);
+                    defaultDecideOptions,
+                    vuid,
+                    odpManager);
         }
     }
 }

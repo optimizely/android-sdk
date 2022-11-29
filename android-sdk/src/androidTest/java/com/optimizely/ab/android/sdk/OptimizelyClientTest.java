@@ -2198,6 +2198,41 @@ public class OptimizelyClientTest {
     }
 
     @Test
+    public void testCreateUserContext_withVuid() {
+        String vuid = "tester";
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger, vuid);
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext();
+        assertEquals(userContext.getUserId(), vuid);
+        assert(userContext.getAttributes().isEmpty());
+    }
+
+    @Test
+    public void testCreateUserContext_withVuid_withAttributes() {
+        String vuid = "tester";
+        Map<String, Object> attributes = Collections.singletonMap("house", "Gryffindor");
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger, vuid);
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(attributes);
+        assertEquals(userContext.getUserId(), vuid);
+        assertEquals(userContext.getAttributes(), attributes);
+    }
+
+    @Test
+    public void testVuidRegister() {
+        String vuid = "tester";
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger, vuid);
+
+        OptimizelyClient mockClient = spy(optimizelyClient);
+        verify(mockClient).sendODPEvent(
+                "fullstack",
+                "client_initialized",
+                new HashMap<String, String>() {{
+                    put("vuid", vuid);
+                }},
+                null);
+    }
+
+    @Test
     // this should be enough to validate connection to the core java-sdk
     public void testDecide() {
         assumeTrue(datafileVersion == Integer.parseInt(ProjectConfig.Version.V4.toString()));
