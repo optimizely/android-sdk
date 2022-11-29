@@ -26,6 +26,8 @@ import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
+import com.optimizely.ab.odp.ODPManager;
+import com.optimizely.ab.odp.ODPSegmentManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -250,7 +252,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager spyManager = spy(manager);
         spyManager.initialize(mockContext, "");
 
-        ODPSegmentManager segmentManager = spyManager.getOptimizely().getOPDManager().getSegmentManager();
+        ODPSegmentManager segmentManager = spyManager.getOptimizely().getODPManager().getSegmentManager();
         // validate custom cache timeout
 
     }
@@ -264,7 +266,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager spyManager = spy(manager);
         spyManager.initialize(mockContext, "");
 
-        ODPManager odpManager = spyManager.getOptimizely().getOPDManager();
+        ODPManager odpManager = spyManager.getOptimizely().getODPManager();
         assertNull(odpManager);
     }
 
