@@ -28,7 +28,7 @@ jobs:
     - name: Run tests
       run: find . -type f -name '*.md' -exec awesome_bot {} \;
   integration_tests:
-    if: ${{ github.event.inputs.SNAPSHOT != 'true' }}
+    if: ${{ startsWith(github.ref, 'refs/tags/') != true && github.event.inputs.SNAPSHOT != 'true' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -75,6 +75,7 @@ jobs:
     with:
       action: build
   test:
+    if: ${{ startsWith(github.ref, 'refs/tags/') != true && github.event.inputs.SNAPSHOT != 'true' }}
     runs-on: macos-latest
     strategy:
       fail-fast: false
