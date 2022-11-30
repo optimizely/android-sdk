@@ -19,22 +19,25 @@ import android.content.SharedPreferences
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
+import java.util.Locale
 
 @RunWith(AndroidJUnit4::class)
 class VuidManagerTest {
-    lateinit var vuidManager: VuidManager
+    private lateinit var vuidManager: VuidManager
     private val context = getInstrumentation().targetContext!!
 
     @Before
     fun setUp() {
         // remove vuid storage
         cleanSharedPrefs()
-        // remove a singlton instance
+        // remove a singleton instance
         VuidManager.removeSharedForTesting()
 
         vuidManager = VuidManager.getShared(context)
@@ -53,8 +56,10 @@ class VuidManagerTest {
         val vuid = vuidManager.makeVuid()
         assertTrue(vuid.length == 32)
         assertTrue(vuid.startsWith("vuid_", ignoreCase = false))
-        assertTrue("generated vuids should be all lowercased", vuid.lowercase(Locale.getDefault())
-            .equals(vuid, ignoreCase = false))
+        assertTrue(
+            "generated vuid should be all lowercase",
+            vuid.lowercase(Locale.getDefault()).equals(vuid, ignoreCase = false)
+        )
     }
 
     @Test
@@ -78,9 +83,9 @@ class VuidManagerTest {
     fun loadAfterSave() {
         vuidManager.save("vuid_1234")
         val vuidLoaded = vuidManager.load()
-        assertEquals("saved vuid should be returned", vuidLoaded,"vuid_1234")
+        assertEquals("saved vuid should be returned", vuidLoaded, "vuid_1234")
         val vuidLoaded2 = vuidManager.load()
-        assertEquals("the same vuid should be returned", vuidLoaded2,"vuid_1234")
+        assertEquals("the same vuid should be returned", vuidLoaded2, "vuid_1234")
     }
 
     @Test

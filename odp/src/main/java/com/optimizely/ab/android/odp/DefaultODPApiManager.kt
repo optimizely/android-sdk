@@ -89,5 +89,4 @@ class DefaultODPApiManager(private val context: Context) : ODPApiManager {
         }
         return segmentsString.toString()
     }
-
 }
