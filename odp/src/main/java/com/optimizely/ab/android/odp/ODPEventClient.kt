@@ -20,7 +20,6 @@ import org.slf4j.Logger
 import java.net.HttpURLConnection
 import java.net.URL
 
-
 // mockito requires kotlin class/fun to be open for mocking
 // https://medium.com/mobile-app-development-publication/befriending-kotlin-and-mockito-1c2e7b0ef791
 
@@ -96,5 +95,4 @@ open class ODPEventClient(private val client: Client, private val logger: Logger
         // power the number of retries
         const val REQUEST_RETRIES_POWER = 3
     }
-
 }

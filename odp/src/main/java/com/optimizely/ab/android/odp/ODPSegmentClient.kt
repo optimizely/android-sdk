@@ -88,5 +88,4 @@ open class ODPSegmentClient(private val client: Client, private val logger: Logg
         // power the number of retries (2 = retry once)
         const val REQUEST_RETRIES_POWER = 2
     }
-
 }

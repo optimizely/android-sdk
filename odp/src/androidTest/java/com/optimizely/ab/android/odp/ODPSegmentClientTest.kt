@@ -16,16 +16,21 @@ package com.optimizely.ab.android.odp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.optimizely.ab.android.shared.Client
+import java.io.OutputStream
+import java.net.HttpURLConnection
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
-import org.mockito.Mockito.*
+import org.mockito.Matchers.anyInt
+import org.mockito.Matchers.contains
+import org.mockito.Matchers.eq
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 import org.slf4j.Logger
-import java.io.OutputStream
-import java.net.HttpURLConnection
 
 @RunWith(AndroidJUnit4::class)
 class ODPSegmentClientTest {
@@ -58,8 +63,8 @@ class ODPSegmentClientTest {
         val received = captor.value.execute()
 
         assert(received == response)
-        verify(urlConnection).connectTimeout = 10*1000
-        verify(urlConnection).readTimeout = 60*1000
+        verify(urlConnection).connectTimeout = 10 * 1000
+        verify(urlConnection).readTimeout = 60 * 1000
         verify(urlConnection).setRequestProperty("x-api-key", apiKey)
         verify(urlConnection).disconnect()
     }
@@ -105,5 +110,4 @@ class ODPSegmentClientTest {
         assertNull(received)
         verify(logger).error(contains("Error making request"), any())
     }
-
 }

@@ -21,10 +21,16 @@ import androidx.work.Data
 import androidx.work.ListenableWorker
 import androidx.work.testing.TestWorkerBuilder
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertThat
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -102,9 +108,8 @@ class ODPEventWorkerTest {
     private fun makeLongString(maxSize: Int): String {
         val builder = StringBuilder()
         val str = "random-string"
-        var repeat = (maxSize / str.length) + 1
+        val repeat = (maxSize / str.length) + 1
         for (i in 1..repeat) builder.append(str)
         return builder.toString()
     }
-
 }

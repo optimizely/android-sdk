@@ -80,4 +80,3 @@ dependencies {
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 }
-

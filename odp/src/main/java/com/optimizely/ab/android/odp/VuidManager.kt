@@ -17,11 +17,11 @@ package com.optimizely.ab.android.odp
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.optimizely.ab.android.shared.OptlyStorage
-import java.util.*
+import java.util.UUID
 
 class VuidManager private constructor(private val context: Context) {
     var vuid = ""
-    private val keyForVuid = "vuid"  // stored in the private "optly" storage
+    private val keyForVuid = "vuid" // stored in the private "optly" storage
 
     init {
         this.vuid = load()
@@ -46,12 +46,11 @@ class VuidManager private constructor(private val context: Context) {
 
     @VisibleForTesting
     fun makeVuid(): String {
-        val maxLength = 32    // required by ODP server
+        val maxLength = 32 // required by ODP server
 
         // make sure UUIDv4 is used (not UUIDv1 or UUIDv6) since the trailing 5 chars will be truncated. See TDD for details.
-        val vuidFull = "vuid_" + UUID.randomUUID().toString().replace("-", "").toLowerCase()
-        val vuid = if (vuidFull.length <= maxLength) vuidFull else vuidFull.substring(0, maxLength)
-        return vuid
+        val vuidFull = "vuid_" + UUID.randomUUID().toString().replace("-", "").lowercase()
+        return if (vuidFull.length <= maxLength) vuidFull else vuidFull.substring(0, maxLength)
     }
 
     @VisibleForTesting

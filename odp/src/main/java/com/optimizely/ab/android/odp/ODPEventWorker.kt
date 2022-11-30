@@ -27,7 +27,7 @@ class ODPEventWorker(context: Context, workerParams: WorkerParameters) :
     Worker(context, workerParams) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public var eventClient= ODPEventClient(
+    public var eventClient = ODPEventClient(
         Client(OptlyStorage(context), LoggerFactory.getLogger(Client::class.java)),
         LoggerFactory.getLogger(ODPEventClient::class.java)
     )
@@ -101,5 +101,4 @@ class ODPEventWorker(context: Context, workerParams: WorkerParameters) :
             return builder.build()
         }
     }
-
 }

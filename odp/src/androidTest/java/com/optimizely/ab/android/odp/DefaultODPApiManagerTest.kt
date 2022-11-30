@@ -17,12 +17,11 @@ package com.optimizely.ab.android.odp
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.work.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
-import java.util.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 
 @RunWith(AndroidJUnit4::class)
 class DefaultODPApiManagerTest {
@@ -51,7 +50,6 @@ class DefaultODPApiManagerTest {
     fun sendEvents() {
         val payload = "event-payload"
         val status = defaultODPApiManager.sendEvents(apiKey, apiEndpoint, payload)
-        assertEquals(status, 200)   // always return success to java-sdk
+        assertEquals(status, 200) // always return success to java-sdk
     }
-
 }
