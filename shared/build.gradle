@@ -53,8 +53,9 @@ dependencies {
     }
     implementation "androidx.annotation:annotation:$annotations_ver"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.google.code.gson:gson:$gson_ver"
     implementation "androidx.work:work-runtime:$work_runtime"
+    // the default json parser for java-sdk core-api (app can exclude it to replace with other parsers)
+    implementation "com.google.code.gson:gson:$gson_ver"
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
