@@ -17,14 +17,14 @@ package com.optimizely.ab.android.odp
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.optimizely.ab.android.shared.OptlyStorage
-import java.util.UUID
+import java.util.*
 
-class VuidManager private constructor(private val context: Context) {
+class VuidManager private constructor(context: Context) {
     var vuid = ""
     private val keyForVuid = "vuid" // stored in the private "optly" storage
 
     init {
-        this.vuid = load()
+        this.vuid = load(context)
     }
 
     companion object {
@@ -54,18 +54,18 @@ class VuidManager private constructor(private val context: Context) {
     }
 
     @VisibleForTesting
-    fun load(): String {
+    fun load(context: Context): String {
         val storage = OptlyStorage(context)
         val oldVuid = storage.getString(keyForVuid, null)
         if (oldVuid != null) return oldVuid
 
         val vuid = makeVuid()
-        save(vuid)
+        save(context, vuid)
         return vuid
     }
 
     @VisibleForTesting
-    fun save(vuid: String) {
+    fun save(context: Context, vuid: String) {
         val storage = OptlyStorage(context)
         storage.saveString(keyForVuid, vuid)
     }
