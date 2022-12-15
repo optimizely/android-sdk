@@ -18,7 +18,7 @@
 
 buildscript {
     ext.kotlin_version = '1.7.0'
-    
+
     ext.version_name = System.getenv('TRAVIS_TAG')
     if (version_name == null || version_name.isEmpty()) {
         ext.version_name = 'debugVersion'
@@ -30,7 +30,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong

@@ -81,7 +81,7 @@ class VuidManagerTest {
 
     @Test
     fun loadAfterSave() {
-        vuidManager.save(context,"vuid_1234")
+        vuidManager.save(context, "vuid_1234")
         val vuidLoaded = vuidManager.load(context)
         assertEquals("saved vuid should be returned", vuidLoaded, "vuid_1234")
         val vuidLoaded2 = vuidManager.load(context)
