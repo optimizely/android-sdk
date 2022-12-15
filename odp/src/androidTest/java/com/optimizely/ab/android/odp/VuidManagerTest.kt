@@ -73,18 +73,18 @@ class VuidManagerTest {
 
     @Test
     fun loadBeforeSave() {
-        val vuid1 = vuidManager.load()
+        val vuid1 = vuidManager.load(context)
         assertTrue("new vuid is created", VuidManager.isVuid(vuid1))
-        val vuid2 = vuidManager.load()
+        val vuid2 = vuidManager.load(context)
         assertEquals("old vuid should be returned since load will save a created vuid", vuid1, vuid2)
     }
 
     @Test
     fun loadAfterSave() {
-        vuidManager.save("vuid_1234")
-        val vuidLoaded = vuidManager.load()
+        vuidManager.save(context,"vuid_1234")
+        val vuidLoaded = vuidManager.load(context)
         assertEquals("saved vuid should be returned", vuidLoaded, "vuid_1234")
-        val vuidLoaded2 = vuidManager.load()
+        val vuidLoaded2 = vuidManager.load(context)
         assertEquals("the same vuid should be returned", vuidLoaded2, "vuid_1234")
     }
 
