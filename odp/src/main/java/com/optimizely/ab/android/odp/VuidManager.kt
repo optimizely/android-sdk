@@ -17,7 +17,7 @@ package com.optimizely.ab.android.odp
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.optimizely.ab.android.shared.OptlyStorage
-import java.util.*
+import java.util.UUID
 
 class VuidManager private constructor(context: Context) {
     var vuid = ""
