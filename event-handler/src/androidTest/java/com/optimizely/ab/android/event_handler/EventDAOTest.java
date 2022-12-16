@@ -59,7 +59,7 @@ public class EventDAOTest {
 
     @After
     public void tearDownEventDAO() {
-        assertTrue(context.deleteDatabase(String.format(EventSQLiteOpenHelper.DB_NAME , "1")));
+        context.deleteDatabase(String.format(EventSQLiteOpenHelper.DB_NAME , "1"));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class EventDAOTest {
         assertTrue(eventDAO.storeEvent(event3));
 
         List<Pair<Long,Event>> events = eventDAO.getEvents();
-        assertTrue(events.size() == 3);
+        assertEquals(events.size(), 3);
 
         Pair<Long,Event> pair1 = events.get(0);
         Pair<Long,Event> pair2 = events.get(1);

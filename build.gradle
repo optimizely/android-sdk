@@ -156,7 +156,7 @@ configure(publishedProjects) {
 
     android.libraryVariants.all { variant ->
         task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
-            source = variant.javaCompile.source
+            source = variant.javaCompileProvider.get().source
 
             title = docTitle
 
@@ -188,7 +188,7 @@ configure(publishedProjects) {
     android.libraryVariants.all { variant ->
         task("${variant.name}SourcesJar", type: Jar) {
             classifier = 'sources'
-            from variant.javaCompile.source
+            from variant.javaCompileProvider.get().source
         }
         project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
     }

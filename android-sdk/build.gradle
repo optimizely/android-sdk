@@ -27,6 +27,7 @@ android {
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
+        multiDexEnabled true
 
         // these rules will be merged to app's proguard rules
         consumerProguardFiles '../proguard-rules.txt'
