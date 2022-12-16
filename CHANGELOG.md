@@ -1,10 +1,11 @@
 # Optimizely Android X SDK Changelog
 
+## 3.13.3
+December 1st, 2022
 
-## [Unpublished]
-* Upgrade gradle to 7.5
-* add ODP module
-
+### Bug Fixes
+* Set timeouts to UrlConnections for DatafileClient and EventClient so resources can be released when connection fails ([#432](https://github.com/optimizely/android-sdk/pull/432)).
+* Call end of compression inflater/deflater to avoid leaks ([#422](https://github.com/optimizely/android-sdk/pull/422)).
 
 ## 3.13.2
 April 7th, 2022

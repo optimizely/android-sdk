@@ -17,5 +17,5 @@
  ***************************************************************************/
 -->
 <manifest package="com.optimizely.ab.android.user_profile"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 </manifest>

@@ -53,8 +53,7 @@ public class EventDAOTest {
     public void setupEventDAO() {
         logger = mock(Logger.class);
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        
-        tearDownEventDAO();
+        context.deleteDatabase(String.format(EventSQLiteOpenHelper.DB_NAME , "1"));
         eventDAO = EventDAO.getInstance(context, "1", logger);
     }
 

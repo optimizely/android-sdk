@@ -68,7 +68,6 @@ public class OptimizelyManagerBuilderTest {
     @Before
     public void setup() throws Exception {
         mockContext = mock(Context.class);
-        when(mockContext.getApplicationContext()).thenReturn(mockContext);
         mockDatafileHandler = mock(DefaultDatafileHandler.class);
     }
 
@@ -133,7 +132,6 @@ public class OptimizelyManagerBuilderTest {
     @Test
     public void testBuildWithUserProfileService() {
         Context appContext = mock(Context.class);
-        when(appContext.getApplicationContext()).thenReturn(appContext);
         DefaultUserProfileService ups = mock(DefaultUserProfileService.class);
         OptimizelyManager manager = OptimizelyManager.builder()
                 .withSDKKey(testSdkKey)

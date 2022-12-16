@@ -85,7 +85,7 @@ class SplashScreenActivity : AppCompatActivity() {
             val userId = notification.userId
             val attributes = notification.attributes
             val eventTags = notification.eventTags
-            println("got track notification: ($eventKey)($userId)($attributes)($eventTags")
+            println("got track notification: ($eventKey)($userId)($attributes)($eventTags)")
         }
 
         // UpdateConfig notification
@@ -114,6 +114,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
         when (optimizelyManager?.optimizely?.isFeatureEnabled("show_coupon", userId, attributes)) {
             true -> intent.putExtra("show_coupon", true)
+            else -> println("feature(show_coupon) is not enabled for user ($userId).")
         }
 
         optimizelyManager?.optimizely?.notificationCenter?.addNotificationHandler(UpdateConfigNotification::class.java) {

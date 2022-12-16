@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.exceptions.base.MockitoException;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
@@ -107,7 +108,6 @@ public class EventClientTest {
         when(client.openConnection(event.getURL())).thenReturn(urlConnection);
         when(urlConnection.getResponseCode()).thenReturn(300);
         InputStream inputStream = mock(InputStream.class);
-        when(urlConnection.getInputStream()).thenReturn(inputStream);
 
         eventClient.sendEvent(event);
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
@@ -146,7 +146,7 @@ public class EventClientTest {
     @SuppressWarnings("unchecked")
     @Test()
     public void sendEventsIoExceptionOpenConnection() throws IOException {
-        when(client.openConnection(event.getURL())).thenThrow(IOException.class);
+        when(client.openConnection(event.getURL())).thenThrow(MockitoException.class);
 
         eventClient.sendEvent(event);
         ArgumentCaptor<Client.Request> captor1 = ArgumentCaptor.forClass(Client.Request.class);
