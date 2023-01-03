@@ -21,7 +21,7 @@ import java.util.UUID
 
 class VuidManager private constructor(context: Context) {
     var vuid = ""
-    private val keyForVuid = "vuid"  // stored in the private "optly" storage
+    private val keyForVuid = "vuid" // stored in the private "optly" storage
 
     init {
         this.vuid = load(context)
@@ -46,7 +46,7 @@ class VuidManager private constructor(context: Context) {
 
     @VisibleForTesting
     fun makeVuid(): String {
-        val maxLength = 32    // required by ODP server
+        val maxLength = 32 // required by ODP server
 
         // make sure UUIDv4 is used (not UUIDv1 or UUIDv6) since the trailing 5 chars will be truncated. See TDD for details.
         val vuidFull = "vuid_" + UUID.randomUUID().toString().replace("-", "").lowercase()

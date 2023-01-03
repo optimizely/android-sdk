@@ -29,6 +29,7 @@ import android.content.Context;
 import androidx.work.Data;
 import androidx.work.WorkerParameters;
 
+import com.optimizely.ab.android.shared.EventHandlerUtils;
 import com.optimizely.ab.event.LogEvent;
 
 import org.junit.Test;

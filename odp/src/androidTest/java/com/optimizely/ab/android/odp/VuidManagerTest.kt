@@ -19,21 +19,25 @@ import android.content.SharedPreferences
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.Locale
 
 @RunWith(AndroidJUnit4::class)
 class VuidManagerTest {
-    lateinit var vuidManager: VuidManager
-    val context = getInstrumentation().getTargetContext()
+    private lateinit var vuidManager: VuidManager
+    private val context = getInstrumentation().targetContext!!
 
     @Before
     fun setUp() {
         // remove vuid storage
         cleanSharedPrefs()
-        // remove a singlton instance
+        // remove a singleton instance
         VuidManager.removeSharedForTesting()
 
         vuidManager = VuidManager.getShared(context)
@@ -52,7 +56,10 @@ class VuidManagerTest {
         val vuid = vuidManager.makeVuid()
         assertTrue(vuid.length == 32)
         assertTrue(vuid.startsWith("vuid_", ignoreCase = false))
-        assertTrue("generated vuids should be all lowercased", vuid.toLowerCase().equals(vuid, ignoreCase = false))
+        assertTrue(
+            "generated vuid should be all lowercase",
+            vuid.lowercase(Locale.getDefault()).equals(vuid, ignoreCase = false)
+        )
     }
 
     @Test
@@ -74,7 +81,7 @@ class VuidManagerTest {
 
     @Test
     fun loadAfterSave() {
-        vuidManager.save(context,"vuid_1234")
+        vuidManager.save(context, "vuid_1234")
         val vuidLoaded = vuidManager.load(context)
         assertEquals("saved vuid should be returned", vuidLoaded, "vuid_1234")
         val vuidLoaded2 = vuidManager.load(context)

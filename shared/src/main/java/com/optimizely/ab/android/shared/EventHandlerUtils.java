@@ -14,7 +14,7 @@
  * limitations under the License.                                           *
  ***************************************************************************/
 
-package com.optimizely.ab.android.event_handler;
+package com.optimizely.ab.android.shared;
 
 import androidx.annotation.NonNull;
 
