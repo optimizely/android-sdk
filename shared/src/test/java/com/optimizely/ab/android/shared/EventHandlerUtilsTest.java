@@ -1,12 +1,8 @@
-package com.optimizely.ab.android.event_handler;
+package com.optimizely.ab.android.shared;
 
 import static org.junit.Assert.assertEquals;
 
-import androidx.work.Data;
-
 import org.junit.Test;
-
-import java.io.IOException;
 
 public class EventHandlerUtilsTest {
 

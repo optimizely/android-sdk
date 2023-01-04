@@ -16,7 +16,6 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -28,6 +27,7 @@ android {
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
+        multiDexEnabled true
 
         // these rules will be merged to app's proguard rules
         consumerProguardFiles '../proguard-rules.txt'
@@ -47,10 +47,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    dexOptions {
-        javaMaxHeapSize "4g"
     }
 }
 

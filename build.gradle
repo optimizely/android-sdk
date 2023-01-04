@@ -18,7 +18,7 @@
 
 buildscript {
     ext.kotlin_version = '1.7.0'
-    
+
     ext.version_name = System.getenv('TRAVIS_TAG')
     if (version_name == null || version_name.isEmpty()) {
         ext.version_name = 'debugVersion'
@@ -30,12 +30,16 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
+}
+
+plugins {
+    id "org.jlleitschuh.gradle.ktlint" version "11.0.0"
 }
 
 allprojects {
@@ -87,7 +91,7 @@ task clean(type: Delete) {
 task cleanAllModules () {
     logger.info("Running clean for all modules")
     dependsOn(':android-sdk:clean', ':event-handler:clean',
-            ':user-profile:clean', ':shared:clean', ':datafile-handler:clean')
+            ':user-profile:clean', ':shared:clean', ':datafile-handler:clean', ':odp:clean')
 }
 
 task testAllModules () {
@@ -101,20 +105,21 @@ task testAllModulesTravis () {
             ':event-handler:connectedAndroidTest', ':event-handler:test',
             ':datafile-handler:connectedAndroidTest', ':datafile-handler:test',
             ':user-profile:connectedAndroidTest',
-            ':shared:connectedAndroidTest')
+            ':shared:connectedAndroidTest',
+            ':odp:connectedAndroidTest', ':odp:test'
+    )
 }
 
 // Publish to MavenCentral
 
 task ship() {
-    dependsOn(':android-sdk:ship', ':shared:ship', ':event-handler:ship', ':user-profile:ship', ':datafile-handler:ship')
+    dependsOn(':android-sdk:ship', ':shared:ship', ':event-handler:ship', ':user-profile:ship', ':datafile-handler:ship', ':odp:ship')
 }
 
 def publishedProjects = subprojects.findAll { it.name != 'test-app' }
 configure(publishedProjects) {
     apply plugin: 'com.android.library'
     apply plugin: 'kotlin-android'
-    apply plugin: 'kotlin-android-extensions'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
 
@@ -141,13 +146,17 @@ configure(publishedProjects) {
             artifactName = 'android-sdk-user-profile'
             docTitle = 'Optimizely X Android SDK: User Profile'
             break
+        case 'odp':
+            artifactName = 'android-sdk-odp'
+            docTitle = 'Optimizely X Android SDK: ODP'
+            break
         default:
             return
     }
 
     android.libraryVariants.all { variant ->
         task("${variant.name}Javadoc", type: Javadoc, dependsOn: "assemble${variant.name.capitalize()}") {
-            source = variant.javaCompile.source
+            source = variant.javaCompileProvider.get().source
 
             title = docTitle
 
@@ -179,9 +188,18 @@ configure(publishedProjects) {
     android.libraryVariants.all { variant ->
         task("${variant.name}SourcesJar", type: Jar) {
             classifier = 'sources'
-            from variant.javaCompile.source
+            from variant.javaCompileProvider.get().source
         }
         project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
+    }
+
+    android {
+        publishing {
+            singleVariant("release") {
+                withSourcesJar()
+                withJavadocJar()
+            }
+        }
     }
 
     afterEvaluate {
@@ -197,8 +215,6 @@ configure(publishedProjects) {
                     pom.description = 'The Android SDK for Optimizely Full Stack (feature flag management for product development teams)'
 
                     from components.release
-                    artifact releaseSourcesJar
-                    artifact releaseJavadocJar
                 }
             }
             repositories {
@@ -233,11 +249,12 @@ configure(publishedProjects) {
     }
 }
 
-project(':android-sdk').ship.shouldRunAfter = [':android-sdk:clean', ':datafile-handler:ship', ':event-handler:ship', ':user-profile:ship']
+project(':android-sdk').ship.shouldRunAfter = [':android-sdk:clean', ':datafile-handler:ship', ':event-handler:ship', ':user-profile:ship', ':odp:ship']
 project(':datafile-handler').ship.shouldRunAfter = [':datafile-handler:clean', ':shared:ship']
 project(':event-handler').ship.shouldRunAfter = [':event-handler:clean', ':shared:ship']
 project(':shared').ship.shouldRunAfter = [':shared:clean']
 project(':user-profile').ship.shouldRunAfter = [':user-profile:clean', ':shared:ship']
+project(':odp').ship.shouldRunAfter = [':odp:clean', ':shared:ship']
 
 // standard POM format required by MavenCentral
 

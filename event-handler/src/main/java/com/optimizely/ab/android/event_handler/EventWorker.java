@@ -25,6 +25,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.optimizely.ab.android.shared.Client;
+import com.optimizely.ab.android.shared.EventHandlerUtils;
 import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.event.LogEvent;
 

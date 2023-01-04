@@ -1,21 +1,22 @@
-/****************************************************************************
- * Copyright 2016, Optimizely, Inc. and contributors                        *
- *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
- * you may not use this file except in compliance with the License.         *
- * You may obtain a copy of the License at                                  *
- *                                                                          *
- *    http://www.apache.org/licenses/LICENSE-2.0                            *
- *                                                                          *
- * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
- * See the License for the specific language governing permissions and      *
- * limitations under the License.                                           *
- ***************************************************************************/
+//
+// Copyright 2022, Optimizely, Inc. and contributors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'org.jlleitschuh.gradle.ktlint'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -45,27 +46,25 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildToolsVersion build_tools_version
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
-    api ("com.optimizely.ab:core-api:$java_core_ver") {
-        exclude group: 'com.google.code.findbugs'
-    }
+    api project(':shared')
     implementation "androidx.annotation:annotation:$annotations_ver"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.work:work-runtime:$work_runtime"
-    // the default json parser for java-sdk core-api (app can exclude it to replace with other parsers)
-    implementation "com.google.code.gson:gson:$gson_ver"
-    // Base64
-    implementation "commons-codec:commons-codec:1.15"
-
-    compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
-    testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
+
+    compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
     androidTestImplementation "androidx.work:work-testing:$work_runtime"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$androidx_test_junit"
     androidTestImplementation "androidx.test.ext:junit:$androidx_test_junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_ver"
     // Set this dependency to use JUnit 4 rules
@@ -77,6 +76,4 @@ dependencies {
     androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
-    androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
-    androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 }
