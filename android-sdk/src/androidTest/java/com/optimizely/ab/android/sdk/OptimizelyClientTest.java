@@ -42,6 +42,7 @@ import com.optimizely.ab.notification.NotificationManager;
 import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.TrackNotificationListener;
 import com.optimizely.ab.notification.UpdateConfigNotification;
+import com.optimizely.ab.odp.ODPManager;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 import com.optimizely.ab.optimizelydecision.DecisionResponse;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
@@ -2219,16 +2220,15 @@ public class OptimizelyClientTest {
 
     @Test
     public void testVuidRegister() {
-        String vuid = "tester";
-        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger, vuid);
+        Optimizely mockOptimizely = mock(Optimizely.class);
+        when(mockOptimizely.isValid()).thenReturn(true);
 
-        OptimizelyClient mockClient = spy(optimizelyClient);
-        verify(mockClient).sendODPEvent(
-                "fullstack",
+        OptimizelyClient optimizelyClient = new OptimizelyClient(mockOptimizely, logger, "any-vuid");
+
+        verify(mockOptimizely).sendODPEvent(
+                null,
                 "client_initialized",
-                new HashMap<String, String>() {{
-                    put("vuid", vuid);
-                }},
+                null,
                 null);
     }
 

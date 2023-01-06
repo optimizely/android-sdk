@@ -33,12 +33,14 @@ import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationHandler;
 import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.UpdateConfigNotification;
+import com.optimizely.ab.odp.ODPManager;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
 
 import org.slf4j.Logger;
 
 import java.io.Closeable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,25 +61,29 @@ public class OptimizelyClient {
 
     @Nullable private Optimizely optimizely;
     @NonNull private Map<String, ?> defaultAttributes = new HashMap<>();
-    @NonNull private String vuid;
+    @Nullable private String vuid;
 
     OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
-        this(optimizely, logger, "");
+        this(optimizely, logger, null);
     }
 
-    OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger, @NonNull String vuid) {
+    OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger, @Nullable String vuid) {
         this.optimizely = optimizely;
         this.logger = logger;
         this.vuid = vuid;
+        /*
+        OptimizelyManager is initialized with an OptimizelyClient with a null optimizely property:
+        https://github.com/optimizely/android-sdk/blob/master/android-sdk/src/main/java/com/optimizely/ab/android/sdk/OptimizelyManager.java#L63
+        optimizely will remain null until OptimizelyManager#initialize has been called, so isValid checks for that. Otherwise apps would crash if
+        the public methods here were called before initialize.
+        So, we start with an empty map of default attributes until the manager is initialized.
+        */
 
         if (isValid()) {
-            optimizely.sendODPEvent(
-                    "fullstack",
-                    "client_initialized",
-                    new HashMap<String, String>() {{
-                        put("vuid", vuid);
-                    }},
-                    null);
+            if (this.vuid != null) {
+                // identifiers are empty here since vuid will be inserted by java-sdk core
+                sendODPEvent(null, "client_initialized", null, null);
+            }
         }
     }
 
@@ -100,12 +106,13 @@ public class OptimizelyClient {
         return this.defaultAttributes;
     }
 
-    public @NonNull String getVuid() {
+    public @Nullable String getVuid() {
         return this.vuid;
     }
 
-    public @Nullable ODPManager getODPManager() {
-        return optimizely.getODPManager();
+    public @Nullable
+    ODPManager getODPManager() {
+        return isValid() ? optimizely.getODPManager() : null;
     }
 
     /**
@@ -822,16 +829,21 @@ public class OptimizelyClient {
 
     @Nullable
     public OptimizelyUserContext createUserContext(@NonNull String userId) {
-        return createUserContext(userId, null);
+        return createUserContext(userId, Collections.emptyMap());
     }
 
     @Nullable
     public OptimizelyUserContext createUserContext() {
-        return createUserContext(vuid, null);
+        return createUserContext(Collections.emptyMap());
     }
 
     @Nullable
     public OptimizelyUserContext createUserContext(@NonNull Map<String, Object> attributes) {
+        if (vuid == null) {
+            logger.warn("Optimizely vuid is not available. A userId is required to create a user context.");
+            return null;
+        }
+
         return createUserContext(vuid, attributes);
     }
 
@@ -854,7 +866,7 @@ public class OptimizelyClient {
             return;
         }
 
-        return optimizely.sendODPEvent(type, action, identifiers, data);
+        optimizely.sendODPEvent(type, action, identifiers, data);
     }
 
     //======== Notification APIs ========//

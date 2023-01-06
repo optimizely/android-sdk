@@ -86,7 +86,7 @@ open class ODPEventClient(private val client: Client, private val logger: Logger
     }
 
     companion object {
-        // easy way to set the connection timeout
+        // configurable connection timeout
         var CONNECTION_TIMEOUT = 10 * 1000
         var READ_TIMEOUT = 60 * 1000
 

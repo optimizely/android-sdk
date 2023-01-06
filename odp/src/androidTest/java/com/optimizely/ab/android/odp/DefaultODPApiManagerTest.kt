@@ -29,7 +29,7 @@ class DefaultODPApiManagerTest {
     private val apiEndpoint = "http://valid-endpoint"
 
     private var context: Context = ApplicationProvider.getApplicationContext()
-    private val defaultODPApiManager = DefaultODPApiManager(context)
+    private val defaultODPApiManager = DefaultODPApiManager(context, 10, 10)
 
     @Test
     fun fetchQualifiedSegments() {

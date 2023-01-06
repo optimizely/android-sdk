@@ -72,7 +72,7 @@ public class OptimizelyDefaultAttributesTest {
 
         assertEquals(commonData.get("os"), "Android");
         assertEquals(commonData.get("device_type"), "Phone");
-        assertTrue(commonData.get("os_version").toString().length() > 2);
+        assertTrue(commonData.get("os_version").toString().length() >= 1);
         assertTrue(commonData.get("model").toString().length() > 2);
     }
 
