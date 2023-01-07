@@ -1049,6 +1049,10 @@ public class OptimizelyManager {
                     timeoutForODPSegmentFetchInSecs,
                     timeoutForODPEventDispatchInSecs);
 
+                // NOTE: ODPManager get updated with ODP configuration from datafile.
+                //       1) ODPConfig is updated when Optimizely.class is instantiated.
+                //       2) ODPConfig update is also added to the UpdateConfigNotification handler.
+
                 odpManager = ODPManager.builder()
                         .withApiManager(odpApiManager)
                         .withSegmentCacheSize((int)odpSegmentCacheSize)

@@ -42,7 +42,6 @@ import com.optimizely.ab.notification.NotificationManager;
 import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.TrackNotificationListener;
 import com.optimizely.ab.notification.UpdateConfigNotification;
-import com.optimizely.ab.odp.ODPManager;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 import com.optimizely.ab.optimizelydecision.DecisionResponse;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
@@ -2200,21 +2199,21 @@ public class OptimizelyClientTest {
 
     @Test
     public void testCreateUserContext_withVuid() {
-        String vuid = "tester";
+        String vuid = "test-vuid";
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger, vuid);
         OptimizelyUserContext userContext = optimizelyClient.createUserContext();
-        assertEquals(userContext.getUserId(), optimizelyClient.getVuid());
+        assertEquals(userContext.getUserId(), "test-vuid");
         assert(userContext.getAttributes().isEmpty());
     }
 
     @Test
     public void testCreateUserContext_withVuid_withAttributes() {
-        String vuid = "tester";
+        String vuid = "test-vuid";
         Map<String, Object> attributes = Collections.singletonMap("house", "Gryffindor");
 
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger, vuid);
         OptimizelyUserContext userContext = optimizelyClient.createUserContext(attributes);
-        assertEquals(userContext.getUserId(), optimizelyClient.getVuid());
+        assertEquals(userContext.getUserId(), "test-vuid");
         assertEquals(userContext.getAttributes(), attributes);
     }
 
