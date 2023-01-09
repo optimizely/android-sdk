@@ -1058,10 +1058,9 @@ public class OptimizelyManager {
                         .withSegmentCacheSize((int)odpSegmentCacheSize)
                         .withSegmentCacheTimeout((int)odpSegmentCacheTimeoutInSecs)
 
-                        // TODO: fix java-sdk
+                        // TODO: this will be fixed in a separate PR after java-sdk is extended for android-sdk support.
                         //.withExtraCommonData(commonData)
                         //.withExtraCommonIdentifiers(commonIdentifiers)
-
 
                         .build();
             }

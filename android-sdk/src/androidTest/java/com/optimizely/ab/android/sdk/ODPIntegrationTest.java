@@ -177,7 +177,7 @@ public class ODPIntegrationTest {
 
         verify(odpManager, times(1)).updateSettings(
             eq("h-2"),
-            eq("p-1"),
+            eq("p-2"),
             eq(Collections.emptySet()));
 
         // no other calls
