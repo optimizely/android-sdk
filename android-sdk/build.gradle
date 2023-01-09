@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2020, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2020, 2023, Optimizely, Inc. and contributors             *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -55,7 +55,7 @@ dependencies {
     api project(':datafile-handler')
     api project(':event-handler')
     api project(':user-profile')
-    api project(path: ':odp')
+    api project(':odp')
     api ("com.optimizely.ab:core-api:$java_core_ver") {
         exclude group: 'com.google.code.findbugs'
     }
