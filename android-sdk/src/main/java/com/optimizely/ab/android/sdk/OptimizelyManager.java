@@ -777,7 +777,7 @@ public class OptimizelyManager {
 
         /**
          * Override the default {@link Logger}.
-         * @param overrideHandler logger to override OptimizedlyManager and OptimizelyClient logger
+         * @param overrideHandler logger to override OptimizelyManager and OptimizelyClient logger
          * @return this {@link Builder} instance
          */
         public Builder withLogger(Logger overrideHandler) {
