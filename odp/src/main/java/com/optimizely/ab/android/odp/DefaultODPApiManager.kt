@@ -23,11 +23,11 @@ import com.optimizely.ab.odp.ODPApiManager
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
-class DefaultODPApiManager(private val context: Context, timeoutForSegmentFetch: Long, timeoutForEventDispatch: Long) : ODPApiManager {
+class DefaultODPApiManager(private val context: Context, timeoutForSegmentFetch: Int, timeoutForEventDispatch: Int) : ODPApiManager {
 
     init {
-        ODPSegmentClient.CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(timeoutForSegmentFetch).toInt()
-        ODPEventClient.CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(timeoutForEventDispatch).toInt()
+        ODPSegmentClient.CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(timeoutForSegmentFetch.toLong()).toInt()
+        ODPEventClient.CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(timeoutForEventDispatch.toLong()).toInt()
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

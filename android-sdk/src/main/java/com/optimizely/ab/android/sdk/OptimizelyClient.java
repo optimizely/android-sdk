@@ -80,10 +80,8 @@ public class OptimizelyClient {
         */
 
         if (isValid()) {
-            if (this.vuid != null) {
-                // identifiers are empty here since vuid will be inserted by java-sdk core
-                sendODPEvent(null, "client_initialized", null, null);
-            }
+            // identifiers are empty here since vuid will be inserted by java-sdk core
+            sendODPEvent(null, "client_initialized", null, null);
         }
     }
 

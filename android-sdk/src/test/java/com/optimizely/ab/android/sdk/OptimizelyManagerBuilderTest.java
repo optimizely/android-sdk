@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017, Optimizely, Inc. and contributors                        *
+ * Copyright 2017, 2023 Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -284,7 +284,7 @@ public class OptimizelyManagerBuilderTest {
     }
 
     @Test
-    public void testBuildWithODP_defaultCache() throws Exception {
+    public void testBuildWithODP_defaultCacheSizeAndTimeout() throws Exception {
         whenNew(ODPSegmentManager.class).withAnyArguments().thenReturn(mock(ODPSegmentManager.class));
         whenNew(ODPEventManager.class).withAnyArguments().thenReturn(mock(ODPEventManager.class));
         whenNew(ODPManager.class).withAnyArguments().thenReturn(mock(ODPManager.class));
@@ -334,7 +334,7 @@ public class OptimizelyManagerBuilderTest {
 
         OptimizelyManager manager = OptimizelyManager.builder()
             .withSDKKey(testSdkKey)
-            .withODPSegmentCacheTimeout(20L, TimeUnit.MINUTES)
+            .withODPSegmentCacheTimeout(20, TimeUnit.MINUTES)
             .withVuid("any-to-avoid-generate")
             .build(mockContext);
 
@@ -346,7 +346,7 @@ public class OptimizelyManagerBuilderTest {
     }
 
     @Test
-    public void testBuildWithODP_defautSegmentFetchTimeout() throws Exception {
+    public void testBuildWithODP_defaultSegmentFetchTimeout() throws Exception {
         OptimizelyManager manager = OptimizelyManager.builder()
             .withSDKKey(testSdkKey)
             .withVuid("any-to-avoid-generate")

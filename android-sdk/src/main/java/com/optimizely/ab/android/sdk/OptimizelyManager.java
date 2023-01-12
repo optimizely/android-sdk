@@ -96,7 +96,7 @@ public class OptimizelyManager {
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
-    @NonNull private final List<OptimizelyDecideOption> defaultDecideOptions;
+    @Nullable private final List<OptimizelyDecideOption> defaultDecideOptions;
     private String sdkVersion = null;
 
     OptimizelyManager(@Nullable String projectId,
@@ -111,7 +111,7 @@ public class OptimizelyManager {
                       @Nullable EventProcessor eventProcessor,
                       @NonNull UserProfileService userProfileService,
                       @NonNull NotificationCenter notificationCenter,
-                      @NonNull List<OptimizelyDecideOption> defaultDecideOptions,
+                      @Nullable List<OptimizelyDecideOption> defaultDecideOptions,
                       @Nullable ODPManager odpManager,
                       @Nullable String vuid) {
 
@@ -741,10 +741,10 @@ public class OptimizelyManager {
         @Nullable private DatafileConfig datafileConfig = null;
         @Nullable private List<OptimizelyDecideOption> defaultDecideOptions = null;
 
-        private long odpSegmentCacheSize = 100L;
-        private long odpSegmentCacheTimeoutInSecs = 600L;
-        private long timeoutForODPSegmentFetchInSecs = 10L;
-        private long timeoutForODPEventDispatchInSecs = 10L;
+        private int odpSegmentCacheSize = 100;
+        private int odpSegmentCacheTimeoutInSecs = 600;
+        private int timeoutForODPSegmentFetchInSecs = 10;
+        private int timeoutForODPEventDispatchInSecs = 10;
         private boolean odpEnabled = true;
         private String vuid = null;
 
@@ -911,7 +911,7 @@ public class OptimizelyManager {
          * @param size the size
          * @return this {@link Builder} instance
          */
-        public Builder withODPSegmentCacheSize(long size) {
+        public Builder withODPSegmentCacheSize(int size) {
             this.odpSegmentCacheSize = size;
             return this;
         }
@@ -922,8 +922,8 @@ public class OptimizelyManager {
          * @param timeUnit the time unit of the timeout argument
          * @return this {@link Builder} instance
          */
-        public Builder withODPSegmentCacheTimeout(long interval, TimeUnit timeUnit) {
-            this.odpSegmentCacheTimeoutInSecs = timeUnit.toSeconds(interval);
+        public Builder withODPSegmentCacheTimeout(int interval, TimeUnit timeUnit) {
+            this.odpSegmentCacheTimeoutInSecs = (int) timeUnit.toSeconds(interval);
             return this;
         }
 
@@ -932,7 +932,7 @@ public class OptimizelyManager {
          * @param interval the interval in secs
          * @return this {@link Builder} instance
          */
-        public Builder withTimeoutForODPSegmentFetch(long interval) {
+        public Builder withTimeoutForODPSegmentFetch(int interval) {
             this.timeoutForODPSegmentFetchInSecs = interval;
             return this;
         }
@@ -942,7 +942,7 @@ public class OptimizelyManager {
          * @param interval the interval in secs
          * @return this {@link Builder} instance
          */
-        public Builder withTimeoutForODPEventDispatch(long interval) {
+        public Builder withTimeoutForODPEventDispatch(int interval) {
             this.timeoutForODPEventDispatchInSecs = interval;
             return this;
         }
@@ -958,6 +958,7 @@ public class OptimizelyManager {
 
         /**
          * Override the default (SDK-generated and persistent) vuid.
+         * @param vuid a user-defined vuid value
          * @return this {@link Builder} instance
          */
         public Builder withVuid(String vuid) {
@@ -1055,8 +1056,8 @@ public class OptimizelyManager {
 
                 odpManager = ODPManager.builder()
                         .withApiManager(odpApiManager)
-                        .withSegmentCacheSize((int)odpSegmentCacheSize)
-                        .withSegmentCacheTimeout((int)odpSegmentCacheTimeoutInSecs)
+                        .withSegmentCacheSize(odpSegmentCacheSize)
+                        .withSegmentCacheTimeout(odpSegmentCacheTimeoutInSecs)
 
                         // TODO: this will be fixed in a separate PR after java-sdk is extended for android-sdk support.
                         //.withExtraCommonData(commonData)

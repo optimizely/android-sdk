@@ -79,7 +79,7 @@ open class ODPSegmentClient(private val client: Client, private val logger: Logg
     }
 
     companion object {
-        // configurable connection timeout
+        // configurable connection timeout in milliseconds
         var CONNECTION_TIMEOUT = 10 * 1000
         var READ_TIMEOUT = 60 * 1000
 
