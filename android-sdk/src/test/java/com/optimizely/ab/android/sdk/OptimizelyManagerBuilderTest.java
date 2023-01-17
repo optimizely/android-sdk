@@ -44,6 +44,7 @@ import com.optimizely.ab.odp.ODPSegmentManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -69,6 +70,7 @@ import static org.powermock.api.mockito.PowerMockito.verifyNew;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import java.sql.Time;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(PowerMockRunner.class)
@@ -367,6 +369,35 @@ public class OptimizelyManagerBuilderTest {
 
         assertEquals(ODPSegmentClient.Companion.getCONNECTION_TIMEOUT(), 20*1000);
         assertEquals(ODPEventClient.Companion.getCONNECTION_TIMEOUT(), 30*1000);
+    }
+
+    @Test
+    public void testBuildWithODP_defaultCommonDataAndIdentifiers() throws Exception {
+        ODPEventManager mockEventManager = mock(ODPEventManager.class);
+        whenNew(ODPEventManager.class).withAnyArguments().thenReturn(mockEventManager);
+        whenNew(ODPSegmentManager.class).withAnyArguments().thenReturn(mock(ODPSegmentManager.class));
+        whenNew(ODPManager.class).withAnyArguments().thenReturn(mock(ODPManager.class));
+
+        OptimizelyManager manager = OptimizelyManager.builder()
+            .withSDKKey(testSdkKey)
+            .withVuid("test-vuid")
+            .build(mockContext);
+
+        ArgumentCaptor<Map<String, Object>> captorData = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<Map<String, String>> captorIdentifiers = ArgumentCaptor.forClass(Map.class);
+
+        verify(mockEventManager).setUserCommonData(captorData.capture());
+        verify(mockEventManager).setUserCommonIdentifiers(captorIdentifiers.capture());
+
+        Map<String, Object> data = captorData.getValue();
+        Map<String, String> identifiers = captorIdentifiers.getValue();
+
+        // here we just validate if data is passed or not (all values are validated in other tests: OptimizelyDefaultAttributesTest)
+        assertEquals(data.get("os"), "Android");
+        assertEquals(data.size(), 4);
+
+        assertEquals(identifiers.get("vuid"), "test-vuid");
+        assertEquals(identifiers.size(), 1);
     }
 
 }
