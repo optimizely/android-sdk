@@ -1,4 +1,4 @@
-// Copyright 2022, Optimizely, Inc. and contributors
+// Copyright 2022-2023, Optimizely, Inc. and contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ class DefaultODPApiManagerTest {
     private val apiEndpoint = "http://valid-endpoint"
 
     private var context: Context = ApplicationProvider.getApplicationContext()
-    private val defaultODPApiManager = DefaultODPApiManager(context)
+    private val defaultODPApiManager = DefaultODPApiManager(context, 10, 10)
 
     @Test
     fun fetchQualifiedSegments() {

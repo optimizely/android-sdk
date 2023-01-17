@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2021, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2021, 2023 Optimizely, Inc. and contributors              *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.UnknownEventTypeException;
+import com.optimizely.ab.android.odp.VuidManager;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
@@ -32,12 +33,14 @@ import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationHandler;
 import com.optimizely.ab.notification.TrackNotification;
 import com.optimizely.ab.notification.UpdateConfigNotification;
+import com.optimizely.ab.odp.ODPManager;
 import com.optimizely.ab.optimizelyconfig.OptimizelyConfig;
 import com.optimizely.ab.optimizelyjson.OptimizelyJSON;
 
 import org.slf4j.Logger;
 
 import java.io.Closeable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,10 +61,16 @@ public class OptimizelyClient {
 
     @Nullable private Optimizely optimizely;
     @NonNull private Map<String, ?> defaultAttributes = new HashMap<>();
+    @Nullable private String vuid;
 
     OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger) {
+        this(optimizely, logger, null);
+    }
+
+    OptimizelyClient(@Nullable Optimizely optimizely, @NonNull Logger logger, @Nullable String vuid) {
         this.optimizely = optimizely;
         this.logger = logger;
+        this.vuid = vuid;
         /*
         OptimizelyManager is initialized with an OptimizelyClient with a null optimizely property:
         https://github.com/optimizely/android-sdk/blob/master/android-sdk/src/main/java/com/optimizely/ab/android/sdk/OptimizelyManager.java#L63
@@ -69,6 +78,11 @@ public class OptimizelyClient {
         the public methods here were called before initialize.
         So, we start with an empty map of default attributes until the manager is initialized.
         */
+
+        if (isValid()) {
+            // identifiers are empty here since vuid will be inserted by java-sdk core
+            sendODPEvent(null, "client_initialized", null, null);
+        }
     }
 
     /**
@@ -88,6 +102,15 @@ public class OptimizelyClient {
      */
     public @NonNull Map<String, ?> getDefaultAttributes() {
         return this.defaultAttributes;
+    }
+
+    public @Nullable String getVuid() {
+        return this.vuid;
+    }
+
+    public @Nullable
+    ODPManager getODPManager() {
+        return isValid() ? optimizely.getODPManager() : null;
     }
 
     /**
@@ -804,7 +827,44 @@ public class OptimizelyClient {
 
     @Nullable
     public OptimizelyUserContext createUserContext(@NonNull String userId) {
-        return createUserContext(userId, null);
+        return createUserContext(userId, Collections.emptyMap());
+    }
+
+    @Nullable
+    public OptimizelyUserContext createUserContext() {
+        return createUserContext(Collections.emptyMap());
+    }
+
+    @Nullable
+    public OptimizelyUserContext createUserContext(@NonNull Map<String, Object> attributes) {
+        if (vuid == null) {
+            logger.warn("Optimizely vuid is not available. A userId is required to create a user context.");
+            return null;
+        }
+
+        return createUserContext(vuid, attributes);
+    }
+
+    //======== ODP APIs ========//
+
+    /**
+     * Send an event to the ODP server.
+     *
+     * @param type  the event type. If set to null, the default type ("fullstack") will be used.
+     * @param action the event action name.
+     * @param identifiers  a map for identifiers.
+     * @param data  a map for associated data. The default event data will be added to this data before sending to the ODP server.
+     */
+    public void sendODPEvent(@Nullable String type,
+                             @NonNull String action,
+                             @Nullable Map<String, String> identifiers,
+                             @Nullable Map<String, Object> data) {
+        if (!isValid()) {
+            logger.warn("Optimizely is not initialized. The ODP event cannot be sent.");
+            return;
+        }
+
+        optimizely.sendODPEvent(type, action, identifiers, data);
     }
 
     //======== Notification APIs ========//

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017, Optimizely, Inc. and contributors                        *
+ * Copyright 2017, 2023 Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -40,6 +40,7 @@ import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
 import com.optimizely.ab.notification.NotificationCenter;
+import com.optimizely.ab.odp.ODPManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -83,6 +84,7 @@ public class OptimizelyManagerIntervalTest {
     public void testBuildWithDatafileDownloadInterval() throws Exception {
         long goodNumber = 27;
         OptimizelyManager manager = OptimizelyManager.builder("1")
+                .withVuid("any-to-avoid-generate")
                 .withLogger(logger)
                 .withDatafileDownloadInterval(goodNumber, TimeUnit.MINUTES)
                 .build(mockContext);
@@ -100,13 +102,16 @@ public class OptimizelyManagerIntervalTest {
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                any());                         // nullable (DefaultDecideOptions)
+                any(),                         // nullable (DefaultDecideOptions)
+                any(ODPManager.class),
+                anyString());
     }
 
     @Test
     public void testBuildWithDatafileDownloadIntervalDeprecated() throws Exception {
         long goodNumber = 1234L;
         OptimizelyManager manager = OptimizelyManager.builder("1")
+                .withVuid("any-to-avoid-generate")
                 .withLogger(logger)
                 .withDatafileDownloadInterval(goodNumber)      // deprecated
                 .build(mockContext);
@@ -124,13 +129,16 @@ public class OptimizelyManagerIntervalTest {
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                any());                         // nullable (DefaultDecideOptions)
+                any(),                         // nullable (DefaultDecideOptions)
+                any(ODPManager.class),
+                anyString());
     }
 
     @Test
     public void testBuildWithEventDispatchInterval() throws Exception {
         long goodNumber = 100L;
         OptimizelyManager manager = OptimizelyManager.builder("1")
+                .withVuid("any-to-avoid-generate")
                 .withLogger(logger)
                 .withEventDispatchInterval(goodNumber, TimeUnit.SECONDS)
                 .build(mockContext);
@@ -160,7 +168,9 @@ public class OptimizelyManagerIntervalTest {
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                any());                         // nullable (DefaultDecideOptions)
+                any(),                         // nullable (DefaultDecideOptions)
+                any(ODPManager.class),
+                anyString());
     }
 
     @Test
@@ -170,6 +180,7 @@ public class OptimizelyManagerIntervalTest {
         long defaultEventFlushInterval = 30L;   // seconds
 
         OptimizelyManager manager = OptimizelyManager.builder("1")
+                .withVuid("any-to-avoid-generate")
                 .withLogger(logger)
                 .withEventDispatchRetryInterval(goodNumber, timeUnit)
                 .build(mockContext);
@@ -199,13 +210,16 @@ public class OptimizelyManagerIntervalTest {
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                any());                         // nullable (DefaultDecideOptions)
+                any(),                         // nullable (DefaultDecideOptions)
+                any(ODPManager.class),
+                anyString());
     }
 
     @Test
     public void testBuildWithEventDispatchIntervalDeprecated() throws Exception {
         long goodNumber = 1234L;
         OptimizelyManager manager = OptimizelyManager.builder("1")
+                .withVuid("any-to-avoid-generate")
                 .withLogger(logger)
                 .withEventDispatchInterval(goodNumber)      // deprecated
                 .build(mockContext);
@@ -234,7 +248,9 @@ public class OptimizelyManagerIntervalTest {
                 any(EventProcessor.class),
                 any(UserProfileService.class),
                 any(NotificationCenter.class),
-                any());                         // nullable (DefaultDecideOptions)
+                any(),                         // nullable (DefaultDecideOptions)
+                any(ODPManager.class),
+                anyString());
     }
 
 }

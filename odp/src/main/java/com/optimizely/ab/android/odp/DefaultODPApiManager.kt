@@ -1,4 +1,4 @@
-// Copyright 2022, Optimizely, Inc. and contributors
+// Copyright 2022-2023, Optimizely, Inc. and contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,17 @@ import com.optimizely.ab.android.shared.OptlyStorage
 import com.optimizely.ab.android.shared.WorkerScheduler
 import com.optimizely.ab.odp.ODPApiManager
 import org.slf4j.LoggerFactory
+import java.util.concurrent.TimeUnit
 
-class DefaultODPApiManager(private val context: Context) : ODPApiManager {
+class DefaultODPApiManager(private val context: Context, timeoutForSegmentFetch: Int, timeoutForEventDispatch: Int) : ODPApiManager {
+
+    init {
+        ODPSegmentClient.CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(timeoutForSegmentFetch.toLong()).toInt()
+        ODPEventClient.CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(timeoutForEventDispatch.toLong()).toInt()
+    }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public var segmentClient = ODPSegmentClient(
+    var segmentClient = ODPSegmentClient(
         Client(OptlyStorage(context), LoggerFactory.getLogger(Client::class.java)),
         LoggerFactory.getLogger(ODPSegmentClient::class.java)
     )

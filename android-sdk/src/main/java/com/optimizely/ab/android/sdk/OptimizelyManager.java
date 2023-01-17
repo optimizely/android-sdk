@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2022, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2023, Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -37,6 +37,8 @@ import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.event_handler.EventDispatcher;
+import com.optimizely.ab.android.odp.DefaultODPApiManager;
+import com.optimizely.ab.android.odp.VuidManager;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -46,9 +48,13 @@ import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
+import com.optimizely.ab.event.internal.BuildVersionInfo;
+import com.optimizely.ab.event.internal.ClientEngineInfo;
 import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
+import com.optimizely.ab.odp.ODPApiManager;
+import com.optimizely.ab.odp.ODPManager;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
 
 import org.slf4j.Logger;
@@ -56,7 +62,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -82,6 +91,8 @@ public class OptimizelyManager {
     @NonNull private final DatafileConfig datafileConfig;
 
     @NonNull private UserProfileService userProfileService;
+    @Nullable private ODPManager odpManager;
+    @Nullable private final String vuid;
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
@@ -100,7 +111,9 @@ public class OptimizelyManager {
                       @Nullable EventProcessor eventProcessor,
                       @NonNull UserProfileService userProfileService,
                       @NonNull NotificationCenter notificationCenter,
-                      @Nullable List<OptimizelyDecideOption> defaultDecideOptions) {
+                      @Nullable List<OptimizelyDecideOption> defaultDecideOptions,
+                      @Nullable ODPManager odpManager,
+                      @Nullable String vuid) {
 
         if (projectId == null && sdkKey == null) {
             logger.error("projectId and sdkKey are both null!");
@@ -121,6 +134,8 @@ public class OptimizelyManager {
         this.eventProcessor = eventProcessor;
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
+        this.vuid = vuid;
+        this.odpManager = odpManager;
         this.notificationCenter = notificationCenter;
         this.defaultDecideOptions = defaultDecideOptions;
 
@@ -591,8 +606,10 @@ public class OptimizelyManager {
         builder.withUserProfileService(userProfileService);
         builder.withNotificationCenter(notificationCenter);
         builder.withDefaultDecideOptions(defaultDecideOptions);
+        builder.withODPManager(odpManager);
         Optimizely optimizely = builder.build();
-        return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class));
+
+        return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class), vuid);
     }
 
     @NonNull
@@ -724,6 +741,13 @@ public class OptimizelyManager {
         @Nullable private DatafileConfig datafileConfig = null;
         @Nullable private List<OptimizelyDecideOption> defaultDecideOptions = null;
 
+        private int odpSegmentCacheSize = 100;
+        private int odpSegmentCacheTimeoutInSecs = 600;
+        private int timeoutForODPSegmentFetchInSecs = 10;
+        private int timeoutForODPEventDispatchInSecs = 10;
+        private boolean odpEnabled = true;
+        private String vuid = null;
+
         @Deprecated
         /**
          * @deprecated use {@link #Builder()} instead and pass in an SDK Key with {@link #withSDKKey(String)}
@@ -753,7 +777,7 @@ public class OptimizelyManager {
 
         /**
          * Override the default {@link Logger}.
-         * @param overrideHandler logger to override OptimizedlyManager and OptimizelyClient logger
+         * @param overrideHandler logger to override OptimizelyManager and OptimizelyClient logger
          * @return this {@link Builder} instance
          */
         public Builder withLogger(Logger overrideHandler) {
@@ -883,6 +907,66 @@ public class OptimizelyManager {
         }
 
         /**
+         * Override the default ODP segment cache size (100).
+         * @param size the size
+         * @return this {@link Builder} instance
+         */
+        public Builder withODPSegmentCacheSize(int size) {
+            this.odpSegmentCacheSize = size;
+            return this;
+        }
+
+        /**
+         * Override the default ODP segment cache timeout (10 minutes).
+         * @param interval the interval
+         * @param timeUnit the time unit of the timeout argument
+         * @return this {@link Builder} instance
+         */
+        public Builder withODPSegmentCacheTimeout(int interval, TimeUnit timeUnit) {
+            this.odpSegmentCacheTimeoutInSecs = (int) timeUnit.toSeconds(interval);
+            return this;
+        }
+
+        /**
+         * Override the default timeout of odp segment fetch (10 seconds).
+         * @param interval the interval in secs
+         * @return this {@link Builder} instance
+         */
+        public Builder withTimeoutForODPSegmentFetch(int interval) {
+            this.timeoutForODPSegmentFetchInSecs = interval;
+            return this;
+        }
+
+        /**
+         * Override the default timeout of odp event dispatch (10 seconds).
+         * @param interval the interval in secs
+         * @return this {@link Builder} instance
+         */
+        public Builder withTimeoutForODPEventDispatch(int interval) {
+            this.timeoutForODPEventDispatchInSecs = interval;
+            return this;
+        }
+
+        /**
+         * Disable ODP integration.
+         * @return this {@link Builder} instance
+         */
+        public Builder withODPDisabled() {
+            this.odpEnabled = false;
+            return this;
+        }
+
+        /**
+         * Override the default (SDK-generated and persistent) vuid.
+         * @param vuid a user-defined vuid value
+         * @return this {@link Builder} instance
+         */
+        public Builder withVuid(String vuid) {
+            this.vuid = vuid;
+            return this;
+        }
+
+        /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          * @param  context the application context used to create default service if not provided.
          * @return a {@link Builder} instance
@@ -949,6 +1033,39 @@ public class OptimizelyManager {
 
             }
 
+            if (vuid == null) {
+                vuid = VuidManager.Companion.getShared(context).getVuid();
+            }
+
+            ODPManager odpManager = null;
+            if (odpEnabled) {
+                // Pass common data for android-sdk only to java-core sdk. All ODP events will include these data.
+                Map<String, Object> commonData = OptimizelyDefaultAttributes.buildODPCommonData(context, logger);
+
+                // Pass common identifiers for android-sdk only to java-core sdk. All ODP events will include these identifiers.
+                Map<String, Object> commonIdentifiers = (vuid != null) ? Collections.singletonMap("vuid", vuid) : Collections.emptyMap();
+
+                ODPApiManager odpApiManager = new DefaultODPApiManager(
+                    context,
+                    timeoutForODPSegmentFetchInSecs,
+                    timeoutForODPEventDispatchInSecs);
+
+                // NOTE: ODPManager get updated with ODP configuration from datafile.
+                //       1) ODPConfig is updated when Optimizely.class is instantiated.
+                //       2) ODPConfig update is also added to the UpdateConfigNotification handler.
+
+                odpManager = ODPManager.builder()
+                        .withApiManager(odpApiManager)
+                        .withSegmentCacheSize(odpSegmentCacheSize)
+                        .withSegmentCacheTimeout(odpSegmentCacheTimeoutInSecs)
+
+                        // TODO: this will be fixed in a separate PR after java-sdk is extended for android-sdk support.
+                        //.withExtraCommonData(commonData)
+                        //.withExtraCommonIdentifiers(commonIdentifiers)
+
+                        .build();
+            }
+
             return new OptimizelyManager(projectId, sdkKey,
                     datafileConfig,
                     logger,
@@ -960,7 +1077,9 @@ public class OptimizelyManager {
                     eventProcessor,
                     userProfileService,
                     notificationCenter,
-                    defaultDecideOptions);
+                    defaultDecideOptions,
+                    odpManager,
+                    vuid);
         }
     }
 }

@@ -80,4 +80,25 @@ public class OptimizelyDefaultAttributes {
 
         return attrMap;
     }
+
+    static Map<String, Object> buildODPCommonData(Context context, Logger logger) {
+        String androidDeviceModel = android.os.Build.MODEL;
+        String androidOSVersion = android.os.Build.VERSION.RELEASE;
+
+        // NOTE: other common fields for all ODP events are automatically added in java-core SDK (with values for android-sdk)
+        //       android-sdk version number is passed down to java-sdk core when initialized.
+        // - "idempotence_id" ("abcd1234-efgh-...")
+        // - "data_source_type" ("sdk")
+        // - "data_source" ("android-sdk")
+        // - "data_source_version" ("3.14.0")
+
+        Map<String, Object> commonData = new HashMap<>();
+        commonData.put("os", "Android");
+        commonData.put("os_version", androidOSVersion);
+        commonData.put("device_type", "Phone");
+        commonData.put("model", androidDeviceModel);
+
+        return commonData;
+    }
+
 }

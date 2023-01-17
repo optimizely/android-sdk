@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017-2021, Optimizely, Inc. and contributors                   *
+ * Copyright 2017-2021, 2023 Optimizely, Inc. and contributors              *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -2195,6 +2195,40 @@ public class OptimizelyClientTest {
         OptimizelyUserContext userContext = optimizelyClient.createUserContext(GENERIC_USER_ID, attributes);
         assertEquals(userContext.getUserId(), GENERIC_USER_ID);
         assertEquals(userContext.getAttributes(), attributes);
+    }
+
+    @Test
+    public void testCreateUserContext_withVuid() {
+        String vuid = "test-vuid";
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger, vuid);
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext();
+        assertEquals(userContext.getUserId(), "test-vuid");
+        assert(userContext.getAttributes().isEmpty());
+    }
+
+    @Test
+    public void testCreateUserContext_withVuid_withAttributes() {
+        String vuid = "test-vuid";
+        Map<String, Object> attributes = Collections.singletonMap("house", "Gryffindor");
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger, vuid);
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(attributes);
+        assertEquals(userContext.getUserId(), "test-vuid");
+        assertEquals(userContext.getAttributes(), attributes);
+    }
+
+    @Test
+    public void testVuidRegister() {
+        Optimizely mockOptimizely = mock(Optimizely.class);
+        when(mockOptimizely.isValid()).thenReturn(true);
+
+        OptimizelyClient optimizelyClient = new OptimizelyClient(mockOptimizely, logger, "any-vuid");
+
+        verify(mockOptimizely).sendODPEvent(
+                null,
+                "client_initialized",
+                null,
+                null);
     }
 
     @Test

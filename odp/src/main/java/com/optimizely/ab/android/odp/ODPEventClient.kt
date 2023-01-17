@@ -1,4 +1,4 @@
-// Copyright 2022, Optimizely, Inc. and contributors
+// Copyright 2022-2023, Optimizely, Inc. and contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ open class ODPEventClient(private val client: Client, private val logger: Logger
     }
 
     companion object {
-        // easy way to set the connection timeout
+        // configurable connection timeout
         var CONNECTION_TIMEOUT = 10 * 1000
         var READ_TIMEOUT = 60 * 1000
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2017, Optimizely, Inc. and contributors                        *
+ * Copyright 2017, 2023 Optimizely, Inc. and contributors                   *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -63,4 +63,18 @@ public class OptimizelyDefaultAttributesTest {
         assertEquals(defaultAttributes.size(), 4);
     }
 
+    @Test
+    public void buildODPCommonData() throws Exception {
+        Context context = mock(Context.class);
+        Map<String, Object> commonData = OptimizelyDefaultAttributes.buildODPCommonData(context, logger);
+
+        assertEquals(commonData.size(), 4);
+
+        assertEquals(commonData.get("os"), "Android");
+        assertEquals(commonData.get("device_type"), "Phone");
+        assertTrue(commonData.get("os_version").toString().length() >= 1);
+        assertTrue(commonData.get("model").toString().length() > 2);
+    }
+
 }
+
