@@ -58,6 +58,11 @@ allprojects {
         // SNAPSHOT support
         maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
+    
+    configurations.all {
+        // no cache for SNAPSHOT dependency
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
 }
 
 ext {

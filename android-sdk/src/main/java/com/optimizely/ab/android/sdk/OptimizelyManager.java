@@ -1043,7 +1043,7 @@ public class OptimizelyManager {
                 Map<String, Object> commonData = OptimizelyDefaultAttributes.buildODPCommonData(context, logger);
 
                 // Pass common identifiers for android-sdk only to java-core sdk. All ODP events will include these identifiers.
-                Map<String, Object> commonIdentifiers = (vuid != null) ? Collections.singletonMap("vuid", vuid) : Collections.emptyMap();
+                Map<String, String> commonIdentifiers = (vuid != null) ? Collections.singletonMap("vuid", vuid) : Collections.emptyMap();
 
                 ODPApiManager odpApiManager = new DefaultODPApiManager(
                     context,
@@ -1058,11 +1058,8 @@ public class OptimizelyManager {
                         .withApiManager(odpApiManager)
                         .withSegmentCacheSize(odpSegmentCacheSize)
                         .withSegmentCacheTimeout(odpSegmentCacheTimeoutInSecs)
-
-                        // TODO: this will be fixed in a separate PR after java-sdk is extended for android-sdk support.
-                        //.withExtraCommonData(commonData)
-                        //.withExtraCommonIdentifiers(commonIdentifiers)
-
+                        .withUserCommonData(commonData)
+                        .withUserCommonIdentifiers(commonIdentifiers)
                         .build();
             }
 
