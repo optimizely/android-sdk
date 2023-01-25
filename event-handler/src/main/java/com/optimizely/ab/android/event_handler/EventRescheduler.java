@@ -90,7 +90,7 @@ public class EventRescheduler extends BroadcastReceiver {
                 logger.warn("Received unsupported broadcast action to event rescheduler");
             }
         } catch (Exception e) {
-            // Rare exceptions (IllegalStateException: "WorkManager is not initialized properly...") with WorkerScheduler.startService), probably related to a WorkManager start timing issue.
+            // Rare exceptions (IllegalStateException: "WorkManager is not initialized properly...") with WorkerScheduler.startService(), probably related to a WorkManager start timing issue.
             // Gracefully handled here, and it's safe for those rare cases since event-dispatch service will be scheduled again on next events.
             logger.warn("WorkScheduler failed to reschedule an event service: " + e.getMessage());
         }
