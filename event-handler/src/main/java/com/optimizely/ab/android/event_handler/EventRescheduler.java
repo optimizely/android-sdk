@@ -62,10 +62,17 @@ public class EventRescheduler extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (context != null && intent != null) {
-            reschedule(context, intent);
-        } else {
+        if (context == null || intent == null) {
             logger.warn("Received invalid broadcast to event rescheduler");
+            return;
+        }
+
+        try {
+            reschedule(context, intent);
+        } catch (Exception e) {
+            // Rare exceptions (IllegalStateException: "WorkManager is not initialized properly...") with WorkerScheduler.startService), probably related to a WorkManager start timing issue.
+            // Gracefully handled here, and it's safe for those rare cases since event-dispatch service will be scheduled again on next events.
+            logger.warn("WorkScheduler failed to reschedule an event service: " + e.getMessage());
         }
     }
 
@@ -75,24 +82,18 @@ public class EventRescheduler extends BroadcastReceiver {
      * @param broadcastIntent broadcast intent (reboot, wifi change, reinstall)
      */
     void reschedule(@NonNull Context context, @NonNull Intent broadcastIntent) {
-        try {
-            if (broadcastIntent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
+        if (broadcastIntent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) ||
                 broadcastIntent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
+            WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY, -1L);
+            logger.info("Rescheduling event flushing if necessary");
+        } else if (broadcastIntent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
+            NetworkInfo info = broadcastIntent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+            if(info != null && info.isConnected()) {
                 WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY, -1L);
-                logger.info("Rescheduling event flushing if necessary");
-            } else if (broadcastIntent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
-                NetworkInfo info = broadcastIntent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-                if (info != null && info.isConnected()) {
-                    WorkerScheduler.startService(context, EventWorker.workerId, EventWorker.class, Data.EMPTY, -1L);
-                    logger.info("Preemptively flushing events since wifi became available");
-                }
-            } else {
-                logger.warn("Received unsupported broadcast action to event rescheduler");
+                logger.info("Preemptively flushing events since wifi became available");
             }
-        } catch (Exception e) {
-            // Rare exceptions (IllegalStateException: "WorkManager is not initialized properly...") with WorkerScheduler.startService(), probably related to a WorkManager start timing issue.
-            // Gracefully handled here, and it's safe for those rare cases since event-dispatch service will be scheduled again on next events.
-            logger.warn("WorkScheduler failed to reschedule an event service: " + e.getMessage());
+        } else {
+            logger.warn("Received unsupported broadcast action to event rescheduler");
         }
     }
 
