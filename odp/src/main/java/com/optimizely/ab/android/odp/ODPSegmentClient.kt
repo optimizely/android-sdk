@@ -16,7 +16,10 @@ package com.optimizely.ab.android.odp
 
 import androidx.annotation.VisibleForTesting
 import com.optimizely.ab.android.shared.Client
+import com.optimizely.ab.odp.parser.ResponseJsonParser
+import com.optimizely.ab.odp.parser.ResponseJsonParserFactory
 import org.slf4j.Logger
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -28,7 +31,7 @@ open class ODPSegmentClient(private val client: Client, private val logger: Logg
         apiKey: String,
         apiEndpoint: String,
         payload: String
-    ): String? {
+    ): List<String>? {
 
         val request: Client.Request<String> = Client.Request {
             var urlConnection: HttpURLConnection? = null
@@ -74,8 +77,15 @@ open class ODPSegmentClient(private val client: Client, private val logger: Logg
                 }
             }
         }
-
-        return client.execute(request, REQUEST_BACKOFF_TIMEOUT, REQUEST_RETRIES_POWER)
+        val response = client.execute(request, REQUEST_BACKOFF_TIMEOUT, REQUEST_RETRIES_POWER)
+        val parser: ResponseJsonParser = ResponseJsonParserFactory.getParser()
+        try {
+            return parser.parseQualifiedSegments(response)
+        } catch (e: java.lang.Exception) {
+            logger.error("Audience segments fetch failed (Error Parsing Response)")
+            logger.debug(e.message)
+        }
+        return null
     }
 
     companion object {
