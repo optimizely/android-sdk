@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2016-2021, Optimizely, Inc. and contributors                        *
+ * Copyright 2016-2021, 2023 Optimizely, Inc. and contributors              *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -62,10 +62,17 @@ public class EventRescheduler extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (context != null && intent != null) {
-            reschedule(context, intent);
-        } else {
+        if (context == null || intent == null) {
             logger.warn("Received invalid broadcast to event rescheduler");
+            return;
+        }
+
+        try {
+            reschedule(context, intent);
+        } catch (Exception e) {
+            // Rare exceptions (IllegalStateException: "WorkManager is not initialized properly...") with WorkerScheduler.startService(), probably related to a WorkManager start timing issue.
+            // Gracefully handled here, and it's safe for those rare cases since event-dispatch service will be scheduled again on next events.
+            logger.warn("WorkScheduler failed to reschedule an event service: " + e.getMessage());
         }
     }
 
