@@ -31,6 +31,7 @@ import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
+import com.optimizely.ab.android.odp.DefaultODPApiManager;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -43,6 +44,7 @@ import com.optimizely.ab.event.EventProcessor;
 import com.optimizely.ab.event.internal.UserEvent;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
+import com.optimizely.ab.odp.ODPEvent;
 import com.optimizely.ab.odp.ODPEventManager;
 import com.optimizely.ab.odp.ODPManager;
 
@@ -55,6 +57,8 @@ import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -133,7 +137,7 @@ public class ODPIntegrationTest {
             notificationCenter,
             null,
             odpManager,
-            null);
+            "test-vuid");
     }
 
     @Test
@@ -186,6 +190,29 @@ public class ODPIntegrationTest {
             anyString(),
             anyString(),
             any(Set.class));
+    }
+
+    @Test
+    public void identifyOdpEventSentWhenUserContextCreated() {
+
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("test-sdkKey").build(context);
+        optimizelyManager.initialize(context, odpDatafile1);
+        OptimizelyClient client = optimizelyManager.getOptimizely();
+
+        client.createUserContext("tester-1");
+
+        ArgumentCaptor<ODPEvent> captor = ArgumentCaptor.forClass(ODPEvent.class);
+        verify(odpEventManager).identifyUser(anyString());
+        verify(odpEventManager, times(2)).sendEvent(captor.capture());
+
+        ODPEvent event = captor.getAllValues().get(1);
+
+        Map<String, String> identifiers = new HashMap<String, String>();
+        identifiers.put("fs_user_id", "tester-1");
+        identifiers.put("vuid", "tester-1");
+
+        assertEquals(event.getAction(), "identified");
+        assertEquals(event.getIdentifiers(), identifiers);
     }
 
 }
