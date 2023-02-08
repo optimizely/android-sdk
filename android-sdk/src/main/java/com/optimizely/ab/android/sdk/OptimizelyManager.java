@@ -54,7 +54,9 @@ import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.odp.ODPApiManager;
+import com.optimizely.ab.odp.ODPEventManager;
 import com.optimizely.ab.odp.ODPManager;
+import com.optimizely.ab.odp.ODPSegmentManager;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
 
 import org.slf4j.Logger;
@@ -740,6 +742,8 @@ public class OptimizelyManager {
         @Nullable private String sdkKey = null;
         @Nullable private DatafileConfig datafileConfig = null;
         @Nullable private List<OptimizelyDecideOption> defaultDecideOptions = null;
+        @Nullable private ODPEventManager odpEventManager;
+        @Nullable private ODPSegmentManager odpSegmentManager;
 
         private int odpSegmentCacheSize = 100;
         private int odpSegmentCacheTimeoutInSecs = 600;
@@ -948,6 +952,32 @@ public class OptimizelyManager {
         }
 
         /**
+         * Provide an optional custom {@link ODPEventManager} instance.
+         *
+         * A Default {@link ODPEventManager} implementation is automatically used if none provided.
+         *
+         * @param odpEventManager The implementation of {@link ODPEventManager}
+         * @return ODPManager builder
+         */
+        public Builder withODPEventManager(ODPEventManager odpEventManager) {
+            this.odpEventManager = odpEventManager;
+            return this;
+        }
+
+        /**
+         * Provide an optional custom {@link ODPSegmentManager} instance.
+         *
+         * A Default {@link ODPSegmentManager} implementation is automatically used if none provided.
+         *
+         * @param odpSegmentManager The implementation of {@link ODPSegmentManager}
+         * @return this {@link Builder} instance
+         */
+        public Builder withODPSegmentManager(ODPSegmentManager odpSegmentManager) {
+            this.odpSegmentManager = odpSegmentManager;
+            return this;
+        }
+
+        /**
          * Disable ODP integration.
          * @return this {@link Builder} instance
          */
@@ -1059,6 +1089,8 @@ public class OptimizelyManager {
                         .withSegmentCacheSize(odpSegmentCacheSize)
                         .withSegmentCacheTimeout(odpSegmentCacheTimeoutInSecs)
                         .withUserCommonData(commonData)
+                        .withSegmentManager(odpSegmentManager)
+                        .withEventManager(odpEventManager)
                         .withUserCommonIdentifiers(commonIdentifiers)
                         .build();
             }

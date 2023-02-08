@@ -308,4 +308,17 @@ public class DefaultDatafileHandler implements DatafileHandler, ProjectConfigMan
     public ProjectConfig getConfig() {
         return currentProjectConfig;
     }
+
+    @Override
+    public ProjectConfig getCachedConfig() {
+        return currentProjectConfig;
+    }
+
+    @Override
+    public String getSDKKey() {
+        if (currentProjectConfig != null) {
+            return currentProjectConfig.getSdkKey();
+        }
+        return null;
+    }
 }

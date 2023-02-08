@@ -43,7 +43,7 @@ class DefaultODPApiManager(private val context: Context, timeoutForSegmentFetch:
         userKey: String,
         userValue: String,
         segmentsToCheck: Set<String>,
-    ): String? {
+    ): List<String>? {
         return segmentClient.fetchQualifiedSegments(
             apiKey,
             apiEndpoint,
