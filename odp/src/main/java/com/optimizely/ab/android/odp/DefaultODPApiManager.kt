@@ -23,7 +23,8 @@ import com.optimizely.ab.odp.ODPApiManager
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
-class DefaultODPApiManager(private val context: Context, timeoutForSegmentFetch: Int, timeoutForEventDispatch: Int) : ODPApiManager {
+@VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+open class DefaultODPApiManager(private val context: Context, timeoutForSegmentFetch: Int, timeoutForEventDispatch: Int) : ODPApiManager {
 
     init {
         ODPSegmentClient.CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(timeoutForSegmentFetch.toLong()).toInt()

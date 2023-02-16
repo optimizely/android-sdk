@@ -28,6 +28,7 @@ import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.LogEvent;
+import com.optimizely.ab.internal.NotificationRegistry;
 import com.optimizely.ab.notification.DecisionNotification;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.notification.NotificationHandler;
@@ -945,5 +946,35 @@ public class OptimizelyClient {
         }
 
         return null;
+    }
+
+    void sendUpdateConfigNotification() {
+        UpdateConfigNotification SIGNAL = new UpdateConfigNotification();
+
+        // notify to clients if notification listeners are set.
+
+        NotificationCenter notificationCenter = getNotificationCenter();
+        if (notificationCenter == null) {
+            logger.debug("NotificationCenter null, not sending notification");
+            return;
+        }
+        notificationCenter.send(SIGNAL);
+
+        // notify to the java-sdk core.
+
+        ProjectConfig config = getProjectConfig();
+        if (config == null) {
+            logger.warn("ProjectConfig null, not sending internal UpdateConfigNotification");
+            return;
+        }
+
+        String sdkKey = config.getSdkKey();
+        if (sdkKey == null) {
+            logger.warn("sdkKey null, not sending internal UpdateConfigNotification");
+            return;
+        }
+
+        NotificationRegistry.getInternalNotificationCenter(sdkKey).send(SIGNAL);
+        notificationCenter.send(SIGNAL);
     }
 }

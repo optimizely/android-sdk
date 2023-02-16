@@ -528,12 +528,7 @@ public class OptimizelyManager {
         }
 
         datafileHandler.startBackgroundUpdates(context, datafileConfig, datafileDownloadInterval, datafile1 -> {
-            NotificationCenter notificationCenter = getOptimizely().getNotificationCenter();
-            if (notificationCenter == null) {
-                logger.debug("NotificationCenter null, not sending notification");
-                return;
-            }
-            notificationCenter.send(new UpdateConfigNotification());
+            getOptimizely().sendUpdateConfigNotification();
         });
     }
 
@@ -1088,9 +1083,9 @@ public class OptimizelyManager {
                         .withApiManager(odpApiManager)
                         .withSegmentCacheSize(odpSegmentCacheSize)
                         .withSegmentCacheTimeout(odpSegmentCacheTimeoutInSecs)
-                        .withUserCommonData(commonData)
                         .withSegmentManager(odpSegmentManager)
                         .withEventManager(odpEventManager)
+                        .withUserCommonData(commonData)
                         .withUserCommonIdentifiers(commonIdentifiers)
                         .build();
             }

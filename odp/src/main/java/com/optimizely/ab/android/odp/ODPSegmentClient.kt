@@ -19,7 +19,6 @@ import com.optimizely.ab.android.shared.Client
 import com.optimizely.ab.odp.parser.ResponseJsonParser
 import com.optimizely.ab.odp.parser.ResponseJsonParserFactory
 import org.slf4j.Logger
-import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 

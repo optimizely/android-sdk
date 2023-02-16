@@ -17,49 +17,24 @@
 package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.os.Build;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.optimizely.ab.Optimizely;
-import com.optimizely.ab.android.datafile_handler.DatafileHandler;
-import com.optimizely.ab.android.datafile_handler.DatafileLoadedListener;
-import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
-import com.optimizely.ab.android.event_handler.DefaultEventHandler;
-import com.optimizely.ab.android.shared.DatafileConfig;
-import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
-import com.optimizely.ab.bucketing.UserProfileService;
-import com.optimizely.ab.config.DatafileProjectConfig;
-import com.optimizely.ab.config.ProjectConfig;
-import com.optimizely.ab.config.Variation;
-import com.optimizely.ab.config.parser.ConfigParseException;
-import com.optimizely.ab.event.EventHandler;
-import com.optimizely.ab.event.EventProcessor;
-import com.optimizely.ab.event.internal.UserEvent;
-import com.optimizely.ab.notification.NotificationCenter;
-import com.optimizely.ab.notification.UpdateConfigNotification;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.optimizely.ab.OptimizelyUserContext;
+import com.optimizely.ab.android.odp.DefaultODPApiManager;
+import com.optimizely.ab.odp.ODPApiManager;
 import com.optimizely.ab.odp.ODPEventManager;
 import com.optimizely.ab.odp.ODPManager;
+import com.optimizely.ab.odp.ODPSegmentManager;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.slf4j.Logger;
-
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -70,12 +45,15 @@ import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Tests for Optimizely ODP Integration
@@ -84,13 +62,17 @@ import static org.mockito.Mockito.when;
 public class ODPIntegrationTest {
 
     private OptimizelyManager optimizelyManager;
+    private OptimizelyClient optimizelyClient;
     private ODPManager odpManager;
-    private DefaultDatafileHandler datafileHandler;
-    private NotificationCenter notificationCenter;
+    private ODPEventManager odpEventManager;
+    private ODPSegmentManager odpSegmentManager;
+    private ODPApiManager odpApiManager;
     private Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
     private String testSdkKey = "12345";
+    private String testUser = "test-user";
+    private String testVuid = "vuid_123";   // must start with "vuid_" to be parsed properly in java-sdk core
 
-    private String emptyV4Core =
+    private String odpDatafile = "{" +
         "\"version\": \"4\"," +
         "\"rollouts\": []," +
         "\"anonymizeIP\": true," +
@@ -103,89 +85,126 @@ public class ODPIntegrationTest {
         "\"attributes\": []," +
         "\"accountId\": \"10367498574\"," +
         "\"events\": []," +
-        "\"revision\": \"100\",";
-
-    String integration1 = "\"integrations\":[{\"key\":\"odp\",\"host\":\"h-1\",\"publicKey\":\"p-1\"}]";
-    String integration2 = "\"integrations\":[{\"key\":\"odp\",\"host\":\"h-2\",\"publicKey\":\"p-2\"}]";
-    String odpDatafile1 = "{" + emptyV4Core + integration1 + "}";
-    String odpDatafile2 = "{" + emptyV4Core + integration2 + "}";
+        "\"revision\": \"100\"," +
+        "\"typedAudiences\":[{\"id\": \"12\",\"conditions\": [\"or\",{\"value\": \"segment-1\",\"type\": \"third_party_dimension\",\"name\": \"odp.audiences\",\"match\": \"qualified\"}],\"name\": \"audience-1\"}]," +
+        "\"integrations\":[{\"key\":\"odp\",\"host\":\"h-1\",\"publicKey\":\"p-1\"}]" +
+        "}";
 
     @Before
     public void setup() throws Exception {
-        odpManager = mock(ODPManager.class);
-        when(odpManager.getEventManager()).thenReturn(mock(ODPEventManager.class));
+        odpApiManager = mock(DefaultODPApiManager.class);
+        when(odpApiManager.sendEvents(anyString(), anyString(), anyString())).thenReturn(200);   // return success, otherwise retried 3 times.
 
-        datafileHandler = new DefaultDatafileHandler();
-        notificationCenter = new NotificationCenter();
+        odpEventManager = new ODPEventManager(odpApiManager);
+        odpSegmentManager = new ODPSegmentManager(odpApiManager);
 
-        optimizelyManager = new OptimizelyManager(
-            null,
-            testSdkKey,
-            null,
-            mock(Logger.class),
-            3600L,
-            datafileHandler,
-            null,
-            3600L,
-            mock(DefaultEventHandler.class),
-            mock(EventProcessor.class),
-            null,
-            notificationCenter,
-            null,
-            odpManager,
-            null);
+        optimizelyManager = OptimizelyManager.builder()
+            .withSDKKey(testSdkKey)
+            .withVuid(testVuid)
+            .withODPEventManager(odpEventManager)
+            .withODPSegmentManager(odpSegmentManager)
+            .build(context);
+
+        optimizelyManager.initialize(context, odpDatafile);
+        optimizelyClient = optimizelyManager.getOptimizely();
     }
 
     @Test
-    public void initializeSynchronous_updateODPConfig() {
-        // NOTE: odpConfig is updated when Optimizely.java (java-sdk core) is initialized.
-        //       Same for async-initialization, so need to repeat the same test (hard to test for async-init).
+    public void identifyOdpEventSentWhenUserContextCreated() throws InterruptedException {
+        optimizelyClient.createUserContext(testUser);
 
-        optimizelyManager.initialize(context, odpDatafile1);
-        verify(odpManager, times(1)).updateSettings(
-            eq("h-1"),
-            eq("p-1"),
-            eq(Collections.emptySet()));
+        Thread.sleep(2000);  // wait for batch timeout (1sec)
 
-        // validate no other calls
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(odpApiManager, times(1)).sendEvents(eq("p-1"), eq("h-1/v3/events"), captor.capture());
+        String eventStr = captor.getValue();
 
-        verify(odpManager, times(1)).updateSettings(
-            anyString(),
-            anyString(),
-            any(Set.class));
+        // 2 events (client_initialized, identified) will be batched in a single sendEvents() call.
+        JsonArray jsonArray = JsonParser.parseString(eventStr).getAsJsonArray();
+        assertEquals(jsonArray.size(), 2);
+
+        // "client_initialized" event (vuid only)
+        JsonObject firstEvt = jsonArray.get(0).getAsJsonObject();
+        JsonObject firstIdentifiers = firstEvt.get("identifiers").getAsJsonObject();
+        JsonObject firstData = firstEvt.get("data").getAsJsonObject();
+
+        // "identified" event (vuid + fs_user_id)
+        JsonObject secondEvt = jsonArray.get(1).getAsJsonObject();
+        JsonObject secondIdentifiers = secondEvt.get("identifiers").getAsJsonObject();
+
+        assertEquals(firstEvt.get("action").getAsString(), "client_initialized");
+        assertEquals(firstIdentifiers.size(), 1);
+        assertEquals(firstIdentifiers.get("vuid").getAsString(), testVuid);
+
+        assertEquals(secondEvt.get("action").getAsString(), "identified");
+        assertEquals(secondIdentifiers.size(), 2);
+        assertEquals(secondIdentifiers.get("vuid").getAsString(), testVuid);
+        assertEquals(secondIdentifiers.get("fs_user_id").getAsString(), testUser);
+
+        // validate that ODP event data includes correct values.
+        assertEquals(firstData.size(), 8); // {idempotence_id, os, os_version, data_source_type, data_source_version, device_type, model, data_source}
+        assertEquals(firstData.get("data_source").getAsString(), "android-sdk");
     }
 
     @Test
-    public void updateODPConfigWhenDatafileUpdatedByBackgroundPolling() throws InterruptedException {
-        // NOTE: same logic for async-initialization, so no need to repeat for async
+    public void identifyOdpEventSentWhenVuidUserContextCreated() throws InterruptedException {
+        optimizelyClient.createUserContext();  // empty userId. vuid will be used.
 
-        boolean updateConfigOnBackgroundDatafile = true;
-        optimizelyManager.initialize(context, odpDatafile1, true, updateConfigOnBackgroundDatafile);
+        Thread.sleep(2000);  // wait for batch timeout (1sec)
 
-        // datafile will be saved when a new datafile is downloaded by background polling
-        datafileHandler.saveDatafile(context, new DatafileConfig(null, testSdkKey, null), odpDatafile2);
-        Thread.sleep(1000);  // need a delay for file-observer (update notification)
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(odpApiManager, times(1)).sendEvents(eq("p-1"), eq("h-1/v3/events"), captor.capture());
+        String eventStr = captor.getValue();
 
-        // odpConfig updated on initialization
+        // 2 events (client_initialized, identified) will be batched in a single sendEvents() call.
+        JsonArray jsonArray = JsonParser.parseString(eventStr).getAsJsonArray();
+        assertEquals(jsonArray.size(), 2);
 
-        verify(odpManager, times(1)).updateSettings(
-            eq("h-1"),
+        // "client_initialized" event (vuid only)
+        JsonObject firstEvt = jsonArray.get(0).getAsJsonObject();
+        JsonObject firstIdentifiers = firstEvt.get("identifiers").getAsJsonObject();
+
+        // "identified" event (vuid only)
+        JsonObject secondEvt = jsonArray.get(1).getAsJsonObject();
+        JsonObject secondIdentifiers = secondEvt.get("identifiers").getAsJsonObject();
+
+        assertEquals(firstEvt.get("action").getAsString(), "client_initialized");
+        assertEquals(firstIdentifiers.size(), 1);
+        assertEquals(firstIdentifiers.get("vuid").getAsString(), testVuid);
+
+        assertEquals(secondEvt.get("action").getAsString(), "identified");
+        assertEquals(secondIdentifiers.size(), 1);
+        assertEquals(secondIdentifiers.get("vuid").getAsString(), testVuid);
+    }
+
+    @Test
+    public void fetchQualifiedSegmentsWithUserContext() throws InterruptedException {
+        OptimizelyUserContext user = optimizelyClient.createUserContext(testUser);
+
+        Boolean status = user.fetchQualifiedSegments();
+
+        verify(odpApiManager, times(1)).fetchQualifiedSegments(
             eq("p-1"),
-            eq(Collections.emptySet()));
+            eq("h-1/v3/graphql"),
+            eq("fs_user_id"),
+            eq(testUser),
+            eq(new HashSet<>(Arrays.asList("segment-1")))
+        );
+    }
 
-        // odpConfig updated on background polling
+    @Test
+    public void fetchQualifiedSegmentsWithVuidUserContext() throws InterruptedException {
+        OptimizelyUserContext user = optimizelyClient.createUserContext();  // empty userId. vuid will be used.
 
-        verify(odpManager, times(1)).updateSettings(
-            eq("h-2"),
-            eq("p-2"),
-            eq(Collections.emptySet()));
+        Boolean status = user.fetchQualifiedSegments();
 
-        // no other calls
-
-        verify(odpManager, times(2)).updateSettings(
-            anyString(),
-            anyString(),
-            any(Set.class));
+        verify(odpApiManager, times(1)).fetchQualifiedSegments(
+            eq("p-1"),
+            eq("h-1/v3/graphql"),
+            eq("vuid"),
+            eq(testVuid),
+            eq(new HashSet<>(Arrays.asList("segment-1")))
+        );
     }
 
 }
