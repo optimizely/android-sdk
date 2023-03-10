@@ -112,7 +112,8 @@ You can import this project into Android Studio by opening Android Studio and se
 
 Tests can be run by right clicking the file in the project pane or by clicking the method name in source and selecting run.  You will be prompted to create an AVD or connect a device if one isn't connected.  
 
-## Contributing
+### Contributing
+
 Please see [CONTRIBUTING](CONTRIBUTING.md).
 
 ### Credits
