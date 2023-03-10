@@ -2,8 +2,6 @@
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=master)](https://travis-ci.org/optimizely/android-sdk)
 
-## Overview
-
 This repository houses the Android SDK for use with Optimizely Feature Experimentation and Optimizely Full Stack (legacy). The Android SDK depends on the [Optimizely Java SDK](https://github.com/optimizely/java-sdk).
 
 Optimizely Feature Experimentation is an A/B testing and feature management tool for product development teams, letting you experiment at every step. Using Optimizely Feature Experimentation allows for every feature on your roadmap to be an opportunity to discover hidden insights. Learn more at [Optimizely.com](https://www.optimizely.com/products/experiment/feature-experimentation/), or see the [developer documentation](https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/welcome).
@@ -60,7 +58,7 @@ optimizelyManager.initialize(this, null, (OptimizelyClient optimizely) -> {
 
 ## Use the Android SDK
 
-See the Optimizely Feature Experimentation [developer documentation](https://docs.developers.optimizely.com/experimentation/v4.0-full-stack/docs/android-sdk) to learn how to set up your first Csharp project and use the SDK.
+See the Optimizely Feature Experimentation [developer documentation](https://docs.developers.optimizely.com/experimentation/v4.0-full-stack/docs/android-sdk) to learn how to set up your first Android project and use the SDK.
 
 ## Architecture
 
