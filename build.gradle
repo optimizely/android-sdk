@@ -217,7 +217,7 @@ configure(publishedProjects) {
 
                     customizePom(pom, docTitle)
                     // "description" is required by MavenCentral but it does not work in customizePom(). added here explicitly.
-                    pom.description = 'The Android SDK for Optimizely Full Stack (feature flag management for product development teams)'
+                    pom.description = 'The Android SDK for Optimizely Feature Experimentation, Optimizely Full Stack (legacy), and Optimizely Rollouts'
 
                     from components.release
                 }
