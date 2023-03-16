@@ -61,7 +61,7 @@ ext {
     build_tools_version = "30.0.3"
     min_sdk_version = 14
     target_sdk_version = 33
-    java_core_ver = "3.10.2"
+    java_core_ver = "3.10.3"
     android_logger_ver = "1.3.6"
     jacksonversion= "2.11.2"
     annotations_ver = "1.2.0"
@@ -193,7 +193,7 @@ configure(publishedProjects) {
 
                     customizePom(pom, docTitle)
                     // "description" is required by MavenCentral but it does not work in customizePom(). added here explicitly.
-                    pom.description = 'The Android SDK for Optimizely Full Stack (feature flag management for product development teams)'
+                    pom.description = 'The Android SDK for Optimizely Feature Experimentation, Optimizely Full Stack (legacy), and Optimizely Rollouts'
 
                     from components.release
                     artifact releaseSourcesJar

@@ -2,24 +2,20 @@
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=master)](https://travis-ci.org/optimizely/android-sdk)
 
-## Overview
+This repository houses the Android SDK for use with Optimizely Feature Experimentation and Optimizely Full Stack (legacy). The Android SDK depends on the [Optimizely Java SDK](https://github.com/optimizely/java-sdk).
 
-This repository houses the Android SDK for use with Optimizely Full Stack and Optimizely Rollouts. The Android SDK depends on the [Optimizely Java SDK](https://github.com/optimizely/java-sdk).
+Optimizely Feature Experimentation is an A/B testing and feature management tool for product development teams, letting you experiment at every step. Using Optimizely Feature Experimentation allows for every feature on your roadmap to be an opportunity to discover hidden insights. Learn more at [Optimizely.com](https://www.optimizely.com/products/experiment/feature-experimentation/), or see the [developer documentation](https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/welcome).
 
-Optimizely Full Stack is A/B testing and feature flag management for product development teams. Experiment in any application. Make every feature on your roadmap an opportunity to learn. Learn more at https://www.optimizely.com/platform/full-stack/, or see the [documentation](https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/welcome).
+Optimizely Rollouts is [free feature flags](https://www.optimizely.com/free-feature-flagging/) for development teams. You can easily roll out and roll back features in any application without code deploys, mitigating risk for every feature on your roadmap.
 
-Optimizely Rollouts is free feature flags for development teams. Easily roll out and roll back features in any application without code deploys. Mitigate risk for every feature on your roadmap. Learn more at https://www.optimizely.com/rollouts/, or see the [documentation](https://docs.developers.optimizely.com/experimentation/v3.1.0-full-stack/docs/introduction-to-rollouts).
+## Get Started
 
-## Getting Started
-
-### Using the SDK
-See the [Android SDK developer documentation](https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/install-sdk-android) to learn how to set
-up an Optimizely project and start using the SDK.
+Refer to the [Android SDK's developer documentation](https://docs.developers.optimizely.com/experimentation/v4.0.0-full-stack/docs/android-sdk) for detailed instructions on getting started with using the SDK.
 
 ### Requirements
 * Android API 14 or higher
 
-### Installing the SDK
+### Install the SDK
 To add the android-sdk and all modules to your project, include the following in your app's `build.gradle`:
 
 ---
@@ -37,7 +33,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.optimizely.ab:android-sdk:3.13.3'
+	implementation 'com.optimizely.ab:android-sdk:3.13.4'
 }
 ```
 
@@ -59,6 +55,10 @@ optimizelyManager.initialize(this, null, (OptimizelyClient optimizely) -> {
 });
 
 ```
+
+## Use the Android SDK
+
+See the Optimizely Feature Experimentation [developer documentation](https://docs.developers.optimizely.com/experimentation/v4.0-full-stack/docs/android-sdk) to learn how to set up your first Android project and use the SDK.
 
 ## Architecture
 
@@ -82,7 +82,7 @@ This project includes 5 library modules and a test app.
 6. Test App
   - A simple app showing how to use the Optimizely Android SDK
 
-## Development
+## SDK Development
 
 ### Command Line
 
@@ -111,6 +111,7 @@ You can import this project into Android Studio by opening Android Studio and se
 Tests can be run by right clicking the file in the project pane or by clicking the method name in source and selecting run.  You will be prompted to create an AVD or connect a device if one isn't connected.  
 
 ### Contributing
+
 Please see [CONTRIBUTING](CONTRIBUTING.md).
 
 ### Credits
@@ -128,3 +129,26 @@ Additional credits from java-sdk:[https://github.com/optimizely/java-sdk/blob/ma
 **Android Logger** [https://github.com/noveogroup/android-logger](https://github.com/noveogroup/android-logger)
 License (Public Domain): [https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt](https://github.com/noveogroup/android-logger/blob/master/LICENSE.txt)
 
+### Other Optimzely SDKs
+
+- Agent - https://github.com/optimizely/agent
+
+- C# - https://github.com/optimizely/csharp-sdk
+
+- Flutter - https://github.com/optimizely/optimizely-flutter-sdk
+
+- Go - https://github.com/optimizely/go-sdk
+
+- Java - https://github.com/optimizely/java-sdk
+
+- JavaScript - https://github.com/optimizely/javascript-sdk
+
+- PHP - https://github.com/optimizely/php-sdk
+
+- Python - https://github.com/optimizely/python-sdk
+
+- React - https://github.com/optimizely/react-sdk
+
+- Ruby - https://github.com/optimizely/ruby-sdk
+
+- Swift - https://github.com/optimizely/swift-sdk
