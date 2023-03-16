@@ -1,7 +1,7 @@
 # Optimizely Android X SDK Changelog
 
 ## 3.13.4
-March 15th, 2023
+March 16th, 2023
 
 - Update README.md and other non-functional code to reflect that this SDK supports both Optimizely Feature Experimentation and Optimizely Full Stack. ([#450](https://github.com/optimizely/android-sdk/pull/450)).
 
