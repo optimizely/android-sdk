@@ -69,7 +69,7 @@ open class ODPEventClient(private val client: Client, private val logger: Logger
                     return@Request false
                 }
             } catch (e: Exception) {
-                logger.error("Error making request", e)
+                logger.error("Error making ODP event request", e)
                 return@Request false
             } finally {
                 if (urlConnection != null) {

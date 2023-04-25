@@ -57,14 +57,14 @@ open class ODPSegmentClient(private val client: Client, private val logger: Logg
                 val status = urlConnection.responseCode
                 if (status in 200..399) {
                     val json = client.readStream(urlConnection)
-                    logger.debug("Successfully fetched segments: {}", json)
+                    logger.debug("Successfully fetched ODP segments: {}", json)
                     return@Request json
                 } else {
-                    logger.error("Unexpected response from event endpoint, status: $status")
+                    logger.error("Unexpected response from ODP segment endpoint, status: $status")
                     return@Request null
                 }
             } catch (e: Exception) {
-                logger.error("Error making request", e)
+                logger.error("Error making ODP segment request", e)
                 return@Request null
             } finally {
                 if (urlConnection != null) {
