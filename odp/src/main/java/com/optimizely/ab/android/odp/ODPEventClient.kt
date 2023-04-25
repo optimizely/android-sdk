@@ -90,6 +90,10 @@ open class ODPEventClient(private val client: Client, private val logger: Logger
         var CONNECTION_TIMEOUT = 10 * 1000
         var READ_TIMEOUT = 60 * 1000
 
+        // OdpEventManager (java-sdk core) is supposed to handle retries on failures.
+        // android-sdk returns success immediately for sendOdpEvent() from OdpEventManager and schedules it via WorkManager.
+        // so retries on failure are supported here in OdpEventClient for android-sdk.
+
         // the numerical base for the exponential backoff
         const val REQUEST_BACKOFF_TIMEOUT = 2
         // power the number of retries

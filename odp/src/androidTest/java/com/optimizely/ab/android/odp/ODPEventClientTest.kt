@@ -76,7 +76,7 @@ class ODPEventClientTest {
 
         eventClient.dispatch(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(2), eq(3))
         val received = captor.value.execute() as Boolean
 
         assertFalse(received)
@@ -91,7 +91,7 @@ class ODPEventClientTest {
 
         eventClient.dispatch(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(2), eq(3))
         val received = captor.value.execute() as Boolean
 
         assertFalse(received)
@@ -107,7 +107,7 @@ class ODPEventClientTest {
         apiEndpoint = "invalid-url"
         eventClient.dispatch(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(2), eq(3))
         val received = captor.value.execute() as Boolean
 
         assertFalse(received)

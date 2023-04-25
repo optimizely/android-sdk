@@ -144,4 +144,13 @@ public class ClientTest {
         assertTrue(timeouts.contains(8));
         assertTrue(timeouts.contains(16));
     }
+
+    @Test
+    public void testExpBackoffFailure_noRetriesWhenBackoffSetToZero() {
+        Client.Request request = mock(Client.Request.class);
+        when(request.execute()).thenReturn(null);
+        assertNull(client.execute(request, 0, 0));
+        verify(logger, never()).info(eq("Request failed, waiting {} seconds to try again"), any(Integer.class));
+    }
+
 }

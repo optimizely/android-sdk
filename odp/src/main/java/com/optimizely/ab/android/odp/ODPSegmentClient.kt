@@ -92,9 +92,12 @@ open class ODPSegmentClient(private val client: Client, private val logger: Logg
         var CONNECTION_TIMEOUT = 10 * 1000
         var READ_TIMEOUT = 60 * 1000
 
+        // No retries on fetchQualifiedSegments() errors.
+        // We want to return failure immediately to callers.
+
         // the numerical base for the exponential backoff
-        const val REQUEST_BACKOFF_TIMEOUT = 2
-        // power the number of retries (2 = retry once)
-        const val REQUEST_RETRIES_POWER = 2
+        const val REQUEST_BACKOFF_TIMEOUT = 0
+        // power the number of retries
+        const val REQUEST_RETRIES_POWER = 0
     }
 }

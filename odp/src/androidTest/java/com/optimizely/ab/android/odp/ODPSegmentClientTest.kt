@@ -59,7 +59,7 @@ class ODPSegmentClientTest {
 
         segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), eq(2), eq(2))
+        verify(client).execute(captor.capture(), eq(0), eq(0))
         val received = captor.value.execute()
 
         assert(received == response)
@@ -75,7 +75,7 @@ class ODPSegmentClientTest {
 
         segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(0), eq(0))
         val received = captor.value.execute()
 
         assertNull(received)
@@ -89,7 +89,7 @@ class ODPSegmentClientTest {
 
         segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(0), eq(0))
         val received = captor.value.execute()
 
         assertNull(received)
@@ -104,7 +104,7 @@ class ODPSegmentClientTest {
         apiEndpoint = "invalid-url"
         segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(0), eq(0))
         val received = captor.value.execute()
 
         assertNull(received)
