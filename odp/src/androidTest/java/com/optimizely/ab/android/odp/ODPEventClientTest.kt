@@ -111,6 +111,6 @@ class ODPEventClientTest {
         val received = captor.value.execute() as Boolean
 
         assertFalse(received)
-        verify(logger).error(contains("Error making request"), any())
+        verify(logger).error(contains("Error making ODP event request"), any())
     }
 }

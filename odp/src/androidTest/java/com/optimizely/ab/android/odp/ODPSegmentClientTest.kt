@@ -79,7 +79,7 @@ class ODPSegmentClientTest {
         val received = captor.value.execute()
 
         assertNull(received)
-        verify(logger).error("Unexpected response from event endpoint, status: 400")
+        verify(logger).error("Unexpected response from ODP segment endpoint, status: 400")
         verify(urlConnection).disconnect()
     }
 
@@ -93,7 +93,7 @@ class ODPSegmentClientTest {
         val received = captor.value.execute()
 
         assertNull(received)
-        verify(logger).error("Unexpected response from event endpoint, status: 500")
+        verify(logger).error("Unexpected response from ODP segment endpoint, status: 500")
         verify(urlConnection).disconnect()
     }
 
@@ -108,6 +108,6 @@ class ODPSegmentClientTest {
         val received = captor.value.execute()
 
         assertNull(received)
-        verify(logger).error(contains("Error making request"), any())
+        verify(logger).error(contains("Error making ODP segment request"), any())
     }
 }
