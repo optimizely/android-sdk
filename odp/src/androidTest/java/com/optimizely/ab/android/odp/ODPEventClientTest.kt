@@ -25,7 +25,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
-import org.mockito.Matchers.anyInt
 import org.mockito.Matchers.contains
 import org.mockito.Matchers.eq
 import org.mockito.Mockito.`when`
