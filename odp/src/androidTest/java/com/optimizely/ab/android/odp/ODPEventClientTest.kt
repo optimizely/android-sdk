@@ -25,7 +25,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
-import org.mockito.Matchers.anyInt
 import org.mockito.Matchers.contains
 import org.mockito.Matchers.eq
 import org.mockito.Mockito.`when`
@@ -76,7 +75,7 @@ class ODPEventClientTest {
 
         eventClient.dispatch(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(2), eq(3))
         val received = captor.value.execute() as Boolean
 
         assertFalse(received)
@@ -91,7 +90,7 @@ class ODPEventClientTest {
 
         eventClient.dispatch(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(2), eq(3))
         val received = captor.value.execute() as Boolean
 
         assertFalse(received)
@@ -107,10 +106,10 @@ class ODPEventClientTest {
         apiEndpoint = "invalid-url"
         eventClient.dispatch(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(2), eq(3))
         val received = captor.value.execute() as Boolean
 
         assertFalse(received)
-        verify(logger).error(contains("Error making request"), any())
+        verify(logger).error(contains("Error making ODP event request"), any())
     }
 }

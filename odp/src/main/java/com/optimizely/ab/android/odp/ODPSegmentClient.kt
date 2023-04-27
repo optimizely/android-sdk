@@ -57,14 +57,14 @@ open class ODPSegmentClient(private val client: Client, private val logger: Logg
                 val status = urlConnection.responseCode
                 if (status in 200..399) {
                     val json = client.readStream(urlConnection)
-                    logger.debug("Successfully fetched segments: {}", json)
+                    logger.debug("Successfully fetched ODP segments: {}", json)
                     return@Request json
                 } else {
-                    logger.error("Unexpected response from event endpoint, status: $status")
+                    logger.error("Unexpected response from ODP segment endpoint, status: $status")
                     return@Request null
                 }
             } catch (e: Exception) {
-                logger.error("Error making request", e)
+                logger.error("Error making ODP segment request", e)
                 return@Request null
             } finally {
                 if (urlConnection != null) {
@@ -92,9 +92,12 @@ open class ODPSegmentClient(private val client: Client, private val logger: Logg
         var CONNECTION_TIMEOUT = 10 * 1000
         var READ_TIMEOUT = 60 * 1000
 
+        // No retries on fetchQualifiedSegments() errors.
+        // We want to return failure immediately to callers.
+
         // the numerical base for the exponential backoff
-        const val REQUEST_BACKOFF_TIMEOUT = 2
-        // power the number of retries (2 = retry once)
-        const val REQUEST_RETRIES_POWER = 2
+        const val REQUEST_BACKOFF_TIMEOUT = 0
+        // power the number of retries
+        const val REQUEST_RETRIES_POWER = 0
     }
 }

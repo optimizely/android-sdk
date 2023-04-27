@@ -24,7 +24,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
-import org.mockito.Matchers.anyInt
 import org.mockito.Matchers.contains
 import org.mockito.Matchers.eq
 import org.mockito.Mockito.`when`
@@ -59,7 +58,7 @@ class ODPSegmentClientTest {
 
         segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), eq(2), eq(2))
+        verify(client).execute(captor.capture(), eq(0), eq(0))
         val received = captor.value.execute()
 
         assert(received == response)
@@ -75,11 +74,11 @@ class ODPSegmentClientTest {
 
         segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(0), eq(0))
         val received = captor.value.execute()
 
         assertNull(received)
-        verify(logger).error("Unexpected response from event endpoint, status: 400")
+        verify(logger).error("Unexpected response from ODP segment endpoint, status: 400")
         verify(urlConnection).disconnect()
     }
 
@@ -89,11 +88,11 @@ class ODPSegmentClientTest {
 
         segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(0), eq(0))
         val received = captor.value.execute()
 
         assertNull(received)
-        verify(logger).error("Unexpected response from event endpoint, status: 500")
+        verify(logger).error("Unexpected response from ODP segment endpoint, status: 500")
         verify(urlConnection).disconnect()
     }
 
@@ -104,10 +103,10 @@ class ODPSegmentClientTest {
         apiEndpoint = "invalid-url"
         segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
 
-        verify(client).execute(captor.capture(), anyInt(), anyInt())
+        verify(client).execute(captor.capture(), eq(0), eq(0))
         val received = captor.value.execute()
 
         assertNull(received)
-        verify(logger).error(contains("Error making request"), any())
+        verify(logger).error(contains("Error making ODP segment request"), any())
     }
 }

@@ -162,6 +162,9 @@ public class Client {
             }
 
             if (response == null || response == Boolean.FALSE) {
+                // retry is disabled when timeout set to 0
+                if (timeout == 0) break;
+
                 try {
                     logger.info("Request failed, waiting {} seconds to try again", timeout);
                     Thread.sleep(TimeUnit.MILLISECONDS.convert(timeout, TimeUnit.SECONDS));
