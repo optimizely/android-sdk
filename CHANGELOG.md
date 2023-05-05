@@ -19,16 +19,12 @@ With ODP accounts integrated into Optimizely projects, you can build audiences u
 This version includes the following changes:
 
 * New API added to `OptimizelyUserContext`:
-
-        - `fetchQualifiedSegments()`: this API will retrieve user segments from the ODP server. The fetched segments will be used for audience evaluation. The fetched data will be stored in the local cache to avoid repeated network delays.
-
-        - When an `OptimizelyUserContext` is created, the SDK will automatically send an identify request to the ODP server to facilitate observing user activities.
+	- `fetchQualifiedSegments()`: this API will retrieve user segments from the ODP server. The fetched segments will be used for audience evaluation. The fetched data will be stored in the local cache to avoid repeated network delays.
+	- When an `OptimizelyUserContext` is created, the SDK will automatically send an identify request to the ODP server to facilitate observing user activities.
 
 * New APIs added to `OptimizelyClient`:
-
-        - `sendODPEvent()`: customers can build/send arbitrary ODP events that will bind user identifiers and data to user profiles in ODP.
-
-        - `createUserContext()` with anonymous user IDs: user-contexts can be created without a userId. The SDK will create and use a persistent `VUID` specific to a device when userId is not provided.
+	- `sendODPEvent()`: customers can build/send arbitrary ODP events that will bind user identifiers and data to user profiles in ODP.
+	- `createUserContext()` with anonymous user IDs: user-contexts can be created without a userId. The SDK will create and use a persistent `VUID` specific to a device when userId is not provided.
 
 For details, refer to our documentation pages:
 
