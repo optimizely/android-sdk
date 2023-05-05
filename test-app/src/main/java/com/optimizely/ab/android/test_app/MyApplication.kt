@@ -19,6 +19,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import com.optimizely.ab.android.sdk.OptimizelyManager
+import com.optimizely.ab.android.test_app.Samples.APISamplesInJava
 import java.util.*
 import java.util.concurrent.TimeUnit
 

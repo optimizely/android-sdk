@@ -24,6 +24,8 @@
 -keepclassmembers class  com.optimizely.ab.config.** {
     *;    
 }
+# Keep Payload classes that get sent to the ODP server
+-keep class com.optimizely.ab.odp.ODPEvent { *; }
 
 # Keep Payload classes that get sent to Optimizely's backend
 -keep class com.optimizely.ab.event.internal.payload.** { *; }
