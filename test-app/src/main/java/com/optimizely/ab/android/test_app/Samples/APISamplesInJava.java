@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright 2020, 2022, Optimizely, Inc. and contributors                  *
+ * Copyright 2020, 2022-2023, Optimizely, Inc. and contributors             *
  *                                                                          *
  * Licensed under the Apache License, Version 2.0 (the "License");          *
  * you may not use this file except in compliance with the License.         *
@@ -90,8 +90,8 @@ public class APISamplesInJava {
         samplesForDoc_NotificatonListener(context);
         samplesForDoc_OlderVersions(context);
         samplesForDoc_ForcedDecision(context);
+        samplesForDoc_ODP(context);
     }
-
 
     static public void samplesForDecide(Context context) {
         // this default-options will be applied to all following decide calls.
@@ -857,6 +857,18 @@ public class APISamplesInJava {
         // remove forced variations
         success = user.removeForcedDecision(flagAndABTestContext);
         success = user.removeAllForcedDecisions();
+    }
+
+    static public void samplesForDoc_ODP(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("VivZyCGPHY369D4z8T9yG").build(context);
+        optimizelyManager.initialize(context, null, (OptimizelyClient client) -> {
+            OptimizelyUserContext userContext = client.createUserContext("user_123");
+            userContext.fetchQualifiedSegments((status) -> {
+                Log.d("Optimizely", "[ODP] segments = " + userContext.getQualifiedSegments());
+                OptimizelyDecision optDecision = userContext.decide("odp-flag-1");
+                Log.d("Optimizely", "[ODP] decision = " + optDecision.toString());
+            });
+        });
     }
 
 }
