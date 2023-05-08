@@ -1,5 +1,12 @@
 # Optimizely Android X SDK Changelog
 
+## 4.0.0-beta2
+May 8th, 2023
+
+### Bug Fixes
+* Added a proguard rule to keep ODPEvent and added sample codes for ODP. ([#456](https://github.com/optimizely/android-sdk/pull/456)).
+
+
 ## 4.0.0-beta
 May 4th, 2023
 
