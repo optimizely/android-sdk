@@ -51,6 +51,7 @@ dependencies {
     api ("com.optimizely.ab:core-api:$java_core_ver") {
         exclude group: 'com.google.code.findbugs'
     }
+
     implementation "androidx.annotation:annotation:$annotations_ver"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.work:work-runtime:$work_runtime"

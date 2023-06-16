@@ -519,7 +519,7 @@ public class OptimizelyManager {
         if (sdkName == null) {
             sdkName = OptimizelyClientEngine.getClientEngineNameFromContext(context);
         }
-        return sdkName
+        return sdkName;
     }
 
     @NonNull
@@ -533,7 +533,7 @@ public class OptimizelyManager {
                 sdkVersion = "UNKNOWN";
             }
         }
-        return sdkVersion
+        return sdkVersion;
     }
 
     private boolean datafileDownloadEnabled() {
@@ -599,7 +599,7 @@ public class OptimizelyManager {
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String datafile) throws ConfigParseException {
         EventHandler eventHandler = getEventHandler(context);
 
-        String sdkName = getSdkName();
+        String sdkName = getSdkName(context);
         String sdkVersion = getSdkVersion();
 
         Optimizely.Builder builder = Optimizely.builder();

@@ -220,6 +220,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder()
             .withSDKKey(testSdkKey)
             .withClientInfo("test-sdk", "test-version")
+            .withVuid("any-to-avoid-generate")
             .build(mockContext);
         assertEquals(manager.getSdkName(mockContext), "test-sdk");
         assertEquals(manager.getSdkVersion(), "test-version");
@@ -249,7 +250,9 @@ public class OptimizelyManagerBuilderTest {
             any(NotificationCenter.class),
             any(),                         // nullable (DefaultDecideOptions)
             any(ODPManager.class),
-            eq("test-vuid"));
+            eq("test-vuid"),
+            any(),
+            any());
     }
 
     @Test
@@ -277,7 +280,9 @@ public class OptimizelyManagerBuilderTest {
             any(NotificationCenter.class),
             any(),                         // nullable (DefaultDecideOptions)
             isNull(),
-            eq("test-vuid"));
+            eq("test-vuid"),
+            any(),
+            any());
     }
 
     @Test
