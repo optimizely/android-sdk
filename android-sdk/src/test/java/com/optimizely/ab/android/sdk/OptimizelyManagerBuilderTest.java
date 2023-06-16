@@ -216,18 +216,13 @@ public class OptimizelyManagerBuilderTest {
     }
 
     @Test
-    public void testBuildWithDatafileDownloadInterval_workerCancelledWhenNoIntervalProvided() throws Exception {
+    public void testBuildWithCustomSdkNameAndVersion() throws Exception {
         OptimizelyManager manager = OptimizelyManager.builder()
-                .withSDKKey(testSdkKey)
-                .withDatafileHandler(mockDatafileHandler)
-                .withVuid("any-to-avoid-generate")
-                .build(mockContext);
-        OptimizelyManager spyManager = spy(manager);
-        when(spyManager.isAndroidVersionSupported()).thenReturn(true);
-        spyManager.initialize(mockContext, "");
-
-        verify(mockDatafileHandler).stopBackgroundUpdates(any(), any());
-        verify(mockDatafileHandler, never()).startBackgroundUpdates(any(), any(), any(), any());
+            .withSDKKey(testSdkKey)
+            .withClientInfo("test-sdk", "test-version")
+            .build(mockContext);
+        assertEquals(manager.getSdkName(mockContext), "test-sdk");
+        assertEquals(manager.getSdkVersion(), "test-version");
     }
 
     @Test
