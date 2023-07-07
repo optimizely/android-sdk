@@ -364,7 +364,7 @@ public class OptimizelyManager {
                 }
             }
             return safeLoadResource(context, datafileRes);
-        } catch (NullPointerException e){
+        } catch (NullPointerException | Resources.NotFoundException e){
             logger.error("Unable to find compiled data file in raw resource",e);
         }
         return null;
