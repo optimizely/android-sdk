@@ -34,35 +34,11 @@ body:
     description: Steps to reproduce the behavior.
     placeholder: |
       1. In this environment...
-      1. With this config...
-      1. Run '...'
-      1. See error...
+      2. With this config...
+      3. Run '...'
+      4. See error...
   validations:
     required: true
-- type: dropdown
-  attributes:
-    label: SDK Type
-    description: Please select the type of JS SDK.
-    multiple: false
-    options:
-      - Browser
-      - Node
-      - React Native
-      - Edge/Lite
-  validations:
-    required: true
-- type: textarea
-  attributes:
-    label: Node Version
-    description: What version of Node are you using?
-  validations:
-    required: false
-- type: textarea
-  attributes:
-    label: Browsers impacted
-    description: What browsers are impacted?
-  validations:
-    required: false
 - type: textarea
   attributes:
     label: Link
