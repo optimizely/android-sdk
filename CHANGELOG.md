@@ -1,5 +1,15 @@
 # Optimizely Android X SDK Changelog
 
+## 4.0.0-beta3
+August 30th, 2023
+
+### Bug Fixes
+* Added catch block to capture resource not found exception. ([#460](https://github.com/optimizely/android-sdk/pull/460)).
+
+### Functionality Enhancements
+- Update Github Issue Templates ([#461](https://github.com/optimizely/android-sdk/pull/461))
+
+
 ## 4.0.0-beta2
 May 8th, 2023
 
