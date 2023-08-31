@@ -4,6 +4,7 @@
 August 30th, 2023
 
 ### Bug Fixes
+* support arbitrary client names to be included in logx and odp events. ([#459](https://github.com/optimizely/android-sdk/pull/459)).
 * Added catch block to capture resource not found exception. ([#460](https://github.com/optimizely/android-sdk/pull/460)).
 
 ### Functionality Enhancements
