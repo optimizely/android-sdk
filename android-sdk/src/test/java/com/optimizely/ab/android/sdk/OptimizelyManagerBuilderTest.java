@@ -216,14 +216,18 @@ public class OptimizelyManagerBuilderTest {
     }
 
     @Test
-    public void testBuildWithCustomSdkNameAndVersion() throws Exception {
+    public void testBuildWithDatafileDownloadInterval_workerCancelledWhenNoIntervalProvided() throws Exception {
         OptimizelyManager manager = OptimizelyManager.builder()
-            .withSDKKey(testSdkKey)
-            .withClientInfo("test-sdk", "test-version")
-            .withVuid("any-to-avoid-generate")
-            .build(mockContext);
-        assertEquals(manager.getSdkName(mockContext), "test-sdk");
-        assertEquals(manager.getSdkVersion(), "test-version");
+                .withSDKKey(testSdkKey)
+                .withDatafileHandler(mockDatafileHandler)
+                .withVuid("any-to-avoid-generate")
+                .build(mockContext);
+        OptimizelyManager spyManager = spy(manager);
+        when(spyManager.isAndroidVersionSupported()).thenReturn(true);
+        spyManager.initialize(mockContext, "");
+
+        verify(mockDatafileHandler).stopBackgroundUpdates(any(), any());
+        verify(mockDatafileHandler, never()).startBackgroundUpdates(any(), any(), any(), any());
     }
 
     @Test
@@ -250,9 +254,7 @@ public class OptimizelyManagerBuilderTest {
             any(NotificationCenter.class),
             any(),                         // nullable (DefaultDecideOptions)
             any(ODPManager.class),
-            eq("test-vuid"),
-            any(),
-            any());
+            eq("test-vuid"));
     }
 
     @Test
@@ -280,9 +282,7 @@ public class OptimizelyManagerBuilderTest {
             any(NotificationCenter.class),
             any(),                         // nullable (DefaultDecideOptions)
             isNull(),
-            eq("test-vuid"),
-            any(),
-            any());
+            eq("test-vuid"));
     }
 
     @Test

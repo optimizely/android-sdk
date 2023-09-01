@@ -35,20 +35,20 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class OptimizelyClientEngineTest {
     @Test
-    public void testGetClientEngineNameFromContextAndroidTV() {
+    public void testGetClientEngineFromContextAndroidTV() {
         Context context = mock(Context.class);
         UiModeManager uiModeManager = mock(UiModeManager.class);
         when(context.getSystemService(Context.UI_MODE_SERVICE)).thenReturn(uiModeManager);
         when(uiModeManager.getCurrentModeType()).thenReturn(Configuration.UI_MODE_TYPE_TELEVISION);
-        assertEquals("android-tv-sdk", OptimizelyClientEngine.getClientEngineNameFromContext(context));
+        assertEquals(EventBatch.ClientEngine.ANDROID_TV_SDK, OptimizelyClientEngine.getClientEngineFromContext(context));
     }
 
     @Test
-    public void testGetClientEngineNameFromContextAndroid() {
+    public void testGetClientEngineFromContextAndroid() {
         Context context = mock(Context.class);
         UiModeManager uiModeManager = mock(UiModeManager.class);
         when(context.getSystemService(Context.UI_MODE_SERVICE)).thenReturn(uiModeManager);
         when(uiModeManager.getCurrentModeType()).thenReturn(Configuration.UI_MODE_TYPE_NORMAL);
-        assertEquals("android-sdk", OptimizelyClientEngine.getClientEngineNameFromContext(context));
+        assertEquals(EventBatch.ClientEngine.ANDROID_SDK, OptimizelyClientEngine.getClientEngineFromContext(context));
     }
 }
