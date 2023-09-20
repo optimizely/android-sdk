@@ -117,9 +117,7 @@ public class ODPIntegrationUpdateConfigTest {
             notificationCenter,
             null,
             odpManager,
-            "test-vuid",
-            null,
-            null);
+            "test-vuid");
     }
 
     @Test
