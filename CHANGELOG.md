@@ -1,7 +1,7 @@
 # Optimizely Android X SDK Changelog
 
 ## 4.0.0-beta3
-August 30th, 2023
+September 20th, 2023
 
 ### Bug Fixes
 * support arbitrary client names to be included in logx and odp events. ([#459](https://github.com/optimizely/android-sdk/pull/459)).
