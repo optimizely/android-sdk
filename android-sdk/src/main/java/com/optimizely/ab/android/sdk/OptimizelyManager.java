@@ -99,8 +99,7 @@ public class OptimizelyManager {
     @Nullable private OptimizelyStartListener optimizelyStartListener;
 
     @Nullable private final List<OptimizelyDecideOption> defaultDecideOptions;
-    private String customSdkName = null;
-    private String customSdkVersion = null;
+    private String sdkVersion = null;
 
     OptimizelyManager(@Nullable String projectId,
                       @Nullable String sdkKey,
@@ -116,9 +115,7 @@ public class OptimizelyManager {
                       @NonNull NotificationCenter notificationCenter,
                       @Nullable List<OptimizelyDecideOption> defaultDecideOptions,
                       @Nullable ODPManager odpManager,
-                      @Nullable String vuid,
-                      @Nullable String clientEngineName,
-                      @Nullable String clientVersion) {
+                      @Nullable String vuid) {
 
         if (projectId == null && sdkKey == null) {
             logger.error("projectId and sdkKey are both null!");
@@ -144,8 +141,12 @@ public class OptimizelyManager {
         this.notificationCenter = notificationCenter;
         this.defaultDecideOptions = defaultDecideOptions;
 
-        this.customSdkName = clientEngineName;
-        this.customSdkVersion = clientVersion;
+        try {
+            sdkVersion = BuildConfig.CLIENT_VERSION;
+            logger.info("SDK Version: {}", sdkVersion);
+        } catch (Exception e) {
+            logger.warn("Error getting BuildConfig version");
+        }
     }
 
     @VisibleForTesting
@@ -513,29 +514,6 @@ public class OptimizelyManager {
         return datafileHandler;
     }
 
-    @NonNull
-    public String getSdkName(Context context) {
-        String sdkName = customSdkName;
-        if (sdkName == null) {
-            sdkName = OptimizelyClientEngine.getClientEngineNameFromContext(context);
-        }
-        return sdkName;
-    }
-
-    @NonNull
-    public String getSdkVersion() {
-        String sdkVersion = customSdkVersion;
-        if (sdkVersion == null) {
-            try {
-                sdkVersion = BuildConfig.CLIENT_VERSION;
-            } catch (Exception e) {
-                logger.warn("Error getting BuildConfig version");
-                sdkVersion = "UNKNOWN";
-            }
-        }
-        return sdkVersion;
-    }
-
     private boolean datafileDownloadEnabled() {
         return datafileDownloadInterval > 0;
     }
@@ -599,8 +577,7 @@ public class OptimizelyManager {
     private OptimizelyClient buildOptimizely(@NonNull Context context, @NonNull String datafile) throws ConfigParseException {
         EventHandler eventHandler = getEventHandler(context);
 
-        String sdkName = getSdkName(context);
-        String sdkVersion = getSdkVersion();
+        EventBatch.ClientEngine clientEngine = OptimizelyClientEngine.getClientEngineFromContext(context);
 
         Optimizely.Builder builder = Optimizely.builder();
 
@@ -617,8 +594,7 @@ public class OptimizelyManager {
         }
 
         // override client sdk name/version to be included in events
-        builder.withClientInfo(sdkName, sdkVersion);
-        logger.info("SDK name: {} and version: {}", sdkName, sdkVersion);
+        builder.withClientInfo(clientEngine, sdkVersion);
 
         if (errorHandler != null) {
             builder.withErrorHandler(errorHandler);
@@ -770,9 +746,6 @@ public class OptimizelyManager {
         private int timeoutForODPEventDispatchInSecs = 10;
         private boolean odpEnabled = true;
         private String vuid = null;
-
-        private String customSdkName = null;
-        private String customSdkVersion = null;
 
         @Deprecated
         /**
@@ -1019,18 +992,6 @@ public class OptimizelyManager {
         }
 
         /**
-         * Override the SDK name and version (for client SDKs like flutter-sdk wrapping the core android-sdk) to be included in events.
-         *
-         * @param clientEngineName the client engine name ("flutter/android-sdk", etc.).
-         * @param clientVersion the client SDK version.
-         * @return this {@link Builder} instance
-         */
-        public Builder withClientInfo(@Nullable String clientEngineName, @Nullable String clientVersion) {
-            this.customSdkName = clientEngineName;
-            this.customSdkVersion = clientVersion;
-            return this;
-        }
-        /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          * @param  context the application context used to create default service if not provided.
          * @return a {@link Builder} instance
@@ -1142,10 +1103,7 @@ public class OptimizelyManager {
                     notificationCenter,
                     defaultDecideOptions,
                     odpManager,
-                    vuid,
-                    customSdkName,
-                    customSdkVersion
-            );
+                    vuid);
         }
     }
 }

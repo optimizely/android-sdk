@@ -65,25 +65,4 @@ public class OptimizelyManagerEventHandlerTest {
         assertEquals(argument.getValue().getEventBatch().getClientVersion(), BuildConfig.CLIENT_VERSION);
     }
 
-    @Test
-    public void eventClientWithCustomNameAndVersion() throws Exception {
-        EventHandler mockEventHandler = mock(EventHandler.class);
-
-        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
-            .withSDKKey("any-sdk-key")
-            .withEventDispatchInterval(0, TimeUnit.SECONDS)
-            .withEventHandler(mockEventHandler)
-            .withClientInfo("test-sdk", "test-version")
-            .build(context);
-
-        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, minDatafileWithEvent);
-        optimizelyClient.track("test_event", "tester");
-
-        ArgumentCaptor<LogEvent> argument = ArgumentCaptor.forClass(LogEvent.class);
-        verify(mockEventHandler, timeout(5000)).dispatchEvent(argument.capture());
-        assertEquals(argument.getValue().getEventBatch().getClientName(), "test-sdk");
-        assertEquals(argument.getValue().getEventBatch().getClientVersion(), "test-version");
-    }
-
 }
