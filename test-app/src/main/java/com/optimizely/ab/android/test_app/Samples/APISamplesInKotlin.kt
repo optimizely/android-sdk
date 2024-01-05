@@ -18,8 +18,6 @@ package com.optimizely.ab.android.test_app
 import android.content.Context
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.Log
 import com.optimizely.ab.OptimizelyDecisionContext
 import com.optimizely.ab.OptimizelyForcedDecision
@@ -29,7 +27,6 @@ import com.optimizely.ab.android.event_handler.EventRescheduler
 import com.optimizely.ab.android.sdk.OptimizelyClient
 import com.optimizely.ab.android.sdk.OptimizelyManager
 import com.optimizely.ab.bucketing.UserProfileService
-import com.optimizely.ab.config.Variation
 import com.optimizely.ab.config.parser.JsonParseException
 import com.optimizely.ab.error.ErrorHandler
 import com.optimizely.ab.error.RaiseExceptionErrorHandler
@@ -40,12 +37,8 @@ import com.optimizely.ab.notification.DecisionNotification
 import com.optimizely.ab.notification.NotificationHandler
 import com.optimizely.ab.notification.TrackNotification
 import com.optimizely.ab.notification.UpdateConfigNotification
-import com.optimizely.ab.optimizelyconfig.OptimizelyConfig
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption
 import com.optimizely.ab.optimizelydecision.OptimizelyDecision
-import com.optimizely.ab.optimizelyjson.OptimizelyJSON
-import org.slf4j.LoggerFactory
-import java.lang.Exception
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -76,7 +69,8 @@ object APISamplesInKotlin {
         samplesForDoc_NotificatonListener(context)
         samplesForDoc_OlderVersions(context)
         samplesForDoc_ForcedDecision(context)
-        samplesForDoc_ODP(context)
+        samplesForDoc_ODP_async(context)
+        samplesForDoc_ODP_sync(context)
     }
 
     fun samplesForDecide(context: Context) {
@@ -829,7 +823,7 @@ object APISamplesInKotlin {
         success = user.removeAllForcedDecisions()
     }
 
-    fun samplesForDoc_ODP(context: Context?) {
+    fun samplesForDoc_ODP_async(context: Context?) {
         val optimizelyManager =
             OptimizelyManager.builder().withSDKKey("VivZyCGPHY369D4z8T9yG").build(context)
         optimizelyManager.initialize(context!!, null) { client: OptimizelyClient ->
@@ -839,6 +833,22 @@ object APISamplesInKotlin {
                 val optDecision = userContext.decide("odp-flag-1")
                 Log.d("Optimizely", "[ODP] decision = $optDecision")
             }
+        }
+    }
+
+    fun samplesForDoc_ODP_sync(context: Context?) {
+        val optimizelyManager =
+            OptimizelyManager.builder().withSDKKey("VivZyCGPHY369D4z8T9yG").build(context)
+
+        val returnInMainThread = false;
+
+        optimizelyManager.initialize(context!!, null, returnInMainThread) { client: OptimizelyClient ->
+            val userContext = client.createUserContext("user_123")
+            userContext!!.fetchQualifiedSegments()
+
+            Log.d("Optimizely", "[ODP] segments = " + userContext.qualifiedSegments)
+            val optDecision = userContext.decide("odp-flag-1")
+            Log.d("Optimizely", "[ODP] decision = $optDecision")
         }
     }
 
