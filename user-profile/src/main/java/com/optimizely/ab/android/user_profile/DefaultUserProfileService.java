@@ -82,6 +82,8 @@ public class DefaultUserProfileService implements UserProfileService {
     public void startInBackground(final StartCallback callback) {
                 final DefaultUserProfileService userProfileService = this;
 
+                // TESTING
+        
                 AsyncTask<Void, Void, UserProfileService> initUserProfileTask = new AsyncTask<Void, Void, UserProfileService>() {
             @Override
             protected UserProfileService doInBackground(Void[] params) {
