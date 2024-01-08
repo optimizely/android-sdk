@@ -21,11 +21,11 @@ android {
             // enable proguard for debug mode (keep both of these to detect issues while testing)
             minifyEnabled true
             debuggable false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'test-app-proguard-rules.pro'
         }
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'test-app-proguard-rules.pro'
         }
     }
     compileOptions {
