@@ -62,14 +62,17 @@ public class DefaultUserProfileService implements UserProfileService {
      */
     public static UserProfileService newInstance(@NonNull String projectId, @NonNull Context context) {
         UserProfileCache userProfileCache = new UserProfileCache(
-                new UserProfileCache.DiskCache(new Cache(context, LoggerFactory.getLogger(Cache.class)),
-                        Executors.newSingleThreadExecutor(), LoggerFactory.getLogger(UserProfileCache.DiskCache.class),
-                        projectId),
+                new UserProfileCache.DiskCache(
+                    new Cache(
+                        context,
+                        LoggerFactory.getLogger(Cache.class)
+                    ),
+                    Executors.newSingleThreadExecutor(),
+                    LoggerFactory.getLogger(UserProfileCache.DiskCache.class),
+                    projectId
+                ),
                 LoggerFactory.getLogger(UserProfileCache.class),
-                new ConcurrentHashMap<String, Map<String, Object>>(),
-                new UserProfileCache.LegacyDiskCache(new Cache(context, LoggerFactory.getLogger(Cache.class)),
-                        Executors.newSingleThreadExecutor(),
-                        LoggerFactory.getLogger(UserProfileCache.LegacyDiskCache.class), projectId));
+                new ConcurrentHashMap<String, Map<String, Object>>());
 
         return new DefaultUserProfileService(userProfileCache,
                 LoggerFactory.getLogger(DefaultUserProfileService.class));

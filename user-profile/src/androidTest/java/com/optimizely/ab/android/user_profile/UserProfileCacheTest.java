@@ -53,7 +53,6 @@ public class UserProfileCacheTest {
     private Logger logger;
     private Cache cache;
     private UserProfileCache.DiskCache diskCache;
-    private UserProfileCache.LegacyDiskCache legacyDiskCache;
     private Map<String, Map<String, Object>> memoryCache;
     private String projectId;
     private UserProfileCache userProfileCache;
@@ -69,9 +68,8 @@ public class UserProfileCacheTest {
         projectId = "1";
         cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
         diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
-        legacyDiskCache = new UserProfileCache.LegacyDiskCache(cache, executor, logger, projectId);
         memoryCache = new ConcurrentHashMap<>();
-        userProfileCache = new UserProfileCache(diskCache, logger, memoryCache, legacyDiskCache);
+        userProfileCache = new UserProfileCache(diskCache, logger, memoryCache);
 
         // Test data.
         userId1 = "user_1";

@@ -51,7 +51,6 @@ public class DefaultUserProfileServiceTest {
     private UserProfileCache.DiskCache diskCache;
     private ExecutorService executor;
     private Logger logger;
-    private UserProfileCache.LegacyDiskCache legacyDiskCache;
     private Map<String, Map<String, Object>> memoryCache;
     private String projectId;
     private UserProfileCache userProfileCache;
@@ -66,11 +65,10 @@ public class DefaultUserProfileServiceTest {
         logger = mock(Logger.class);
         cache = new Cache(InstrumentationRegistry.getInstrumentation().getTargetContext(), logger);
         executor =Executors.newSingleThreadExecutor();
-        legacyDiskCache = new UserProfileCache.LegacyDiskCache(cache, executor, logger, projectId);
         memoryCache = new ConcurrentHashMap<>();
         projectId = "123";
         diskCache = new UserProfileCache.DiskCache(cache, executor, logger, projectId);
-        userProfileCache = new UserProfileCache(diskCache, logger, memoryCache, legacyDiskCache);
+        userProfileCache = new UserProfileCache(diskCache, logger, memoryCache);
         userProfileService = new DefaultUserProfileService(userProfileCache, logger);
 
         // Test data.
