@@ -97,6 +97,7 @@ public class OptimizelyManager {
     @Nullable private final String vuid;
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
+    private boolean returnInMainThreadFromAsyncInit = true;
 
     @Nullable private final List<OptimizelyDecideOption> defaultDecideOptions;
     private String sdkVersion = null;
@@ -175,8 +176,14 @@ public class OptimizelyManager {
         return optimizelyStartListener;
     }
 
-    void setOptimizelyStartListener(@Nullable OptimizelyStartListener optimizelyStartListener) {
+    void setOptimizelyStartListener(@Nullable OptimizelyStartListener optimizelyStartListener, boolean returnInMainThread) {
         this.optimizelyStartListener = optimizelyStartListener;
+        this.returnInMainThreadFromAsyncInit = returnInMainThread;
+    }
+
+    void setOptimizelyStartListener(@Nullable OptimizelyStartListener optimizelyStartListener) {
+        boolean returnInMainThread = true;
+        setOptimizelyStartListener(optimizelyStartListener, returnInMainThread);
     }
 
     private void notifyStartListener() {
@@ -398,11 +405,27 @@ public class OptimizelyManager {
      * @see #initialize(Context, Integer, OptimizelyStartListener)
      */
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public void initialize(@NonNull final Context context, @RawRes final Integer datafileRes, @NonNull OptimizelyStartListener optimizelyStartListener) {
+    public void initialize(
+        @NonNull final Context context,
+        @RawRes final Integer datafileRes,
+        @NonNull OptimizelyStartListener optimizelyStartListener)
+    {
+        // return in main thread after async completed (backward compatible)
+        boolean returnInMainThread = true;
+        initialize(context, datafileRes, returnInMainThread, optimizelyStartListener);
+    }
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    public void initialize(
+        @NonNull final Context context,
+        @RawRes final Integer datafileRes,
+        final boolean returnInMainThread,
+        @NonNull OptimizelyStartListener optimizelyStartListener)
+    {
         if (!isAndroidVersionSupported()) {
             return;
         }
-        setOptimizelyStartListener(optimizelyStartListener);
+        setOptimizelyStartListener(optimizelyStartListener, returnInMainThread);
         datafileHandler.downloadDatafile(context, datafileConfig, getDatafileLoadedListener(context,datafileRes));
     }
 
@@ -553,7 +576,7 @@ public class OptimizelyManager {
                             logger.info("No listener to send Optimizely to");
                         }
                     }
-                });
+                }, returnInMainThreadFromAsyncInit);
             }
             else {
                 if (optimizelyStartListener != null) {

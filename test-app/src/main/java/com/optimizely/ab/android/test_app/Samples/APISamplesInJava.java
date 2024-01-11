@@ -90,7 +90,8 @@ public class APISamplesInJava {
         samplesForDoc_NotificatonListener(context);
         samplesForDoc_OlderVersions(context);
         samplesForDoc_ForcedDecision(context);
-        samplesForDoc_ODP(context);
+        samplesForDoc_ODP_async(context);
+        samplesForDoc_ODP_sync(context);
     }
 
     static public void samplesForDecide(Context context) {
@@ -859,7 +860,7 @@ public class APISamplesInJava {
         success = user.removeAllForcedDecisions();
     }
 
-    static public void samplesForDoc_ODP(Context context) {
+    static public void samplesForDoc_ODP_async(Context context) {
         OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("VivZyCGPHY369D4z8T9yG").build(context);
         optimizelyManager.initialize(context, null, (OptimizelyClient client) -> {
             OptimizelyUserContext userContext = client.createUserContext("user_123");
@@ -868,6 +869,21 @@ public class APISamplesInJava {
                 OptimizelyDecision optDecision = userContext.decide("odp-flag-1");
                 Log.d("Optimizely", "[ODP] decision = " + optDecision.toString());
             });
+        });
+    }
+
+    static public void samplesForDoc_ODP_sync(Context context) {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("VivZyCGPHY369D4z8T9yG").build(context);
+
+        boolean returnInMainThread = false;
+
+        optimizelyManager.initialize(context, null, returnInMainThread, (OptimizelyClient client) -> {
+            OptimizelyUserContext userContext = client.createUserContext("user_123");
+            userContext.fetchQualifiedSegments();
+
+            Log.d("Optimizely", "[ODP] segments = " + userContext.getQualifiedSegments());
+            OptimizelyDecision optDecision = userContext.decide("odp-flag-1");
+            Log.d("Optimizely", "[ODP] decision = " + optDecision.toString());
         });
     }
 

@@ -20,6 +20,9 @@ import android.os.Build;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.annotation.TargetApi;
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -32,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -44,8 +48,10 @@ import java.util.concurrent.Executors;
  */
 public class DefaultUserProfileService implements UserProfileService {
 
-    @NonNull private final UserProfileCache userProfileCache;
-    @NonNull private final Logger logger;
+    @NonNull
+    private final UserProfileCache userProfileCache;
+    @NonNull
+    private final Logger logger;
 
     DefaultUserProfileService(@NonNull UserProfileCache userProfileCache, @NonNull Logger logger) {
         this.userProfileCache = userProfileCache;
@@ -62,20 +68,20 @@ public class DefaultUserProfileService implements UserProfileService {
      */
     public static UserProfileService newInstance(@NonNull String projectId, @NonNull Context context) {
         UserProfileCache userProfileCache = new UserProfileCache(
-                new UserProfileCache.DiskCache(
-                    new Cache(
-                        context,
-                        LoggerFactory.getLogger(Cache.class)
-                    ),
-                    Executors.newSingleThreadExecutor(),
-                    LoggerFactory.getLogger(UserProfileCache.DiskCache.class),
-                    projectId
+            new UserProfileCache.DiskCache(
+                new Cache(
+                    context,
+                    LoggerFactory.getLogger(Cache.class)
                 ),
-                LoggerFactory.getLogger(UserProfileCache.class),
-                new ConcurrentHashMap<String, Map<String, Object>>());
+                Executors.newSingleThreadExecutor(),
+                LoggerFactory.getLogger(UserProfileCache.DiskCache.class),
+                projectId
+            ),
+            LoggerFactory.getLogger(UserProfileCache.class),
+            new ConcurrentHashMap<String, Map<String, Object>>());
 
         return new DefaultUserProfileService(userProfileCache,
-                LoggerFactory.getLogger(DefaultUserProfileService.class));
+            LoggerFactory.getLogger(DefaultUserProfileService.class));
     }
 
     public interface StartCallback {
@@ -83,30 +89,35 @@ public class DefaultUserProfileService implements UserProfileService {
     }
 
     public void startInBackground(final StartCallback callback) {
-                final DefaultUserProfileService userProfileService = this;
+        startInBackground(callback, true);
+    }
 
-                AsyncTask<Void, Void, UserProfileService> initUserProfileTask = new AsyncTask<Void, Void, UserProfileService>() {
+    public void startInBackground(final StartCallback callback, boolean returnOnMainThread) {
+        final DefaultUserProfileService userProfileService = this;
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+
+        Runnable initUserProfileTask = new Runnable() {
             @Override
-            protected UserProfileService doInBackground(Void[] params) {
-                                userProfileService.start();
-                                return userProfileService;
-            }
-            @Override
-            protected void onPostExecute(UserProfileService userProfileService) {
+            public void run() {
+                userProfileService.start();
+
                 if (callback != null) {
-                    callback.onStartComplete(userProfileService);
+                    if (returnOnMainThread) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onStartComplete(userProfileService);
+                            }
+                        });
+                    } else {
+                        callback.onStartComplete(userProfileService);
+                    }
                 }
             }
         };
 
-        try {
-            initUserProfileTask.executeOnExecutor(Executors.newSingleThreadExecutor());
-        }
-        catch (Exception e) {
-            logger.error("Error loading user profile service from AndroidUserProfileServiceDefault");
-            callback.onStartComplete(null);
-        }
-
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(initUserProfileTask);
     }
 
     /**
@@ -146,15 +157,15 @@ public class DefaultUserProfileService implements UserProfileService {
     public void removeInvalidExperiments(Set<String> validExperiments) {
         try {
             userProfileCache.removeInvalidExperiments(validExperiments);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error calling userProfileCache to remove invalid experiments", e);
         }
     }
+
     /**
      * Remove a decision from a user profile.
      *
-     * @param userId the user ID of the decision to remove
+     * @param userId       the user ID of the decision to remove
      * @param experimentId the experiment ID of the decision to remove
      */
     public void remove(String userId, String experimentId) {

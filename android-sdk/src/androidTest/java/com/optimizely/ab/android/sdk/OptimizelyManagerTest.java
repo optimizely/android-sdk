@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SdkSuppress;
@@ -48,6 +49,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -58,6 +61,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -359,7 +363,7 @@ public class OptimizelyManagerTest {
         UserProfileService userProfileService = mock(UserProfileService.class);
         OptimizelyStartListener startListener = mock(OptimizelyStartListener.class);
 
-        optimizelyManager.setOptimizelyStartListener(startListener);
+        optimizelyManager.setOptimizelyStartListener(startListener, true);
         optimizelyManager.injectOptimizely(context, userProfileService, minDatafile);
         try {
             executor.awaitTermination(5, TimeUnit.SECONDS);
@@ -750,6 +754,72 @@ public class OptimizelyManagerTest {
         verify(manager).initialize(eq(context), eq(defaultDatafile), eq(true),  eq(false));
     }
 
+    @Test
+    public void initializeAsyncCallbackInBackgroundThread() throws InterruptedException {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder(testProjectId)
+            .build(InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        // by default, async init returns in main thread.
+        // this parameter should be set to false to overrule it.
+        boolean returnInMainThread = false;
+
+        optimizelyManager.initialize(
+            InstrumentationRegistry.getInstrumentation().getContext(),
+            null,
+            returnInMainThread,
+            (client) -> {
+                Log.d("Optly", "[TESTING] " + Thread.currentThread().getName());
+                try {
+                    assertNotEquals(
+                        "OptimizelyStartListener should be called in a background thread",
+                        "main", Thread.currentThread().getName()
+                    );
+                    latch.countDown();
+                } catch (AssertionError e) {
+                    // we need catch and silence this assertion error, otherwise it will be caught in OptimizeManager,
+                    // and give a wrong error message. The failure will be detected with the latch timeout below.
+                }
+            }
+        );
+
+        boolean completed = latch.await(1, TimeUnit.SECONDS);
+        if (!completed) {
+            fail("OptimizelyStartListener thread checking failed");
+        }
+    }
+
+    @Test
+    public void initializeAsyncCallbackInMainThread() throws InterruptedException {
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder(testProjectId)
+            .build(InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        optimizelyManager.initialize(
+            InstrumentationRegistry.getInstrumentation().getContext(),
+            null,
+            (client) -> {
+                Log.d("Optly", "[TESTING] " + Thread.currentThread().getName());
+                try {
+                    assertEquals(
+                        "OptimizelyStartListener should be called in a background thread",
+                        "main", Thread.currentThread().getName()
+                    );
+                    latch.countDown();
+                } catch (AssertionError e) {
+                    // we need catch and silence this assertion error, otherwise it will be caught in OptimizeManager,
+                    // and give a wrong error message. The failure will be detected with the latch timeout below.
+                }
+            }
+        );
+
+        boolean completed = latch.await(1, TimeUnit.SECONDS);
+        if (!completed) {
+            fail("OptimizelyStartListener thread checking failed");
+        }
+    }
 
     // Utils
 

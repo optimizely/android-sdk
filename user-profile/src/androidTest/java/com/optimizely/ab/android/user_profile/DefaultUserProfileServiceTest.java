@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +40,8 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DefaultUserProfileService}
@@ -99,6 +102,20 @@ public class DefaultUserProfileServiceTest {
     @After
     public void teardown() {
         cache.delete(diskCache.getFileName());
+    }
+
+    @Test
+    public void startInBackground() throws InterruptedException {
+        DefaultUserProfileService ups = spy(DefaultUserProfileService.class);
+
+        CountDownLatch latch = new CountDownLatch(1);
+        ups.startInBackground((u) -> {
+            latch.countDown();
+        });
+
+        latch.await(3, TimeUnit.SECONDS);
+
+        verify(ups).start();
     }
 
     @Test
