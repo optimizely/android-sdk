@@ -182,7 +182,8 @@ public class OptimizelyManager {
     }
 
     void setOptimizelyStartListener(@Nullable OptimizelyStartListener optimizelyStartListener) {
-        setOptimizelyStartListener(optimizelyStartListener, true);
+        boolean returnInMainThread = true;
+        setOptimizelyStartListener(optimizelyStartListener, returnInMainThread);
     }
 
     private void notifyStartListener() {
