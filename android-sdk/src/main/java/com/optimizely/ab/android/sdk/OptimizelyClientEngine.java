@@ -49,7 +49,7 @@ public class OptimizelyClientEngine {
      *
      * @param context any valid Android {@link Context}
      * @return String value of client engine
-     * @deprecated Consider using {@link #getClientEngineNameFromContext(Context, Integer, OptimizelyStartListener)}
+     * @deprecated Consider using {@link #getClientEngineNameFromContext(Context)}
      */
     @Deprecated
     public static EventBatch.ClientEngine getClientEngineFromContext(@NonNull Context context) {
