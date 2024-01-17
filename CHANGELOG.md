@@ -1,5 +1,62 @@
 # Optimizely Android X SDK Changelog
 
+
+## 4.0.0
+January 17th, 2024
+
+### New Features
+
+The 4.0.0 release introduces a new primary feature, [Advanced Audience Targeting]( https://docs.developers.optimizely.com/feature-experimentation/docs/optimizely-data-platform-advanced-audience-targeting) enabled through integration with [Optimizely Data Platform (ODP)](https://docs.developers.optimizely.com/optimizely-data-platform/docs)
+([#431](https://github.com/optimizely/android-sdk/pull/431),
+[#440](https://github.com/optimizely/android-sdk/pull/440),
+[#444](https://github.com/optimizely/android-sdk/pull/444),
+[#445](https://github.com/optimizely/android-sdk/pull/445),
+[#448](https://github.com/optimizely/android-sdk/pull/448),
+[#470](https://github.com/optimizely/android-sdk/pull/470)).
+
+You can use ODP, a high-performance [Customer Data Platform (CDP)]( https://www.optimizely.com/optimization-glossary/customer-data-platform/), to easily create complex real-time segments (RTS) using first-party and 50+ third-party data sources out of the box. You can create custom schemas that support the user attributes important for your business, and stitch together user behavior done on different devices to better understand and target your customers for personalized user experiences. ODP can be used as a single source of truth for these segments in any Optimizely or 3rd party tool.
+
+With ODP accounts integrated into Optimizely projects, you can build audiences using segments pre-defined in ODP. The SDK will fetch the segments for given users and make decisions using the segments. For access to ODP audience targeting in your Feature Experimentation account, please contact your Customer Success Manager.
+
+This version includes the following changes:
+
+* New API added to `OptimizelyUserContext`:
+	- `fetchQualifiedSegments()`: this API will retrieve user segments from the ODP server. The fetched segments will be used for audience evaluation. The fetched data will be stored in the local cache to avoid repeated network delays.
+	- When an `OptimizelyUserContext` is created, the SDK will automatically send an identify request to the ODP server to facilitate observing user activities.
+
+* New APIs added to `OptimizelyClient`:
+	- `sendODPEvent()`: customers can build/send arbitrary ODP events that will bind user identifiers and data to user profiles in ODP.
+	- `createUserContext()` with anonymous user IDs: user-contexts can be created without a userId. The SDK will create and use a persistent `VUID` specific to a device when userId is not provided.
+
+For details, refer to our documentation pages:
+
+* [Advanced Audience Targeting](https://docs.developers.optimizely.com/feature-experimentation/docs/optimizely-data-platform-advanced-audience-targeting)
+
+* [Client SDK Support](https://docs.developers.optimizely.com/feature-experimentation/v1.0/docs/advanced-audience-targeting-for-client-side-sdks)
+
+* [Initialize Android SDK](https://docs.developers.optimizely.com/feature-experimentation/docs/initialize-sdk-android)
+
+* [OptimizelyUserContext Android SDK](https://docs.developers.optimizely.com/feature-experimentation/docs/optimizelyusercontext-android)
+
+* [Advanced Audience Targeting segment qualification methods](https://docs.developers.optimizely.com/feature-experimentation/docs/advanced-audience-targeting-segment-qualification-methods-android)
+
+* [Send Optimizely Data Platform data using Advanced Audience Targeting](https://docs.developers.optimizely.com/feature-experimentation/docs/send-odp-data-using-advanced-audience-targeting-android)
+
+### Breaking Changes
+
+* `ODPManager` in the SDK is enabled by default. Unless an ODP account is integrated into the Optimizely projects, most `ODPManager` functions will be ignored. If needed, `ODPManager` can be disabled when `OptimizelyClient` is instantiated.
+* minimum Android API level requirements upgraded to 21 or higher.
+
+### Bug Fixes
+* support arbitrary client names to be included in logx and odp events. ([#459](https://github.com/optimizely/android-sdk/pull/459)).
+* Added catch block to capture resource not found exception. ([#460](https://github.com/optimizely/android-sdk/pull/460)).
+* Added a proguard rule to suppress warning for java.beans.Transient. Upgraded Java to 11. ([#471](https://github.com/optimizely/android-sdk/pull/471)).
+* Added a proguard rule to keep ODPEvent and added sample codes for ODP. ([#456](https://github.com/optimizely/android-sdk/pull/456)).
+
+### Functionality Enhancements
+- Update Github Issue Templates ([#461](https://github.com/optimizely/android-sdk/pull/461))
+
+
 ## 4.0.0-beta3
 September 20th, 2023
 
@@ -215,7 +272,7 @@ Using Java SDK 3.7.0
 September 30th, 2020
 
 - This build has support for audience evaluation by version.  It also supports number 'greater than or equal to' and 'less than or equal to'.
-- This build also supports getting the current config string.  
+- This build also supports getting the current config string.
 
 For a complete list see the [release notes](https://github.com/optimizely/java-sdk/releases/tag/3.6.0) for java sdk 3.6.0
 
@@ -224,7 +281,7 @@ Using Java SDK 3.6.0
 ## 3.6.0
 July 13th, 2020
 
-This build has support for Feature JSON.  It also includes an update to the test application 
+This build has support for Feature JSON.  It also includes an update to the test application
 with feature flag example and package level log setting.
 
 Using Java SDK 3.5.0
@@ -352,10 +409,10 @@ This minor release updates the SDK to use the Optimizely Java SDK 3.1.0 which in
 ## 3.0.1
 April 23, 2019
 
-This patch release fixes some git hub issues mentioned below.  
+This patch release fixes some git hub issues mentioned below.
 
 ### Bug Fixes
-* The Logger security exception is handled a little more cleanly for logging. ([#270](https://github.com/optimizely/android-sdk/pull/270)) 
+* The Logger security exception is handled a little more cleanly for logging. ([#270](https://github.com/optimizely/android-sdk/pull/270))
 * There was the possibility to start too many intents for event handling. ([#268](https://github.com/optimizely/android-sdk/pull/268))
 * The proguard rules have been cleaned up and tested. ([#266](https://github.com/optimizely/android-sdk/pull/266))
 * This also includes using Optimizely Java SDK 3.0.1.  The Java SDK patch allows for using the Optimizely Android aar with older versions of org.json which are included in the android framework.
@@ -421,7 +478,7 @@ This is the release candidate for the 3.0 SDK, which includes a number of improv
 
 ### New Features
 * Support for number-valued and boolean-valued attributes. ([#213](https://github.com/optimizely/java-sdk/pull/213))
-* Support for audiences with new match conditions for attribute values, including “substring” and “exists” matches for strings; “greater than”, “less than”, exact, and “exists” matches for numbers; and “exact”, and “exists” matches for booleans. 
+* Support for audiences with new match conditions for attribute values, including “substring” and “exists” matches for strings; “greater than”, “less than”, exact, and “exists” matches for numbers; and “exact”, and “exists” matches for booleans.
 * Built-in datafile version compatibility checks so that SDKs will not initialize with a newer datafile it is not compatible with. ([#209](https://github.com/optimizely/java-sdk/pull/209))
 * Audience combinations within an experiment are unofficially supported in this release.
 
@@ -435,7 +492,7 @@ This is the release candidate for the 3.0 SDK, which includes a number of improv
 * fix for exact match when dealing with integers and doubles.  Created a new Numeric match type.
 * make a copy of attributes passed in to avoid any concurrency problems. Addresses GitHub issue in Optimizely Andriod SDK.
 * allow single root node for audience.conditions, typedAudience.conditions, and Experiment.audienceCombinations.
- 
+
 ## 3.0.0-RC
 November 9, 2018
 
@@ -443,10 +500,10 @@ This is a RC candidate for major release 3.0.0 with support of new audience matc
 ### New Features
 * Support for number-valued and boolean-valued attributes. ([#213](https://githu
 b.com/optimizely/java-sdk/pull/213))
-* Support for audiences with new match conditions for attribute values, including “substring” and “exists” matches for strings; “greater than”, “less than”, exact, and “exists” matches for numbers; and “exact”, and “exists” matches for booleans. 
+* Support for audiences with new match conditions for attribute values, including “substring” and “exists” matches for strings; “greater than”, “less than”, exact, and “exists” matches for numbers; and “exact”, and “exists” matches for booleans.
 * Built-in datafile version compatibility checks so that SDKs will not initialize with a newer datafile it is not compatible with. ([#209](https://github.com/op
 timizely/java-sdk/pull/209))
-* Audience combinations within an experiment are unofficially supported in this 
+* Audience combinations within an experiment are unofficially supported in this
 release.
 
 ### Breaking Changes
@@ -479,7 +536,7 @@ Update credits
 ## 2.1.0
 August 2nd, 2018
 
-This release is the 2.x general availability launch of the Android SDK, which includes a number of significant new features that are now stable and fully supported. [Feature Management](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#feature-introduction) is now generally available, which introduces  new APIs and which replaces the SDK's variable APIs (`getVariableBoolean`, etc.) with the feature variable APIs (`getFeatureVariableBoolean`, etc.).  
+This release is the 2.x general availability launch of the Android SDK, which includes a number of significant new features that are now stable and fully supported. [Feature Management](https://developers.optimizely.com/x/solutions/sdks/reference/?language=android#feature-introduction) is now generally available, which introduces  new APIs and which replaces the SDK's variable APIs (`getVariableBoolean`, etc.) with the feature variable APIs (`getFeatureVariableBoolean`, etc.).
 
 The primary difference between the new Feature Variable APIs and the older, Variable APIs is that they allow you to link your variables to a Feature (a new type of entity defined in the Optimizely UI) and to a feature flag in your application. This in turn allows you to run Feature Tests and Rollouts on both your Features and Feature Variables. For complete details of the Feature Management APIs, see the "New Features" section below.
 
@@ -518,7 +575,7 @@ optimizelyManager.initialize(this, new OptimizelyStartListener() {
 ```
 
 ### Deprecations
-* Version 2.1.0 deprecates the Variable APIs: `getVariableBoolean`, `getVariableFloat`, `getVariableInteger`, and `getVariableString` 
+* Version 2.1.0 deprecates the Variable APIs: `getVariableBoolean`, `getVariableFloat`, `getVariableInteger`, and `getVariableString`
 
 * Replace use of the Variable APIs with Feature Management's Feature Variable APIs, described above
 
@@ -633,7 +690,7 @@ April 25, 2018
 
 - Release 1.6.1
 
-This is a patch release for 1.6.0 and 1.5.1 Optimizely SDKs.  
+This is a patch release for 1.6.0 and 1.5.1 Optimizely SDKs.
 
 ### Bug Fixes
 * Fix for the following issue:

@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.optimizely.ab:android-sdk:3.13.4'
+	implementation 'com.optimizely.ab:android-sdk:4.0.0'
 }
 ```
 
@@ -45,12 +45,12 @@ OptimizelyManager optimizelyManager = OptimizelyManager.builder()
             .withSDKKey("my_sdk_key")
             .withDatafileDownloadInterval(TimeUnit.MINUTES.toSeconds(15))
             .build(getApplicationContext());
-            
+
 optimizelyManager.initialize(this, null, (OptimizelyClient optimizely) -> {
 	OptimizelyClient optimizely = optimizelyManager.getOptimizely();
-	
+
 	Variation variation = optimizely.activate("background_experiment", userId);
-	
+
 	optimizely.track("sample_conversion", userId);
 });
 
@@ -104,11 +104,11 @@ This project includes 5 library modules and a test app.
 
 ### Android Studio
 
-Android Studio is an IDE that wraps gradle. Everything you can do in Android Studio can be done from the command line tools.  
+Android Studio is an IDE that wraps gradle. Everything you can do in Android Studio can be done from the command line tools.
 
 You can import this project into Android Studio by opening Android Studio and selecting `Import Project` from the first dialog or from the `File` menu.  Simply select the project's root `build.gradle` file and Android Studio will do the rest.
 
-Tests can be run by right clicking the file in the project pane or by clicking the method name in source and selecting run.  You will be prompted to create an AVD or connect a device if one isn't connected.  
+Tests can be run by right clicking the file in the project pane or by clicking the method name in source and selecting run.  You will be prompted to create an AVD or connect a device if one isn't connected.
 
 ### Contributing
 
