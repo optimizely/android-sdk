@@ -29,11 +29,29 @@ import com.optimizely.ab.event.internal.payload.EventBatch;
 public class OptimizelyClientEngine {
 
     /**
+     * Get client engine name for current UI mode type
+     *
+     * @param context any valid Android {@link Context}
+     * @return client engine name ("android-sdk" or "android-tv-sdk")
+     */
+    public static String getClientEngineNameFromContext(@NonNull Context context) {
+        UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+
+        if (uiModeManager != null && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
+            return "android-tv-sdk";
+        }
+
+        return "android-sdk";
+    }
+
+    /**
      * Get client engine value for current UI mode type
      *
      * @param context any valid Android {@link Context}
      * @return String value of client engine
+     * @deprecated Consider using {@link #getClientEngineNameFromContext(Context)}
      */
+    @Deprecated
     public static EventBatch.ClientEngine getClientEngineFromContext(@NonNull Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
 

@@ -167,7 +167,7 @@ public class OptimizelyManagerTest {
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         EventProcessor eventProcessor = mock(EventProcessor.class);
         OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, 3600L, datafileHandler, null, 3600L,
-                eventHandler, eventProcessor, null, null, null, null, null);
+                eventHandler, eventProcessor, null, null, null, null, null, null, null);
         /*
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
@@ -226,7 +226,7 @@ public class OptimizelyManagerTest {
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         EventProcessor eventProcessor = mock(EventProcessor.class);
         final OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, 3600L, datafileHandler, null, 3600L,
-                eventHandler, eventProcessor, null, null, null, null, null);
+                eventHandler, eventProcessor, null, null, null, null, null, null, null);
 
         /*
          * Scenario#1: when datafile is not Empty
@@ -498,7 +498,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -531,7 +531,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -564,7 +564,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -597,7 +597,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null);
 
         doAnswer(
                 (Answer<Object>) invocation -> {
@@ -629,7 +629,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -662,7 +662,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -696,7 +696,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -729,7 +729,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = spy(new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null));
+                null, null, null, null, null, null, null, null, null));
 
         datafileHandler.removeSavedDatafile(context, manager.getDatafileConfig());
         OptimizelyClient client = manager.initialize(context, R.raw.datafile, downloadToCache, updateConfigOnNewDatafile);
@@ -746,7 +746,7 @@ public class OptimizelyManagerTest {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         OptimizelyManager manager = spy(new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null));
+                null, null, null, null, null, null, null, null, null));
 
         datafileHandler.removeSavedDatafile(context, manager.getDatafileConfig());
         OptimizelyClient client = manager.initialize(context, R.raw.datafile);
