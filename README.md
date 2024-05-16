@@ -58,7 +58,7 @@ optimizelyManager.initialize(this, null, (OptimizelyClient optimizely) -> {
 
 ## Use the Android SDK
 
-See the Optimizely Feature Experimentation [developer documentation](https://docs.developers.optimizely.com/experimentation/v4.0-full-stack/docs/android-sdk) to learn how to set up your first Android project and use the SDK.
+See the Optimizely Feature Experimentation documentation [developer documentation](https://docs.developers.optimizely.com/experimentation/v4.0-full-stack/docs/android-sdk) to learn how to set up your first Android project and use the SDK.
 
 ## Architecture
 
@@ -84,7 +84,7 @@ This project includes 5 library modules and a test app.
 
 ## SDK Development
 
-### Command Line
+### Command Line 
 
 1. Clone the repo
   * `git clone git@github.com:optimizely/android-sdk.git`
