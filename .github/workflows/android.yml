@@ -1,7 +1,7 @@
 name: Android CI
 on:
   push:
-    branches: '*'
+    branches: [ muzahid/test-fsc ]
     tags:
       - '*'
   pull_request:
