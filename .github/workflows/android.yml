@@ -1,11 +1,11 @@
 name: Android CI
 on:
   push:
-    branches: [ master ]
+    branches: '*'
     tags:
       - '*'
   pull_request:
-    branches: [ master ]
+    branches: '*'
   workflow_dispatch:
     inputs:
       SNAPSHOT:
@@ -40,12 +40,12 @@ jobs:
         ref: 'master'
       
     - name: set SDK Branch if PR
-      if: ${{ github.event_name == 'pull_request' }}
-      env:
+      env:  
         HEAD_REF: ${{ github.head_ref }}
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
-        echo "SDK_BRANCH=${{ HEAD_REF }}" >> $GITHUB_ENV
-        echo "TRAVIS_BRANCH=${{ HEAD_REF }}" >> $GITHUB_ENV
+        echo "SDK_BRANCH=${{ env.HEAD_REF }}" >> $GITHUB_ENV
+        echo "TRAVIS_BRANCH=${{ env.HEAD_REF }}" >> $GITHUB_ENV
     - name: set SDK Branch if not pull request
       if: ${{ github.event_name != 'pull_request' }}
       run: |
