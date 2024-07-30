@@ -120,7 +120,6 @@ public class OptimizelyClient {
      *
      * @param attrs      Attributes that will be combined with default attributes.
      *
-     *
      * @return           A new map of both the default attributes and attributes passed in.
      */
     private Map<String, ?> getAllAttributes(@NonNull Map<String, ?> attrs) {

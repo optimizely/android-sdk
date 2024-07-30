@@ -66,7 +66,7 @@ open class ODPSegmentClient(private val client: ClientForODPOnly, private val lo
             } catch (e: Exception) {
                 logger.error("Error making ODP segment request", e)
                 // return@Request null
-                throw e;
+                throw e
             } finally {
                 if (urlConnection != null) {
                     try {
