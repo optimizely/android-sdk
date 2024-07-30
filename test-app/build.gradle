@@ -19,8 +19,8 @@ android {
     buildTypes {
         debug {
             // enable proguard for debug mode (keep both of these to detect issues while testing)
-            minifyEnabled false
-            debuggable true
+            minifyEnabled true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'test-app-proguard-rules.pro'
         }
         release {
