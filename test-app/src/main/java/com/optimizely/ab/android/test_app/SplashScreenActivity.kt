@@ -52,19 +52,17 @@ class SplashScreenActivity : AppCompatActivity() {
         val eventRescheduler = EventRescheduler()
         applicationContext.registerReceiver(eventRescheduler, IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION))
 
-//        if (INITIALIZE_ASYNCHRONOUSLY) {
-//            optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->
-//                addNotificationListeners()
-//                startVariation()
-//            }
-//        } else {
-//            optimizelyManager!!.initialize(this, R.raw.datafile)
-//            addNotificationListeners()
-//            startVariation()
-//        }
+        if (INITIALIZE_ASYNCHRONOUSLY) {
+            optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->
+                addNotificationListeners()
+                startVariation()
+            }
+        } else {
+            optimizelyManager!!.initialize(this, R.raw.datafile)
+            addNotificationListeners()
+            startVariation()
+        }
 
-//        APISamplesInJava.samplesForDoc_ODP_sync(this)
-        APISamplesInJava.samplesForDoc_ODP_network_errors(this)
     }
 
     private fun addNotificationListeners() {
