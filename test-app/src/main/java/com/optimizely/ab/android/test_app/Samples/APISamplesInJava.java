@@ -861,6 +861,7 @@ public class APISamplesInJava {
     }
 
     static public void samplesForDoc_ODP_async(Context context) {
+        Log.d("Optimizely", "[ODP] samplesForDoc_ODP_async");
         OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("VivZyCGPHY369D4z8T9yG").build(context);
         optimizelyManager.initialize(context, null, (OptimizelyClient client) -> {
             OptimizelyUserContext userContext = client.createUserContext("user_123");
@@ -873,6 +874,7 @@ public class APISamplesInJava {
     }
 
     static public void samplesForDoc_ODP_sync(Context context) {
+        Log.d("Optimizely", "[ODP] samplesForDoc_ODP_sync");
         OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("VivZyCGPHY369D4z8T9yG").build(context);
 
         boolean returnInMainThread = false;
@@ -880,6 +882,28 @@ public class APISamplesInJava {
         optimizelyManager.initialize(context, null, returnInMainThread, (OptimizelyClient client) -> {
             OptimizelyUserContext userContext = client.createUserContext("user_123");
             userContext.fetchQualifiedSegments();
+
+            Log.d("Optimizely", "[ODP] segments = " + userContext.getQualifiedSegments());
+            OptimizelyDecision optDecision = userContext.decide("odp-flag-1");
+            Log.d("Optimizely", "[ODP] decision = " + optDecision.toString());
+        });
+    }
+
+    static public void samplesForDoc_ODP_network_errors(Context context) {
+        Log.d("Optimizely", "[ODP] samplesForDoc_ODP_network_errors");
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder().withSDKKey("VivZyCGPHY369D4z8T9yG").build(context);
+
+        boolean returnInMainThread = false;
+
+        optimizelyManager.initialize(context, null, returnInMainThread, (OptimizelyClient client) -> {
+            optimizelyManager.getOptimizely().getODPManager().updateSettings("https://a.com", "any-key", Set.of("apple"));
+
+            OptimizelyUserContext userContext = client.createUserContext("user_123");
+            try {
+                userContext.fetchQualifiedSegments();
+            } catch (Exception e) {
+                Log.d("Optimizely", "[ODP] exception from SDK = " + e.getMessage());
+            }
 
             Log.d("Optimizely", "[ODP] segments = " + userContext.getQualifiedSegments());
             OptimizelyDecision optDecision = userContext.decide("odp-flag-1");

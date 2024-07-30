@@ -16,7 +16,7 @@ package com.optimizely.ab.android.odp
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import com.optimizely.ab.android.shared.Client
+import com.optimizely.ab.android.shared.ClientForODPOnly
 import com.optimizely.ab.android.shared.OptlyStorage
 import com.optimizely.ab.android.shared.WorkerScheduler
 import com.optimizely.ab.odp.ODPApiManager
@@ -33,7 +33,7 @@ open class DefaultODPApiManager(private val context: Context, timeoutForSegmentF
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var segmentClient = ODPSegmentClient(
-        Client(OptlyStorage(context), LoggerFactory.getLogger(Client::class.java)),
+        ClientForODPOnly(OptlyStorage(context), LoggerFactory.getLogger(ClientForODPOnly::class.java)),
         LoggerFactory.getLogger(ODPSegmentClient::class.java)
     )
     private val logger = LoggerFactory.getLogger(DefaultODPApiManager::class.java)
