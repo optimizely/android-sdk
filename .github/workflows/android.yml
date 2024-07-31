@@ -86,11 +86,11 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: set up JDK 17
+      - name: set up JDK version
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 17
+          java-version: 11
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
