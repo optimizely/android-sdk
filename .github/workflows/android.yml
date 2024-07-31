@@ -93,7 +93,7 @@ jobs:
           java-version: 11
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v2
   
       - name: Install required SDK components
         run: |
