@@ -78,6 +78,7 @@ public class OptimizelyClientTest {
         }
     }
 
+    @Test(expected=ArgumentsAreDifferent.class)
     public void testGoodActivation1() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
         optimizelyClient.activate("1", "1");
