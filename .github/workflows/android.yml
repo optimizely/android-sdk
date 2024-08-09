@@ -126,14 +126,14 @@ jobs:
           disable-animations: false
           script: echo "Generated AVD snapshot for caching."
 
-      # - name: run tests
-      #   uses: reactivecircus/android-emulator-runner@v2
-      #   with:
-      #     api-level: ${{ matrix.api-level }}
-      #     force-avd-creation: false
-      #     emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-      #     disable-animations: true
-      #     script: ./gradlew testAllModulesTravis
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: ./gradlew testAllModulesTravis
   publish:
     if: startsWith(github.ref, 'refs/tags/')
     uses: optimizely/android-sdk/.github/workflows/build.yml@master
