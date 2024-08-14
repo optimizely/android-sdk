@@ -118,7 +118,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          # arch: arm64-v8a  # Specify ARM architecture
+          # arch: arm64-v8a  # Specify ARM architecture 
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
