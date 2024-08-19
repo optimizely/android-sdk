@@ -40,10 +40,12 @@ jobs:
         ref: 'master'
       
     - name: set SDK Branch if PR
+      env:  
+        HEAD_REF: ${{ github.head_ref }}
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        echo "SDK_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
-        echo "TRAVIS_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
+        echo "SDK_BRANCH=${{ env.HEAD_REF }}" >> $GITHUB_ENV
+        echo "TRAVIS_BRANCH=${{ env.HEAD_REF }}" >> $GITHUB_ENV
     - name: set SDK Branch if not pull request
       if: ${{ github.event_name != 'pull_request' }}
       run: |
@@ -80,7 +82,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        api-level: [21, 26, 27, 29]
+        api-level: [21, 25, 26, 29]
     steps:
       - name: checkout
         uses: actions/checkout@v2
