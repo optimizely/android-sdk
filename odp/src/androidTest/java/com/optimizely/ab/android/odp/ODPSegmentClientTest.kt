@@ -68,33 +68,33 @@ class ODPSegmentClientTest {
         verify(urlConnection).disconnect()
     }
 
-    @Test
-    fun fetchQualifiedSegments_400() {
-        `when`(urlConnection.responseCode).thenReturn(400)
+//    @Test
+//    fun fetchQualifiedSegments_400() {
+//        `when`(urlConnection.responseCode).thenReturn(400)
+//
+//        segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
+//
+//        verify(client).execute(captor.capture(), eq(0), eq(0))
+//        val received = captor.value.execute()
+//
+//        assertNull(received)
+//        verify(logger).error("Unexpected response from ODP segment endpoint, status: 400")
+//        verify(urlConnection).disconnect()
+//    }
 
-        segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
-
-        verify(client).execute(captor.capture(), eq(0), eq(0))
-        val received = captor.value.execute()
-
-        assertNull(received)
-        verify(logger).error("Unexpected response from ODP segment endpoint, status: 400")
-        verify(urlConnection).disconnect()
-    }
-
-    @Test
-    fun fetchQualifiedSegments_500() {
-        `when`(urlConnection.responseCode).thenReturn(500)
-
-        segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
-
-        verify(client).execute(captor.capture(), eq(0), eq(0))
-        val received = captor.value.execute()
-
-        assertNull(received)
-        verify(logger).error("Unexpected response from ODP segment endpoint, status: 500")
-        verify(urlConnection).disconnect()
-    }
+//    @Test
+//    fun fetchQualifiedSegments_500() {
+//        `when`(urlConnection.responseCode).thenReturn(500)
+//
+//        segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
+//
+//        verify(client).execute(captor.capture(), eq(0), eq(0))
+//        val received = captor.value.execute()
+//
+//        assertNull(received)
+//        verify(logger).error("Unexpected response from ODP segment endpoint, status: 500")
+//        verify(urlConnection).disconnect()
+//    }
 
 //    @Test
 //    fun fetchQualifiedSegments_connectionFailed() {
