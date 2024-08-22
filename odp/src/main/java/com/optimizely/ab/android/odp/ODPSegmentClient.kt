@@ -62,13 +62,11 @@ open class ODPSegmentClient(private val client: ClientForODPOnly, private val lo
                 } else {
                     var errMsg = "Unexpected response from ODP segment endpoint, status: $status"
                     logger.error(errMsg)
-//                    return@Request null
-                    throw Exception(errMsg)
+                    return@Request null
                 }
             } catch (e: Exception) {
                 logger.error("Error making ODP segment request", e)
-                // return@Request null
-                throw e
+                return@Request null
             } finally {
                 if (urlConnection != null) {
                     try {
