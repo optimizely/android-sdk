@@ -15,7 +15,7 @@
 package com.optimizely.ab.android.odp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.optimizely.ab.android.shared.ClientForODPOnly
+import com.optimizely.ab.android.shared.Client
 import java.io.OutputStream
 import java.net.HttpURLConnection
 import org.junit.Assert.assertNull
@@ -34,9 +34,9 @@ import org.slf4j.Logger
 @RunWith(AndroidJUnit4::class)
 class ODPSegmentClientTest {
     private val logger = mock(Logger::class.java)
-    private val client = mock(ClientForODPOnly::class.java)
+    private val client = mock(Client::class.java)
     private val urlConnection = mock(HttpURLConnection::class.java)
-    private val captor = ArgumentCaptor.forClass(ClientForODPOnly.Request::class.java)
+    private val captor = ArgumentCaptor.forClass(Client.Request::class.java)
     private lateinit var segmentClient: ODPSegmentClient
 
     private val apiKey = "valid-key"

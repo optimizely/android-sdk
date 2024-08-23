@@ -15,7 +15,7 @@
 package com.optimizely.ab.android.odp
 
 import androidx.annotation.VisibleForTesting
-import com.optimizely.ab.android.shared.ClientForODPOnly
+import com.optimizely.ab.android.shared.Client
 import com.optimizely.ab.odp.parser.ResponseJsonParser
 import com.optimizely.ab.odp.parser.ResponseJsonParserFactory
 import org.slf4j.Logger
@@ -23,7 +23,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-open class ODPSegmentClient(private val client: ClientForODPOnly, private val logger: Logger) {
+open class ODPSegmentClient(private val client: Client, private val logger: Logger) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     open fun fetchQualifiedSegments(
@@ -32,7 +32,7 @@ open class ODPSegmentClient(private val client: ClientForODPOnly, private val lo
         payload: String
     ): List<String>? {
 
-        val request: ClientForODPOnly.Request<String> = ClientForODPOnly.Request {
+        val request: Client.Request<String> = Client.Request {
             var urlConnection: HttpURLConnection? = null
             try {
                 val url = URL(apiEndpoint)
