@@ -15,7 +15,7 @@
 package com.optimizely.ab.android.odp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.optimizely.ab.android.shared.ClientForODPOnly
+import com.optimizely.ab.android.shared.Client
 import java.io.OutputStream
 import java.net.HttpURLConnection
 import org.junit.Assert.assertNull
@@ -34,9 +34,9 @@ import org.slf4j.Logger
 @RunWith(AndroidJUnit4::class)
 class ODPSegmentClientTest {
     private val logger = mock(Logger::class.java)
-    private val client = mock(ClientForODPOnly::class.java)
+    private val client = mock(Client::class.java)
     private val urlConnection = mock(HttpURLConnection::class.java)
-    private val captor = ArgumentCaptor.forClass(ClientForODPOnly.Request::class.java)
+    private val captor = ArgumentCaptor.forClass(Client.Request::class.java)
     private lateinit var segmentClient: ODPSegmentClient
 
     private val apiKey = "valid-key"
@@ -68,45 +68,45 @@ class ODPSegmentClientTest {
         verify(urlConnection).disconnect()
     }
 
-//    @Test
-//    fun fetchQualifiedSegments_400() {
-//        `when`(urlConnection.responseCode).thenReturn(400)
-//
-//        segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
-//
-//        verify(client).execute(captor.capture(), eq(0), eq(0))
-//        val received = captor.value.execute()
-//
-//        assertNull(received)
-//        verify(logger).error("Unexpected response from ODP segment endpoint, status: 400")
-//        verify(urlConnection).disconnect()
-//    }
+    @Test
+    fun fetchQualifiedSegments_400() {
+        `when`(urlConnection.responseCode).thenReturn(400)
 
-//    @Test
-//    fun fetchQualifiedSegments_500() {
-//        `when`(urlConnection.responseCode).thenReturn(500)
-//
-//        segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
-//
-//        verify(client).execute(captor.capture(), eq(0), eq(0))
-//        val received = captor.value.execute()
-//
-//        assertNull(received)
-//        verify(logger).error("Unexpected response from ODP segment endpoint, status: 500")
-//        verify(urlConnection).disconnect()
-//    }
+        segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
 
-//    @Test
-//    fun fetchQualifiedSegments_connectionFailed() {
-//        `when`(urlConnection.responseCode).thenReturn(200)
-//
-//        apiEndpoint = "invalid-url"
-//        segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
-//
-//        verify(client).execute(captor.capture(), eq(0), eq(0))
-//        val received = captor.value.execute()
-//
-//        assertNull(received)
-//        verify(logger).error(contains("Error making ODP segment request"), any())
-//    }
+        verify(client).execute(captor.capture(), eq(0), eq(0))
+        val received = captor.value.execute()
+
+        assertNull(received)
+        verify(logger).error("Unexpected response from ODP segment endpoint, status: 400")
+        verify(urlConnection).disconnect()
+    }
+
+    @Test
+    fun fetchQualifiedSegments_500() {
+        `when`(urlConnection.responseCode).thenReturn(500)
+
+        segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
+
+        verify(client).execute(captor.capture(), eq(0), eq(0))
+        val received = captor.value.execute()
+
+        assertNull(received)
+        verify(logger).error("Unexpected response from ODP segment endpoint, status: 500")
+        verify(urlConnection).disconnect()
+    }
+
+    @Test
+    fun fetchQualifiedSegments_connectionFailed() {
+        `when`(urlConnection.responseCode).thenReturn(200)
+
+        apiEndpoint = "invalid-url"
+        segmentClient.fetchQualifiedSegments(apiKey, apiEndpoint, payload)
+
+        verify(client).execute(captor.capture(), eq(0), eq(0))
+        val received = captor.value.execute()
+
+        assertNull(received)
+        verify(logger).error(contains("Error making ODP segment request"), any())
+    }
 }
