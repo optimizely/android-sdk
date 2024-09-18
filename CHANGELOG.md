@@ -1,6 +1,13 @@
 # Optimizely Android X SDK Changelog
 
 
+## 4.0.4
+September 10th, 2024
+
+### Bug Fixes
+* R8 configuration breaks Gson use at runtime ([#493](https://github.com/optimizely/android-sdk/pull/493)).
+
+
 ## 4.0.0
 January 17th, 2024
 
