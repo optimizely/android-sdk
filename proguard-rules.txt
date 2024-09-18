@@ -85,5 +85,8 @@
 # Retain generic signatures of TypeToken and its subclasses with R8 version 3.0 and higher.
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+
+# Retain the name used by the Java SDK to determine whether Gson is usable as a config parser.
+-keepnames class com.google.gson.Gson
 ##---------------End: proguard configuration for Gson  ----------
 
