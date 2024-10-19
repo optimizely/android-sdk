@@ -72,6 +72,14 @@ public class OptlyStorage {
     public void saveString(String key, String value) {
         getWritablePrefs().putString(key, value).apply();
     }
+    /**
+     * Remove a string value
+     * @param key a String key
+     * @hide
+     */
+    public void removeString(String key) {
+        getWritablePrefs().remove(key).apply();
+    }
 
     /**
      * Get a string value

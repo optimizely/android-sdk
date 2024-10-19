@@ -94,8 +94,7 @@ public class OptimizelyManager {
 
     @NonNull private UserProfileService userProfileService;
     @Nullable private ODPManager odpManager;
-    @Nullable private final String vuid;
-
+    private VuidManager vuidManager;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
     private boolean returnInMainThreadFromAsyncInit = true;
 
@@ -117,7 +116,7 @@ public class OptimizelyManager {
                       @NonNull NotificationCenter notificationCenter,
                       @Nullable List<OptimizelyDecideOption> defaultDecideOptions,
                       @Nullable ODPManager odpManager,
-                      @Nullable String vuid,
+                      VuidManager vuidManger,
                       @Nullable String clientEngineName,
                       @Nullable String clientVersion) {
 
@@ -140,7 +139,7 @@ public class OptimizelyManager {
         this.eventProcessor = eventProcessor;
         this.errorHandler = errorHandler;
         this.userProfileService = userProfileService;
-        this.vuid = vuid;
+        this.vuidManager = vuidManger;
         this.odpManager = odpManager;
         this.notificationCenter = notificationCenter;
         this.defaultDecideOptions = defaultDecideOptions;
@@ -652,8 +651,7 @@ public class OptimizelyManager {
         builder.withDefaultDecideOptions(defaultDecideOptions);
         builder.withODPManager(odpManager);
         Optimizely optimizely = builder.build();
-
-        return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class), vuid);
+        return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class), vuidManager.getVuid());
     }
 
     @NonNull
@@ -792,8 +790,7 @@ public class OptimizelyManager {
         private int timeoutForODPSegmentFetchInSecs = 10;
         private int timeoutForODPEventDispatchInSecs = 10;
         private boolean odpEnabled = true;
-        private String vuid = null;
-
+        private boolean vuidEnabled = false;
         private String customSdkName = null;
         private String customSdkVersion = null;
 
@@ -821,6 +818,10 @@ public class OptimizelyManager {
 
         public Builder withSDKKey(String sdkKey) {
             this.sdkKey = sdkKey;
+            return this;
+        }
+        public Builder withVuidEnabled() {
+            this.vuidEnabled = true;
             return this;
         }
 
@@ -1036,10 +1037,10 @@ public class OptimizelyManager {
          * @param vuid a user-defined vuid value
          * @return this {@link Builder} instance
          */
-        public Builder withVuid(String vuid) {
-            this.vuid = vuid;
-            return this;
-        }
+//        public Builder withVuid(String vuid) {
+//            this.vuid = vuid;
+//            return this;
+//        }
 
         /**
          * Override the SDK name and version (for client SDKs like flutter-sdk wrapping the core android-sdk) to be included in events.
@@ -1120,9 +1121,7 @@ public class OptimizelyManager {
 
             }
 
-            if (vuid == null) {
-                vuid = VuidManager.Companion.getShared(context).getVuid();
-            }
+            VuidManager vuidManager = new VuidManager(context, vuidEnabled);
 
             ODPManager odpManager = null;
             if (odpEnabled) {
@@ -1130,7 +1129,7 @@ public class OptimizelyManager {
                 Map<String, Object> commonData = OptimizelyDefaultAttributes.buildODPCommonData(context, logger);
 
                 // Pass common identifiers for android-sdk only to java-core sdk. All ODP events will include these identifiers.
-                Map<String, String> commonIdentifiers = (vuid != null) ? Collections.singletonMap("vuid", vuid) : Collections.emptyMap();
+                Map<String, String> commonIdentifiers = (vuidEnabled) ? Collections.singletonMap("vuid", vuidManager.getVuid()) : Collections.emptyMap();
 
                 ODPApiManager odpApiManager = new DefaultODPApiManager(
                     context,
@@ -1165,7 +1164,7 @@ public class OptimizelyManager {
                     notificationCenter,
                     defaultDecideOptions,
                     odpManager,
-                    vuid,
+                    vuidManager,
                     customSdkName,
                     customSdkVersion
             );
