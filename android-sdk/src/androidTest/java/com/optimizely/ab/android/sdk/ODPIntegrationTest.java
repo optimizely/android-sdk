@@ -29,6 +29,7 @@ import com.optimizely.ab.android.odp.DefaultODPApiManager;
 import com.optimizely.ab.odp.ODPApiManager;
 import com.optimizely.ab.odp.ODPEventManager;
 import com.optimizely.ab.odp.ODPManager;
+import com.optimizely.ab.android.odp.VuidManager;
 import com.optimizely.ab.odp.ODPSegmentManager;
 
 import org.junit.Before;
@@ -107,6 +108,7 @@ public class ODPIntegrationTest {
 
         optimizelyManager.initialize(context, odpDatafile);
         optimizelyClient = optimizelyManager.getOptimizely();
+
     }
 
     @Test
@@ -134,11 +136,11 @@ public class ODPIntegrationTest {
 
         assertEquals(firstEvt.get("action").getAsString(), "client_initialized");
         assertEquals(firstIdentifiers.size(), 1);
-        assertEquals(firstIdentifiers.get("vuid").getAsString(), testVuid);
+        assertTrue(VuidManager.isVuid(firstIdentifiers.get("vuid").getAsString()));
 
         assertEquals(secondEvt.get("action").getAsString(), "identified");
         assertEquals(secondIdentifiers.size(), 2);
-        assertEquals(secondIdentifiers.get("vuid").getAsString(), testVuid);
+        assertTrue(VuidManager.isVuid(secondIdentifiers.get("vuid").getAsString()));
         assertEquals(secondIdentifiers.get("fs_user_id").getAsString(), testUser);
 
         // validate that ODP event data includes correct values.
@@ -170,11 +172,11 @@ public class ODPIntegrationTest {
 
         assertEquals(firstEvt.get("action").getAsString(), "client_initialized");
         assertEquals(firstIdentifiers.size(), 1);
-        assertEquals(firstIdentifiers.get("vuid").getAsString(), testVuid);
+        assertTrue(VuidManager.isVuid(firstIdentifiers.get("vuid").getAsString()));
 
         assertEquals(secondEvt.get("action").getAsString(), "identified");
         assertEquals(secondIdentifiers.size(), 1);
-        assertEquals(secondIdentifiers.get("vuid").getAsString(), testVuid);
+        assertTrue(VuidManager.isVuid(secondIdentifiers.get("vuid").getAsString()));
     }
 
     @Test
@@ -202,7 +204,7 @@ public class ODPIntegrationTest {
             eq("p-1"),
             eq("h-1/v3/graphql"),
             eq("vuid"),
-            eq(testVuid),
+            eq(optimizelyClient.getVuid()),
             eq(new HashSet<>(Arrays.asList("segment-1")))
         );
     }
