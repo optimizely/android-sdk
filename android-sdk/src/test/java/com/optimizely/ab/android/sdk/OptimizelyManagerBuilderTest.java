@@ -250,7 +250,7 @@ public class OptimizelyManagerBuilderTest {
             any(NotificationCenter.class),
             any(),                         // nullable (DefaultDecideOptions)
             any(ODPManager.class),
-            eq("test-vuid"),
+            any(VuidManager.class),
             any(),
             any());
     }
@@ -280,7 +280,7 @@ public class OptimizelyManagerBuilderTest {
             any(NotificationCenter.class),
             any(),                         // nullable (DefaultDecideOptions)
             isNull(),
-            eq("test-vuid"),
+            any(VuidManager.class),
             any(),
             any());
     }
