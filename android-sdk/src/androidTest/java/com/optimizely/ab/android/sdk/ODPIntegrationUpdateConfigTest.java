@@ -34,6 +34,7 @@ import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.odp.ODPApiManager;
 import com.optimizely.ab.odp.ODPEventManager;
 import com.optimizely.ab.odp.ODPManager;
+import com.optimizely.ab.android.odp.VuidManager;
 import com.optimizely.ab.odp.ODPSegmentManager;
 
 import org.junit.Before;
@@ -68,6 +69,7 @@ public class ODPIntegrationUpdateConfigTest {
 
     private OptimizelyManager optimizelyManager;
     private ODPManager odpManager;
+    private VuidManager vuidManager;
     private DefaultDatafileHandler datafileHandler;
     private NotificationCenter notificationCenter;
     private Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -101,6 +103,7 @@ public class ODPIntegrationUpdateConfigTest {
 
         datafileHandler = new DefaultDatafileHandler();
         notificationCenter = new NotificationCenter();
+        vuidManager = new VuidManager(context, true);
 
         optimizelyManager = new OptimizelyManager(
             null,
@@ -117,7 +120,7 @@ public class ODPIntegrationUpdateConfigTest {
             notificationCenter,
             null,
             odpManager,
-            "test-vuid",
+            vuidManager,
             null,
             null);
     }
