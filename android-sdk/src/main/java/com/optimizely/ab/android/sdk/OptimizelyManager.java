@@ -94,7 +94,7 @@ public class OptimizelyManager {
 
     @NonNull private UserProfileService userProfileService;
     @Nullable private ODPManager odpManager;
-    private VuidManager vuidManager;
+    @Nullable private VuidManager vuidManager;
     @Nullable private OptimizelyStartListener optimizelyStartListener;
     private boolean returnInMainThreadFromAsyncInit = true;
 
@@ -116,7 +116,7 @@ public class OptimizelyManager {
                       @NonNull NotificationCenter notificationCenter,
                       @Nullable List<OptimizelyDecideOption> defaultDecideOptions,
                       @Nullable ODPManager odpManager,
-                      VuidManager vuidManger,
+                      @Nullable VuidManager vuidManger,
                       @Nullable String clientEngineName,
                       @Nullable String clientVersion) {
 
