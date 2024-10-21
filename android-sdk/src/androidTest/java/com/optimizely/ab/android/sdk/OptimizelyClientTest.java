@@ -2222,7 +2222,7 @@ public class OptimizelyClientTest {
         Optimizely mockOptimizely = mock(Optimizely.class);
         when(mockOptimizely.isValid()).thenReturn(true);
 
-        OptimizelyClient optimizelyClient = new OptimizelyClient(mockOptimizely, logger, "any-vuid");
+        OptimizelyClient optimizelyClient = new OptimizelyClient(mockOptimizely, logger, "vuid_123");
 
         verify(mockOptimizely).sendODPEvent(
                 null,

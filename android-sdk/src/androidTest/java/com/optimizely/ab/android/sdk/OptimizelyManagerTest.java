@@ -40,6 +40,7 @@ import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
+import com.optimizely.ab.android.odp.VuidManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -166,8 +167,10 @@ public class OptimizelyManagerTest {
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         EventProcessor eventProcessor = mock(EventProcessor.class);
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        VuidManager vuidManager = new VuidManager(context, true);
         OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, 3600L, datafileHandler, null, 3600L,
-                eventHandler, eventProcessor, null, null, null, null, null, null, null);
+                eventHandler, eventProcessor, null, null, null, null, vuidManager, null, null);
         /*
          * Scenario#1: when datafile is not Empty
          * Scenario#2: when datafile is Empty
@@ -225,8 +228,10 @@ public class OptimizelyManagerTest {
         DatafileHandler datafileHandler = mock(DefaultDatafileHandler.class);
         EventHandler eventHandler = mock(DefaultEventHandler.class);
         EventProcessor eventProcessor = mock(EventProcessor.class);
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        VuidManager vuidManager = new VuidManager(context, true);
         final OptimizelyManager optimizelyManager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, 3600L, datafileHandler, null, 3600L,
-                eventHandler, eventProcessor, null, null, null, null, null, null, null);
+                eventHandler, eventProcessor, null, null, null, null, vuidManager, null, null);
 
         /*
          * Scenario#1: when datafile is not Empty
@@ -496,9 +501,9 @@ public class OptimizelyManagerTest {
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
+        VuidManager vuidManager = new VuidManager(context, true);
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, vuidManager, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -529,9 +534,9 @@ public class OptimizelyManagerTest {
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
+        VuidManager vuidManager = new VuidManager(context, true);
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, vuidManager, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -562,9 +567,9 @@ public class OptimizelyManagerTest {
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
+        VuidManager vuidManager = new VuidManager(context, true);
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, vuidManager, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -595,9 +600,9 @@ public class OptimizelyManagerTest {
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
+        VuidManager vuidManager = new VuidManager(context, true);
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, vuidManager, null, null);
 
         doAnswer(
                 (Answer<Object>) invocation -> {
@@ -627,9 +632,9 @@ public class OptimizelyManagerTest {
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
+        VuidManager vuidManager = new VuidManager(context, true);
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, vuidManager, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -660,9 +665,9 @@ public class OptimizelyManagerTest {
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
+        VuidManager vuidManager = new VuidManager(context, true);
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, vuidManager, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -694,9 +699,9 @@ public class OptimizelyManagerTest {
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
+        VuidManager vuidManager = new VuidManager(context, true);
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, vuidManager, null, null);
 
         doAnswer(
                 new Answer<Object>() {
@@ -727,9 +732,9 @@ public class OptimizelyManagerTest {
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
+        VuidManager vuidManager = new VuidManager(context, true);
         OptimizelyManager manager = spy(new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null, null, null));
+                null, null, null, null, null, null, vuidManager, null, null));
 
         datafileHandler.removeSavedDatafile(context, manager.getDatafileConfig());
         OptimizelyClient client = manager.initialize(context, R.raw.datafile, downloadToCache, updateConfigOnNewDatafile);
@@ -744,9 +749,9 @@ public class OptimizelyManagerTest {
         DefaultDatafileHandler datafileHandler = spy(new DefaultDatafileHandler());
         Logger logger = mock(Logger.class);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
+        VuidManager vuidManager = new VuidManager(context, true);
         OptimizelyManager manager = spy(new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
-                null, null, null, null, null, null, null, null, null));
+                null, null, null, null, null, null, vuidManager, null, null));
 
         datafileHandler.removeSavedDatafile(context, manager.getDatafileConfig());
         OptimizelyClient client = manager.initialize(context, R.raw.datafile);
