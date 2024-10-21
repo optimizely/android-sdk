@@ -100,7 +100,7 @@ public class ODPIntegrationTest {
 
         optimizelyManager = OptimizelyManager.builder()
             .withSDKKey(testSdkKey)
-            .withVuid(testVuid)
+            .withVuidEnabled()
             .withODPEventManager(odpEventManager)
             .withODPSegmentManager(odpSegmentManager)
             .build(context);

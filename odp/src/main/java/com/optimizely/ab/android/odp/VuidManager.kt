@@ -47,7 +47,7 @@ class VuidManager constructor(context: Context, isEnabled: Boolean = false) {
             return visitorId.startsWith("vuid_", ignoreCase = true)
         }
     }
-    
+
     @VisibleForTesting
     fun makeVuid(): String {
         val maxLength = 32 // required by ODP server

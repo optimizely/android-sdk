@@ -84,7 +84,7 @@ public class OptimizelyManagerIntervalTest {
     public void testBuildWithDatafileDownloadInterval() throws Exception {
         long goodNumber = 27;
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .withLogger(logger)
                 .withDatafileDownloadInterval(goodNumber, TimeUnit.MINUTES)
                 .build(mockContext);
@@ -113,7 +113,7 @@ public class OptimizelyManagerIntervalTest {
     public void testBuildWithDatafileDownloadIntervalDeprecated() throws Exception {
         long goodNumber = 1234L;
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .withLogger(logger)
                 .withDatafileDownloadInterval(goodNumber)      // deprecated
                 .build(mockContext);
@@ -142,7 +142,7 @@ public class OptimizelyManagerIntervalTest {
     public void testBuildWithEventDispatchInterval() throws Exception {
         long goodNumber = 100L;
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .withLogger(logger)
                 .withEventDispatchInterval(goodNumber, TimeUnit.SECONDS)
                 .build(mockContext);
@@ -186,7 +186,7 @@ public class OptimizelyManagerIntervalTest {
         long defaultEventFlushInterval = 30L;   // seconds
 
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .withLogger(logger)
                 .withEventDispatchRetryInterval(goodNumber, timeUnit)
                 .build(mockContext);
@@ -227,7 +227,7 @@ public class OptimizelyManagerIntervalTest {
     public void testBuildWithEventDispatchIntervalDeprecated() throws Exception {
         long goodNumber = 1234L;
         OptimizelyManager manager = OptimizelyManager.builder("1")
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .withLogger(logger)
                 .withEventDispatchInterval(goodNumber)      // deprecated
                 .build(mockContext);

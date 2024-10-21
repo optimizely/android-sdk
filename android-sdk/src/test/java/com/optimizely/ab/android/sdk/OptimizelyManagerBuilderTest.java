@@ -115,7 +115,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder()
                 .withSDKKey(testSdkKey)
                 .withDatafileDownloadInterval(interval, timeUnit)
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .build(mockContext);
 
         assertEquals(interval * 60L, manager.getDatafileDownloadInterval().longValue());
@@ -128,7 +128,7 @@ public class OptimizelyManagerBuilderTest {
                 .withSDKKey(testSdkKey)
                 .withDatafileDownloadInterval(901L, TimeUnit.SECONDS)
                 .withEventHandler(eventHandler)
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .build(mockContext);
 
         assertEquals(901L, manager.getDatafileDownloadInterval().longValue());
@@ -142,7 +142,7 @@ public class OptimizelyManagerBuilderTest {
                 .withSDKKey(testSdkKey)
                 .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
                 .withErrorHandler(errorHandler)
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .build(mockContext);
 
         manager.initialize(mockContext, minDatafile);
@@ -157,7 +157,7 @@ public class OptimizelyManagerBuilderTest {
                 .withSDKKey(testSdkKey)
                 .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
                 .withDatafileHandler(dfHandler)
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .build(mockContext);
 
         manager.initialize(mockContext, minDatafile);
@@ -172,7 +172,7 @@ public class OptimizelyManagerBuilderTest {
                 .withSDKKey(testSdkKey)
                 .withDatafileDownloadInterval(61L, TimeUnit.SECONDS)
                 .withUserProfileService(ups)
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .build(mockContext);
 
         manager.initialize(mockContext, minDatafile);
@@ -189,7 +189,7 @@ public class OptimizelyManagerBuilderTest {
                 .withSDKKey(testSdkKey)
                 .withDatafileHandler(mockDatafileHandler)
                 .withDatafileDownloadInterval(goodNumber, TimeUnit.MINUTES)
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .build(mockContext);
         OptimizelyManager spyManager = spy(manager);
         when(spyManager.isAndroidVersionSupported()).thenReturn(true);
@@ -205,7 +205,7 @@ public class OptimizelyManagerBuilderTest {
                 .withSDKKey(testSdkKey)
                 .withDatafileHandler(mockDatafileHandler)
                 .withDatafileDownloadInterval(-1, TimeUnit.MINUTES)
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .build(mockContext);
         OptimizelyManager spyManager = spy(manager);
         when(spyManager.isAndroidVersionSupported()).thenReturn(true);
@@ -220,7 +220,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder()
             .withSDKKey(testSdkKey)
             .withClientInfo("test-sdk", "test-version")
-            .withVuid("any-to-avoid-generate")
+            .withVuidEnabled()
             .build(mockContext);
         assertEquals(manager.getSdkName(mockContext), "test-sdk");
         assertEquals(manager.getSdkVersion(), "test-version");
@@ -232,7 +232,7 @@ public class OptimizelyManagerBuilderTest {
 
         OptimizelyManager manager = OptimizelyManager.builder()
                 .withSDKKey(testSdkKey)
-                .withVuid("test-vuid")
+                .withVuidEnabled()
                 .build(mockContext);
 
         verifyNew(OptimizelyManager.class).withArguments(
@@ -262,7 +262,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder()
             .withSDKKey(testSdkKey)
             .withODPDisabled()
-            .withVuid("test-vuid")
+            .withVuidEnabled()
             .build(mockContext);
 
         verifyNew(OptimizelyManager.class).withArguments(
@@ -293,7 +293,7 @@ public class OptimizelyManagerBuilderTest {
 
         OptimizelyManager manager = OptimizelyManager.builder()
                 .withSDKKey(testSdkKey)
-                .withVuid("any-to-avoid-generate")
+                .withVuidEnabled()
                 .build(mockContext);
 
         verifyNew(ODPManager.class).withArguments(
@@ -320,7 +320,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder()
             .withSDKKey(testSdkKey)
             .withODPSegmentCacheSize(1234)
-            .withVuid("any-to-avoid-generate")
+            .withVuidEnabled()
             .build(mockContext);
 
         verifyNew(ODPSegmentManager.class).withArguments(
@@ -337,7 +337,7 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder()
             .withSDKKey(testSdkKey)
             .withODPSegmentCacheTimeout(20, TimeUnit.MINUTES)
-            .withVuid("any-to-avoid-generate")
+            .withVuidEnabled()
             .build(mockContext);
 
         verifyNew(ODPSegmentManager.class).withArguments(
@@ -351,7 +351,7 @@ public class OptimizelyManagerBuilderTest {
     public void testBuildWithODP_defaultSegmentFetchTimeout() throws Exception {
         OptimizelyManager manager = OptimizelyManager.builder()
             .withSDKKey(testSdkKey)
-            .withVuid("any-to-avoid-generate")
+            .withVuidEnabled()
             .build(mockContext);
 
         assertEquals(ODPSegmentClient.Companion.getCONNECTION_TIMEOUT(), 10*1000);
@@ -364,7 +364,7 @@ public class OptimizelyManagerBuilderTest {
             .withSDKKey(testSdkKey)
             .withTimeoutForODPSegmentFetch(20)
             .withTimeoutForODPEventDispatch(30)
-            .withVuid("any-to-avoid-generate")
+            .withVuidEnabled()
             .build(mockContext);
 
         assertEquals(ODPSegmentClient.Companion.getCONNECTION_TIMEOUT(), 20*1000);
@@ -380,7 +380,7 @@ public class OptimizelyManagerBuilderTest {
 
         OptimizelyManager manager = OptimizelyManager.builder()
             .withSDKKey(testSdkKey)
-            .withVuid("test-vuid")
+            .withVuidEnabled()
             .build(mockContext);
 
         ArgumentCaptor<Map<String, Object>> captorData = ArgumentCaptor.forClass(Map.class);
