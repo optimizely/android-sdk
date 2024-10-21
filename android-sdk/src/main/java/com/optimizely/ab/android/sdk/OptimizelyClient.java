@@ -80,7 +80,7 @@ public class OptimizelyClient {
         So, we start with an empty map of default attributes until the manager is initialized.
         */
 
-        if (isValid()) {
+        if (isValid() && vuid != null && VuidManager.isVuid(vuid)) {
             // identifiers are empty here since vuid will be inserted by java-sdk core
             sendODPEvent(null, "client_initialized", null, null);
         }
