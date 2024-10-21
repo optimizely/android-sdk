@@ -36,27 +36,18 @@ class VuidManager constructor(context: Context, isEnabled: Boolean = false) {
     fun getVuid(): String? {
         return if (isEnabled) this._vuid else null
     }
+
     fun isEnabled(): Boolean {
         return isEnabled
     }
 
     companion object {
-//        @Volatile
-//        private var INSTANCE: VuidManager? = null
-
-        @Synchronized
-//        fun getShared(context: Context): VuidManager = INSTANCE ?: VuidManager(context).also { INSTANCE = it }
-
+        @JvmStatic
         fun isVuid(visitorId: String): Boolean {
             return visitorId.startsWith("vuid_", ignoreCase = true)
         }
-
-//        @VisibleForTesting
-//        fun removeSharedForTesting() {
-//            INSTANCE = null
-//        }
     }
-
+    
     @VisibleForTesting
     fun makeVuid(): String {
         val maxLength = 32 // required by ODP server

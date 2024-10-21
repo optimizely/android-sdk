@@ -13,13 +13,14 @@
 // limitations under the License.
 
 package com.optimizely.ab.android.odp
-
+import com.optimizely.ab.android.shared.OptlyStorage
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
@@ -37,10 +38,8 @@ class VuidManagerTest {
     fun setUp() {
         // remove vuid storage
         cleanSharedPrefs()
-        // remove a singleton instance
-        VuidManager.removeSharedForTesting()
 
-        vuidManager = VuidManager.getShared(context)
+        vuidManager = VuidManager(context, true)
     }
 
     @After
@@ -89,36 +88,31 @@ class VuidManagerTest {
     }
 
     @Test
-    fun autoLoaded() {
+    fun autoLoadedWhenVuidEnable() {
+        // Save vuid for context
+        val storage = OptlyStorage(context)
+        storage.saveString("vuid", "vuid_123")
+
+        val vuidManager = VuidManager(context, true)
+        val vuid = vuidManager.getVuid()
+        assertTrue("vuid should be auto loaded when constructed", vuid!!.startsWith("vuid_"))
+        assertEquals("Vuid should be same", vuid, "vuid_123")
+    }
+
+    @Test
+    fun autoRemoveWhenVuidDisable() {
         val vuidManager1 = VuidManager(context, true)
-        val vuid1 = vuidManager1.vuid
-        assertTrue("vuid should be auto loaded when constructed", vuid1.startsWith("vuid_"))
-        val savedVuid = vuidManager1.load(context)
-        assertEquals("Vuid should be same", vuid1, savedVuid)
+        val vuid1 = vuidManager1.getVuid()
+        assertTrue("Vuid is created succesfully", vuid1!!.startsWith("vuid_"))
+        val storage = OptlyStorage(context)
+        val cachedVuid = storage.getString("vuid", null)
+        assertEquals("Vuid should be same", vuid1, cachedVuid)
 
+        /// Remove previous vuid when disable
         val vuidManager2 = VuidManager(context, false)
-        val vuid2 = vuidManager2.vuid
-        assertTrue(vuid2 == "")
-        assertFalse("vuid should be auto loaded when constructed", vuid2.startsWith("vuid_"))
+        assertNull(vuidManager2.getVuid());
+        val cachedVuid2 = storage.getString("vuid", null)
+        assertNull(cachedVuid2);
 
-
-
-//        val vuid2 = VuidManager.getShared(context).vuid
-//        assertEquals("the same vuid should be returned when getting a singleton", vuid1, vuid2)
-//
-//        // remove shared instance, so will be re-instantiated
-//        VuidManager.removeSharedForTesting()
-//
-//        val vuid3 = VuidManager.getShared(context).vuid
-//        assertEquals("the saved vuid should be returned when instantiated again", vuid2, vuid3)
-//
-//        // remove saved vuid
-//        cleanSharedPrefs()
-//        // remove shared instance, so will be re-instantiated
-//        VuidManager.removeSharedForTesting()
-//
-//        val vuid4 = VuidManager.getShared(context).vuid
-//        assertNotEquals("a new vuid should be returned when storage cleared and re-instantiated", vuid3, vuid4)
-//        assertTrue(vuid4.startsWith("vuid_"))
     }
 }
