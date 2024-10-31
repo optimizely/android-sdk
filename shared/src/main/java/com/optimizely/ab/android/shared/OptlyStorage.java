@@ -93,6 +93,6 @@ public class OptlyStorage {
     }
 
     public void remove(String key) {
-        getWritablePrefs().remove(key);
+        getWritablePrefs().remove(key).apply();
     }
 }

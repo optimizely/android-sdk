@@ -442,6 +442,8 @@ public class OptimizelyManagerBuilderTest {
         verify(mockBuilder).withUserCommonIdentifiers(identifiersCaptor.capture());
         Map<String, String> identifiers = identifiersCaptor.getValue();
         assertFalse(identifiers.containsKey("vuid"));
+
+        when(ODPManager.builder()).thenCallRealMethod();
     }
 
     @Test
@@ -464,5 +466,7 @@ public class OptimizelyManagerBuilderTest {
         verify(mockBuilder).withUserCommonIdentifiers(identifiersCaptor.capture());
         Map<String, String> identifiers = identifiersCaptor.getValue();
         assertEquals(identifiers.get("vuid"), "vuid_test");
+
+        when(ODPManager.builder()).thenCallRealMethod();
     }
 }
