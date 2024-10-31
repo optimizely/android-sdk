@@ -142,8 +142,8 @@ class VuidManagerTest {
 
         vuidManager = VuidManager.getInstance()
         vuidManager.configure(false, context)
-        assertNull(getFromSharedPrefs("vuid"))
 
+        assertNull(getFromSharedPrefs("vuid"))
         assertEquals(vuidManager.vuid, "")
     }
 
@@ -152,8 +152,10 @@ class VuidManagerTest {
         cleanSharedPrefs()
         saveInSharedPrefs("vuid", "vuid_test")
         VuidManager.removeSharedForTesting()
+
         vuidManager = VuidManager.getInstance()
         vuidManager.configure(true, context)
+
         assertEquals(vuidManager.vuid, "vuid_test")
     }
 
@@ -162,8 +164,10 @@ class VuidManagerTest {
         cleanSharedPrefs()
         VuidManager.removeSharedForTesting()
         assertNull(getFromSharedPrefs("vuid"))
+
         vuidManager = VuidManager.getInstance()
         vuidManager.configure(true, context)
+
         assertTrue(vuidManager.vuid.startsWith("vuid_"))
         assertNotNull(getFromSharedPrefs("vuid"))
         getFromSharedPrefs("vuid")?.let { assertTrue(it.startsWith("vuid_")) }
