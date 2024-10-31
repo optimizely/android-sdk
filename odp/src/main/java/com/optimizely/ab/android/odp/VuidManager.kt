@@ -41,6 +41,7 @@ class VuidManager private constructor() {
         }
     }
 
+    @Synchronized
     fun configure(enableVuid: Boolean, context: Context) {
         if (!enableVuid) {
             removeVuid(context);
