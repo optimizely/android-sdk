@@ -28,8 +28,7 @@ class VuidManager private constructor() {
         private var INSTANCE: VuidManager? = null
 
         @Synchronized
-        fun getInstance(): VuidManager = INSTANCE ?:
-            VuidManager().also { INSTANCE = it }
+        fun getInstance(): VuidManager = INSTANCE ?: VuidManager().also { INSTANCE = it }
 
         fun isVuid(visitorId: String): Boolean {
             return visitorId.startsWith("vuid_", ignoreCase = true)
@@ -44,7 +43,7 @@ class VuidManager private constructor() {
     @Synchronized
     fun configure(enableVuid: Boolean, context: Context) {
         if (!enableVuid) {
-            removeVuid(context);
+            removeVuid(context)
         } else {
             this.vuid = load(context)
         }
@@ -80,6 +79,6 @@ class VuidManager private constructor() {
 
     fun removeVuid(context: Context) {
         val storage = OptlyStorage(context)
-        storage.remove(keyForVuid);
+        storage.remove(keyForVuid)
     }
 }
