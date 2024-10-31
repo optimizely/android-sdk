@@ -48,11 +48,7 @@ import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
-import com.optimizely.ab.event.internal.BuildVersionInfo;
-import com.optimizely.ab.event.internal.ClientEngineInfo;
-import com.optimizely.ab.event.internal.payload.EventBatch;
 import com.optimizely.ab.notification.NotificationCenter;
-import com.optimizely.ab.notification.UpdateConfigNotification;
 import com.optimizely.ab.odp.ODPApiManager;
 import com.optimizely.ab.odp.ODPEventManager;
 import com.optimizely.ab.odp.ODPManager;
@@ -65,7 +61,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -792,6 +787,7 @@ public class OptimizelyManager {
         private int timeoutForODPSegmentFetchInSecs = 10;
         private int timeoutForODPEventDispatchInSecs = 10;
         private boolean odpEnabled = true;
+        private boolean vuidEnabled = false;
         private String vuid = null;
 
         private String customSdkName = null;
@@ -1032,6 +1028,15 @@ public class OptimizelyManager {
         }
 
         /**
+         * Enable Vuid
+         * @return this {@link Builder} instance
+         */
+        public Builder withVuidEnabled() {
+            this.vuidEnabled = true;
+            return this;
+        }
+
+        /**
          * Override the default (SDK-generated and persistent) vuid.
          * @param vuid a user-defined vuid value
          * @return this {@link Builder} instance
@@ -1120,8 +1125,11 @@ public class OptimizelyManager {
 
             }
 
-            if (vuid == null) {
-                vuid = VuidManager.Companion.getShared(context).getVuid();
+            VuidManager vuidManager = VuidManager.Companion.getInstance();
+            vuidManager.configure(vuidEnabled, context);
+
+            if (vuid == null && vuidEnabled) {
+                vuid = vuidManager.getVuid();
             }
 
             ODPManager odpManager = null;
