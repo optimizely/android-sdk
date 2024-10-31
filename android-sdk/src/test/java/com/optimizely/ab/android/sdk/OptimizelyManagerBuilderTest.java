@@ -113,10 +113,6 @@ public class OptimizelyManagerBuilderTest {
         );
     }
 
-    @After
-    public void cleanUp() {
-    }
-
     /**
      * Verify that building the {@link OptimizelyManager} with a polling interval greater than 60
      * seconds is properly registered.
@@ -425,6 +421,7 @@ public class OptimizelyManagerBuilderTest {
         when(mockBuilder.withUserCommonIdentifiers(any())).thenReturn(mockBuilder);
         return mockBuilder;
     }
+
     @Test
     public void testBuildWithVuidDisabled() throws Exception {
         mockStatic(ODPManager.class);
