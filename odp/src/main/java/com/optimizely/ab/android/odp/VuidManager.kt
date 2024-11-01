@@ -44,6 +44,7 @@ class VuidManager private constructor() {
     fun configure(enableVuid: Boolean, context: Context) {
         if (!enableVuid) {
             removeVuid(context)
+            this.vuid = "";
         } else {
             this.vuid = load(context)
         }
