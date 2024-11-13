@@ -1,5 +1,10 @@
 # Optimizely Android X SDK Changelog
 
+## 4.1.0
+November 13th, 2024
+
+### New Features
+* Batch UPS lookup and save calls in decideAll and decideForKeys methods  ([#498](https://github.com/optimizely/android-sdk/pull/498)).
 
 ## 4.0.4
 September 10th, 2024
