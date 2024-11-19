@@ -17,9 +17,7 @@
 package com.optimizely.ab.android.sdk;
 
 import android.content.Context;
-import android.graphics.Path;
 
-import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.datafile_handler.DefaultDatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
@@ -28,7 +26,6 @@ import com.optimizely.ab.android.odp.ODPEventClient;
 import com.optimizely.ab.android.odp.ODPSegmentClient;
 import com.optimizely.ab.android.odp.VuidManager;
 import com.optimizely.ab.android.shared.DatafileConfig;
-import com.optimizely.ab.android.shared.WorkerScheduler;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
 import com.optimizely.ab.error.ErrorHandler;
@@ -36,22 +33,24 @@ import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
 import com.optimizely.ab.notification.NotificationCenter;
-import com.optimizely.ab.odp.ODPApiManager;
 import com.optimizely.ab.odp.ODPEventManager;
 import com.optimizely.ab.odp.ODPManager;
 import com.optimizely.ab.odp.ODPSegmentManager;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -63,24 +62,26 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyNew;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
-import java.sql.Time;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("jdk.internal.reflect.*")
-@PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class, DefaultEventHandler.class, ODPManager.class, ODPSegmentManager.class, ODPEventManager.class})
+@PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class, DefaultEventHandler.class, ODPManager.class, ODPSegmentManager.class, ODPEventManager.class, VuidManager.class})
 public class OptimizelyManagerBuilderTest {
 
     private String testProjectId = "7595190003";
     private String testSdkKey = "1234";
     private Logger logger;
+
+    private VuidManager mockVuidManager;
 
     private String minDatafile = "{\n" +
             "experiments: [ ],\n" +
@@ -101,6 +102,15 @@ public class OptimizelyManagerBuilderTest {
     public void setup() throws Exception {
         mockContext = mock(Context.class);
         mockDatafileHandler = mock(DefaultDatafileHandler.class);
+
+        mockStatic(VuidManager.class);
+        VuidManager.Companion mockCompanion = PowerMockito.mock(VuidManager.Companion.class);
+        mockVuidManager = PowerMockito.mock(VuidManager.class);
+        PowerMockito.doReturn(mockVuidManager).when(mockCompanion).getInstance();
+        Whitebox.setInternalState(
+            VuidManager.class, "Companion",
+            mockCompanion
+        );
     }
 
     /**
@@ -400,4 +410,60 @@ public class OptimizelyManagerBuilderTest {
         assertEquals(identifiers.size(), 1);
     }
 
+    ODPManager.Builder getMockODPManagerBuilder() {
+        ODPManager.Builder mockBuilder = PowerMockito.mock(ODPManager.Builder.class);
+        when(mockBuilder.withApiManager(any())).thenReturn(mockBuilder);
+        when(mockBuilder.withSegmentCacheSize(any())).thenReturn(mockBuilder);
+        when(mockBuilder.withSegmentCacheTimeout(any())).thenReturn(mockBuilder);
+        when(mockBuilder.withSegmentManager(any())).thenReturn(mockBuilder);
+        when(mockBuilder.withEventManager(any())).thenReturn(mockBuilder);
+        when(mockBuilder.withUserCommonData(any())).thenReturn(mockBuilder);
+        when(mockBuilder.withUserCommonIdentifiers(any())).thenReturn(mockBuilder);
+        return mockBuilder;
+    }
+
+    @Test
+    public void testBuildWithVuidDisabled() throws Exception {
+        mockStatic(ODPManager.class);
+        ODPManager.Builder mockBuilder = getMockODPManagerBuilder();
+        when(mockBuilder.build()).thenReturn(mock(ODPManager.class));
+        when(ODPManager.builder()).thenReturn(mockBuilder);
+
+        OptimizelyManager manager = OptimizelyManager.builder()
+            .withSDKKey(testSdkKey)
+            .build(mockContext);
+
+        verify(mockVuidManager, times(1)).configure(eq(false), any(Context.class));
+
+        ArgumentCaptor<Map<String, String>> identifiersCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(mockBuilder).withUserCommonIdentifiers(identifiersCaptor.capture());
+        Map<String, String> identifiers = identifiersCaptor.getValue();
+        assertFalse(identifiers.containsKey("vuid"));
+
+        when(ODPManager.builder()).thenCallRealMethod();
+    }
+
+    @Test
+    public void testBuildWithVuidEnabled() throws Exception {
+        mockStatic(ODPManager.class);
+        ODPManager.Builder mockBuilder = getMockODPManagerBuilder();
+        when(mockBuilder.build()).thenReturn(mock(ODPManager.class));
+        when(ODPManager.builder()).thenReturn(mockBuilder);
+
+        when(mockVuidManager.getVuid()).thenReturn("vuid_test");
+
+        OptimizelyManager manager = OptimizelyManager.builder()
+            .withSDKKey(testSdkKey)
+            .withVuidEnabled()
+            .build(mockContext);
+
+        verify(mockVuidManager, times(1)).configure(eq(true), any(Context.class));
+
+        ArgumentCaptor<Map<String, String>> identifiersCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(mockBuilder).withUserCommonIdentifiers(identifiersCaptor.capture());
+        Map<String, String> identifiers = identifiersCaptor.getValue();
+        assertEquals(identifiers.get("vuid"), "vuid_test");
+
+        when(ODPManager.builder()).thenCallRealMethod();
+    }
 }

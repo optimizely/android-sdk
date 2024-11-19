@@ -19,20 +19,16 @@ import androidx.annotation.VisibleForTesting
 import com.optimizely.ab.android.shared.OptlyStorage
 import java.util.UUID
 
-class VuidManager private constructor(context: Context) {
+class VuidManager private constructor() {
     var vuid = ""
     private val keyForVuid = "vuid" // stored in the private "optly" storage
-
-    init {
-        this.vuid = load(context)
-    }
 
     companion object {
         @Volatile
         private var INSTANCE: VuidManager? = null
 
         @Synchronized
-        fun getShared(context: Context): VuidManager = INSTANCE ?: VuidManager(context).also { INSTANCE = it }
+        fun getInstance(): VuidManager = INSTANCE ?: VuidManager().also { INSTANCE = it }
 
         fun isVuid(visitorId: String): Boolean {
             return visitorId.startsWith("vuid_", ignoreCase = true)
@@ -41,6 +37,16 @@ class VuidManager private constructor(context: Context) {
         @VisibleForTesting
         fun removeSharedForTesting() {
             INSTANCE = null
+        }
+    }
+
+    @Synchronized
+    fun configure(enableVuid: Boolean, context: Context) {
+        if (!enableVuid) {
+            removeVuid(context)
+            this.vuid = ""
+        } else {
+            this.vuid = load(context)
         }
     }
 
@@ -57,7 +63,9 @@ class VuidManager private constructor(context: Context) {
     fun load(context: Context): String {
         val storage = OptlyStorage(context)
         val oldVuid = storage.getString(keyForVuid, null)
-        if (oldVuid != null) return oldVuid
+        if (oldVuid != null) {
+            return oldVuid
+        }
 
         val vuid = makeVuid()
         save(context, vuid)
@@ -68,5 +76,10 @@ class VuidManager private constructor(context: Context) {
     fun save(context: Context, vuid: String) {
         val storage = OptlyStorage(context)
         storage.saveString(keyForVuid, vuid)
+    }
+
+    fun removeVuid(context: Context) {
+        val storage = OptlyStorage(context)
+        storage.remove(keyForVuid)
     }
 }

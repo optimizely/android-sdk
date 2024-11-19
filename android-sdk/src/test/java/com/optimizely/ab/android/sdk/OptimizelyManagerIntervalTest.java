@@ -18,13 +18,14 @@ package com.optimizely.ab.android.sdk;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyNew;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
@@ -33,9 +34,9 @@ import android.content.Context;
 
 import com.optimizely.ab.android.datafile_handler.DatafileHandler;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
+import com.optimizely.ab.android.odp.VuidManager;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.bucketing.UserProfileService;
-import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
@@ -45,11 +46,12 @@ import com.optimizely.ab.odp.ODPManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.PowerMockUtils;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import org.powermock.reflect.Whitebox;
 import org.slf4j.Logger;
 
 import java.util.concurrent.BlockingQueue;
@@ -59,7 +61,7 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("jdk.internal.reflect.*")
-@PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class, DefaultEventHandler.class})
+@PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class, DefaultEventHandler.class, VuidManager.class})
 public class OptimizelyManagerIntervalTest {
 
     private Logger logger;
@@ -76,6 +78,15 @@ public class OptimizelyManagerIntervalTest {
         mockEventHandler = mock(DefaultEventHandler.class);
         mockStatic(DefaultEventHandler.class);
         when(DefaultEventHandler.getInstance(any())).thenReturn(mockEventHandler);
+
+        mockStatic(VuidManager.class);
+        VuidManager.Companion mockCompanion = PowerMockito.mock(VuidManager.Companion.class);
+        VuidManager mockVuidManager = PowerMockito.mock(VuidManager.class);
+        doReturn(mockVuidManager).when(mockCompanion).getInstance();
+        Whitebox.setInternalState(
+            VuidManager.class, "Companion",
+            mockCompanion
+        );
     }
 
     // DatafileDownloadInterval

@@ -91,4 +91,8 @@ public class OptlyStorage {
     private SharedPreferences getReadablePrefs() {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
+
+    public void remove(String key) {
+        getWritablePrefs().remove(key).apply();
+    }
 }
