@@ -1,5 +1,11 @@
 # Optimizely Android X SDK Changelog
 
+## 5.0.0
+November 21st, 2024
+
+### Functionality Enhancements
+- VUID configuration is now independent of ODP ([#497](https://github.com/optimizely/android-sdk/pull/497))
+
 ## 4.1.0
 November 13th, 2024
 
