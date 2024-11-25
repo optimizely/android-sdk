@@ -1,5 +1,16 @@
 # Optimizely Android X SDK Changelog
 
+## 5.0.0
+November 25th, 2024
+
+### Breaking Changes
+* VUID configuration is now independent of ODP ([#497](https://github.com/optimizely/android-sdk/pull/497))
+* When VUID is disabled:
+    * `vuid` is not generated or saved.
+    * `client-initialized` event will not auto fired on SDK init.
+    * `vuid` is not included in the odp events as a default attribute.
+    * `createUserContext()` will be rejected if `userId` is not provided.
+
 ## 4.1.0
 November 13th, 2024
 
