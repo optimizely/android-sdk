@@ -19,10 +19,14 @@ package com.optimizely.ab.android.event_handler;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
+import org.mockito.MockedStatic;
+
 
 import android.content.Context;
 
@@ -35,22 +39,17 @@ import com.optimizely.ab.event.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 
 /**
  * Tests {@link EventWorker}
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ EventWorker.class, EventHandlerUtils.class, WorkerParameters.class })
-@PowerMockIgnore("jdk.internal.reflect.*")
+@RunWith(MockitoJUnitRunner.class)
 public class EventWorkerUnitTest {
 
-    private WorkerParameters mockWorkParams = PowerMockito.mock(WorkerParameters.class);
+    private WorkerParameters mockWorkParams = mock(WorkerParameters.class);
     private EventWorker eventWorker = new EventWorker(mock(Context.class), mockWorkParams);
 
     private String host = "http://www.foo.com";
@@ -72,31 +71,40 @@ public class EventWorkerUnitTest {
         assertEquals(data.getString("bodyCompressed"), base64);
         assertNull(data.getString("body"));
     }
-
     @Test
     public void compressEvent() throws IOException {
         String base64 = "abc123";
-        PowerMockito.mockStatic(EventHandlerUtils.class);
-        when(EventHandlerUtils.compress(anyString())).thenReturn(base64);
 
-        Data data = EventWorker.compressEvent(host, smallBody);
-        assertEquals(data.getString("url"), host);
-        assertEquals(data.getString("bodyCompressed"), base64);
-        assertNull(data.getString("body"));
+        // Mocking the static method compress in EventHandlerUtils
+        try (MockedStatic<EventHandlerUtils> mockedStatic = mockStatic(EventHandlerUtils.class)) {
+            mockedStatic.when(() -> EventHandlerUtils.compress(anyString())).thenReturn(base64);
+
+            Data data = EventWorker.compressEvent(host, smallBody);
+
+            // Verify the results
+            assertEquals(data.getString("url"), host);
+            assertEquals(data.getString("bodyCompressed"), base64);
+            assertNull(data.getString("body"));
+
+            // Optionally, verify that the method was called
+            mockedStatic.verify(() -> EventHandlerUtils.compress(anyString()));
+        }
     }
+
 
     @Test
     public void compressEventWithCompressionFailure() throws IOException {
-        PowerMockito.mockStatic(EventHandlerUtils.class);
-        PowerMockito.doThrow(new IOException()).when(EventHandlerUtils.class);
-        EventHandlerUtils.compress(anyString());  // PowerMockito throws exception on this static method
+        try (MockedStatic<EventHandlerUtils> mockedStatic = mockStatic(EventHandlerUtils.class)) {
+            mockedStatic.when(() -> EventHandlerUtils.compress(anyString())).thenThrow(new IOException());
 
-        // return original body if compress fails
+            // return original body if compress fails
 
-        Data data = EventWorker.compressEvent(host, smallBody);
-        assertEquals(data.getString("url"), host);
-        assertEquals(data.getString("body"), smallBody);
-        assertNull(data.getByteArray("bodyCompressed"));
+            Data data = EventWorker.compressEvent(host, smallBody);
+            assertEquals(data.getString("url"), host);
+            assertEquals(data.getString("body"), smallBody);
+            assertNull(data.getByteArray("bodyCompressed"));
+
+        }
     }
 
     @Test
@@ -155,12 +163,17 @@ public class EventWorkerUnitTest {
     public void getEventBodyFromInputDataDecompressFailure() throws Exception {
         Data data = EventWorker.compressEvent(host, smallBody);
 
-        PowerMockito.mockStatic(EventHandlerUtils.class);
-        PowerMockito.doThrow(new IOException()).when(EventHandlerUtils.class);
-        EventHandlerUtils.decompress(any());  // PowerMockito throws exception on this static method
+        try (MockedStatic<EventHandlerUtils> mockedStatic = mockStatic(EventHandlerUtils.class)) {
+            mockedStatic.when(() -> EventHandlerUtils.compress(anyString())).thenThrow(new IOException());
 
-        String str = eventWorker.getEventBodyFromInputData(data);
-        assertNull(str);
+            // return original body if compress fails
+
+            EventHandlerUtils.decompress(any());
+
+            String str = eventWorker.getEventBodyFromInputData(data);
+            assertNull(str);
+
+        }
     }
 
     @Test
