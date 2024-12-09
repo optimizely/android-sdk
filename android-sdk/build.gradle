@@ -34,6 +34,11 @@ android {
     }
     testOptions {
         unitTests.returnDefaultValues = true
+        unitTests.all {
+            jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+            jvmArgs '--add-opens=java.base/java.util.zip=ALL-UNNAMED'
+            jvmArgs '--add-opens=java.base/java.io=ALL-UNNAMED'
+        }
     }
     buildTypes {
         release {
@@ -45,8 +50,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
@@ -65,8 +70,8 @@ dependencies {
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
-    testImplementation "org.powermock:powermock-module-junit4:$powermock_ver"
-    testImplementation "org.powermock:powermock-api-mockito2:$powermock_ver"
+//    testImplementation "org.powermock:powermock-module-junit4:$powermock_ver"
+//    testImplementation "org.powermock:powermock-api-mockito2:$powermock_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
     androidTestImplementation "androidx.work:work-testing:$work_runtime"

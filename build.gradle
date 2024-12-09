@@ -76,6 +76,10 @@ ext {
     jacksonversion= "2.11.2"
     annotations_ver = "1.2.0"
     junit_ver = "4.12"
+//    mockito_ver = "4.11.0"
+//    mockito_ver = "4.9.0"
+//    mockito_ver = "2.8.9"
+//    mockito_ver = " 2.1.0"
     mockito_ver = "1.10.19"
     powermock_ver = "2.0.9"
     support_test_runner_ver = "0.5"
@@ -180,23 +184,23 @@ configure(publishedProjects) {
         }
     }
 
-    android.libraryVariants.all { variant ->
-        task("${variant.name}JavadocJar", type: Jar, dependsOn: "${variant.name}Javadoc") {
-            classifier = 'javadoc'
-            from tasks["${variant.name}Javadoc"].destinationDir
-        }
+//    android.libraryVariants.all { variant ->
+//        task("${variant.name}JavadocJar", type: Jar, dependsOn: "${variant.name}Javadoc") {
+//            classifier = 'javadoc'
+//            from tasks["${variant.name}Javadoc"].destinationDir
+//        }
+//
+//        // Add the Javadoc jar to the project's artifacts. This will allow us to upload it easily later
+//        project.artifacts.add("archives", tasks["${variant.name}JavadocJar"]);
+//    }
 
-        // Add the Javadoc jar to the project's artifacts. This will allow us to upload it easily later
-        project.artifacts.add("archives", tasks["${variant.name}JavadocJar"]);
-    }
-
-    android.libraryVariants.all { variant ->
-        task("${variant.name}SourcesJar", type: Jar) {
-            classifier = 'sources'
-            from variant.javaCompileProvider.get().source
-        }
-        project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
-    }
+//    android.libraryVariants.all { variant ->
+//        task("${variant.name}SourcesJar", type: Jar) {
+//            classifier = 'sources'
+//            from variant.javaCompileProvider.get().source
+//        }
+//        project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);
+//    }
 
     android {
         publishing {
