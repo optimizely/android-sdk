@@ -29,6 +29,11 @@ android {
     }
     testOptions {
         unitTests.returnDefaultValues = true
+        unitTests.all {
+            jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+            jvmArgs '--add-opens=java.base/java.util.zip=ALL-UNNAMED'
+            jvmArgs '--add-opens=java.base/java.io=ALL-UNNAMED'
+        }
     }
     buildTypes {
         release {
