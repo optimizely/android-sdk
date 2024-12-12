@@ -60,7 +60,6 @@ dependencies {
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
-//    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockito_ver"
 
     compileOnly "com.noveogroup.android:android-logger:$android_logger_ver"
 
@@ -75,7 +74,4 @@ dependencies {
 
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
     androidTestImplementation "org.mockito:mockito-android:$mockito_ver"
-//    androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
-//    androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
-//    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
 }

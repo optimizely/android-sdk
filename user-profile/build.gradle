@@ -66,9 +66,6 @@ dependencies {
 
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
     androidTestImplementation "org.mockito:mockito-android:$mockito_ver"
-//    androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
-//    androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
-//    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 }
