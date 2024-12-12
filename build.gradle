@@ -265,11 +265,6 @@ project(':event-handler').ship.shouldRunAfter = [':event-handler:clean', ':share
 project(':shared').ship.shouldRunAfter = [':shared:clean']
 project(':user-profile').ship.shouldRunAfter = [':user-profile:clean', ':shared:ship']
 project(':odp').ship.shouldRunAfter = [':odp:clean', ':shared:ship']
-subprojects{
-    tasks.withType(Test).configureEach{
-        jvmArgs = jvmArgs + ['--add-opens=java.base/java.lang=ALL-UNNAMED']
-    }
-}
 
 // standard POM format required by MavenCentral
 
