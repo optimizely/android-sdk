@@ -23,9 +23,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
-import org.mockito.Matchers.any
-import org.mockito.Matchers.contains
-import org.mockito.Matchers.eq
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.contains
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify

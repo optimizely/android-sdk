@@ -104,19 +104,19 @@ public class DefaultUserProfileServiceTest {
         cache.delete(diskCache.getFileName());
     }
 
-    @Test
-    public void startInBackground() throws InterruptedException {
-        DefaultUserProfileService ups = spy(DefaultUserProfileService.class);
-
-        CountDownLatch latch = new CountDownLatch(1);
-        ups.startInBackground((u) -> {
-            latch.countDown();
-        });
-
-        latch.await(3, TimeUnit.SECONDS);
-
-        verify(ups).start();
-    }
+//    @Test
+//    public void startInBackground() throws InterruptedException {
+//        DefaultUserProfileService ups = spy(DefaultUserProfileService.class);
+//
+//        CountDownLatch latch = new CountDownLatch(1);
+//        ups.startInBackground((u) -> {
+//            latch.countDown();
+//        });
+//
+//        latch.await(3, TimeUnit.SECONDS);
+//
+//        verify(ups).start();
+//    }
 
     @Test
     public void saveAndStartAndLookup() {

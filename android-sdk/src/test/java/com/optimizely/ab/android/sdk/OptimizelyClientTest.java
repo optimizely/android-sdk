@@ -29,12 +29,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.exceptions.verification.junit.ArgumentsAreDifferent;
 import org.slf4j.Logger;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +41,9 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.powermock.reflect.Whitebox;
+
+
 
 /**
  * Tests for {@link OptimizelyClient}
@@ -56,28 +57,9 @@ public class OptimizelyClientTest {
 
     @Before
     public void setup() {
-        Field field = null;
-        try {
-            field = Optimizely.class.getDeclaredField("notificationCenter");
-            // Mark the field as public so we can toy with it
-            field.setAccessible(true);
-// Get the Modifiers for the Fields
-            Field modifiersField = Field.class.getDeclaredField("modifiers");
-// Allow us to change the modifiers
-            modifiersField.setAccessible(true);
-            // Remove final modifier from field by blanking out the bit that says "FINAL" in the Modifiers
-            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-// Set new value
-            field.set(optimizely, notificationCenter);
-
-            when(optimizely.isValid()).thenReturn(true);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        Whitebox.setInternalState(optimizely, "notificationCenter", notificationCenter);
+        when(optimizely.isValid()).thenReturn(true);
     }
-
     @Test(expected=ArgumentsAreDifferent.class)
     public void testGoodActivation1() {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);

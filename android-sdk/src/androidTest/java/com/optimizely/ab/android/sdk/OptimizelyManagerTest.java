@@ -62,13 +62,9 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link OptimizelyManager}
@@ -500,14 +496,20 @@ public class OptimizelyManagerTest {
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null, null, null, null, null, null);
 
-        doAnswer(
-                new Answer<Object>() {
-                    public Object answer(InvocationOnMock invocation) {
-                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
-                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
-                        return null;
-                    }
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+        ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+        ArgumentCaptor<DatafileConfig> configCaptor = ArgumentCaptor.forClass(DatafileConfig.class);
+        ArgumentCaptor<DatafileLoadedListener> listenerCaptor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
+
+        doAnswer(invocation -> {
+            Context capturedContext = contextCaptor.getValue();
+            DatafileConfig capturedConfig = configCaptor.getValue();
+            DatafileLoadedListener capturedListener = listenerCaptor.getValue();
+
+            String newDatafile = manager.getDatafile(capturedContext, R.raw.datafile_api);
+            datafileHandler.saveDatafile(capturedContext, capturedConfig, newDatafile);
+
+            return datafileHandler;
+        }).when(manager.getDatafileHandler()).downloadDatafile(contextCaptor.capture(), configCaptor.capture(), listenerCaptor.capture());
 
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 
@@ -533,14 +535,20 @@ public class OptimizelyManagerTest {
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null, null, null, null, null, null);
 
-        doAnswer(
-                new Answer<Object>() {
-                    public Object answer(InvocationOnMock invocation) {
-                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
-                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
-                        return null;
-                    }
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+        ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+        ArgumentCaptor<DatafileConfig> configCaptor = ArgumentCaptor.forClass(DatafileConfig.class);
+        ArgumentCaptor<DatafileLoadedListener> listenerCaptor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
+
+        doAnswer(invocation -> {
+            Context capturedContext = contextCaptor.getValue();
+            DatafileConfig capturedConfig = configCaptor.getValue();
+            DatafileLoadedListener capturedListener = listenerCaptor.getValue();
+
+            String newDatafile = manager.getDatafile(capturedContext, R.raw.datafile_api);
+            datafileHandler.saveDatafile(capturedContext, capturedConfig, newDatafile);
+
+            return datafileHandler;
+        }).when(manager.getDatafileHandler()).downloadDatafile(contextCaptor.capture(), configCaptor.capture(), listenerCaptor.capture());
 
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 
@@ -566,14 +574,20 @@ public class OptimizelyManagerTest {
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null, null, null, null, null, null);
 
-        doAnswer(
-                new Answer<Object>() {
-                    public Object answer(InvocationOnMock invocation) {
-                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
-                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
-                        return null;
-                    }
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+        ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+        ArgumentCaptor<DatafileConfig> configCaptor = ArgumentCaptor.forClass(DatafileConfig.class);
+        ArgumentCaptor<DatafileLoadedListener> listenerCaptor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
+
+        doAnswer(invocation -> {
+            Context capturedContext = contextCaptor.getValue();
+            DatafileConfig capturedConfig = configCaptor.getValue();
+            DatafileLoadedListener capturedListener = listenerCaptor.getValue();
+
+            String newDatafile = manager.getDatafile(capturedContext, R.raw.datafile_api);
+            datafileHandler.saveDatafile(capturedContext, capturedConfig, newDatafile);
+
+            return datafileHandler;
+        }).when(manager.getDatafileHandler()).downloadDatafile(contextCaptor.capture(), configCaptor.capture(), listenerCaptor.capture());
 
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 
@@ -599,12 +613,20 @@ public class OptimizelyManagerTest {
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null, null, null, null, null, null);
 
-        doAnswer(
-                (Answer<Object>) invocation -> {
-                    String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
-                    datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
-                    return null;
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+        ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+        ArgumentCaptor<DatafileConfig> configCaptor = ArgumentCaptor.forClass(DatafileConfig.class);
+        ArgumentCaptor<DatafileLoadedListener> listenerCaptor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
+
+        doAnswer(invocation -> {
+            Context capturedContext = contextCaptor.getValue();
+            DatafileConfig capturedConfig = configCaptor.getValue();
+            DatafileLoadedListener capturedListener = listenerCaptor.getValue();
+
+            String newDatafile = manager.getDatafile(capturedContext, R.raw.datafile_api);
+            datafileHandler.saveDatafile(capturedContext, capturedConfig, newDatafile);
+
+            return datafileHandler;
+        }).when(manager.getDatafileHandler()).downloadDatafile(contextCaptor.capture(), configCaptor.capture(), listenerCaptor.capture());
 
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 
@@ -631,14 +653,20 @@ public class OptimizelyManagerTest {
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null, null, null, null, null, null);
 
-        doAnswer(
-                new Answer<Object>() {
-                    public Object answer(InvocationOnMock invocation) {
-                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
-                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
-                        return null;
-                    }
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+        ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+        ArgumentCaptor<DatafileConfig> configCaptor = ArgumentCaptor.forClass(DatafileConfig.class);
+        ArgumentCaptor<DatafileLoadedListener> listenerCaptor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
+
+        doAnswer(invocation -> {
+            Context capturedContext = contextCaptor.getValue();
+            DatafileConfig capturedConfig = configCaptor.getValue();
+            DatafileLoadedListener capturedListener = listenerCaptor.getValue();
+
+            String newDatafile = manager.getDatafile(capturedContext, R.raw.datafile_api);
+            datafileHandler.saveDatafile(capturedContext, capturedConfig, newDatafile);
+
+            return datafileHandler;
+        }).when(manager.getDatafileHandler()).downloadDatafile(contextCaptor.capture(), configCaptor.capture(), listenerCaptor.capture());
 
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 
@@ -664,15 +692,21 @@ public class OptimizelyManagerTest {
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null, null, null, null, null, null);
 
-        doAnswer(
-                new Answer<Object>() {
-                    public Object answer(InvocationOnMock invocation) {
-                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
-                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
-                        return null;
-                    }
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+        ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+        ArgumentCaptor<DatafileConfig> configCaptor = ArgumentCaptor.forClass(DatafileConfig.class);
+        ArgumentCaptor<DatafileLoadedListener> listenerCaptor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
 
+        doAnswer(invocation -> {
+            Context capturedContext = contextCaptor.getValue();
+            DatafileConfig capturedConfig = configCaptor.getValue();
+            DatafileLoadedListener capturedListener = listenerCaptor.getValue();
+
+            String newDatafile = manager.getDatafile(capturedContext, R.raw.datafile_api);
+            datafileHandler.saveDatafile(capturedContext, capturedConfig, newDatafile);
+
+            return datafileHandler;
+        }).when(manager.getDatafileHandler()).downloadDatafile(contextCaptor.capture(), configCaptor.capture(), listenerCaptor.capture());
+        
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 
         try {
@@ -698,14 +732,20 @@ public class OptimizelyManagerTest {
         OptimizelyManager manager = new OptimizelyManager(testProjectId, testSdkKey, null, logger, pollingInterval, datafileHandler, null, 0,
                 null, null, null, null, null, null, null, null, null);
 
-        doAnswer(
-                new Answer<Object>() {
-                    public Object answer(InvocationOnMock invocation) {
-                        String newDatafile = manager.getDatafile(context, R.raw.datafile_api);
-                        datafileHandler.saveDatafile(context, manager.getDatafileConfig(), newDatafile);
-                        return null;
-                    }
-                }).when(manager.getDatafileHandler()).downloadDatafile(any(Context.class), any(DatafileConfig.class), any(DatafileLoadedListener.class));
+        ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+        ArgumentCaptor<DatafileConfig> configCaptor = ArgumentCaptor.forClass(DatafileConfig.class);
+        ArgumentCaptor<DatafileLoadedListener> listenerCaptor = ArgumentCaptor.forClass(DatafileLoadedListener.class);
+
+        doAnswer(invocation -> {
+            Context capturedContext = contextCaptor.getValue();
+            DatafileConfig capturedConfig = configCaptor.getValue();
+            DatafileLoadedListener capturedListener = listenerCaptor.getValue();
+
+            String newDatafile = manager.getDatafile(capturedContext, R.raw.datafile_api);
+            datafileHandler.saveDatafile(capturedContext, capturedConfig, newDatafile);
+
+            return datafileHandler;
+        }).when(manager.getDatafileHandler()).downloadDatafile(contextCaptor.capture(), configCaptor.capture(), listenerCaptor.capture());
 
         OptimizelyClient client = manager.initialize(context, defaultDatafile, downloadToCache, updateConfigOnNewDatafile);
 
