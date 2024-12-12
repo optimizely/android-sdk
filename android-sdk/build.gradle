@@ -34,6 +34,27 @@ android {
     }
     testOptions {
         unitTests.returnDefaultValues = true
+        unitTests.all {
+            jvmArgs = ["--illegal-access=debug",
+                       "--add-opens","java.logging/java.util.logging=ALL-UNNAMED",
+                       "--add-opens","java.base/java.time.zone=ALL-UNNAMED",
+                       "--add-opens","java.base/java.lang.reflect=ALL-UNNAMED",
+                       "--add-opens","java.base/java.security.cert=ALL-UNNAMED",
+                       "--add-opens","java.base/java.text=ALL-UNNAMED",
+                       "--add-opens","java.base/java.nio.charset=ALL-UNNAMED",
+                       "--add-opens","java.base/java.nio.file=ALL-UNNAMED",
+                       "--add-opens","java.base/sun.nio.fs=ALL-UNNAMED",
+                       "--add-opens","java.base/sun.security.x509=ALL-UNNAMED",
+                       "--add-opens","java.base/java.util.regex=ALL-UNNAMED",
+                       "--add-opens","java.base/java.util.stream=ALL-UNNAMED",
+                       "--add-opens","java.base/java.util.concurrent=ALL-UNNAMED",
+                       "--add-opens","java.base/java.util.concurrent.atomic=ALL-UNNAMED",
+                       "--add-opens","java.base/java.util.concurrent.locks=ALL-UNNAMED",
+                       "--add-opens","java.base/java.time=ALL-UNNAMED",
+                       "--add-opens","java.base/java.util=ALL-UNNAMED",
+                       "--add-opens","java.base/java.io=ALL-UNNAMED",
+                       "--add-opens","java.base/java.lang=ALL-UNNAMED"]
+        }
     }
     buildTypes {
         release {
@@ -47,12 +68,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
-    }
-}
-
-subprojects {
-    tasks.withType(Test).configureEach{
-        jvmArgs = jvmArgs + ['--add-opens=java.base/java.lang=ALL-UNNAMED', '--add-open=java.base/java.util=ALL-UNNAMED', '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED' ]
     }
 }
 
@@ -70,9 +85,11 @@ dependencies {
     implementation "androidx.annotation:annotation:$annotations_ver"
 
     testImplementation "junit:junit:$junit_ver"
-    testImplementation "org.mockito:mockito-core:$mockito_ver"
+    testImplementation "org.mockito:mockito-core:3.6.28"
+
     testImplementation "org.powermock:powermock-module-junit4:$powermock_ver"
     testImplementation "org.powermock:powermock-api-mockito2:$powermock_ver"
+//    testImplementation "org.powermock:powermock-core:$powermock_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
     androidTestImplementation "androidx.work:work-testing:$work_runtime"
