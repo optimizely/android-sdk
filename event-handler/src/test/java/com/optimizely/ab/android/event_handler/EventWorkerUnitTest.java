@@ -96,14 +96,11 @@ public class EventWorkerUnitTest {
     public void compressEventWithCompressionFailure() throws IOException {
         try (MockedStatic<EventHandlerUtils> mockedStatic = mockStatic(EventHandlerUtils.class)) {
             mockedStatic.when(() -> EventHandlerUtils.compress(anyString())).thenThrow(new IOException());
-
             // return original body if compress fails
-
             Data data = EventWorker.compressEvent(host, smallBody);
             assertEquals(data.getString("url"), host);
             assertEquals(data.getString("body"), smallBody);
             assertNull(data.getByteArray("bodyCompressed"));
-
         }
     }
 
