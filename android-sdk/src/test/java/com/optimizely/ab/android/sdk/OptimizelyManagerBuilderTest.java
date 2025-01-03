@@ -56,8 +56,8 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -73,7 +73,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class, DefaultEventHandler.class, ODPManager.class, ODPSegmentManager.class, ODPEventManager.class, VuidManager.class})
 public class OptimizelyManagerBuilderTest {
 

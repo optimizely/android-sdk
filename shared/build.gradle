@@ -41,8 +41,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildToolsVersion build_tools_version
 }
@@ -75,9 +75,7 @@ dependencies {
     androidTestImplementation "androidx.test:core-ktx:$androidx_test_core"
 
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
+    androidTestImplementation "org.mockito:mockito-android:$mockito_ver"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 }
