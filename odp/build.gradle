@@ -46,9 +46,8 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     buildToolsVersion build_tools_version
-
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 }
 
