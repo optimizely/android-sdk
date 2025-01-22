@@ -16,7 +16,7 @@ jobs:
   lint_markdown_files:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -31,7 +31,7 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/') != true && github.event.inputs.SNAPSHOT != 'true' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         # You should create a personal access token and store it in your repository
         token: ${{ secrets.CI_USER_TOKEN }}
@@ -87,7 +87,7 @@ jobs:
         api-level: [21, 25, 26, 29]
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: set up JDK 17
         uses: actions/setup-java@v1
         with:
@@ -101,14 +101,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Gradle cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/**/*.kt') }}
       - name: AVD cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: avd-cache
         with:
           path: |
