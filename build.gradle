@@ -102,11 +102,6 @@ task cleanAllModules () {
 
 task testAllModules () {
     logger.info("Running android tests for all modules")
-    dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')
-}
-
-task testAllModulesTravis () {
-    logger.info("Running android tests for Travis")
     dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
             ':event-handler:connectedAndroidTest', ':event-handler:test',
             ':datafile-handler:connectedAndroidTest', ':datafile-handler:test',

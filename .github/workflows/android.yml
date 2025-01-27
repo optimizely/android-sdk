@@ -135,7 +135,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew testAllModulesTravis
+          script: ./gradlew testAllModules
   publish:
     if: startsWith(github.ref, 'refs/tags/')
     uses: optimizely/android-sdk/.github/workflows/build.yml@master
