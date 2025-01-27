@@ -135,7 +135,21 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew testAllModulesTravis
+          script: ./gradlew task testAllModules () {
+    logger.info("Running android tests for all modules")
+    dependsOn('testAllModules', ':test-app:connectedAndroidTest')
+}
+
+  task testAllModules () {
+  logger.info("Running android tests for Travis")
+  dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
+  ':event-handler:connectedAndroidTest', ':event-handler:test',
+  ':datafile-handler:connectedAndroidTest', ':datafile-handler:test',
+  ':user-profile:connectedAndroidTest',
+  ':shared:connectedAndroidTest',
+  ':odp:connectedAndroidTest', ':odp:test'
+  )
+}
   publish:
     if: startsWith(github.ref, 'refs/tags/')
     uses: optimizely/android-sdk/.github/workflows/build.yml@master
