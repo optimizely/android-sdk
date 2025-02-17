@@ -13,7 +13,7 @@ We welcome contributions and feedback! All contributors must sign our [Contribut
 7. Open a pull request from `YOUR_NAME/branch_name` to `master`.
 8. A repository maintainer will review your pull request and, if all goes well, squash and merge it!
 
-All branches will be built and run against the entire test suite on Travis with every commit.
+All branches will be built and run against the entire test suite on Gtihub Actions with every commit.
 
 The `test-app` module is built against a real Optimizely project. Changing the project ID will cause tests to fail. The test app should be used as a reference.
 
