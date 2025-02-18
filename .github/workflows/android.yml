@@ -35,8 +35,8 @@ jobs:
       with:
         # You should create a personal access token and store it in your repository
         token: ${{ secrets.CI_USER_TOKEN }}
-        repository: 'optimizely/travisci-tools'
-        path: 'home/runner/travisci-tools'
+        repository: 'optimizely/ci-helper-tools'
+        path: 'home/runner/ci-helper-tools'
         ref: 'master'
       
     - name: set SDK Branch if PR
@@ -45,14 +45,12 @@ jobs:
       if: ${{ github.event_name == 'pull_request' }}
       run: |
         echo "SDK_BRANCH=$HEAD_REF" >> $GITHUB_ENV
-        echo "TRAVIS_BRANCH=$HEAD_REF" >> $GITHUB_ENV
     - name: set SDK Branch if not pull request
       env:
         REF_NAME: ${{github.ref_name}}
       if: ${{ github.event_name != 'pull_request' }}
       run: |
         echo "SDK_BRANCH=$REF_NAME" >> $GITHUB_ENV
-        echo "TRAVIS_BRANCH=$REF_NAME" >> $GITHUB_ENV
     - name: Trigger build
       env:
         SDK: android
@@ -68,12 +66,11 @@ jobs:
         PULL_REQUEST_SHA: ${{ github.event.pull_request.head.sha }}
         PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
         UPSTREAM_SHA: ${{ github.sha }}
-        TOKEN: ${{ secrets.TRAVIS_COM_TOKEN }}
         EVENT_MESSAGE: ${{ github.event.message }}
         HOME: 'home/runner'
       run: |
         echo "$GITHUB_CONTEXT"
-        home/runner/travisci-tools/trigger-script-with-status-update.sh
+        home/runner/ci-helper-tools/trigger-script-with-status-update.sh
   build:
     uses: optimizely/android-sdk/.github/workflows/build.yml@master
     with:
@@ -135,13 +132,13 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew testAllModulesTravis
+          script: ./gradlew testAllModules
   publish:
     if: startsWith(github.ref, 'refs/tags/')
     uses: optimizely/android-sdk/.github/workflows/build.yml@master
     with:
       action: ship
-      travis_tag: ${GITHUB_REF#refs/*/}
+      github_tag: ${GITHUB_REF#refs/*/}
     secrets:
       MAVEN_SIGNING_KEY_BASE64: ${{ secrets.MAVEN_SIGNING_KEY_BASE64 }}
       MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
@@ -153,7 +150,7 @@ jobs:
     uses: optimizely/android-sdk/.github/workflows/build.yml@master
     with:
       action: ship
-      travis_tag: BB-SNAPSHOT
+      github_tag: BB-SNAPSHOT
     secrets:
       MAVEN_SIGNING_KEY_BASE64: ${{ secrets.MAVEN_SIGNING_KEY_BASE64 }}
       MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
