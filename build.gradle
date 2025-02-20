@@ -19,7 +19,7 @@
 buildscript {
     ext.kotlin_version = '1.7.0'
 
-    ext.version_name = System.getenv('TRAVIS_TAG')
+    ext.version_name = System.getenv('GITHUB_TAG')
     if (version_name == null || version_name.isEmpty()) {
         ext.version_name = 'debugVersion'
     }
@@ -111,7 +111,7 @@ task testAllModules () {
     )
 }
 task testODPModule () {
-    logger.info("Running android tests for Travis")
+    logger.info("Running android tests for ODP")
     dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',)
 }
 
