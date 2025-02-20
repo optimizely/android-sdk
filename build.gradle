@@ -236,7 +236,6 @@ configure(publishedProjects) {
         }
 
         signing {
-            // base64 for workaround travis escape chars issue
             def signingKeyBase64 = System.getenv('MAVEN_SIGNING_KEY_BASE64')
             // skip signing for "local" version into MavenLocal
             if (!signingKeyBase64?.trim()) return
