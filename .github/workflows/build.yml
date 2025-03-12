@@ -6,7 +6,7 @@ on:
       action:
         required: true
         type: string
-      travis_tag:
+      github_tag:
         required: false
         type: string
     secrets:
@@ -39,4 +39,4 @@ jobs:
         MAVEN_SIGNING_PASSPHRASE: ${{ secrets.MAVEN_SIGNING_PASSPHRASE }}
         MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
         MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-      run: TRAVIS_TAG=${{ inputs.travis_tag }} ./gradlew ${{ inputs.action }}
+      run: GITHUB_TAG=${{ inputs.github_tag }} ./gradlew ${{ inputs.action }}
