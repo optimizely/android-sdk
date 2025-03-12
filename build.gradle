@@ -76,7 +76,7 @@ ext {
     jacksonversion= "2.11.2"
     annotations_ver = "1.2.0"
     junit_ver = "4.12"
-    mockito_ver = "4.11.0"
+    mockito_ver = "5.11.0"
     mockito_ver_sdk_module = "3.6.28"
     powermock_ver = "2.0.9"
     support_test_runner_ver = "0.5"
