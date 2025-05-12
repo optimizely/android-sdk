@@ -106,7 +106,7 @@ public class DefaultUserProfileServiceTest {
 
     @Test
     public void startInBackground() throws InterruptedException {
-        DefaultUserProfileService ups = spy(DefaultUserProfileService.class);
+        DefaultUserProfileService ups = spy(userProfileService);
 
         CountDownLatch latch = new CountDownLatch(1);
         ups.startInBackground((u) -> {

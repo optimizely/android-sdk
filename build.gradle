@@ -19,7 +19,7 @@
 buildscript {
     ext.kotlin_version = '1.7.0'
 
-    ext.version_name = System.getenv('TRAVIS_TAG')
+    ext.version_name = System.getenv('GITHUB_TAG')
     if (version_name == null || version_name.isEmpty()) {
         ext.version_name = 'debugVersion'
     }
@@ -76,7 +76,8 @@ ext {
     jacksonversion= "2.11.2"
     annotations_ver = "1.2.0"
     junit_ver = "4.12"
-    mockito_ver = "1.10.19"
+    mockito_ver = "4.11.0"
+    mockito_ver_sdk_module = "3.6.28"
     powermock_ver = "2.0.9"
     support_test_runner_ver = "0.5"
     dexmaker_ver = "1.4"
@@ -101,11 +102,6 @@ task cleanAllModules () {
 
 task testAllModules () {
     logger.info("Running android tests for all modules")
-    dependsOn('testAllModulesTravis', ':test-app:connectedAndroidTest')
-}
-
-task testAllModulesTravis () {
-    logger.info("Running android tests for Travis")
     dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',
             ':event-handler:connectedAndroidTest', ':event-handler:test',
             ':datafile-handler:connectedAndroidTest', ':datafile-handler:test',
@@ -113,6 +109,10 @@ task testAllModulesTravis () {
             ':shared:connectedAndroidTest',
             ':odp:connectedAndroidTest', ':odp:test'
     )
+}
+task testODPModule () {
+    logger.info("Running android tests for ODP")
+    dependsOn(':android-sdk:connectedAndroidTest', ':android-sdk:test',)
 }
 
 // Publish to MavenCentral
@@ -236,7 +236,6 @@ configure(publishedProjects) {
         }
 
         signing {
-            // base64 for workaround travis escape chars issue
             def signingKeyBase64 = System.getenv('MAVEN_SIGNING_KEY_BASE64')
             // skip signing for "local" version into MavenLocal
             if (!signingKeyBase64?.trim()) return

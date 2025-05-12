@@ -34,6 +34,15 @@ android {
     }
     testOptions {
         unitTests.returnDefaultValues = true
+        unitTests.all {
+            jvmArgs = [
+                       "--add-opens","java.base/java.lang.reflect=ALL-UNNAMED",
+                       "--add-opens","java.base/java.util.concurrent=ALL-UNNAMED",
+                       "--add-opens","java.base/java.util.concurrent.locks=ALL-UNNAMED",
+                       "--add-opens","java.base/java.util=ALL-UNNAMED",
+                       "--add-opens","java.base/java.lang=ALL-UNNAMED"
+            ]
+        }
     }
     buildTypes {
         release {
@@ -45,8 +54,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
@@ -64,7 +73,8 @@ dependencies {
     implementation "androidx.annotation:annotation:$annotations_ver"
 
     testImplementation "junit:junit:$junit_ver"
-    testImplementation "org.mockito:mockito-core:$mockito_ver"
+    testImplementation "org.mockito:mockito-core:$mockito_ver_sdk_module"
+
     testImplementation "org.powermock:powermock-module-junit4:$powermock_ver"
     testImplementation "org.powermock:powermock-api-mockito2:$powermock_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
@@ -78,9 +88,7 @@ dependencies {
     androidTestImplementation "androidx.test:core-ktx:$androidx_test_core"
 
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
+    androidTestImplementation "org.mockito:mockito-android:$mockito_ver"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.google.code.gson:gson:$gson_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"

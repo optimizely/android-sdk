@@ -1,6 +1,5 @@
 # Optimizely Android SDK
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-extra-configurations-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Build Status](https://travis-ci.org/optimizely/android-sdk.svg?branch=master)](https://travis-ci.org/optimizely/android-sdk)
 
 This repository houses the Android SDK for use with Optimizely Feature Experimentation and Optimizely Full Stack (legacy). The Android SDK depends on the [Optimizely Java SDK](https://github.com/optimizely/java-sdk).
 
