@@ -72,7 +72,7 @@ jobs:
         echo "$GITHUB_CONTEXT"
         home/runner/ci-helper-tools/trigger-script-with-status-update.sh
   build:
-    uses: optimizely/android-sdk/.github/workflows/build.yml@master
+    uses: optimizely/android-sdk/.github/workflows/build.yml@muzahid/bump-java-sdk-4.2.2
     with:
       action: build
   test:
