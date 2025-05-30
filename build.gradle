@@ -88,6 +88,7 @@ ext {
     androidx_test_core = "1.4.0"
     androidx_test_rules = "1.4.0"
     espresso_ver = "3.4.0"
+    slf4j_ver = "1.7.3"
 }
 
 task clean(type: Delete) {
