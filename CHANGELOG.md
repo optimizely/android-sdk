@@ -1,5 +1,11 @@
 # Optimizely Android X SDK Changelog
 
+## 5.0.1
+May 30th, 2025
+
+### Functionality Enhancements
+* Add experimentId and variationId to decision notification ([#509](https://github.com/optimizely/android-sdk/pull/509)).
+
 ## 5.0.0
 November 25th, 2024
 
