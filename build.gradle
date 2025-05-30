@@ -71,7 +71,7 @@ ext {
     build_tools_version = "30.0.3"
     min_sdk_version = 21
     target_sdk_version = 33
-    java_core_ver = "4.2.0"
+    java_core_ver = "4.2.2"
     android_logger_ver = "1.3.6"
     jacksonversion= "2.11.2"
     annotations_ver = "1.2.0"
@@ -88,6 +88,7 @@ ext {
     androidx_test_core = "1.4.0"
     androidx_test_rules = "1.4.0"
     espresso_ver = "3.4.0"
+    slf4j_ver = "1.7.3"
 }
 
 task clean(type: Delete) {

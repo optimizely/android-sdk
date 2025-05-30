@@ -57,6 +57,8 @@ dependencies {
     implementation "androidx.annotation:annotation:$annotations_ver"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "androidx.work:work-runtime:$work_runtime"
+    // Add SLF4J API for Logger interface
+    implementation "org.slf4j:slf4j-api:$slf4j_ver"
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
@@ -74,4 +76,5 @@ dependencies {
 
     androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
     androidTestImplementation "org.mockito:mockito-android:$mockito_ver"
+    androidTestImplementation "org.slf4j:slf4j-api:$slf4j_ver"
 }

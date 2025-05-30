@@ -69,6 +69,8 @@ dependencies {
         exclude group: 'com.google.code.findbugs'
     }
 
+    implementation "org.slf4j:slf4j-api:$slf4j_ver"
+
     compileOnly "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
     implementation "androidx.annotation:annotation:$annotations_ver"
 
