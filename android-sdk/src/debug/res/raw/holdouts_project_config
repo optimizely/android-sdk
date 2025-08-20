@@ -1,0 +1,432 @@
+{
+  "accountId": "2360254204",
+  "anonymizeIP": true,
+  "botFiltering": true,
+  "sendFlagDecisions": true,
+  "projectId": "3918735994",
+  "revision": "1480511547",
+  "sdkKey": "ValidProjectConfigV4",
+  "environmentKey": "production",
+  "version": "4",
+  "audiences": [
+    {
+      "id": "3468206642",
+      "name": "Gryffindors",
+      "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"house\", \"type\": \"custom_attribute\", \"value\":\"Gryffindor\"}]]]"
+    },
+    {
+      "id": "3988293898",
+      "name": "Slytherins",
+      "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"house\", \"type\": \"custom_attribute\", \"value\":\"Slytherin\"}]]]"
+    },
+    {
+      "id": "4194404272",
+      "name": "english_citizens",
+      "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"nationality\", \"type\": \"custom_attribute\", \"value\":\"English\"}]]]"
+    },
+    {
+      "id": "2196265320",
+      "name": "audience_with_missing_value",
+      "conditions": "[\"and\", [\"or\", [\"or\", {\"name\": \"nationality\", \"type\": \"custom_attribute\", \"value\": \"English\"}, {\"name\": \"nationality\", \"type\": \"custom_attribute\"}]]]"
+    }
+  ],
+  "typedAudiences": [
+    {
+      "id": "3468206643",
+      "name": "BOOL",
+      "conditions": ["and", ["or", ["or", {"name": "booleanKey", "type": "custom_attribute", "match":"exact", "value":true}]]]
+    },
+    {
+      "id": "3468206646",
+      "name": "INTEXACT",
+      "conditions": ["and", ["or", ["or", {"name": "integerKey", "type": "custom_attribute", "match":"exact", "value":1.0}]]]
+    },
+    {
+      "id": "3468206644",
+      "name": "INT",
+      "conditions": ["and", ["or", ["or", {"name": "integerKey", "type": "custom_attribute", "match":"gt", "value":1.0}]]]
+    },
+    {
+      "id": "3468206645",
+      "name": "DOUBLE",
+      "conditions": ["and", ["or", ["or", {"name": "doubleKey", "type": "custom_attribute", "match":"lt", "value":100.0}]]]
+    },
+    {
+      "id": "3468206642",
+      "name": "Gryffindors",
+      "conditions": ["and", ["or", ["or", {"name": "house", "type": "custom_attribute", "match":"exact", "value":"Gryffindor"}]]]
+    },
+    {
+      "id": "3988293898",
+      "name": "Slytherins",
+      "conditions": ["and", ["or", ["or", {"name": "house", "type": "custom_attribute", "match":"substring", "value":"Slytherin"}]]]
+    },
+    {
+      "id": "4194404272",
+      "name": "english_citizens",
+      "conditions": ["and", ["or", ["or", {"name": "nationality", "type": "custom_attribute", "match":"exact", "value":"English"}]]]
+    },
+    {
+      "id": "2196265320",
+      "name": "audience_with_missing_value",
+      "conditions": ["and", ["or", ["or", {"name": "nationality", "type": "custom_attribute", "value": "English"}, {"name": "nationality", "type": "custom_attribute"}]]]
+    }
+  ],
+  "attributes": [
+    {
+      "id": "553339214",
+      "key": "house"
+    },
+    {
+      "id": "58339410",
+      "key": "nationality"
+    },
+    {
+      "id": "583394100",
+      "key": "$opt_test"
+    },
+    {
+      "id": "323434545",
+      "key": "booleanKey"
+    },
+    {
+      "id": "616727838",
+      "key": "integerKey"
+    },
+    {
+      "id": "808797686",
+      "key": "doubleKey"
+    }
+  ],
+  "events": [
+    {
+      "id": "3785620495",
+      "key": "basic_event",
+      "experimentIds": [
+        "1323241596",
+        "2738374745",
+        "3042640549",
+        "3262035800",
+        "3072915611"
+      ]
+    },
+    {
+      "id": "3195631717",
+      "key": "event_with_paused_experiment",
+      "experimentIds": [
+        "2667098701"
+      ]
+    },
+    {
+      "id": "1987018666",
+      "key": "event_with_launched_experiments_only",
+      "experimentIds": [
+        "3072915611"
+      ]
+    }
+  ],
+  "experiments": [
+    {
+      "id": "1323241596",
+      "key": "basic_experiment",
+      "layerId": "1630555626",
+      "status": "Running",
+      "variations": [
+        {
+          "id": "1423767502",
+          "key": "A",
+          "variables": []
+        },
+        {
+          "id": "3433458314",
+          "key": "B",
+          "variables": []
+        }
+      ],
+      "trafficAllocation": [
+        {
+          "entityId": "1423767502",
+          "endOfRange": 5000
+        },
+        {
+          "entityId": "3433458314",
+          "endOfRange": 10000
+        }
+      ],
+      "audienceIds": [],
+      "forcedVariations": {
+        "Harry Potter": "A",
+        "Tom Riddle": "B"
+      }
+    },
+    {
+      "id": "3262035800",
+      "key": "multivariate_experiment",
+      "layerId": "3262035800",
+      "status": "Running",
+      "variations": [
+        {
+          "id": "1880281238",
+          "key": "Fred",
+          "featureEnabled": true,
+          "variables": [
+            {
+              "id": "675244127",
+              "value": "F"
+            },
+            {
+              "id": "4052219963",
+              "value": "red"
+            },
+            {
+              "id": "4111661000",
+              "value": "{\"k1\":\"s1\",\"k2\":103.5,\"k3\":false,\"k4\":{\"kk1\":\"ss1\",\"kk2\":true}}"
+            }
+          ]
+        },
+        {
+          "id": "3631049532",
+          "key": "Feorge",
+          "featureEnabled": true,
+          "variables": [
+            {
+              "id": "675244127",
+              "value": "F"
+            },
+            {
+              "id": "4052219963",
+              "value": "eorge"
+            },
+            {
+              "id": "4111661000",
+              "value": "{\"k1\":\"s2\",\"k2\":203.5,\"k3\":true,\"k4\":{\"kk1\":\"ss2\",\"kk2\":true}}"
+            }
+          ]
+        },
+        {
+          "id": "4204375027",
+          "key": "Gred",
+          "featureEnabled": false,
+          "variables": [
+            {
+              "id": "675244127",
+              "value": "G"
+            },
+            {
+              "id": "4052219963",
+              "value": "red"
+            },
+            {
+              "id": "4111661000",
+              "value": "{\"k1\":\"s3\",\"k2\":303.5,\"k3\":true,\"k4\":{\"kk1\":\"ss3\",\"kk2\":false}}"
+            }
+          ]
+        },
+        {
+          "id": "2099211198",
+          "key": "George",
+          "featureEnabled": true,
+          "variables": [
+            {
+              "id": "675244127",
+              "value": "G"
+            },
+            {
+              "id": "4052219963",
+              "value": "eorge"
+            },
+            {
+              "id": "4111661000",
+              "value": "{\"k1\":\"s4\",\"k2\":403.5,\"k3\":false,\"k4\":{\"kk1\":\"ss4\",\"kk2\":true}}"
+            }
+          ]
+        }
+      ],
+      "trafficAllocation": [
+        {
+          "entityId": "1880281238",
+          "endOfRange": 2500
+        },
+        {
+          "entityId": "3631049532",
+          "endOfRange": 5000
+        },
+        {
+          "entityId": "4204375027",
+          "endOfRange": 7500
+        },
+        {
+          "entityId": "2099211198",
+          "endOfRange": 10000
+        }
+      ],
+      "audienceIds": [
+        "3468206642"
+      ],
+      "forcedVariations": {
+        "Fred": "Fred",
+        "Feorge": "Feorge",
+        "Gred": "Gred",
+        "George": "George"
+      }
+    }
+  ],
+  "holdouts": [
+    {
+      "audienceIds": [],
+      "id": "1007532345428",
+      "key": "holdout_zero_traffic",
+      "status": "Running",
+      "trafficAllocation": [
+        {
+          "endOfRange": 0,
+          "entityId": "$opt_dummy_variation_id"
+        }
+      ],
+      "variations": [
+        {
+          "featureEnabled": false,
+          "id": "$opt_dummy_variation_id",
+          "key": "ho_off_key"
+        }
+      ]
+    },
+    {
+      "audienceIds": [],
+      "id": "1007543323427",
+      "key": "holdout_included_flags",
+      "status": "Running",
+      "trafficAllocation": [
+        {
+          "endOfRange": 2000,
+          "entityId": "$opt_dummy_variation_id"
+        }
+      ],
+      "variations": [
+        {
+          "featureEnabled": false,
+          "id": "$opt_dummy_variation_id",
+          "key": "ho_off_key"
+        }
+      ],
+      "includedFlags": [
+        "4195505407",
+        "3926744821",
+        "3281420120"
+      ]
+    },
+    {
+      "audienceIds": [],
+      "id": "10075323428",
+      "key": "basic_holdout",
+      "status": "Running",
+      "trafficAllocation": [
+        {
+          "endOfRange": 500,
+          "entityId": "$opt_dummy_variation_id"
+        }
+      ],
+      "variations": [
+        {
+          "featureEnabled": false,
+          "id": "$opt_dummy_variation_id",
+          "key": "ho_off_key"
+        }
+      ]
+    }
+  ],
+  "groups": [],
+  "featureFlags": [
+    {
+      "id": "4195505407",
+      "key": "boolean_feature",
+      "rolloutId": "",
+      "experimentIds": [],
+      "variables": []
+    },
+    {
+      "id": "3926744821",
+      "key": "double_single_variable_feature",
+      "rolloutId": "",
+      "experimentIds": [],
+      "variables": [
+        {
+          "id": "4111654444",
+          "key": "double_variable",
+          "type": "double",
+          "defaultValue": "14.99"
+        }
+      ]
+    },
+    {
+      "id": "3281420120",
+      "key": "integer_single_variable_feature",
+      "rolloutId": "",
+      "experimentIds": [],
+      "variables": [
+        {
+          "id": "593964691",
+          "key": "integer_variable",
+          "type": "integer",
+          "defaultValue": "7"
+        }
+      ]
+    },
+    {
+      "id": "2591051011",
+      "key": "boolean_single_variable_feature",
+      "rolloutId": "",
+      "experimentIds": [],
+      "variables": [
+        {
+          "id": "3974680341",
+          "key": "boolean_variable",
+          "type": "boolean",
+          "defaultValue": "true"
+        }
+      ]
+    },
+    {
+      "id": "2079378557",
+      "key": "string_single_variable_feature",
+      "rolloutId": "",
+      "experimentIds": [],
+      "variables": [
+        {
+          "id": "2077511132",
+          "key": "string_variable",
+          "type": "string",
+          "defaultValue": "wingardium leviosa"
+        }
+      ]
+    },
+    {
+      "id": "3263342226",
+      "key": "multi_variate_feature",
+      "rolloutId": "",
+      "experimentIds": ["3262035800"],
+      "variables": [
+        {
+          "id": "675244127",
+          "key": "first_letter",
+          "type": "string",
+          "defaultValue": "H"
+        },
+        {
+          "id": "4052219963",
+          "key": "rest_of_name",
+          "type": "string",
+          "defaultValue": "arry"
+        },
+        {
+          "id": "4111661000",
+          "key": "json_patched",
+          "type": "string",
+          "subType": "json",
+          "defaultValue": "{\"k1\":\"v1\",\"k2\":3.5,\"k3\":true,\"k4\":{\"kk1\":\"vv1\",\"kk2\":false}}"
+        }
+      ]
+    }
+  ],
+  "rollouts": []
+}
