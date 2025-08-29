@@ -59,6 +59,13 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url "https://central.sonatype.com/repository/maven-snapshots/"
+    }
+    mavenCentral()
+}
+
 dependencies {
     api project(':shared')
     api project(':datafile-handler')
@@ -68,7 +75,6 @@ dependencies {
     api ("com.optimizely.ab:core-api:$java_core_ver") {
         exclude group: 'com.google.code.findbugs'
     }
-
     implementation "org.slf4j:slf4j-api:$slf4j_ver"
 
     compileOnly "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
