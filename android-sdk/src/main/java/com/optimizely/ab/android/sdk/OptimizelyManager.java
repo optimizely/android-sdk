@@ -58,6 +58,7 @@ import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.DefaultPersistenceDelegate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -90,6 +91,7 @@ public class OptimizelyManager {
     @NonNull private UserProfileService userProfileService;
     @Nullable private ODPManager odpManager;
     @Nullable private final String vuid;
+    @Nullable private CmabService cmabService;
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
     private boolean returnInMainThreadFromAsyncInit = true;
@@ -112,6 +114,7 @@ public class OptimizelyManager {
                       @NonNull NotificationCenter notificationCenter,
                       @Nullable List<OptimizelyDecideOption> defaultDecideOptions,
                       @Nullable ODPManager odpManager,
+                      @Nullable CmabService cmabService,
                       @Nullable String vuid,
                       @Nullable String clientEngineName,
                       @Nullable String clientVersion) {
@@ -137,6 +140,7 @@ public class OptimizelyManager {
         this.userProfileService = userProfileService;
         this.vuid = vuid;
         this.odpManager = odpManager;
+        this.cmabService = cmabService;
         this.notificationCenter = notificationCenter;
         this.defaultDecideOptions = defaultDecideOptions;
 
@@ -646,6 +650,7 @@ public class OptimizelyManager {
         builder.withNotificationCenter(notificationCenter);
         builder.withDefaultDecideOptions(defaultDecideOptions);
         builder.withODPManager(odpManager);
+        builder.withCmabService(cmabService);
         Optimizely optimizely = builder.build();
 
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class), vuid);
@@ -781,14 +786,18 @@ public class OptimizelyManager {
         @Nullable private List<OptimizelyDecideOption> defaultDecideOptions = null;
         @Nullable private ODPEventManager odpEventManager;
         @Nullable private ODPSegmentManager odpSegmentManager;
+        @Nullable private CMABClient cmabClient;
 
         private int odpSegmentCacheSize = 100;
-        private int odpSegmentCacheTimeoutInSecs = 600;
+        private int odpSegmentCacheTimeoutInSecs = 10*60;
         private int timeoutForODPSegmentFetchInSecs = 10;
         private int timeoutForODPEventDispatchInSecs = 10;
         private boolean odpEnabled = true;
         private boolean vuidEnabled = false;
         private String vuid = null;
+
+        private int cmabCacheSize = 100;
+        private int cmabCacheTimeoutInSecs = 30*60;
 
         private String customSdkName = null;
         private String customSdkVersion = null;
@@ -1058,6 +1067,12 @@ public class OptimizelyManager {
             this.customSdkVersion = clientVersion;
             return this;
         }
+
+        public Builder withCmabClient(CmabClient cmabClient) {
+            this.cmabClient = cmabClient;
+            return this;
+        }
+
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          * @param  context the application context used to create default service if not provided.
@@ -1160,6 +1175,13 @@ public class OptimizelyManager {
                         .build();
             }
 
+            if (cmabClient == null) {
+                cmabClient = new DefaultCmabClient();
+            }
+            DefaultLRUCache<CmabCacheValue> cmabCache = new DefaultLRUCache<>(cmabCacheSize, cmabCacheTimeoutInSecs);
+            CmabServiceOptions cmabServiceOptions = new CmabServiceOptions(logger, cmabCache, cmabClient);
+            CmabService cmabService = new DefaultCmabService(cmabServiceOptions);
+
             return new OptimizelyManager(projectId, sdkKey,
                     datafileConfig,
                     logger,
@@ -1173,6 +1195,7 @@ public class OptimizelyManager {
                     notificationCenter,
                     defaultDecideOptions,
                     odpManager,
+                    cmabService,
                     vuid,
                     customSdkName,
                     customSdkVersion

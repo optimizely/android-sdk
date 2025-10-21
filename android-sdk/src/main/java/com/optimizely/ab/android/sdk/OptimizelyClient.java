@@ -818,12 +818,17 @@ public class OptimizelyClient {
     @Nullable
     public OptimizelyUserContext createUserContext(@NonNull String userId,
                                                    @NonNull Map<String, Object> attributes) {
-        if (optimizely != null) {
-            return optimizely.createUserContext(userId, attributes);
-        } else {
+        if (optimizely == null) {
             logger.warn("Optimizely is not initialized, could not create a user context");
             return null;
         }
+
+        if (userId == null) {
+            logger.warn("The userId parameter must be nonnull.");
+            return null;
+        }
+
+        return new OptimizelyUserContextAndroid(optimizely, userId, attributes);
     }
 
     @Nullable
