@@ -534,4 +534,82 @@ public class OptimizelyManagerBuilderTest {
         assertNotNull("Manager should be created successfully", manager);
     }
 
+    @Test
+    public void testCmabServiceDefaultConfigurationValidation() throws Exception {
+        // Default configuration values
+        int defaultCacheSize = 100;
+        int defaultTimeoutSeconds = 30 * 60; // 30 minutes = 1800 seconds
+
+        // Create mocks for the CMAB service creation chain
+        Object mockDefaultLRUCache = PowerMockito.mock(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"));
+        Object mockDefaultCmabClient = PowerMockito.mock(Class.forName("com.optimizely.ab.cmab.DefaultCmabClient"));
+        Object mockCmabServiceOptions = PowerMockito.mock(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"));
+        Object mockDefaultCmabService = PowerMockito.mock(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"));
+
+        // Mock the construction chain with parameter validation
+        whenNew(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"))
+            .thenReturn(mockDefaultLRUCache);
+
+        whenNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabClient"))
+            .thenReturn(mockDefaultCmabClient);
+
+        whenNew(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"))
+            .thenReturn(mockCmabServiceOptions);
+
+        whenNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"))
+            .thenReturn(mockDefaultCmabService);
+
+        // Use PowerMock to verify OptimizelyManager constructor is called with CMAB service
+        whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
+
+        // Build OptimizelyManager with NO CMAB configuration to test defaults
+        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
+                .build(mockContext);
+
+        verifyNew(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"))
+            .withArguments(eq(defaultCacheSize), eq(defaultTimeoutSeconds));
+
+        // Verify DefaultCmabClient is created with default parameters
+        verifyNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabClient"))
+            .withNoArguments();
+
+        // Verify CmabServiceOptions is created with logger, cache, and default client
+        verifyNew(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"))
+            .withArguments(any(), eq(mockDefaultLRUCache), eq(mockDefaultCmabClient));
+
+        verifyNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"))
+            .withArguments(eq(mockCmabServiceOptions));
+
+        // Verify OptimizelyManager constructor was called with the mocked CMAB service
+        verifyNew(OptimizelyManager.class).withArguments(
+            any(),                      // projectId
+            any(),                      // sdkKey
+            any(),                      // datafileConfig
+            any(),                      // logger
+            anyLong(),                  // datafileDownloadInterval
+            any(),                      // datafileHandler
+            any(),                      // errorHandler
+            anyLong(),                  // eventDispatchRetryInterval
+            any(),                      // eventHandler
+            any(),                      // eventProcessor
+            any(),                      // userProfileService
+            any(),                      // notificationCenter
+            any(),                      // defaultDecideOptions
+            any(),                      // odpManager
+            eq(mockDefaultCmabService), // cmabService - Should be our mocked service
+            any(),                      // vuid
+            any(),                      // customSdkName
+            any()                       // customSdkVersion
+        );
+
+        // This test validates:
+        // 1. DefaultLRUCache created with default cache size (100) and timeout (1800 seconds)
+        // 2. DefaultCmabClient created with no arguments (using defaults)
+        // 3. CmabServiceOptions created with logger, mocked cache, and default client
+        // 4. DefaultCmabService created with the mocked service options
+        // 5. OptimizelyManager constructor receives the exact mocked CMAB service
+        // 6. All default parameters flow correctly through the creation chain
+        assertNotNull("Manager should be created successfully", manager);
+    }
+
 }
