@@ -152,9 +152,12 @@ public class Client {
      */
     public <T> T execute(Request<T> request, int timeout, int power) {
         int baseTimeout = timeout;
-        int maxTimeout = (int) Math.pow(baseTimeout, power);
         T response = null;
-        while(timeout <= maxTimeout) {
+        int attempts = 0;
+        int maxAttempts = power + 1; // power represents retries, so total attempts = power + 1
+
+        while(attempts < maxAttempts) {
+            attempts++;
             try {
                 response = request.execute();
             } catch (Exception e) {
@@ -164,6 +167,9 @@ public class Client {
             if (response == null || response == Boolean.FALSE) {
                 // retry is disabled when timeout set to 0
                 if (timeout == 0) break;
+
+                // don't sleep if this was the last attempt
+                if (attempts >= maxAttempts) break;
 
                 try {
                     logger.info("Request failed, waiting {} seconds to try again", timeout);
