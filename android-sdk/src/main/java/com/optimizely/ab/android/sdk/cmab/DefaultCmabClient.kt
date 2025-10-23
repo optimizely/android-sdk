@@ -21,7 +21,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-open class CMABClient(private val client: Client, private val logger: Logger) {
+open class DefaultCmabClient(private val client: Client, private val logger: Logger) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     fun fetchDecision(
@@ -68,7 +68,7 @@ open class CMABClient(private val client: Client, private val logger: Logger) {
                 } else {
                     val errorMessage: String = java.lang.String.format(
                         CmabClientHelper.CMAB_FETCH_FAILED,
-                        statusLine.getReasonPhrase()
+                        urlConnection.responseMessage
                     )
                     logger.error(errorMessage)
                     throw CmabFetchException(errorMessage)
@@ -104,9 +104,11 @@ open class CMABClient(private val client: Client, private val logger: Logger) {
         var CONNECTION_TIMEOUT = 10 * 1000
         var READ_TIMEOUT = 60 * 1000
 
-        // the numerical base for the exponential backoff
-        const val REQUEST_BACKOFF_TIMEOUT = 2
-        // power the number of retries
-        const val REQUEST_RETRIES_POWER = 3
+        // cmab service retries only once with 1sec interval
+
+        // the numerical base for the exponential backoff (1 second)
+        const val REQUEST_BACKOFF_TIMEOUT = 1
+        // retry only once = 2 total attempts
+        const val REQUEST_RETRIES_POWER = 2
     }
 }
