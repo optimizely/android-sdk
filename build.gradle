@@ -26,8 +26,8 @@ buildscript {
     ext.is_release_version = !version_name.endsWith("SNAPSHOT")
 
     repositories {
-        jcenter()
         google()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.2'
@@ -39,7 +39,8 @@ buildscript {
 }
 
 plugins {
-    id "org.jlleitschuh.gradle.ktlint" version "11.0.0"
+    id "org.jlleitschuh.gradle.ktlint" version "11.0.0" 
+    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
 allprojects {
@@ -52,11 +53,10 @@ allprojects {
     }
 
     repositories {
-        jcenter()
         google()
         mavenCentral()
         // SNAPSHOT support
-        maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://central.sonatype.com/repository/maven-snapshots/" }
         maven { url "https://jitpack.io" }
     }
 
@@ -117,9 +117,35 @@ task testODPModule () {
 }
 
 // Publish to MavenCentral
+nexusPublishing {
+    packageGroup = group_id
+    repositories {
+        sonatype {
+            nexusUrl.set(uri('https://ossrh-staging-api.central.sonatype.com/service/local/'))
+            snapshotRepositoryUrl.set(uri('https://central.sonatype.com/repository/maven-snapshots/'))
+            username = System.getenv('MAVEN_CENTRAL_USERNAME')
+            password = System.getenv('MAVEN_CENTRAL_PASSWORD')
+        }
+    }
+    
+}
 
 task ship() {
     dependsOn(':android-sdk:ship', ':shared:ship', ':event-handler:ship', ':user-profile:ship', ':datafile-handler:ship', ':odp:ship')
+    doLast {
+        def sonatypeTasks = ['publishToSonatype']
+        if (is_release_version) {
+            sonatypeTasks.add('closeSonatypeStagingRepository')
+        }
+
+        def args = ['./gradlew']
+        args.addAll(sonatypeTasks)
+        args.add('--info')
+
+        exec {
+            commandLine args
+        }
+    }
 }
 
 def publishedProjects = subprojects.findAll { it.name != 'test-app' }
@@ -221,17 +247,6 @@ configure(publishedProjects) {
                     pom.description = 'The Android SDK for Optimizely Feature Experimentation, Optimizely Full Stack (legacy), and Optimizely Rollouts'
 
                     from components.release
-                }
-            }
-            repositories {
-                maven {
-                    def releaseUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-                    def snapshotUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-                    url = is_release_version ? releaseUrl : snapshotUrl
-                    credentials {
-                        username System.getenv('MAVEN_CENTRAL_USERNAME')
-                        password System.getenv('MAVEN_CENTRAL_PASSWORD')
-                    }
                 }
             }
         }
