@@ -1068,6 +1068,27 @@ public class OptimizelyManager {
             return this;
         }
 
+        /**
+         * Override the default Cmab cache size (100).
+         * @param size the size
+         * @return this {@link Builder} instance
+         */
+        public Builder withCmabCacheSize(int size) {
+            this.cmabCacheSize = size;
+            return this;
+        }
+
+        /**
+         * Override the default Cmab cache timeout (30 minutes).
+         * @param interval the interval
+         * @param timeUnit the time unit of the timeout argument
+         * @return this {@link Builder} instance
+         */
+        public Builder withCmabCacheTimeout(int interval, TimeUnit timeUnit) {
+            this.cmabCacheTimeoutInSecs = (int) timeUnit.toSeconds(interval);
+            return this;
+        }
+
         public Builder withCmabClient(CmabClient cmabClient) {
             this.cmabClient = cmabClient;
             return this;

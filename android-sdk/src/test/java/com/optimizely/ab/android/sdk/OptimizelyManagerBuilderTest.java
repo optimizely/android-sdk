@@ -25,6 +25,8 @@ import com.optimizely.ab.android.odp.DefaultODPApiManager;
 import com.optimizely.ab.android.odp.ODPEventClient;
 import com.optimizely.ab.android.odp.ODPSegmentClient;
 import com.optimizely.ab.android.odp.VuidManager;
+import com.optimizely.ab.android.sdk.cmab.CMABClient;
+import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
@@ -465,4 +467,71 @@ public class OptimizelyManagerBuilderTest {
 
         when(ODPManager.builder()).thenCallRealMethod();
     }
+
+    @Test
+    public void testCmabServiceConfigurationValidation() throws Exception {
+        // Custom configuration values
+        int customCacheSize = 500;
+        int customTimeoutMinutes = 45;
+        int expectedTimeoutSeconds = customTimeoutMinutes * 60; // 45 min = 2700 sec
+        CMABClient mockCmabClient = mock(CMABClient.class);
+
+        // Create mocks for the CMAB service creation chain
+        Object mockDefaultLRUCache = PowerMockito.mock(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"));
+        Object mockCmabServiceOptions = PowerMockito.mock(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"));
+        Object mockDefaultCmabService = PowerMockito.mock(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"));
+
+        // Mock the construction chain with parameter validation
+        whenNew(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"))
+            .thenReturn(mockDefaultLRUCache);
+
+        whenNew(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"))
+            .thenReturn(mockCmabServiceOptions);
+
+        whenNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"))
+            .thenReturn(mockDefaultCmabService);
+
+        // Use PowerMock to verify OptimizelyManager constructor is called with CMAB service
+        whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
+
+        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
+                .withCmabCacheSize(customCacheSize)
+                .withCmabCacheTimeout(customTimeoutMinutes, TimeUnit.MINUTES)
+                .withCmabClient(mockCmabClient)
+                .build(mockContext);
+
+        verifyNew(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"))
+            .withArguments(eq(customCacheSize), eq(expectedTimeoutSeconds));
+
+        verifyNew(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"))
+            .withArguments(any(), eq(mockDefaultLRUCache), eq(mockCmabClient));
+
+        verifyNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"))
+            .withArguments(eq(mockCmabServiceOptions));
+
+        // Verify OptimizelyManager constructor was called with the mocked CMAB service
+        verifyNew(OptimizelyManager.class).withArguments(
+            any(),                      // projectId
+            any(),                      // sdkKey
+            any(),                      // datafileConfig
+            any(),                      // logger
+            anyLong(),                  // datafileDownloadInterval
+            any(),                      // datafileHandler
+            any(),                      // errorHandler
+            anyLong(),                  // eventDispatchRetryInterval
+            any(),                      // eventHandler
+            any(),                      // eventProcessor
+            any(),                      // userProfileService
+            any(),                      // notificationCenter
+            any(),                      // defaultDecideOptions
+            any(),                      // odpManager
+            eq(mockDefaultCmabService), // cmabService - Should be our mocked service
+            any(),                      // vuid
+            any(),                      // customSdkName
+            any()                       // customSdkVersion
+        );
+
+        assertNotNull("Manager should be created successfully", manager);
+    }
+
 }
