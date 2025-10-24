@@ -50,6 +50,7 @@ optimizelyManager.initialize(this, null, (OptimizelyClient optimizely) -> {
 
 	Variation variation = optimizely.activate("background_experiment", userId);
 
+
 	optimizely.track("sample_conversion", userId);
 });
 
