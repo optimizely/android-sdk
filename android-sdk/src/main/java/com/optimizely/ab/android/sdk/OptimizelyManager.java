@@ -1196,12 +1196,14 @@ public class OptimizelyManager {
                         .build();
             }
 
+            DefaultCmabService.Builder cmabBuilder = DefaultCmabService.builder();
             if (cmabClient == null) {
                 cmabClient = new DefaultCmabClient();
             }
-            DefaultLRUCache<CmabCacheValue> cmabCache = new DefaultLRUCache<>(cmabCacheSize, cmabCacheTimeoutInSecs);
-            CmabServiceOptions cmabServiceOptions = new CmabServiceOptions(logger, cmabCache, cmabClient);
-            CmabService cmabService = new DefaultCmabService(cmabServiceOptions);
+            cmabBuilder.withClient(cmabClient);
+            cmabBuilder.withCmabCacheSize(cmabCacheSize);
+            cmabBuilder.withCmabCacheTimeoutInSecs(cmabCacheTimeoutInSecs);
+            CmabService cmabService = cmabBuilder.build();
 
             return new OptimizelyManager(projectId, sdkKey,
                     datafileConfig,
