@@ -39,9 +39,15 @@ import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.event_handler.EventDispatcher;
 import com.optimizely.ab.android.odp.DefaultODPApiManager;
 import com.optimizely.ab.android.odp.VuidManager;
+import com.optimizely.ab.android.sdk.cmab.DefaultCmabClient;
+import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.DatafileConfig;
+import com.optimizely.ab.android.shared.OptlyStorage;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.cmab.client.CmabClient;
+import com.optimizely.ab.cmab.service.CmabService;
+import com.optimizely.ab.cmab.service.DefaultCmabService;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
@@ -58,7 +64,6 @@ import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.beans.DefaultPersistenceDelegate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -786,7 +791,7 @@ public class OptimizelyManager {
         @Nullable private List<OptimizelyDecideOption> defaultDecideOptions = null;
         @Nullable private ODPEventManager odpEventManager;
         @Nullable private ODPSegmentManager odpSegmentManager;
-        @Nullable private CMABClient cmabClient;
+        @Nullable private CmabClient cmabClient;
 
         private int odpSegmentCacheSize = 100;
         private int odpSegmentCacheTimeoutInSecs = 10*60;
@@ -1198,7 +1203,7 @@ public class OptimizelyManager {
 
             DefaultCmabService.Builder cmabBuilder = DefaultCmabService.builder();
             if (cmabClient == null) {
-                cmabClient = new DefaultCmabClient();
+                cmabClient = new DefaultCmabClient(context);
             }
             cmabBuilder.withClient(cmabClient);
             cmabBuilder.withCmabCacheSize(cmabCacheSize);

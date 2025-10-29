@@ -45,7 +45,10 @@ android {
 }
 
 dependencies {
-    api ("com.optimizely.ab:core-api:$java_core_ver") {
+//    api ("com.optimizely.ab:core-api:$java_core_ver") {
+//        exclude group: 'com.google.code.findbugs'
+//    }
+    api ("com.optimizely.ab:core-api:3.1.0-SNAPSHOT") {
         exclude group: 'com.google.code.findbugs'
     }
 
