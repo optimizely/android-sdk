@@ -47,6 +47,8 @@ public class EventSQLiteOpenHelperTest {
     public void setup() {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         logger = mock(Logger.class);
+        // Delete any existing database to ensure onCreate is called
+        context.deleteDatabase(String.format(EventSQLiteOpenHelper.DB_NAME, "1"));
     }
 
     @After
