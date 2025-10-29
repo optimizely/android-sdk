@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace "com.optimizely.ab.android.test_app"
     compileSdkVersion compile_sdk_version
     buildToolsVersion build_tools_version
 
@@ -28,10 +29,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'test-app-proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
     }
     packagingOptions {
         resources {

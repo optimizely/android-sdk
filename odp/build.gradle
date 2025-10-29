@@ -21,7 +21,7 @@ apply plugin: 'org.jlleitschuh.gradle.ktlint'
 android {
     namespace "com.optimizely.ab.android.odp"
     compileSdk compile_sdk_version
-    buildTools build_tools_version
+    buildToolsVersion build_tools_version
 
     defaultConfig {
         minSdkVersion min_sdk_version
@@ -42,15 +42,7 @@ android {
             testCoverageEnabled true
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
     buildToolsVersion build_tools_version
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
 }
 
 dependencies {

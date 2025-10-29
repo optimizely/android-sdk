@@ -30,7 +30,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.2'
+        classpath 'com.android.tools.build:gradle:8.6.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -41,6 +41,19 @@ buildscript {
 plugins {
     id "org.jlleitschuh.gradle.ktlint" version "11.0.0"
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
+}
+
+subprojects {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "17"
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
+    }
 }
 
 allprojects {
@@ -209,7 +222,7 @@ configure(publishedProjects) {
 
     android.libraryVariants.all { variant ->
         task("${variant.name}JavadocJar", type: Jar, dependsOn: "${variant.name}Javadoc") {
-            classifier = 'javadoc'
+            archiveClassifier = 'javadoc'
             from tasks["${variant.name}Javadoc"].destinationDir
         }
 
@@ -219,7 +232,7 @@ configure(publishedProjects) {
 
     android.libraryVariants.all { variant ->
         task("${variant.name}SourcesJar", type: Jar) {
-            classifier = 'sources'
+            archiveClassifier = 'sources'
             from variant.javaCompileProvider.get().source
         }
         project.artifacts.add("archives", tasks["${variant.name}SourcesJar"]);

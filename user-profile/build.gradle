@@ -20,7 +20,7 @@ apply plugin: 'kotlin-android'
 android {
     namespace "com.optimizely.ab.android.user_profile"
     compileSdk compile_sdk_version
-    buildTools build_tools_version
+    buildToolsVersion build_tools_version
 
     defaultConfig {
         minSdkVersion min_sdk_version
@@ -38,10 +38,6 @@ android {
         debug {
             testCoverageEnabled true
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
