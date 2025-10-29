@@ -205,6 +205,9 @@ configure(publishedProjects) {
 
             title = docTitle
 
+            // Set unique output directory for each variant
+            destinationDir = file("${project.buildDir}/docs/javadoc/${variant.name}")
+
             options.links("http://docs.oracle.com/javase/7/docs/api/");
 
             // First add all of your dependencies to the classpath, then add the android jars
@@ -239,6 +242,17 @@ configure(publishedProjects) {
     }
 
     android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_17
+            targetCompatibility JavaVersion.VERSION_17
+        }
+
+        lint {
+            disable 'GradleDependency', 'VisibleForTesting', 'UnsafeProtectedBroadcastReceiver'
+            abortOnError true
+            warningsAsErrors false
+        }
+
         publishing {
             singleVariant("release") {
                 withSourcesJar()

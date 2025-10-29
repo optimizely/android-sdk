@@ -44,6 +44,7 @@ android {
             testCoverageEnabled true
         }
     }
+    
     buildToolsVersion build_tools_version
 }
 

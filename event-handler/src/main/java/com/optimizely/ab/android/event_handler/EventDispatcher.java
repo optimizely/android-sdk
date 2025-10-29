@@ -39,7 +39,7 @@ import java.util.List;
  *
  * This abstraction makes unit testing much simpler
  */
-@VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public class EventDispatcher {
 
     @NonNull private final Context context;
