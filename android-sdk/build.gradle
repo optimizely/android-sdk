@@ -18,8 +18,9 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion compile_sdk_version
-    buildToolsVersion build_tools_version
+    namespace "com.optimizely.ab.android.sdk"
+    compileSdk compile_sdk_version
+    buildTools build_tools_version
 
     defaultConfig {
         minSdkVersion min_sdk_version

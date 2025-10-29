@@ -19,8 +19,9 @@ apply plugin: 'kotlin-android'
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
 
 android {
-    compileSdkVersion compile_sdk_version
-    buildToolsVersion build_tools_version
+    namespace "com.optimizely.ab.android.odp"
+    compileSdk compile_sdk_version
+    buildTools build_tools_version
 
     defaultConfig {
         minSdkVersion min_sdk_version
