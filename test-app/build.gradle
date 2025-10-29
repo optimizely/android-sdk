@@ -12,7 +12,6 @@ android {
         targetSdkVersion target_sdk_version
         versionCode 1
         versionName "1.0.2"
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     testOptions {
         unitTests.returnDefaultValues = true
@@ -23,6 +22,8 @@ android {
             minifyEnabled true
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'test-app-proguard-rules.pro'
+            // Disable minification for Android tests to avoid missing class issues with mockito
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'test-app-proguard-rules.pro'
         }
         release {
             minifyEnabled true
@@ -77,25 +78,8 @@ dependencies {
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
-    // testImplementation 'com.optimizely.ab:android-sdk:1.0.0'
     testImplementation project(':android-sdk')
 
-    androidTestImplementation "androidx.work:work-testing:$work_runtime"
-    androidTestImplementation "androidx.test.ext:junit:$androidx_test_junit"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_ver"
-    // Set this dependency to use JUnit 4 rules
-    androidTestImplementation "androidx.test:rules:$androidx_test_rules"
-    androidTestImplementation "androidx.test:core:$androidx_test_core"
-    androidTestImplementation "androidx.test:core-ktx:$androidx_test_core"
-
-    androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$dexmaker_ver"
-    androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$dexmaker_ver"
-    // androidTestImplementation 'com.optimizely.ab:android-sdk:1.0.0'
-    androidTestImplementation project(':android-sdk')
-    androidTestImplementation project(path: ':shared')
-    androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 

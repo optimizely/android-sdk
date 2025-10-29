@@ -67,7 +67,7 @@ dependencies {
     androidTestImplementation "androidx.test:core:$androidx_test_core"
     androidTestImplementation "androidx.test:core-ktx:$androidx_test_core"
 
-    androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "org.mockito:mockito-android:$mockito_ver"
+    androidTestImplementation "org.mockito:mockito-core:$mockito_ver_sdk_module"
+    androidTestImplementation "org.mockito:mockito-android:$mockito_ver_sdk_module"
     androidTestImplementation "org.slf4j:slf4j-api:$slf4j_ver"
 }

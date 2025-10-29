@@ -61,8 +61,8 @@ dependencies {
     androidTestImplementation "androidx.test:core:$androidx_test_core"
     androidTestImplementation "androidx.test:core-ktx:$androidx_test_core"
 
-    androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "org.mockito:mockito-android:$mockito_ver"
+    androidTestImplementation "org.mockito:mockito-core:$mockito_ver_sdk_module"
+    androidTestImplementation "org.mockito:mockito-android:$mockito_ver_sdk_module"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 }
