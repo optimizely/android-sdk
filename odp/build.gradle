@@ -48,7 +48,7 @@ android {
 dependencies {
     api project(':shared')
     implementation "androidx.annotation:annotation:$annotations_ver"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.work:work-runtime:$work_runtime"
     // Add SLF4J API for Logger interface
     implementation "org.slf4j:slf4j-api:$slf4j_ver"

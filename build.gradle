@@ -76,6 +76,17 @@ allprojects {
     configurations.all {
         // no cache for SNAPSHOT dependency
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        
+        // Exclude conflicting kotlin stdlib versions
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'org.jetbrains.kotlin') {
+                if (details.requested.name == 'kotlin-stdlib-jdk8' || 
+                    details.requested.name == 'kotlin-stdlib-jdk7') {
+                    details.useTarget "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+                    details.because 'Unified kotlin stdlib to avoid conflicts'
+                }
+            }
+        }
     }
 }
 
