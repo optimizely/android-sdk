@@ -43,9 +43,7 @@ open class DefaultCmabClient(private val client: Client) : CmabClient {
         val request: Client.Request<String?> = Client.Request {
             var urlConnection: HttpURLConnection? = null
             try {
-                // [TESTING]
-//                val apiEndpoint = String.format(CmabClientHelper.CMAB_PREDICTION_ENDPOINT, ruleId)
-                val apiEndpoint = String.format("https://prediction.cmab.optimizely.com/predict/%s", ruleId)
+                val apiEndpoint = String.format(CmabClientHelper.CMAB_PREDICTION_ENDPOINT, ruleId)
 
                 val requestBody: String =
                     CmabClientHelper.buildRequestJson(userId, ruleId, attributes, cmabUuid)

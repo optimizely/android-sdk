@@ -15,6 +15,8 @@
 package com.optimizely.ab.android.sdk.cmab;
 
 import com.optimizely.ab.android.shared.Client;
+import com.optimizely.ab.cmab.client.CmabClientHelper;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,7 +66,7 @@ public class DefaultCmabClientTest {
         mockUrlConnection = mock(HttpURLConnection.class);
         mockOutputStream = mock(ByteArrayOutputStream.class);
 
-        cmabClient = new DefaultCmabClient(mockClient, mockLogger);
+        cmabClient = new DefaultCmabClient(mockClient);
 
         testAttributes = new HashMap<>();
         testAttributes.put("age", 25);

@@ -25,15 +25,18 @@ import com.optimizely.ab.android.odp.DefaultODPApiManager;
 import com.optimizely.ab.android.odp.ODPEventClient;
 import com.optimizely.ab.android.odp.ODPSegmentClient;
 import com.optimizely.ab.android.odp.VuidManager;
-import com.optimizely.ab.android.sdk.cmab.CMABClient;
+import com.optimizely.ab.android.sdk.cmab.DefaultCmabClient;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.cmab.client.CmabClient;
+import com.optimizely.ab.cmab.service.DefaultCmabService;
 import com.optimizely.ab.error.ErrorHandler;
 import com.optimizely.ab.event.BatchEventProcessor;
 import com.optimizely.ab.event.EventHandler;
 import com.optimizely.ab.event.EventProcessor;
+import com.optimizely.ab.internal.DefaultLRUCache;
 import com.optimizely.ab.notification.NotificationCenter;
 import com.optimizely.ab.odp.ODPEventManager;
 import com.optimizely.ab.odp.ODPManager;
@@ -55,6 +58,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -75,7 +79,17 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({OptimizelyManager.class, BatchEventProcessor.class, DefaultEventHandler.class, ODPManager.class, ODPSegmentManager.class, ODPEventManager.class, VuidManager.class})
+@PrepareForTest({
+    OptimizelyManager.class,
+    BatchEventProcessor.class,
+    DefaultEventHandler.class,
+    ODPManager.class,
+    ODPSegmentManager.class,
+    ODPEventManager.class,
+    VuidManager.class,
+    CmabClient.class,
+    DefaultCmabService.class
+})
 public class OptimizelyManagerBuilderTest {
 
     private String testProjectId = "7595190003";
@@ -261,6 +275,7 @@ public class OptimizelyManagerBuilderTest {
             any(NotificationCenter.class),
             any(),                         // nullable (DefaultDecideOptions)
             any(ODPManager.class),
+            any(),
             eq("test-vuid"),
             any(),
             any());
@@ -291,6 +306,7 @@ public class OptimizelyManagerBuilderTest {
             any(NotificationCenter.class),
             any(),                         // nullable (DefaultDecideOptions)
             isNull(),
+            any(),
             eq("test-vuid"),
             any(),
             any());
@@ -468,30 +484,29 @@ public class OptimizelyManagerBuilderTest {
         when(ODPManager.builder()).thenCallRealMethod();
     }
 
+    DefaultCmabService.Builder getMockDefaultCmabServiceBuilder() {
+        DefaultCmabService.Builder mockBuilder = PowerMockito.mock(DefaultCmabService.Builder.class);
+        when(mockBuilder.withClient(any())).thenReturn(mockBuilder);
+        when(mockBuilder.withCmabCacheSize(anyInt())).thenReturn(mockBuilder);
+        when(mockBuilder.withCmabCacheTimeoutInSecs(anyInt())).thenReturn(mockBuilder);
+        return mockBuilder;
+    }
+
     @Test
     public void testCmabServiceConfigurationValidation() throws Exception {
         // Custom configuration values
         int customCacheSize = 500;
         int customTimeoutMinutes = 45;
         int expectedTimeoutSeconds = customTimeoutMinutes * 60; // 45 min = 2700 sec
-        CMABClient mockCmabClient = mock(CMABClient.class);
+        CmabClient mockCmabClient = mock(CmabClient.class);
 
-        // Create mocks for the CMAB service creation chain
-        Object mockDefaultLRUCache = PowerMockito.mock(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"));
-        Object mockCmabServiceOptions = PowerMockito.mock(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"));
-        Object mockDefaultCmabService = PowerMockito.mock(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"));
+        DefaultCmabService.Builder mockBuilder = getMockDefaultCmabServiceBuilder();
+        mockStatic(DefaultCmabService.class);
+        when(DefaultCmabService.builder()).thenReturn(mockBuilder);
 
-        // Mock the construction chain with parameter validation
-        whenNew(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"))
-            .thenReturn(mockDefaultLRUCache);
+        DefaultCmabService mockDefaultCmabService = mock(DefaultCmabService.class);
+        when(mockBuilder.build()).thenReturn(mockDefaultCmabService);
 
-        whenNew(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"))
-            .thenReturn(mockCmabServiceOptions);
-
-        whenNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"))
-            .thenReturn(mockDefaultCmabService);
-
-        // Use PowerMock to verify OptimizelyManager constructor is called with CMAB service
         whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
 
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
@@ -500,14 +515,10 @@ public class OptimizelyManagerBuilderTest {
                 .withCmabClient(mockCmabClient)
                 .build(mockContext);
 
-        verifyNew(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"))
-            .withArguments(eq(customCacheSize), eq(expectedTimeoutSeconds));
-
-        verifyNew(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"))
-            .withArguments(any(), eq(mockDefaultLRUCache), eq(mockCmabClient));
-
-        verifyNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"))
-            .withArguments(eq(mockCmabServiceOptions));
+        verify(mockBuilder).withCmabCacheSize(eq(customCacheSize));
+        verify(mockBuilder).withCmabCacheTimeoutInSecs(eq(expectedTimeoutSeconds));
+        verify(mockBuilder).withClient(eq(mockCmabClient));
+        verify(mockBuilder).build();
 
         // Verify OptimizelyManager constructor was called with the mocked CMAB service
         verifyNew(OptimizelyManager.class).withArguments(
@@ -540,24 +551,12 @@ public class OptimizelyManagerBuilderTest {
         int defaultCacheSize = 100;
         int defaultTimeoutSeconds = 30 * 60; // 30 minutes = 1800 seconds
 
-        // Create mocks for the CMAB service creation chain
-        Object mockDefaultLRUCache = PowerMockito.mock(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"));
-        Object mockDefaultCmabClient = PowerMockito.mock(Class.forName("com.optimizely.ab.cmab.DefaultCmabClient"));
-        Object mockCmabServiceOptions = PowerMockito.mock(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"));
-        Object mockDefaultCmabService = PowerMockito.mock(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"));
+        DefaultCmabService.Builder mockBuilder = getMockDefaultCmabServiceBuilder();
+        mockStatic(DefaultCmabService.class);
+        when(DefaultCmabService.builder()).thenReturn(mockBuilder);
 
-        // Mock the construction chain with parameter validation
-        whenNew(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"))
-            .thenReturn(mockDefaultLRUCache);
-
-        whenNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabClient"))
-            .thenReturn(mockDefaultCmabClient);
-
-        whenNew(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"))
-            .thenReturn(mockCmabServiceOptions);
-
-        whenNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"))
-            .thenReturn(mockDefaultCmabService);
+        DefaultCmabService mockDefaultCmabService = mock(DefaultCmabService.class);
+        when(mockBuilder.build()).thenReturn(mockDefaultCmabService);
 
         // Use PowerMock to verify OptimizelyManager constructor is called with CMAB service
         whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
@@ -566,19 +565,10 @@ public class OptimizelyManagerBuilderTest {
         OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
                 .build(mockContext);
 
-        verifyNew(Class.forName("com.optimizely.ab.cache.DefaultLRUCache"))
-            .withArguments(eq(defaultCacheSize), eq(defaultTimeoutSeconds));
-
-        // Verify DefaultCmabClient is created with default parameters
-        verifyNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabClient"))
-            .withNoArguments();
-
-        // Verify CmabServiceOptions is created with logger, cache, and default client
-        verifyNew(Class.forName("com.optimizely.ab.cmab.CmabServiceOptions"))
-            .withArguments(any(), eq(mockDefaultLRUCache), eq(mockDefaultCmabClient));
-
-        verifyNew(Class.forName("com.optimizely.ab.cmab.DefaultCmabService"))
-            .withArguments(eq(mockCmabServiceOptions));
+        verify(mockBuilder).withCmabCacheSize(eq(defaultCacheSize));
+        verify(mockBuilder).withCmabCacheTimeoutInSecs(eq(defaultTimeoutSeconds));
+        verify(mockBuilder).withClient(any(DefaultCmabClient.class));
+        verify(mockBuilder).build();
 
         // Verify OptimizelyManager constructor was called with the mocked CMAB service
         verifyNew(OptimizelyManager.class).withArguments(
