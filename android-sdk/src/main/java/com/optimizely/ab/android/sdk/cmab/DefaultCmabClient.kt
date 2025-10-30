@@ -34,7 +34,7 @@ open class DefaultCmabClient(private val client: Client) : CmabClient {
     constructor(context: Context) : this(Client(OptlyStorage(context), LoggerFactory.getLogger(OptlyStorage::class.java)))
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    open fun fetchDecision(
+    override fun fetchDecision(
         ruleId: String?,
         userId: String?,
         attributes: Map<String?, Any?>?,
@@ -43,7 +43,10 @@ open class DefaultCmabClient(private val client: Client) : CmabClient {
         val request: Client.Request<String?> = Client.Request {
             var urlConnection: HttpURLConnection? = null
             try {
-                val apiEndpoint = String.format(CmabClientHelper.CMAB_PREDICTION_ENDPOINT, ruleId)
+                // [TESTING]
+//                val apiEndpoint = String.format(CmabClientHelper.CMAB_PREDICTION_ENDPOINT, ruleId)
+                val apiEndpoint = String.format("https://prediction.cmab.optimizely.com/predict/%s", ruleId)
+
                 val requestBody: String =
                     CmabClientHelper.buildRequestJson(userId, ruleId, attributes, cmabUuid)
 

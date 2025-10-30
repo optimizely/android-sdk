@@ -19,6 +19,8 @@ import com.optimizely.ab.OptimizelyForcedDecision;
 import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecision;
+import com.optimizely.ab.optimizelydecision.OptimizelyDecisionCallback;;
+import com.optimizely.ab.optimizelydecision.OptimizelyDecisionsCallback;
 
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +72,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     @Override
     public OptimizelyDecision decide(@NonNull String key,
                                      @NonNull List<OptimizelyDecideOption> options) {
-        return optimizely.decideSync(copy(), key, options);
+        return getOptimizely().decideSync(copy(), key, options);
     }
 
     /**
@@ -105,7 +107,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     @Override
     public Map<String, OptimizelyDecision> decideForKeys(@NonNull List<String> keys,
                                                          @NonNull List<OptimizelyDecideOption> options) {
-        return optimizely.decideForKeysSync(copy(), keys, options);
+        return getOptimizely().decideForKeysSync(copy(), keys, options);
     }
 
     /**
@@ -135,7 +137,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      */
     @Override
     public Map<String, OptimizelyDecision> decideAll(@NonNull List<OptimizelyDecideOption> options) {
-        return optimizely.decideAllSync(copy(), options);
+        return getOptimizely().decideAllSync(copy(), options);
     }
 
     /**
@@ -159,10 +161,10 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param callback A callback to invoke when the decision is available.
      * @param options A list of options for decision-making.
      */
-    public void decideAsync(@Nonnull String key,
-                            @Nonnull OptimizelyDecisionCallback callback,
-                            @Nonnull List<OptimizelyDecideOption> options) {
-        optimizely.decideAsync(copy(), key, callback, options);
+    public void decideAsync(@NonNull String key,
+                            @NonNull OptimizelyDecisionCallback callback,
+                            @NonNull List<OptimizelyDecideOption> options) {
+        getOptimizely().decideAsync(copy(), key, callback, options);
     }
 
     /**
@@ -171,7 +173,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param key A flag key for which a decision will be made.
      * @param callback A callback to invoke when the decision is available.
      */
-    public void decideAsync(@Nonnull String key, @Nonnull OptimizelyDecisionCallback callback) {
+    public void decideAsync(@NonNull String key, @NonNull OptimizelyDecisionCallback callback) {
         decideAsync(key, callback, Collections.emptyList());
     }
 
@@ -182,10 +184,10 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param callback A callback to invoke when decisions are available.
      * @param options A list of options for decision-making.
      */
-    public void decideForKeysAsync(@Nonnull List<String> keys,
-                                   @Nonnull OptimizelyDecisionsCallback callback,
-                                   @Nonnull List<OptimizelyDecideOption> options) {
-        optimizely.decideForKeysAsync(copy(), keys, callback, options);
+    public void decideForKeysAsync(@NonNull List<String> keys,
+                                   @NonNull OptimizelyDecisionsCallback callback,
+                                   @NonNull List<OptimizelyDecideOption> options) {
+        getOptimizely().decideForKeysAsync(copy(), keys, callback, options);
     }
 
     /**
@@ -194,7 +196,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param keys A list of flag keys for which decisions will be made.
      * @param callback A callback to invoke when decisions are available.
      */
-    public void decideForKeysAsync(@Nonnull List<String> keys, @Nonnull OptimizelyDecisionsCallback callback) {
+    public void decideForKeysAsync(@NonNull List<String> keys, @NonNull OptimizelyDecisionsCallback callback) {
         decideForKeysAsync(keys, callback, Collections.emptyList());
     }
 
@@ -204,9 +206,9 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param callback A callback to invoke when decisions are available.
      * @param options A list of options for decision-making.
      */
-    public void decideAllAsync(@Nonnull OptimizelyDecisionsCallback callback,
-                               @Nonnull List<OptimizelyDecideOption> options) {
-        optimizely.decideAllAsync(copy(), callback, options);
+    public void decideAllAsync(@NonNull OptimizelyDecisionsCallback callback,
+                               @NonNull List<OptimizelyDecideOption> options) {
+        getOptimizely().decideAllAsync(copy(), callback, options);
     }
 
     /**
@@ -214,7 +216,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      *
      * @param callback A callback to invoke when decisions are available.
      */
-    public void decideAllAsync(@Nonnull OptimizelyDecisionsCallback callback) {
+    public void decideAllAsync(@NonNull OptimizelyDecisionsCallback callback) {
         decideAllAsync(callback, Collections.emptyList());
     }
 
