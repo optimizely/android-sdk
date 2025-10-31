@@ -19,7 +19,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
 
 android {
-    compileSdkVersion compile_sdk_version
+    namespace "com.optimizely.ab.android.odp"
+    compileSdk compile_sdk_version
     buildToolsVersion build_tools_version
 
     defaultConfig {
@@ -41,21 +42,13 @@ android {
             testCoverageEnabled true
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
     buildToolsVersion build_tools_version
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
 }
 
 dependencies {
     api project(':shared')
     implementation "androidx.annotation:annotation:$annotations_ver"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.work:work-runtime:$work_runtime"
     // Add SLF4J API for Logger interface
     implementation "org.slf4j:slf4j-api:$slf4j_ver"
@@ -74,7 +67,7 @@ dependencies {
     androidTestImplementation "androidx.test:core:$androidx_test_core"
     androidTestImplementation "androidx.test:core-ktx:$androidx_test_core"
 
-    androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "org.mockito:mockito-android:$mockito_ver"
+    androidTestImplementation "org.mockito:mockito-core:$mockito_ver_sdk_module"
+    androidTestImplementation "org.mockito:mockito-android:$mockito_ver_sdk_module"
     androidTestImplementation "org.slf4j:slf4j-api:$slf4j_ver"
 }

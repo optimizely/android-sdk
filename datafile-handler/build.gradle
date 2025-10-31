@@ -18,7 +18,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion compile_sdk_version
+    namespace "com.optimizely.ab.android.datafile_handler"
+    compileSdk compile_sdk_version
     buildToolsVersion build_tools_version
 
     defaultConfig {
@@ -37,10 +38,6 @@ android {
         debug {
             testCoverageEnabled true
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
@@ -63,9 +60,9 @@ dependencies {
     androidTestImplementation "androidx.test:core:$androidx_test_core"
     androidTestImplementation "androidx.test:core-ktx:$androidx_test_core"
 
-    androidTestImplementation "org.mockito:mockito-core:$mockito_ver"
-    androidTestImplementation "org.mockito:mockito-android:$mockito_ver"
+    androidTestImplementation "org.mockito:mockito-core:$mockito_ver_sdk_module"
+    androidTestImplementation "org.mockito:mockito-android:$mockito_ver_sdk_module"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
