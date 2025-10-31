@@ -72,7 +72,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     @Override
     public OptimizelyDecision decide(@NonNull String key,
                                      @NonNull List<OptimizelyDecideOption> options) {
-        return super.decideSync(key, options);
+        return decideSync(key, options);
     }
 
     /**
@@ -107,7 +107,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     @Override
     public Map<String, OptimizelyDecision> decideForKeys(@NonNull List<String> keys,
                                                          @NonNull List<OptimizelyDecideOption> options) {
-        return super.decideForKeysSync(keys, options);
+        return decideForKeysSync(keys, options);
     }
 
     /**
@@ -137,7 +137,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      */
     @Override
     public Map<String, OptimizelyDecision> decideAll(@NonNull List<OptimizelyDecideOption> options) {
-        return super.decideAllSync(options);
+        return decideAllSync(options);
     }
 
     /**
@@ -153,6 +153,10 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     public Map<String, OptimizelyDecision> decideAll() {
         return decideAll(Collections.emptyList());
     }
+
+    // ===========================================
+    // Async Methods (Android-specific)
+    // ===========================================
 
     /**
      * Returns a decision result asynchronously for a given flag key and a user context.
@@ -218,6 +222,24 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      */
     public void decideAllAsync(@NonNull OptimizelyDecisionsCallback callback) {
         decideAllAsync(Collections.emptyList(), callback);
+    }
+
+    // ===========================================
+    // Override methods for testability
+    // These methods enable Mockito spies to intercept calls that would
+    // otherwise go directly to super.method() and be unverifiable
+    // ===========================================
+
+    public OptimizelyDecision decideSync(@NonNull String key, @NonNull List<OptimizelyDecideOption> options) {
+        return super.decideSync(key, options);
+    }
+
+    public Map<String, OptimizelyDecision> decideForKeysSync(@NonNull List<String> keys, @NonNull List<OptimizelyDecideOption> options) {
+        return super.decideForKeysSync(keys, options);
+    }
+
+    public Map<String, OptimizelyDecision> decideAllSync(@NonNull List<OptimizelyDecideOption> options) {
+        return super.decideAllSync(options);
     }
 
 }

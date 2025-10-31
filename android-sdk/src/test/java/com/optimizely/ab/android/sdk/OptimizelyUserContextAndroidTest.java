@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.api.mockito.PowerMockito;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -146,7 +145,7 @@ public class OptimizelyUserContextAndroidTest {
                 testAttributes
             )
         );
-        PowerMockito.doReturn(mockDecision).when(userContextSpy, "decideSync", any(), any());
+        doReturn(mockDecision).when(userContextSpy).decideSync(any(), any());
 
         OptimizelyDecision result = userContextSpy.decide(TEST_FLAG_KEY, TEST_OPTIONS);
         verify(userContextSpy).decideSync(eq(TEST_FLAG_KEY), eq(TEST_OPTIONS));
@@ -162,7 +161,7 @@ public class OptimizelyUserContextAndroidTest {
                 testAttributes
             )
         );
-        PowerMockito.doReturn(mockDecision).when(userContextSpy, "decideSync", any(), any());
+        doReturn(mockDecision).when(userContextSpy).decideSync(any(), any());
 
         OptimizelyDecision result = userContextSpy.decide(TEST_FLAG_KEY);
         verify(userContextSpy).decideSync(eq(TEST_FLAG_KEY), eq(Collections.emptyList()));
@@ -178,7 +177,7 @@ public class OptimizelyUserContextAndroidTest {
                 testAttributes
             )
         );
-        PowerMockito.doReturn(mockDecisionsMap).when(userContextSpy, "decideForKeysSync", any(), any());
+        doReturn(mockDecisionsMap).when(userContextSpy).decideForKeysSync(any(), any());
 
         Map<String, OptimizelyDecision> result = userContextSpy.decideForKeys(TEST_FLAG_KEYS, TEST_OPTIONS);
         verify(userContextSpy).decideForKeysSync(eq(TEST_FLAG_KEYS), eq(TEST_OPTIONS));
@@ -194,7 +193,7 @@ public class OptimizelyUserContextAndroidTest {
                 testAttributes
             )
         );
-        PowerMockito.doReturn(mockDecisionsMap).when(userContextSpy, "decideForKeysSync", any(), any());
+        doReturn(mockDecisionsMap).when(userContextSpy).decideForKeysSync(any(), any());
 
         Map<String, OptimizelyDecision> result = userContextSpy.decideForKeys(TEST_FLAG_KEYS);
         verify(userContextSpy).decideForKeysSync(eq(TEST_FLAG_KEYS), eq(Collections.emptyList()));
@@ -210,7 +209,7 @@ public class OptimizelyUserContextAndroidTest {
                 testAttributes
             )
         );
-        PowerMockito.doReturn(mockDecisionsMap).when(userContextSpy, "decideAllSync", any());
+        doReturn(mockDecisionsMap).when(userContextSpy).decideAllSync(any());
 
         Map<String, OptimizelyDecision> result = userContextSpy.decideAll(TEST_OPTIONS);
         verify(userContextSpy).decideAllSync(eq(TEST_OPTIONS));
@@ -226,7 +225,7 @@ public class OptimizelyUserContextAndroidTest {
                 testAttributes
             )
         );
-        PowerMockito.doReturn(mockDecisionsMap).when(userContextSpy, "decideAllSync", any());
+        doReturn(mockDecisionsMap).when(userContextSpy).decideAllSync(any());
 
         Map<String, OptimizelyDecision> result = userContextSpy.decideAll();
         verify(userContextSpy).decideAllSync(eq(Collections.emptyList()));
