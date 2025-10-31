@@ -155,7 +155,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     }
 
     // ===========================================
-    // Async Methods (Android-specific)
+    // Async Methods (Android-specific) with callbacks
     // ===========================================
 
     /**
@@ -222,6 +222,69 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      */
     public void decideAllAsync(@NonNull OptimizelyDecisionsCallback callback) {
         decideAllAsync(Collections.emptyList(), callback);
+    }
+
+    // ===========================================
+    // Async Methods (Android-specific) with blocking calls to synchronous methods
+    // ===========================================
+
+    public OptimizelyDecision decideAsync(@Nonnull String key,
+                                     @Nonnull List<OptimizelyDecideOption> options) {
+        return super.decide(key, options);
+    }
+
+    /**
+     * Returns a decision result ({@link OptimizelyDecision}) for a given flag key and a user context, which contains all data required to deliver the flag.
+     *
+     * @param key A flag key for which a decision will be made.
+     * @return A decision result.
+     */
+    public OptimizelyDecision decideAsync(@Nonnull String key) {
+        return decideAsync(key, Collections.emptyList());
+    }
+
+    /**
+     * Returns a key-map of decision results ({@link OptimizelyDecision}) for multiple flag keys and a user context.
+     * <ul>
+     * <li>If the SDK finds an error for a key, the response will include a decision for the key showing <b>reasons</b> for the error.
+     * <li>The SDK will always return key-mapped decisions. When it can not process requests, it’ll return an empty map after logging the errors.
+     * </ul>
+     * @param keys A list of flag keys for which decisions will be made.
+     * @param options A list of options for decision-making.
+     * @return All decision results mapped by flag keys.
+     */
+    public Map<String, OptimizelyDecision> decideForKeysAsync(@Nonnull List<String> keys,
+                                                         @Nonnull List<OptimizelyDecideOption> options) {
+        return super.decideForKeys(keys, options);
+    }
+
+    /**
+     * Returns a key-map of decision results for multiple flag keys and a user context.
+     *
+     * @param keys A list of flag keys for which decisions will be made.
+     * @return All decision results mapped by flag keys.
+     */
+    public Map<String, OptimizelyDecision> decideForKeysAsync(@Nonnull List<String> keys) {
+        return decideForKeysAsync(keys, Collections.emptyList());
+    }
+
+    /**
+     * Returns a key-map of decision results ({@link OptimizelyDecision}) for all active flag keys.
+     *
+     * @param options A list of options for decision-making.
+     * @return All decision results mapped by flag keys.
+     */
+    public Map<String, OptimizelyDecision> decideAllAsync(@Nonnull List<OptimizelyDecideOption> options) {
+        return super.decideAll(options);
+    }
+
+    /**
+     * Returns a key-map of decision results ({@link OptimizelyDecision}) for all active flag keys.
+     *
+     * @return A dictionary of all decision results, mapped by flag keys.
+     */
+    public Map<String, OptimizelyDecision> decideAllAsync() {
+        return decideAllAsync(Collections.emptyList());
     }
 
     // ===========================================
