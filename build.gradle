@@ -66,7 +66,6 @@ allprojects {
     }
 
     repositories {
-        mavenLocal()
         google()
         mavenCentral()
         // SNAPSHOT support
