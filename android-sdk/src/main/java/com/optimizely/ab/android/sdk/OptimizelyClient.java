@@ -816,28 +816,33 @@ public class OptimizelyClient {
      * @return An OptimizelyUserContext associated with this OptimizelyClient.
      */
     @Nullable
-    public OptimizelyUserContext createUserContext(@NonNull String userId,
-                                                   @NonNull Map<String, Object> attributes) {
-        if (optimizely != null) {
-            return optimizely.createUserContext(userId, attributes);
-        } else {
+    public OptimizelyUserContextAndroid createUserContext(@NonNull String userId,
+                                                          @NonNull Map<String, Object> attributes) {
+        if (optimizely == null) {
             logger.warn("Optimizely is not initialized, could not create a user context");
             return null;
         }
+
+        if (userId == null) {
+            logger.warn("The userId parameter must be nonnull.");
+            return null;
+        }
+
+        return new OptimizelyUserContextAndroid(optimizely, userId, attributes);
     }
 
     @Nullable
-    public OptimizelyUserContext createUserContext(@NonNull String userId) {
+    public OptimizelyUserContextAndroid createUserContext(@NonNull String userId) {
         return createUserContext(userId, Collections.emptyMap());
     }
 
     @Nullable
-    public OptimizelyUserContext createUserContext() {
+    public OptimizelyUserContextAndroid createUserContext() {
         return createUserContext(Collections.emptyMap());
     }
 
     @Nullable
-    public OptimizelyUserContext createUserContext(@NonNull Map<String, Object> attributes) {
+    public OptimizelyUserContextAndroid createUserContext(@NonNull Map<String, Object> attributes) {
         if (vuid == null) {
             logger.warn("Optimizely vuid is not available. A userId is required to create a user context.");
             return null;
