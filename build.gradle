@@ -21,7 +21,7 @@ buildscript {
 
     ext.version_name = System.getenv('GITHUB_TAG')
     if (version_name == null || version_name.isEmpty()) {
-        ext.version_name = 'debugVersion'
+        ext.version_name = version
     }
     ext.is_release_version = !version_name.endsWith("SNAPSHOT")
 
@@ -66,6 +66,7 @@ allprojects {
     }
 
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
         // SNAPSHOT support
@@ -76,11 +77,11 @@ allprojects {
     configurations.all {
         // no cache for SNAPSHOT dependency
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-        
+
         // Exclude conflicting kotlin stdlib versions
         resolutionStrategy.eachDependency { details ->
             if (details.requested.group == 'org.jetbrains.kotlin') {
-                if (details.requested.name == 'kotlin-stdlib-jdk8' || 
+                if (details.requested.name == 'kotlin-stdlib-jdk8' ||
                     details.requested.name == 'kotlin-stdlib-jdk7') {
                     details.useTarget "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
                     details.because 'Unified kotlin stdlib to avoid conflicts'

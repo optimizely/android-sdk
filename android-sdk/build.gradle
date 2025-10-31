@@ -72,7 +72,10 @@ dependencies {
     api project(':event-handler')
     api project(':user-profile')
     api project(':odp')
-    api ("com.optimizely.ab:core-api:$java_core_ver") {
+//    api ("com.optimizely.ab:core-api:$java_core_ver") {
+//        exclude group: 'com.google.code.findbugs'
+//    }
+    api ("com.optimizely.ab:core-api:3.1.0-SNAPSHOT") {
         exclude group: 'com.google.code.findbugs'
     }
     implementation "org.slf4j:slf4j-api:$slf4j_ver"

@@ -14,32 +14,58 @@
 
 package com.optimizely.ab.android.sdk.cmab
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.optimizely.ab.android.shared.Client
-import org.slf4j.Logger
+import com.optimizely.ab.android.shared.OptlyStorage
+import com.optimizely.ab.cmab.client.CmabClient
+import com.optimizely.ab.cmab.client.CmabFetchException
+import com.optimizely.ab.cmab.client.CmabInvalidResponseException
+import org.slf4j.LoggerFactory
 import java.net.HttpURLConnection
 import java.net.URL
 
 @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-open class DefaultCmabClient(private val client: Client, private val logger: Logger) {
+open class DefaultCmabClient : CmabClient {
+    private val client: Client
+    private val cmabClientHelper: CmabClientHelperAndroid
+    private val logger = LoggerFactory.getLogger(DefaultCmabClient::class.java)
+
+    constructor(context: Context) {
+        this.client =
+            Client(OptlyStorage(context), LoggerFactory.getLogger(OptlyStorage::class.java))
+        this.cmabClientHelper = CmabClientHelperAndroid()
+    }
+
+    constructor(client: Client) {
+        this.client = client
+        this.cmabClientHelper = CmabClientHelperAndroid()
+    }
+
+    constructor(client: Client, cmabClientHelper: CmabClientHelperAndroid) {
+        this.client = client
+        this.cmabClientHelper = cmabClientHelper
+    }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    fun fetchDecision(
+    override fun fetchDecision(
         ruleId: String?,
         userId: String?,
         attributes: Map<String?, Any?>?,
         cmabUuid: String?
-    ): String {
-        val request: Client.Request<String> = Client.Request {
+    ): String? {
+        val request: Client.Request<String?> = Client.Request {
             var urlConnection: HttpURLConnection? = null
             try {
-                val apiEndpoint = String.format(CmabClientHelper.CMAB_PREDICTION_ENDPOINT, ruleId)
+                val apiEndpoint = String.format(cmabClientHelper.cmabPredictionEndpoint, ruleId)
+
                 val requestBody: String =
-                    CmabClientHelper.buildRequestJson(userId, ruleId, attributes, cmabUuid)
+                    cmabClientHelper.buildRequestJson(userId, ruleId, attributes, cmabUuid)
 
                 val url = URL(apiEndpoint)
                 urlConnection = client.openConnection(url)
                 if (urlConnection == null) {
+                    logger.error("Error opening connection to $apiEndpoint")
                     return@Request null
                 }
 
@@ -60,14 +86,15 @@ open class DefaultCmabClient(private val client: Client, private val logger: Log
                     val json = client.readStream(urlConnection)
                     logger.debug("Successfully fetched CMAB decision: {}", json)
 
-                    if (!CmabClientHelper.validateResponse(json)) {
-                        logger.error(CmabClientHelper.INVALID_CMAB_FETCH_RESPONSE)
-                        throw CmabInvalidResponseException(CmabClientHelper.INVALID_CMAB_FETCH_RESPONSE)
+                    if (!cmabClientHelper.validateResponse(json)) {
+                        logger.error(cmabClientHelper.invalidCmabFetchResponse)
+                        throw CmabInvalidResponseException(cmabClientHelper.invalidCmabFetchResponse)
                     }
-                    return@Request CmabClientHelper.parseVariationId(json)
+
+                    return@Request cmabClientHelper.parseVariationId(json)
                 } else {
                     val errorMessage: String = java.lang.String.format(
-                        CmabClientHelper.CMAB_FETCH_FAILED,
+                        cmabClientHelper.cmabFetchFailed,
                         urlConnection.responseMessage
                     )
                     logger.error(errorMessage)
@@ -75,7 +102,7 @@ open class DefaultCmabClient(private val client: Client, private val logger: Log
                 }
             } catch (e: Exception) {
                 val errorMessage: String =
-                    java.lang.String.format(CmabClientHelper.CMAB_FETCH_FAILED, e.message)
+                    java.lang.String.format(cmabClientHelper.cmabFetchFailed, e.message)
                 logger.error(errorMessage)
                 throw CmabFetchException(errorMessage)
             } finally {
@@ -88,15 +115,7 @@ open class DefaultCmabClient(private val client: Client, private val logger: Log
                 }
             }
         }
-        val response = client.execute(request, REQUEST_BACKOFF_TIMEOUT, REQUEST_RETRIES_POWER)
-        val parser: ResponseJsonParser = ResponseJsonParserFactory.getParser()
-        try {
-            return parser.parseQualifiedSegments(response)
-        } catch (e: java.lang.Exception) {
-            logger.error("Audience segments fetch failed (Error Parsing Response)")
-            logger.debug(e.message)
-        }
-        return null
+        return client.execute(request, REQUEST_BACKOFF_TIMEOUT, REQUEST_RETRIES_POWER)
     }
 
     companion object {
