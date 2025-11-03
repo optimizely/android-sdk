@@ -330,12 +330,9 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     // ===========================================
 
     /**
-     * Core delegation methods that encapsulate all parent class method calls.
-     * These protected methods can be overridden in test subclasses to mock parent behavior
-     * without affecting production code or requiring complex dependency injection.
-     *
-     * Pattern: Each public API method delegates to its corresponding core method,
-     * which then calls the appropriate super method from OptimizelyUserContext.
+     * Core delegation methods that encapsulate all java-sdk parent class method calls.
+     * These methods enable clean unit testing by providing mockable entry points
+     * for parent functionality, circumventing Mockito's inability to intercept super calls.
      */
 
     OptimizelyDecision coreDecideSync(@NonNull String key, @NonNull List<OptimizelyDecideOption> options) {
