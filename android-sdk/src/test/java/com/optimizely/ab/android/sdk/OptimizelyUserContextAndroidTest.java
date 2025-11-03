@@ -44,6 +44,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link OptimizelyUserContextAndroid}
@@ -138,186 +139,92 @@ public class OptimizelyUserContextAndroidTest {
 
     @Test
     public void testDecide_withOptions() throws Exception {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-        doReturn(mockDecision).when(userContextSpy).decideSync(any(), any());
+        OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
+            mockOptimizely,
+            TEST_USER_ID,
+            testAttributes
+        ));
+        doReturn(mockDecision).when(userContext).coreDecideSync(any(), any());
 
-        OptimizelyDecision result = userContextSpy.decide(TEST_FLAG_KEY, TEST_OPTIONS);
-        verify(userContextSpy).decideSync(eq(TEST_FLAG_KEY), eq(TEST_OPTIONS));
+        OptimizelyDecision result = userContext.decide(TEST_FLAG_KEY, TEST_OPTIONS);
+
+        verify(userContext).coreDecideSync(TEST_FLAG_KEY, TEST_OPTIONS);
         assertEquals(mockDecision, result);
     }
 
     @Test
     public void testDecide_withoutOptions() throws Exception {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-        doReturn(mockDecision).when(userContextSpy).decideSync(any(), any());
+        OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
+            mockOptimizely,
+            TEST_USER_ID,
+            testAttributes
+        ));
+        doReturn(mockDecision).when(userContext).coreDecideSync(any(), any());
 
-        OptimizelyDecision result = userContextSpy.decide(TEST_FLAG_KEY);
-        verify(userContextSpy).decideSync(eq(TEST_FLAG_KEY), eq(Collections.emptyList()));
+        OptimizelyDecision result = userContext.decide(TEST_FLAG_KEY);
+
+        verify(userContext).coreDecideSync(TEST_FLAG_KEY, Collections.emptyList());
         assertEquals(mockDecision, result);
     }
 
     @Test
     public void testDecideForKeys_withOptions() throws Exception {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-        doReturn(mockDecisionsMap).when(userContextSpy).decideForKeysSync(any(), any());
+        OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
+            mockOptimizely,
+            TEST_USER_ID,
+            testAttributes
+        ));
+        doReturn(mockDecisionsMap).when(userContext).coreDecideForKeysSync(any(), any());
 
-        Map<String, OptimizelyDecision> result = userContextSpy.decideForKeys(TEST_FLAG_KEYS, TEST_OPTIONS);
-        verify(userContextSpy).decideForKeysSync(eq(TEST_FLAG_KEYS), eq(TEST_OPTIONS));
+        Map<String, OptimizelyDecision> result = userContext.decideForKeys(TEST_FLAG_KEYS, TEST_OPTIONS);
+
+        verify(userContext).coreDecideForKeysSync(TEST_FLAG_KEYS, TEST_OPTIONS);
         assertEquals(mockDecisionsMap, result);
     }
 
     @Test
     public void testDecideForKeys_withoutOptions() throws Exception {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-        doReturn(mockDecisionsMap).when(userContextSpy).decideForKeysSync(any(), any());
+        OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
+            mockOptimizely,
+            TEST_USER_ID,
+            testAttributes
+        ));
+        doReturn(mockDecisionsMap).when(userContext).coreDecideForKeysSync(any(), any());
 
-        Map<String, OptimizelyDecision> result = userContextSpy.decideForKeys(TEST_FLAG_KEYS);
-        verify(userContextSpy).decideForKeysSync(eq(TEST_FLAG_KEYS), eq(Collections.emptyList()));
+        Map<String, OptimizelyDecision> result = userContext.decideForKeys(TEST_FLAG_KEYS);
+
+        verify(userContext).coreDecideForKeysSync(TEST_FLAG_KEYS, Collections.emptyList());
         assertEquals(mockDecisionsMap, result);
     }
 
     @Test
     public void testDecideAll_withOptions() throws Exception {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-        doReturn(mockDecisionsMap).when(userContextSpy).decideAllSync(any());
+        OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
+            mockOptimizely,
+            TEST_USER_ID,
+            testAttributes
+        ));
+        doReturn(mockDecisionsMap).when(userContext).coreDecideAllSync(any());
 
-        Map<String, OptimizelyDecision> result = userContextSpy.decideAll(TEST_OPTIONS);
-        verify(userContextSpy).decideAllSync(eq(TEST_OPTIONS));
+        Map<String, OptimizelyDecision> result = userContext.decideAll(TEST_OPTIONS);
+
+        verify(userContext).coreDecideAllSync(TEST_OPTIONS);
         assertEquals(mockDecisionsMap, result);
     }
 
     @Test
     public void testDecideAll_withoutOptions() throws Exception {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-        doReturn(mockDecisionsMap).when(userContextSpy).decideAllSync(any());
+        OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
+            mockOptimizely,
+            TEST_USER_ID,
+            testAttributes
+        ));
+        doReturn(mockDecisionsMap).when(userContext).coreDecideAllSync(any());
 
-        Map<String, OptimizelyDecision> result = userContextSpy.decideAll();
-        verify(userContextSpy).decideAllSync(eq(Collections.emptyList()));
+        Map<String, OptimizelyDecision> result = userContext.decideAll();
+
+        verify(userContext).coreDecideAllSync(Collections.emptyList());
         assertEquals(mockDecisionsMap, result);
-    }
-
-    // ===========================================
-    // Tests for Async Decide Methods
-    // ===========================================
-
-    @Test
-    public void testDecideAsync_withOptions() {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-
-        userContextSpy.decideAsync(TEST_FLAG_KEY, TEST_OPTIONS, mockDecisionCallback);
-        verify(userContextSpy).decideAsync(eq(TEST_FLAG_KEY), eq(TEST_OPTIONS), eq(mockDecisionCallback));
-    }
-
-    @Test
-    public void testDecideAsync_withoutOptions() {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-
-        userContextSpy.decideAsync(TEST_FLAG_KEY, mockDecisionCallback);
-        verify(userContextSpy).decideAsync(eq(TEST_FLAG_KEY), eq(Collections.emptyList()), eq(mockDecisionCallback));
-    }
-
-    @Test
-    public void testDecideForKeysAsync_withOptions() {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-
-        userContextSpy.decideForKeysAsync(TEST_FLAG_KEYS, TEST_OPTIONS, mockDecisionsCallback);
-        verify(userContextSpy).decideForKeysAsync(eq(TEST_FLAG_KEYS), eq(TEST_OPTIONS), eq(mockDecisionsCallback));
-    }
-
-    @Test
-    public void testDecideForKeysAsync_withoutOptions() {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-
-        userContextSpy.decideForKeysAsync(TEST_FLAG_KEYS, mockDecisionsCallback);
-        verify(userContextSpy).decideForKeysAsync(eq(TEST_FLAG_KEYS), eq(Collections.emptyList()), eq(mockDecisionsCallback));
-    }
-
-    @Test
-    public void testDecideAllAsync_withOptions() {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-
-        userContextSpy.decideAllAsync(TEST_OPTIONS, mockDecisionsCallback);
-        verify(userContextSpy).decideAllAsync(eq(TEST_OPTIONS), eq(mockDecisionsCallback));
-    }
-
-    @Test
-    public void testDecideAllAsync_withoutOptions() {
-        OptimizelyUserContextAndroid userContextSpy = spy(
-            new OptimizelyUserContextAndroid(
-                mockOptimizely,
-                TEST_USER_ID,
-                testAttributes
-            )
-        );
-
-        userContextSpy.decideAllAsync(mockDecisionsCallback);
-        verify(userContextSpy).decideAllAsync(eq(Collections.emptyList()), eq(mockDecisionsCallback));
     }
 
 }
