@@ -18,8 +18,7 @@ import com.optimizely.ab.cmab.client.CmabClientHelper
 
 open class CmabClientHelperAndroid {
 
-    open val cmabPredictionEndpoint: String
-        get() = CmabClientHelper.CMAB_PREDICTION_ENDPOINT
+    open var cmabPredictionEndpoint: String = CmabClientHelper.CMAB_PREDICTION_ENDPOINT
 
     open val cmabFetchFailed: String
         get() = CmabClientHelper.CMAB_FETCH_FAILED

@@ -37,6 +37,12 @@ open class DefaultCmabClient : CmabClient {
         this.cmabClientHelper = CmabClientHelperAndroid()
     }
 
+    constructor(context: Context, cmabClientHelper: CmabClientHelperAndroid) {
+        this.client =
+            Client(OptlyStorage(context), LoggerFactory.getLogger(OptlyStorage::class.java))
+        this.cmabClientHelper = cmabClientHelper
+    }
+
     constructor(client: Client) {
         this.client = client
         this.cmabClientHelper = CmabClientHelperAndroid()
