@@ -17,6 +17,7 @@
 package com.optimizely.ab.android.sdk;
 
 import com.optimizely.ab.Optimizely;
+import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.internal.ReservedEventKey;
@@ -39,6 +40,7 @@ import java.util.Map;
 
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.powermock.reflect.Whitebox;
@@ -276,5 +278,57 @@ public class OptimizelyClientTest {
                 optimizelyClient.getNotificationCenter() : new NotificationCenter();
         notificationCenter.clearAllNotificationListeners();
         verify(logger).warn("Optimizely is not initialized, could not get the notification listener");
+    }
+
+    @Test
+    public void testCreateUserContext_withUserIdAndAttributes() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        String userId = "testUser123";
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("isLoggedIn", true);
+        attributes.put("userType", "premium");
+
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(userId, attributes);
+
+        assertTrue(userContext instanceof OptimizelyUserContextAndroid);
+        assertEquals(userId, userContext.getUserId());
+        assertEquals(attributes, userContext.getAttributes());
+    }
+
+    @Test
+    public void testCreateUserContext_withUserIdOnly() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        String userId = "testUser123";
+
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(userId);
+
+        assertTrue(userContext instanceof OptimizelyUserContextAndroid);
+        assertEquals(userId, userContext.getUserId());
+        assertEquals(Collections.emptyMap(), userContext.getAttributes());
+    }
+
+    @Test
+    public void testCreateUserContext_withNullOptimizely() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(null, logger);
+        String userId = "testUser123";
+        Map<String, Object> attributes = new HashMap<>();
+
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(userId, attributes);
+
+        assertEquals(null, userContext);
+        verify(logger).warn("Optimizely is not initialized, could not create a user context");
+    }
+
+    @Test
+    public void testCreateUserContext_withEmptyAttributes() {
+        OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely, logger);
+        String userId = "testUser123";
+        Map<String, Object> emptyAttributes = Collections.emptyMap();
+
+        OptimizelyUserContext userContext = optimizelyClient.createUserContext(userId, emptyAttributes);
+
+        assertTrue(userContext instanceof OptimizelyUserContextAndroid);
+        assertEquals(userId, userContext.getUserId());
+        assertEquals(emptyAttributes, userContext.getAttributes());
     }
 }

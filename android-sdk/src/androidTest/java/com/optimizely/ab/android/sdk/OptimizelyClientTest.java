@@ -2249,7 +2249,9 @@ public class OptimizelyClientTest {
         assertEquals(decision.getVariables().toMap(), variablesExpected.toMap());
         assertEquals(decision.getRuleKey(), FEATURE_MULTI_VARIATE_EXPERIMENT_KEY);
         assertEquals(decision.getFlagKey(), flagKey);
-        assertEquals(decision.getUserContext(), userContext);
+        OptimizelyUserContext decisionUserContext = decision.getUserContext();
+        assertEquals(decisionUserContext.getUserId(), userContext.getUserId());
+        assertEquals(decisionUserContext.getAttributes(), userContext.getAttributes());
         assertTrue(decision.getReasons().isEmpty());
     }
 

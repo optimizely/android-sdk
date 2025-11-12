@@ -146,6 +146,20 @@ public class ClientTest {
     }
 
     @Test
+    public void testExpBackoffFailure_with_one_second_timeout() {
+        Client.Request request = mock(Client.Request.class);
+        when(request.execute()).thenReturn(null);
+        // one second timeout is a corner case - pow(1, 4) = 1
+        assertNull(client.execute(request, 1, 2));
+        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
+        verify(logger, times(2)).info(eq("Request failed, waiting {} seconds to try again"), captor.capture());
+        List<Integer> timeouts = captor.getAllValues();
+        assertTrue(timeouts.contains(1));
+        assertTrue(timeouts.contains(1));
+    }
+
+
+    @Test
     public void testExpBackoffFailure_noRetriesWhenBackoffSetToZero() {
         Client.Request request = mock(Client.Request.class);
         when(request.execute()).thenReturn(null);
