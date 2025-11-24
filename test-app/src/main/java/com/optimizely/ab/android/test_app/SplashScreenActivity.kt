@@ -45,8 +45,7 @@ class SplashScreenActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        APISamplesInJava.samplesForCmab__local_datafile(this)
-        APISamplesInJava.samplesForCmab__cdn_datafile(this)
+        APISamplesInJava.samplesForCmab(this)
 
 //
 //        val INITIALIZE_ASYNCHRONOUSLY = true
