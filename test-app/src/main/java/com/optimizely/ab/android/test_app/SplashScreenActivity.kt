@@ -46,6 +46,8 @@ class SplashScreenActivity : AppCompatActivity() {
         super.onStart()
 
         APISamplesInJava.samplesForCmab(this)
+        APISamplesInJava.samplesForCmabConfig(this)
+        APISamplesInJava.samplesForCmabConfig2(this)
 
 //
 //        val INITIALIZE_ASYNCHRONOUSLY = true

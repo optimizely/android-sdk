@@ -18,6 +18,7 @@ package com.optimizely.ab.android.test_app.Samples;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.graphics.Path;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
@@ -29,8 +30,11 @@ import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.event_handler.EventRescheduler;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
+import com.optimizely.ab.android.sdk.cmab.CmabClientHelperAndroid;
+import com.optimizely.ab.android.sdk.cmab.DefaultCmabClient;
 import com.optimizely.ab.android.test_app.R;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.cmab.client.CmabClient;
 import com.optimizely.ab.config.Variation;
 import com.optimizely.ab.config.parser.JsonParseException;
 import com.optimizely.ab.error.ErrorHandler;
@@ -69,6 +73,9 @@ public class APISamplesInJava {
 
     static public void samplesAll(Context context) {
         samplesForCmab(context);
+        samplesForCmabConfig(context);
+        samplesForCmabConfig2(context);
+
         samplesForDecide(context);
         samplesForInitialization(context);
         samplesForOptimizelyConfig(context);
@@ -98,19 +105,19 @@ public class APISamplesInJava {
 
 
     static public void samplesForCmab(Context context) {
-        List<OptimizelyDecideOption> defaultDecideOptions = Arrays.asList(
+        List<OptimizelyDecideOption> options = Arrays.asList(
             OptimizelyDecideOption.INCLUDE_REASONS,
-            OptimizelyDecideOption.IGNORE_USER_PROFILE_SERVICE
+            OptimizelyDecideOption.IGNORE_USER_PROFILE_SERVICE,
+            OptimizelyDecideOption.IGNORE_CMAB_CACHE
         );
 
         // we use cmab test project=4552646833471488 datafile for this testing
 
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
             .withSDKKey("4ft9p1vSXYM5hLATwWdRc")
-            .withDefaultDecideOptions(defaultDecideOptions)
             .build(context);
         // we use raw datafile for this testing
-        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile_full, false, false);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile_full);
 
         String userId = "user_123";
         Map<String, Object> attributes = new HashMap<>();
@@ -122,7 +129,6 @@ public class APISamplesInJava {
 
         // decide (decideSync)
 
-        List<OptimizelyDecideOption> options = Arrays.asList(OptimizelyDecideOption.INCLUDE_REASONS);
         Log.d("Samples","=================================================================");
         Log.d("Samples","[CMAB] calling sync decision for cmab...");
         Log.d("Samples","=================================================================");
@@ -152,13 +158,113 @@ public class APISamplesInJava {
         });
 
         try {
-            latch.await(5, TimeUnit.SECONDS);
+            latch.await(60, TimeUnit.SECONDS);
             Log.d("Samples", "[CMAB] Latch released. Async operation completed.");
         } catch (InterruptedException e) {
             e.printStackTrace();
             Thread.currentThread().interrupt();
         }
 
+    }
+
+    static public void samplesForCmabConfig(Context context) {
+        List<OptimizelyDecideOption> options = Arrays.asList(
+            OptimizelyDecideOption.INCLUDE_REASONS,
+            OptimizelyDecideOption.IGNORE_USER_PROFILE_SERVICE,
+            OptimizelyDecideOption.IGNORE_CMAB_CACHE
+        );
+
+        // we use cmab test project=4552646833471488 datafile for this testing
+
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+            .withSDKKey("4ft9p1vSXYM5hLATwWdRc")
+            .withCmabCacheSize(50)
+            .withCmabCacheTimeout(10, TimeUnit.SECONDS)
+            .build(context);
+        // we use raw datafile for this testing
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile_full);
+
+        String userId = "user_123";
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("country", "us");
+        attributes.put("extra-1", 100);
+        OptimizelyUserContext user = optimizelyClient.createUserContext(userId, attributes);
+
+        String flagKey = "cmab-flag";
+
+        // decideAsync
+
+        Log.d("Samples","=================================================================");
+        Log.d("Samples","[CMAB] calling async decision for cmab with custom cmab cache...");
+        Log.d("Samples","=================================================================");
+        final CountDownLatch latch = new CountDownLatch(1);
+        user.decideAsync(flagKey, options, (OptimizelyDecision optDecision) -> {
+            Log.d("Samples","=================================================================");
+            Log.d("Samples","[CMAB] async decision for cmab with custom cmab cache: " + optDecision.toString());
+            if (!optDecision.getEnabled()) {
+                Log.e("Samples","[ERROR] " + flagKey + " is expected to be enabled for this user!");
+            }
+            Log.d("Samples","=================================================================");
+            latch.countDown();
+        });
+
+        try {
+            latch.await(60, TimeUnit.SECONDS);
+            Log.d("Samples", "[CMAB] Latch released. Async operation completed.");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    static public void samplesForCmabConfig2(Context context) {
+        List<OptimizelyDecideOption> options = Arrays.asList(
+            OptimizelyDecideOption.INCLUDE_REASONS,
+            OptimizelyDecideOption.IGNORE_USER_PROFILE_SERVICE,
+            OptimizelyDecideOption.IGNORE_CMAB_CACHE
+        );
+
+        // custom CmabClient
+
+        CmabClientHelperAndroid cmabHelper = new CmabClientHelperAndroid();
+        cmabHelper.setCmabPredictionEndpoint("https://prediction.cmab.optimizely.com/predict/%s");
+        CmabClient customCmabClient = new DefaultCmabClient(context, cmabHelper);
+
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+            .withSDKKey("4ft9p1vSXYM5hLATwWdRc")
+            .withCmabClient(customCmabClient)
+            .build(context);
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile_full);
+
+        String userId = "user_123";
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("country", "us");
+        attributes.put("extra-1", 100);
+        OptimizelyUserContext user = optimizelyClient.createUserContext(userId, attributes);
+
+        String flagKey = "cmab-flag";
+
+        Log.d("Samples","=================================================================");
+        Log.d("Samples","[CMAB] calling async decision for cmab with custom CmabClient...");
+        Log.d("Samples","=================================================================");
+        final CountDownLatch latch = new CountDownLatch(1);
+        user.decideAsync(flagKey, options, (OptimizelyDecision optDecision) -> {
+            Log.d("Samples","=================================================================");
+            Log.d("Samples","[CMAB] async decision for cmab with custom CmabClient: " + optDecision.toString());
+            if (!optDecision.getEnabled()) {
+                Log.e("Samples","[ERROR] " + flagKey + " is expected to be enabled for this user!");
+            }
+            Log.d("Samples","=================================================================");
+            latch.countDown();
+        });
+
+        try {
+            latch.await(60, TimeUnit.SECONDS);
+            Log.d("Samples", "[CMAB] Latch released. Async operation completed.");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
     }
 
     static public void samplesForDecide(Context context) {
