@@ -45,28 +45,23 @@ class SplashScreenActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        APISamplesInJava.samplesForCmab(this)
-        APISamplesInJava.samplesForCmabConfig(this)
-        APISamplesInJava.samplesForCmabConfig2(this)
+        val INITIALIZE_ASYNCHRONOUSLY = true
 
-//
-//        val INITIALIZE_ASYNCHRONOUSLY = true
-//
-//        // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
-//        // in the manifest.
-//        val eventRescheduler = EventRescheduler()
-//        applicationContext.registerReceiver(eventRescheduler, IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION))
-//
-//        if (INITIALIZE_ASYNCHRONOUSLY) {
-//            optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->
-//                addNotificationListeners()
-//                startVariation()
-//            }
-//        } else {
-//            optimizelyManager!!.initialize(this, R.raw.datafile)
-//            addNotificationListeners()
-//            startVariation()
-//        }
+        // with the new Android O differences, you need to register the service for the intent filter you desire in code instead of
+        // in the manifest.
+        val eventRescheduler = EventRescheduler()
+        applicationContext.registerReceiver(eventRescheduler, IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION))
+
+        if (INITIALIZE_ASYNCHRONOUSLY) {
+            optimizelyManager!!.initialize(this, R.raw.datafile) { _ ->
+                addNotificationListeners()
+                startVariation()
+            }
+        } else {
+            optimizelyManager!!.initialize(this, R.raw.datafile)
+            addNotificationListeners()
+            startVariation()
+        }
 
     }
 
