@@ -68,6 +68,8 @@ open class DefaultCmabClient : CmabClient {
                 val requestBody: String =
                     cmabClientHelper.buildRequestJson(userId, ruleId, attributes, cmabUuid)
 
+                logger.info("Fetching CMAB decision: " + apiEndpoint + " with body: " + requestBody)
+
                 val url = URL(apiEndpoint)
                 urlConnection = client.openConnection(url)
                 if (urlConnection == null) {
@@ -99,6 +101,7 @@ open class DefaultCmabClient : CmabClient {
 
                     return@Request cmabClientHelper.parseVariationId(json)
                 } else {
+                    logger.debug("Failed to fetching CMAB decision for ruleId=" + ruleId + " and userId=" + userId + ": status=" + status);
                     val errorMessage: String = java.lang.String.format(
                         cmabClientHelper.cmabFetchFailed,
                         urlConnection.responseMessage
@@ -107,6 +110,7 @@ open class DefaultCmabClient : CmabClient {
                     throw CmabFetchException(errorMessage)
                 }
             } catch (e: Exception) {
+                logger.debug("Failed to fetching CMAB decision for ruleId=" + ruleId + " and userId=" + userId);
                 val errorMessage: String =
                     java.lang.String.format(cmabClientHelper.cmabFetchFailed, e.message)
                 logger.error(errorMessage)

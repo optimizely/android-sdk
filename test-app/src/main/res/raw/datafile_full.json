@@ -1,0 +1,112 @@
+{
+  "accountId": "5030020721",
+  "projectId": "5139960550391808",
+  "revision": "7",
+  "attributes": [
+    {
+      "id": "5179257152339968",
+      "key": "age"
+    }
+  ],
+  "audiences": [
+    {
+      "id": "$opt_dummy_audience",
+      "name": "Optimizely-Generated Audience for Backwards Compatibility",
+      "conditions": "[\"or\", {\"match\": \"exact\", \"name\": \"$opt_dummy_attribute\", \"type\": \"custom_attribute\", \"value\": \"$opt_dummy_value\"}]"
+    }
+  ],
+  "version": "4",
+  "events": [
+    {
+      "id": "6548971704287232",
+      "experimentIds": [
+        "9000003791039"
+      ],
+      "key": "ev1"
+    }
+  ],
+  "integrations": [],
+  "holdouts": [],
+  "anonymizeIP": true,
+  "botFiltering": false,
+  "typedAudiences": [],
+  "variables": [],
+  "environmentKey": "development",
+  "sdkKey": "AxbpgEqC9P2tRv9zC1cdu",
+  "featureFlags": [
+    {
+      "id": "849323",
+      "key": "cmab-1",
+      "rolloutId": "rollout-849323-431750693605093",
+      "experimentIds": [
+        "90000001"
+      ],
+      "variables": []
+    }
+  ],
+  "rollouts": [
+    {
+      "id": "rollout-849323-431750693605093",
+      "experiments": [
+        {
+          "id": "default-rollout-849323-431750693605093",
+          "key": "default-rollout-849323-431750693605093",
+          "status": "Running",
+          "layerId": "rollout-849323-431750693605093",
+          "variations": [
+            {
+              "id": "1993173",
+              "key": "off",
+              "featureEnabled": false,
+              "variables": []
+            }
+          ],
+          "trafficAllocation": [
+            {
+              "entityId": "1993173",
+              "endOfRange": 10000
+            }
+          ],
+          "forcedVariations": {},
+          "audienceIds": [],
+          "audienceConditions": []
+        }
+      ]
+    },
+    {}
+  ],
+  "experiments": [
+    {
+      "id": "90000001",
+      "key": "c1",
+      "status": "Running",
+      "layerId": "9000003768807",
+      "variations": [
+        {
+          "id": "1993173",
+          "key": "off",
+          "featureEnabled": false,
+          "variables": []
+        },
+        {
+          "id": "1993174",
+          "key": "on",
+          "featureEnabled": true,
+          "variables": []
+        }
+      ],
+      "trafficAllocation": [],
+      "forcedVariations": {},
+      "audienceIds": [],
+      "audienceConditions": [],
+      "cmab": {
+        "attributeIds": [
+          "5179257152339968"
+        ],
+        "trafficAllocation": 10000
+      }
+    }
+  ],
+  "groups": [],
+  "region": "US"
+}

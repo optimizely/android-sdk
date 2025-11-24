@@ -62,11 +62,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class APISamplesInJava {
 
     static public void samplesAll(Context context) {
+        samplesForCmab__local_datafile(context);
+        samplesForCmab__cdn_datafile(context);
+
         samplesForDecide(context);
         samplesForInitialization(context);
         samplesForOptimizelyConfig(context);
@@ -92,6 +96,130 @@ public class APISamplesInJava {
         samplesForDoc_ForcedDecision(context);
         samplesForDoc_ODP_async(context);
         samplesForDoc_ODP_sync(context);
+    }
+
+
+    static public void samplesForCmab__local_datafile(Context context) {
+        List<OptimizelyDecideOption> defaultDecideOptions = Arrays.asList(
+            OptimizelyDecideOption.INCLUDE_REASONS,
+            OptimizelyDecideOption.IGNORE_USER_PROFILE_SERVICE
+        );
+
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+            .withSDKKey("invalid-sdk-key-for-cmab-testing")
+            .withDefaultDecideOptions(defaultDecideOptions)
+            .build(context);
+        // we use raw datafile for this testing
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile_full);
+
+        String userId = "user_123";
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("is_logged_in", false);
+        attributes.put("app_version", "1.3.2");
+        OptimizelyUserContext user = optimizelyClient.createUserContext(userId, attributes);
+
+        // decide (decideSync)
+
+        String flagKey = "cmab-1";
+
+        List<OptimizelyDecideOption> options = Arrays.asList(OptimizelyDecideOption.INCLUDE_REASONS);
+        Log.d("Samples","=================================================================");
+        Log.d("Samples","[CMAB Local Datafile] calling sync decision for cmab...");
+        Log.d("Samples","=================================================================");
+        OptimizelyDecision decision = user.decide(flagKey, options);
+
+        Log.d("Samples","=================================================================");
+        Log.d("Samples","[CMAB Local Datafile] sync decision for cmab: " + decision.toString());
+        if (decision.getEnabled()) {
+            Log.e("Samples","[ERROR] " + flagKey + " is expected to be NOT enabled for this user!");
+        }
+        Log.d("Samples","=================================================================");
+
+        // decideAsync
+
+        Log.d("Samples","=================================================================");
+        Log.d("Samples","[CMAB Local Datafile] calling async decision for cmab...");
+        Log.d("Samples","=================================================================");
+        final CountDownLatch latch = new CountDownLatch(1);
+        user.decideAsync(flagKey, options, (OptimizelyDecision optDecision) -> {
+            Log.d("Samples","=================================================================");
+            Log.d("Samples","[CMAB Local Datafile] async decision for cmab: " + optDecision.toString());
+            if (!optDecision.getEnabled()) {
+                Log.e("Samples","[ERROR] " + flagKey + " is expected to be enabled for this user!");
+            }
+            Log.d("Samples","=================================================================");
+            latch.countDown();
+        });
+
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+            Log.d("Samples", "[CMAB Local Datafile] Latch released. Async operation completed.");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
+    }
+
+
+    static public void samplesForCmab__cdn_datafile(Context context) {
+        List<OptimizelyDecideOption> defaultDecideOptions = Arrays.asList(
+            OptimizelyDecideOption.INCLUDE_REASONS,
+            OptimizelyDecideOption.IGNORE_USER_PROFILE_SERVICE
+        );
+
+        // we use project=4552646833471488 for CMAB testing
+        OptimizelyManager optimizelyManager = OptimizelyManager.builder()
+            .withSDKKey("4ft9p1vSXYM5hLATwWdRc")
+            .withDefaultDecideOptions(defaultDecideOptions)
+            .build(context);
+        // we use raw datafile for this testing
+        OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile_full);
+
+        String userId = "user_20";
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("country", "us");
+        OptimizelyUserContext user = optimizelyClient.createUserContext(userId, attributes);
+
+        // decide (decideSync)
+
+        String flagKey = "cmab-flag";
+
+        List<OptimizelyDecideOption> options = Arrays.asList(OptimizelyDecideOption.INCLUDE_REASONS);
+        Log.d("Samples","=================================================================");
+        Log.d("Samples","[CMAB CDN Datafile] calling sync decision for cmab...");
+        Log.d("Samples","=================================================================");
+        OptimizelyDecision decision = user.decide(flagKey, options);
+
+        Log.d("Samples","=================================================================");
+        Log.d("Samples","[CMAB CDN Datafile] sync decision for cmab: " + decision.toString());
+        if (decision.getEnabled()) {
+            Log.e("Samples","[ERROR] " + flagKey + " is expected to be NOT enabled for this user!");
+        }
+        Log.d("Samples","=================================================================");
+
+        // decideAsync
+
+        Log.d("Samples","=================================================================");
+        Log.d("Samples","[CMAB CDN Datafile] calling async decision for cmab...");
+        Log.d("Samples","=================================================================");
+        final CountDownLatch latch = new CountDownLatch(1);
+        user.decideAsync(flagKey, options, (OptimizelyDecision optDecision) -> {
+            Log.d("Samples","=================================================================");
+            Log.d("Samples","[CMAB CDN Datafile] async decision for cmab: " + optDecision.toString());
+            if (!optDecision.getEnabled()) {
+                Log.e("Samples","[ERROR] " + flagKey + " is expected to be enabled for this user!");
+            }
+            Log.d("Samples","=================================================================");
+            latch.countDown();
+        });
+
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+            Log.d("Samples", "[CMAB CDN Datafile] Latch released. Async operation completed.");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
     }
 
     static public void samplesForDecide(Context context) {
