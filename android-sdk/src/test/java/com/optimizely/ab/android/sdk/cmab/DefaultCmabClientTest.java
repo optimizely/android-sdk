@@ -58,6 +58,36 @@ public class DefaultCmabClientTest {
     }
 
     @Test
+    public void testConstructorWithClientOnly() {
+        Client client = mock(Client.class);
+        DefaultCmabClient cmabClient = new DefaultCmabClient(client);
+        assertNotNull(cmabClient);
+    }
+
+    @Test
+    public void testConstructorWithClientAndHelper() {
+        Client client = mock(Client.class);
+        CmabClientHelperAndroid helper = mock(CmabClientHelperAndroid.class);
+        DefaultCmabClient cmabClient = new DefaultCmabClient(client, helper);
+        assertNotNull(cmabClient);
+    }
+
+    @Test
+    public void testConstructorWithContextOnly() {
+        android.content.Context mockContext = mock(android.content.Context.class);
+        DefaultCmabClient cmabClient = new DefaultCmabClient(mockContext);
+        assertNotNull(cmabClient);
+    }
+
+    @Test
+    public void testConstructorWithContextAndHelper() {
+        android.content.Context mockContext = mock(android.content.Context.class);
+        CmabClientHelperAndroid helper = mock(CmabClientHelperAndroid.class);
+        DefaultCmabClient cmabClient = new DefaultCmabClient(mockContext, helper);
+        assertNotNull(cmabClient);
+    }
+
+    @Test
     public void testFetchDecisionSuccess() throws Exception {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);

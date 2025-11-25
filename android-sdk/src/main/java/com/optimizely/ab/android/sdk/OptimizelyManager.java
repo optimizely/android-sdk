@@ -39,6 +39,7 @@ import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.event_handler.EventDispatcher;
 import com.optimizely.ab.android.odp.DefaultODPApiManager;
 import com.optimizely.ab.android.odp.VuidManager;
+import com.optimizely.ab.android.sdk.cmab.CmabClientHelperAndroid;
 import com.optimizely.ab.android.sdk.cmab.DefaultCmabClient;
 import com.optimizely.ab.android.shared.Client;
 import com.optimizely.ab.android.shared.DatafileConfig;
@@ -803,6 +804,7 @@ public class OptimizelyManager {
 
         private int cmabCacheSize = 100;
         private int cmabCacheTimeoutInSecs = 30*60;
+        private String cmabPredictionEndpoint = null;
 
         private String customSdkName = null;
         private String customSdkVersion = null;
@@ -1094,8 +1096,25 @@ public class OptimizelyManager {
             return this;
         }
 
+        /**
+         * Override the default {@link CmabClient} implementation for CMAB operations.
+         *
+         * @param cmabClient The {@link CmabClient} instance to use.
+         * @return this {@link Builder} instance
+         */
         public Builder withCmabClient(CmabClient cmabClient) {
             this.cmabClient = cmabClient;
+            return this;
+        }
+
+        /**
+         * Override the default prediction endpoint for the CMAB client.
+         *
+         * @param endpoint The prediction endpoint as an integer.
+         * @return this {@link Builder} instance
+         */
+        public Builder withCmabPredictionEndpoint(String endpoint) {
+            this.cmabPredictionEndpoint = endpoint;
             return this;
         }
 
@@ -1203,7 +1222,13 @@ public class OptimizelyManager {
 
             DefaultCmabService.Builder cmabBuilder = DefaultCmabService.builder();
             if (cmabClient == null) {
-                cmabClient = new DefaultCmabClient(context);
+                if (cmabPredictionEndpoint == null) {
+                    cmabClient = new DefaultCmabClient(context);
+                } else {
+                    CmabClientHelperAndroid cmabHelper = new CmabClientHelperAndroid();
+                    cmabHelper.setCmabPredictionEndpoint(cmabPredictionEndpoint);
+                    cmabClient = new DefaultCmabClient(context, cmabHelper);
+                }
             }
             cmabBuilder.withClient(cmabClient);
             cmabBuilder.withCmabCacheSize(cmabCacheSize);

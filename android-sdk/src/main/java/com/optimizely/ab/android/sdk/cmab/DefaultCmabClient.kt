@@ -31,26 +31,24 @@ open class DefaultCmabClient : CmabClient {
     private val cmabClientHelper: CmabClientHelperAndroid
     private val logger = LoggerFactory.getLogger(DefaultCmabClient::class.java)
 
-    constructor(context: Context) {
+    @VisibleForTesting
+    fun getCmabClientHelper(): CmabClientHelperAndroid {
+        return cmabClientHelper
+    }
+
+    constructor(context: Context) : this(context, null)
+
+    constructor(context: Context, cmabClientHelper: CmabClientHelperAndroid?) {
         this.client =
             Client(OptlyStorage(context), LoggerFactory.getLogger(OptlyStorage::class.java))
-        this.cmabClientHelper = CmabClientHelperAndroid()
+        this.cmabClientHelper = cmabClientHelper ?: CmabClientHelperAndroid()
     }
 
-    constructor(context: Context, cmabClientHelper: CmabClientHelperAndroid) {
-        this.client =
-            Client(OptlyStorage(context), LoggerFactory.getLogger(OptlyStorage::class.java))
-        this.cmabClientHelper = cmabClientHelper
-    }
+    constructor(client: Client) : this(client, null)
 
-    constructor(client: Client) {
+    constructor(client: Client, cmabClientHelper: CmabClientHelperAndroid?) {
         this.client = client
-        this.cmabClientHelper = CmabClientHelperAndroid()
-    }
-
-    constructor(client: Client, cmabClientHelper: CmabClientHelperAndroid) {
-        this.client = client
-        this.cmabClientHelper = cmabClientHelper
+        this.cmabClientHelper = cmabClientHelper ?: CmabClientHelperAndroid()
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)

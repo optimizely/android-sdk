@@ -74,7 +74,7 @@ public class APISamplesInJava {
     static public void samplesAll(Context context) {
         samplesForCmab(context);
         samplesForCmabConfig(context);
-        samplesForCmabConfig2(context);
+        samplesForCmabConfig_endpoint(context);
 
         samplesForDecide(context);
         samplesForInitialization(context);
@@ -176,10 +176,12 @@ public class APISamplesInJava {
 
         // we use cmab test project=4552646833471488 datafile for this testing
 
+        CmabClient customCmabClient = new DefaultCmabClient(context);
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
             .withSDKKey("4ft9p1vSXYM5hLATwWdRc")
             .withCmabCacheSize(50)
             .withCmabCacheTimeout(10, TimeUnit.SECONDS)
+            .withCmabClient(customCmabClient)
             .build(context);
         // we use raw datafile for this testing
         OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile_full);
@@ -217,19 +219,16 @@ public class APISamplesInJava {
         }
     }
 
-    static public void samplesForCmabConfig2(Context context) {
+    static public void samplesForCmabConfig_endpoint(Context context) {
         List<OptimizelyDecideOption> options = Arrays.asList(
             OptimizelyDecideOption.INCLUDE_REASONS,
             OptimizelyDecideOption.IGNORE_USER_PROFILE_SERVICE,
             OptimizelyDecideOption.IGNORE_CMAB_CACHE
         );
 
-        // custom CmabClient
+        // custom Cmab Endpoint
 
-        CmabClientHelperAndroid cmabHelper = new CmabClientHelperAndroid();
-        cmabHelper.setCmabPredictionEndpoint("https://prediction.cmab.optimizely.com/predict/%s");
-        CmabClient customCmabClient = new DefaultCmabClient(context, cmabHelper);
-
+        CmabClient customCmabClient = new DefaultCmabClient(context);
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
             .withSDKKey("4ft9p1vSXYM5hLATwWdRc")
             .withCmabClient(customCmabClient)

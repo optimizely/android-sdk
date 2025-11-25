@@ -132,6 +132,7 @@ public class OptimizelyClientTest {
 
             // set to return DecisionResponse with null variation by default (instead of null DecisionResponse)
             when(bucketer.bucket(any(), any(), any())).thenReturn(DecisionResponse.nullNoReasons());
+            when(bucketer.bucket(any(), any(), any(), any())).thenReturn(DecisionResponse.nullNoReasons());
 
             if(datafileVersion==3) {
                 Variation variation = optimizely.getProjectConfig().getExperiments().get(0).getVariations().get(0);
