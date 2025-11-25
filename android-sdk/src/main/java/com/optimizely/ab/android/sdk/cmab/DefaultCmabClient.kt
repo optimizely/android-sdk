@@ -66,7 +66,7 @@ open class DefaultCmabClient : CmabClient {
                 val requestBody: String =
                     cmabClientHelper.buildRequestJson(userId, ruleId, attributes, cmabUuid)
 
-                logger.info("Fetching CMAB decision: " + apiEndpoint + " with body: " + requestBody)
+                logger.info("Fetching CMAB decision: {} with body: {}", apiEndpoint, requestBody)
 
                 val url = URL(apiEndpoint)
                 urlConnection = client.openConnection(url)
@@ -99,7 +99,7 @@ open class DefaultCmabClient : CmabClient {
 
                     return@Request cmabClientHelper.parseVariationId(json)
                 } else {
-                    logger.debug("Failed to fetching CMAB decision for ruleId=" + ruleId + " and userId=" + userId + ": status=" + status);
+                    logger.debug("Failed to fetch CMAB decision for ruleId={} and userId={}: status={}", ruleId, userId, status)
                     val errorMessage: String = java.lang.String.format(
                         cmabClientHelper.cmabFetchFailed,
                         urlConnection.responseMessage
@@ -108,7 +108,7 @@ open class DefaultCmabClient : CmabClient {
                     throw CmabFetchException(errorMessage)
                 }
             } catch (e: Exception) {
-                logger.debug("Failed to fetching CMAB decision for ruleId=" + ruleId + " and userId=" + userId);
+                logger.debug("Failed to fetch CMAB decision for ruleId={} and userId={}", ruleId, userId);
                 val errorMessage: String =
                     java.lang.String.format(cmabClientHelper.cmabFetchFailed, e.message)
                 logger.error(errorMessage)
@@ -131,11 +131,11 @@ open class DefaultCmabClient : CmabClient {
         var CONNECTION_TIMEOUT = 10 * 1000
         var READ_TIMEOUT = 60 * 1000
 
-        // cmab service retries only once with 1sec interval
+        // cmab service retries twice with 1sec interval
 
         // the numerical base for the exponential backoff (1 second)
         const val REQUEST_BACKOFF_TIMEOUT = 1
-        // retry only once = 2 total attempts
+        // retry twice = 3 total attempts
         const val REQUEST_RETRIES_POWER = 2
     }
 }

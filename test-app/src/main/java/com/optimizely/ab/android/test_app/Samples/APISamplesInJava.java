@@ -18,7 +18,6 @@ package com.optimizely.ab.android.test_app.Samples;
 
 import android.content.Context;
 import android.content.IntentFilter;
-import android.graphics.Path;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 

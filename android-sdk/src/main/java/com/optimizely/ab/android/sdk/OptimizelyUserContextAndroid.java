@@ -19,7 +19,7 @@ import com.optimizely.ab.OptimizelyForcedDecision;
 import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecideOption;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecision;
-import com.optimizely.ab.optimizelydecision.OptimizelyDecisionCallback;;
+import com.optimizely.ab.optimizelydecision.OptimizelyDecisionCallback;
 import com.optimizely.ab.optimizelydecision.OptimizelyDecisionsCallback;
 
 import java.util.Collections;
