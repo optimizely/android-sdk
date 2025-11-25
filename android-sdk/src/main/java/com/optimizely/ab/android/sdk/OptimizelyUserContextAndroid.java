@@ -84,6 +84,11 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
         super(optimizely, userId, attributes, forcedDecisionsMap, qualifiedSegments, shouldIdentifyUser);
     }
 
+    // ===========================================
+    // [SYNCHRONOUS DECIDE METHODS]
+    // - "decideSync" methods skip async decision like cmab for backward compatibility.
+    // ===========================================
+
     /**
      * Returns a decision result ({@link OptimizelyDecision}) for a given flag key and a user context, which contains all data required to deliver the flag.
      * <ul>
@@ -183,7 +188,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     }
 
     // ===========================================
-    // Async Methods (Android-specific) with callbacks
+    // [ASYNCHRONOUS DECIDE METHODS WITH CALLBACKS]
     // ===========================================
 
     /**
@@ -253,7 +258,9 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     }
 
     // ===========================================
-    // Async Methods (Android-specific) with blocking calls to synchronous methods
+    // [ASYNCHRONOUS DECIDE METHODS WITH BLOCKING CALLS]
+    // - This will block the calling thread until a decision is returned.
+    // - So this should be called in background thread only.
     // ===========================================
 
     /**
@@ -267,7 +274,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @return A decision result.
      */
     public OptimizelyDecision decideAsync(@NonNull String key,
-                                     @NonNull List<OptimizelyDecideOption> options) {
+                                          @NonNull List<OptimizelyDecideOption> options) {
         return coreDecide(key, options);
     }
 
@@ -292,7 +299,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @return All decision results mapped by flag keys.
      */
     public Map<String, OptimizelyDecision> decideForKeysAsync(@NonNull List<String> keys,
-                                                         @NonNull List<OptimizelyDecideOption> options) {
+                                                              @NonNull List<OptimizelyDecideOption> options) {
         return coreDecideForKeys(keys, options);
     }
 
@@ -335,6 +342,10 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * for parent functionality, circumventing Mockito's inability to intercept super calls.
      */
 
+    // [SYNCHRONOUS DECIDE METHODS]
+    // - java-sdk provides these "decideSync" methods only for android-sdk we are using them directly.
+    // - "decideSync" methods skip async decision like cmab for backward compatibility.
+
     OptimizelyDecision coreDecideSync(@NonNull String key, @NonNull List<OptimizelyDecideOption> options) {
         return super.decideSync(key, options);
     }
@@ -347,6 +358,9 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
         return super.decideAllSync(options);
     }
 
+    // [ASYNCHRONOUS DECIDE METHODS WITH CALLBACKS]
+    // - java-sdk also provides async decide methods with callbacks, we are just delegating to super class here.
+
     void coreDecideAsync(@NonNull String key, @NonNull List<OptimizelyDecideOption> options, @NonNull OptimizelyDecisionCallback callback) {
         super.decideAsync(key, options, callback);
     }
@@ -358,6 +372,9 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     void coreDecideAllAsync(@NonNull List<OptimizelyDecideOption> options, @NonNull OptimizelyDecisionsCallback callback) {
         super.decideAllAsync(options, callback);
     }
+
+    // [ASYNCHRONOUS DECIDE METHODS WITH BLOCKING CALLS]
+    // - these APIs call java-sdk native "decide" methods directly, blocking the calling thread until a decision is returned
 
     OptimizelyDecision coreDecide(@NonNull String key, @NonNull List<OptimizelyDecideOption> options) {
         return super.decide(key, options);
