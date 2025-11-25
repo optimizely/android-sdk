@@ -98,7 +98,7 @@ ext {
     build_tools_version = "35.0.0"
     min_sdk_version = 21
     target_sdk_version = 35
-    
+
     // [TESTING] replace with production java-sdk version before release
     java_core_ver = "3.1.0-SNAPSHOT"
 
