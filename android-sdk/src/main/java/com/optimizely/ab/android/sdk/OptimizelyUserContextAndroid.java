@@ -84,10 +84,10 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
         super(optimizely, userId, attributes, forcedDecisionsMap, qualifiedSegments, shouldIdentifyUser);
     }
 
-    // ===========================================
+    // ==================================================================
     // [SYNCHRONOUS DECIDE METHODS]
     // - "decideSync" methods skip async decision like cmab for backward compatibility.
-    // ===========================================
+    // ==================================================================
 
     /**
      * Returns a decision result ({@link OptimizelyDecision}) for a given flag key and a user context, which contains all data required to deliver the flag.
@@ -187,9 +187,9 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
         return coreDecideAllSync(Collections.emptyList());
     }
 
-    // ===========================================
+    // ==================================================================
     // [ASYNCHRONOUS DECIDE METHODS WITH CALLBACKS]
-    // ===========================================
+    // ==================================================================
 
     /**
      * Returns a decision result asynchronously for a given flag key and a user context.
@@ -257,11 +257,11 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
         coreDecideAllAsync(Collections.emptyList(), callback);
     }
 
-    // ===========================================
+    // ==================================================================
     // [ASYNCHRONOUS DECIDE METHODS WITH BLOCKING CALLS]
     // - This will block the calling thread until a decision is returned.
     // - So this should be called in background thread only.
-    // ===========================================
+    // ==================================================================
 
     /**
      * Returns a decision result ({@link OptimizelyDecision}) for a given flag key and a user context, which contains all data required to deliver the flag.
@@ -342,9 +342,9 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
         return coreDecideAll(Collections.emptyList());
     }
 
-    // ===========================================
+    // ==================================================================
     // Core Methods - All super calls centralized here for testability
-    // ===========================================
+    // ==================================================================
 
     /**
      * Core delegation methods that encapsulate all java-sdk parent class method calls.
