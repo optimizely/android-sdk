@@ -266,21 +266,25 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
     /**
      * Returns a decision result ({@link OptimizelyDecision}) for a given flag key and a user context, which contains all data required to deliver the flag.
      * <p>
-     * Note: Despite the "Async" name, this method performs blocking synchronous decision-making.
-     * For true asynchronous decision-making with callbacks, use the callback-based decideAsync() methods.
+     * Note: This method blocks the calling thread until the decision is complete.
+     * It should only be called from a background thread.
+     * For callback-based asynchronous decision-making, use decideAsync() methods.
      * </p>
      * @param key A flag key for which a decision will be made.
      * @param options A list of options for decision-making.
      * @return A decision result.
      */
     public OptimizelyDecision decideAsync(@NonNull String key,
-                                          @NonNull List<OptimizelyDecideOption> options) {
+                                                   @NonNull List<OptimizelyDecideOption> options) {
         return coreDecide(key, options);
     }
 
     /**
      * Returns a decision result ({@link OptimizelyDecision}) for a given flag key and a user context, which contains all data required to deliver the flag.
-     *
+     * <p>
+     * Note: This method blocks the calling thread until the decision is complete.
+     * It should only be called from a background thread.
+     * </p>
      * @param key A flag key for which a decision will be made.
      * @return A decision result.
      */
@@ -315,7 +319,10 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
 
     /**
      * Returns a key-map of decision results ({@link OptimizelyDecision}) for all active flag keys.
-     *
+     * <p>
+     * Note: This method blocks the calling thread until decisions are complete.
+     * It should only be called from a background thread.
+     * </p>
      * @param options A list of options for decision-making.
      * @return All decision results mapped by flag keys.
      */
@@ -325,7 +332,10 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
 
     /**
      * Returns a key-map of decision results ({@link OptimizelyDecision}) for all active flag keys.
-     *
+     * <p>
+     * Note: This method blocks the calling thread until decisions are complete.
+     * It should only be called from a background thread.
+     * </p>
      * @return A dictionary of all decision results, mapped by flag keys.
      */
     public Map<String, OptimizelyDecision> decideAllAsync() {

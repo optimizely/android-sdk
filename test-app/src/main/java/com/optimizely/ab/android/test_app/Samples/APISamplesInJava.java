@@ -30,6 +30,7 @@ import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.event_handler.EventRescheduler;
 import com.optimizely.ab.android.sdk.OptimizelyClient;
 import com.optimizely.ab.android.sdk.OptimizelyManager;
+import com.optimizely.ab.android.sdk.OptimizelyUserContextAndroid;
 import com.optimizely.ab.android.sdk.cmab.CmabClientHelperAndroid;
 import com.optimizely.ab.android.sdk.cmab.DefaultCmabClient;
 import com.optimizely.ab.android.test_app.R;
@@ -123,7 +124,7 @@ public class APISamplesInJava {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("country", "us");
         attributes.put("extra-1", 100);
-        OptimizelyUserContext user = optimizelyClient.createUserContext(userId, attributes);
+        OptimizelyUserContextAndroid user = optimizelyClient.createUserContext(userId, attributes);
 
         String flagKey = "cmab-flag";
 
@@ -141,7 +142,7 @@ public class APISamplesInJava {
         }
         Log.d("Samples","=================================================================");
 
-        // decideAsync
+        // decideAsync with callback
 
         Log.d("Samples","=================================================================");
         Log.d("Samples","[CMAB] calling async decision for cmab...");
@@ -165,6 +166,31 @@ public class APISamplesInJava {
             Thread.currentThread().interrupt();
         }
 
+        // decideAsync with blocking
+
+        Log.d("Samples","=================================================================");
+        Log.d("Samples","[CMAB] calling async blocking decision for cmab...");
+        Log.d("Samples","=================================================================");
+        final CountDownLatch latch_2 = new CountDownLatch(1);
+        Thread thread = new Thread(() -> {
+            OptimizelyDecision blockDecision = user.decideAsync(flagKey, options);
+            Log.d("Samples","=================================================================");
+            Log.d("Samples","[CMAB] async blocking decision for cmab: " + blockDecision.toString());
+            if (!blockDecision.getEnabled()) {
+                Log.e("Samples","[ERROR] " + flagKey + " is expected to be enabled for this user!");
+            }
+            Log.d("Samples","=================================================================");
+            latch_2.countDown();
+        });
+        thread.start();
+
+        try {
+            latch_2.await(60, TimeUnit.SECONDS);
+            Log.d("Samples", "[CMAB] Latch released. Async operation completed.");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
     }
 
     static public void samplesForCmabConfig(Context context) {
