@@ -389,7 +389,7 @@ public class OptimizelyClientTest {
         Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get(FEATURE_ANDROID_EXPERIMENT_KEY);
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.activate(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
-        verify(bucketer).bucket(experiment, bucketingId, optimizely.getProjectConfig());
+        verify(bucketer).bucket(eq(experiment), eq(bucketingId), eq(optimizely.getProjectConfig()), any());
     }
 
     @Test
@@ -914,7 +914,7 @@ public class OptimizelyClientTest {
         Map<String, String> attributes = new HashMap<>();
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.getVariation("android_experiment_key", "userId", attributes);
-        verify(bucketer).bucket(experiment, bucketingId, optimizely.getProjectConfig());
+        verify(bucketer).bucket(eq(experiment), eq(bucketingId), eq(optimizely.getProjectConfig()), any());
     }
 
     @Test
