@@ -546,52 +546,7 @@ public class OptimizelyManagerBuilderTest {
 
         assertNotNull("Manager should be created successfully", manager);
     }
-//
-//    @Test
-//    public void testCmabServiceConfigurationValidation_2() throws Exception {
-//        // Custom configuration for cmab endpoint
-//        String customCmabEndpoint = "https://google.com";
-//
-//        // Mock the builder and its static method
-//
-//        DefaultCmabService.Builder mockBuilder = getMockDefaultCmabServiceBuilder();
-//        mockStatic(DefaultCmabService.class);
-//        when(DefaultCmabService.builder()).thenReturn(mockBuilder);
-//        DefaultCmabService mockDefaultCmabService = mock(DefaultCmabService.class);
-//        when(mockBuilder.build()).thenReturn(mockDefaultCmabService);
-//
-//        // Prevent the real OptimizelyManager from being constructed
-//        whenNew(OptimizelyManager.class).withAnyArguments().thenReturn(mock(OptimizelyManager.class));
-//
-//        // Spy on the real DefaultCmabClient constructor.
-//
-//        final DefaultCmabClient[] clientSpyContainer = new DefaultCmabClient[1];
-//        whenNew(DefaultCmabClient.class).withAnyArguments().thenAnswer(invocation -> {
-//            // Create a REAL spy of the object that was about to be created.
-//            DefaultCmabClient realClient = (DefaultCmabClient) invocation.callRealMethod();
-//            DefaultCmabClient clientSpy = spy(realClient);
-//            clientSpyContainer[0] = clientSpy; // Store the spy in a container to access it later
-//            return clientSpy;
-//        });
-//
-//        // Build the manager with the custom endpoint
-//
-//        OptimizelyManager manager = OptimizelyManager.builder(testProjectId)
-//            .withCmabPredictionEndpoint(customCmabEndpoint)
-//            .build(mockContext);
-//
-//        // Assert
-//
-//        DefaultCmabClient capturedClient = clientSpyContainer[0];
-//        assertNotNull("The DefaultCmabClient spy should have been captured", capturedClient);
-//
-//        CmabClientHelperAndroid helper = capturedClient.getCmabClientHelper();
-//        Assert.assertEquals("The helper endpoint should have been updated", customCmabEndpoint, helper.getCmabPredictionEndpoint());
-//
-//        verify(mockBuilder).withClient(eq(capturedClient));
-//        verify(mockBuilder).build();
-//    }
-//
+
     @Test
     public void testCmabServiceDefaultConfigurationValidation() throws Exception {
         // Default configuration values
