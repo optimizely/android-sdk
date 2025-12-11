@@ -1108,7 +1108,7 @@ public class OptimizelyManager {
         /**
          * Override the default prediction endpoint for the CMAB client.
          *
-         * @param endpoint The prediction endpoint as an integer.
+         * @param endpoint The prediction endpoint as a string.
          * @return this {@link Builder} instance
          */
         public Builder withCmabPredictionEndpoint(String endpoint) {

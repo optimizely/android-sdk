@@ -253,10 +253,9 @@ public class APISamplesInJava {
 
         // custom Cmab Endpoint
 
-        CmabClient customCmabClient = new DefaultCmabClient(context);
         OptimizelyManager optimizelyManager = OptimizelyManager.builder()
             .withSDKKey("4ft9p1vSXYM5hLATwWdRc")
-            .withCmabClient(customCmabClient)
+            .withCmabPredictionEndpoint("https://example-prediction.com/%s")
             .build(context);
         OptimizelyClient optimizelyClient = optimizelyManager.initialize(context, R.raw.datafile_full);
 
@@ -274,9 +273,9 @@ public class APISamplesInJava {
         final CountDownLatch latch = new CountDownLatch(1);
         user.decideAsync(flagKey, options, (OptimizelyDecision optDecision) -> {
             Log.d("Samples","=================================================================");
-            Log.d("Samples","[CMAB] async decision for cmab with custom CmabClient: " + optDecision.toString());
-            if (!optDecision.getEnabled()) {
-                Log.e("Samples","[ERROR] " + flagKey + " is expected to be enabled for this user!");
+            Log.d("Samples","[CMAB] async decision for cmab with custom prediction endpoint: " + optDecision.toString());
+            if (optDecision.getEnabled()) {
+                Log.e("Samples","[ERROR] " + flagKey + " is expected to fail to fetch decision!");
             }
             Log.d("Samples","=================================================================");
             latch.countDown();
