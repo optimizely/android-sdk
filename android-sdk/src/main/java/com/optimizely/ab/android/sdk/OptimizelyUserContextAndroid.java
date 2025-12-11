@@ -197,8 +197,8 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * Returns a decision result asynchronously for a given flag key and a user context.
      *
      * @param key A flag key for which a decision will be made.
-     * @param callback A callback to invoke when the decision is available.
      * @param options A list of options for decision-making.
+     * @param callback A callback to invoke when the decision is available.
      */
     public void decideAsync(@NonNull String key,
                             @NonNull List<OptimizelyDecideOption> options,
