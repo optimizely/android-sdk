@@ -123,7 +123,7 @@ public class APISamplesInJava {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("country", "us");
         attributes.put("extra-1", 100);
-        OptimizelyUserContextAndroid user = optimizelyClient.createUserContext(userId, attributes);
+        OptimizelyUserContext user = optimizelyClient.createUserContext(userId, attributes);
 
         String flagKey = "cmab-flag";
 
@@ -172,7 +172,7 @@ public class APISamplesInJava {
         Log.d("Samples","=================================================================");
         final CountDownLatch latch_2 = new CountDownLatch(1);
         Thread thread = new Thread(() -> {
-            OptimizelyDecision blockDecision = user.decideAsync(flagKey, options);
+            OptimizelyDecision blockDecision = ((OptimizelyUserContextAndroid)user).decideBlocking(flagKey, options);
             Log.d("Samples","=================================================================");
             Log.d("Samples","[CMAB] async blocking decision for cmab: " + blockDecision.toString());
             if (!blockDecision.getEnabled()) {

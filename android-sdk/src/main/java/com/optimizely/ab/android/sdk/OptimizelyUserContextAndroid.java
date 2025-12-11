@@ -14,6 +14,8 @@
 
 package com.optimizely.ab.android.sdk;
 
+import android.util.Log;
+
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.OptimizelyForcedDecision;
 import com.optimizely.ab.OptimizelyUserContext;
@@ -274,8 +276,8 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param options A list of options for decision-making.
      * @return A decision result.
      */
-    public OptimizelyDecision decideAsync(@NonNull String key,
-                                                   @NonNull List<OptimizelyDecideOption> options) {
+    public OptimizelyDecision decideBlocking(@NonNull String key,
+                                             @NonNull List<OptimizelyDecideOption> options) {
         return coreDecide(key, options);
     }
 
@@ -288,7 +290,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param key A flag key for which a decision will be made.
      * @return A decision result.
      */
-    public OptimizelyDecision decideAsync(@NonNull String key) {
+    public OptimizelyDecision decideBlocking(@NonNull String key) {
         return coreDecide(key, Collections.emptyList());
     }
 
@@ -302,8 +304,8 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param options A list of options for decision-making.
      * @return All decision results mapped by flag keys.
      */
-    public Map<String, OptimizelyDecision> decideForKeysAsync(@NonNull List<String> keys,
-                                                              @NonNull List<OptimizelyDecideOption> options) {
+    public Map<String, OptimizelyDecision> decideForKeysBlocking(@NonNull List<String> keys,
+                                                                 @NonNull List<OptimizelyDecideOption> options) {
         return coreDecideForKeys(keys, options);
     }
 
@@ -313,7 +315,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param keys A list of flag keys for which decisions will be made.
      * @return All decision results mapped by flag keys.
      */
-    public Map<String, OptimizelyDecision> decideForKeysAsync(@NonNull List<String> keys) {
+    public Map<String, OptimizelyDecision> decideForKeysBlocking(@NonNull List<String> keys) {
         return coreDecideForKeys(keys, Collections.emptyList());
     }
 
@@ -326,7 +328,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param options A list of options for decision-making.
      * @return All decision results mapped by flag keys.
      */
-    public Map<String, OptimizelyDecision> decideAllAsync(@NonNull List<OptimizelyDecideOption> options) {
+    public Map<String, OptimizelyDecision> decideAllBlocking(@NonNull List<OptimizelyDecideOption> options) {
         return coreDecideAll(options);
     }
 
@@ -338,7 +340,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * </p>
      * @return A dictionary of all decision results, mapped by flag keys.
      */
-    public Map<String, OptimizelyDecision> decideAllAsync() {
+    public Map<String, OptimizelyDecision> decideAllBlocking() {
         return coreDecideAll(Collections.emptyList());
     }
 

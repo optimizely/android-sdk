@@ -314,7 +314,7 @@ public class OptimizelyUserContextAndroidTest {
     // ===========================================
 
     @Test
-    public void testDecideAsync_blocking_withOptions() throws Exception {
+    public void testDecideBlocking_withOptions() throws Exception {
         OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
             mockOptimizely,
             TEST_USER_ID,
@@ -323,14 +323,14 @@ public class OptimizelyUserContextAndroidTest {
 
         doReturn(mockDecision).when(userContext).coreDecide(any(), any());
 
-        OptimizelyDecision result = userContext.decideAsync(TEST_FLAG_KEY, TEST_OPTIONS);
+        OptimizelyDecision result = userContext.decideBlocking(TEST_FLAG_KEY, TEST_OPTIONS);
 
         verify(userContext).coreDecide(TEST_FLAG_KEY, TEST_OPTIONS);
         assertEquals(mockDecision, result);
     }
 
     @Test
-    public void testDecideAsync_blocking_withoutOptions() throws Exception {
+    public void testDecideBlocking_withoutOptions() throws Exception {
         OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
             mockOptimizely,
             TEST_USER_ID,
@@ -339,14 +339,14 @@ public class OptimizelyUserContextAndroidTest {
 
         doReturn(mockDecision).when(userContext).coreDecide(any(), any());
 
-        OptimizelyDecision result = userContext.decideAsync(TEST_FLAG_KEY);
+        OptimizelyDecision result = userContext.decideBlocking(TEST_FLAG_KEY);
 
         verify(userContext).coreDecide(TEST_FLAG_KEY, Collections.emptyList());
         assertEquals(mockDecision, result);
     }
 
     @Test
-    public void testDecideForKeysAsync_blocking_withOptions() throws Exception {
+    public void testDecideForKeysBlocking_withOptions() throws Exception {
         OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
             mockOptimizely,
             TEST_USER_ID,
@@ -355,14 +355,14 @@ public class OptimizelyUserContextAndroidTest {
 
         doReturn(mockDecisionsMap).when(userContext).coreDecideForKeys(any(), any());
 
-        Map<String, OptimizelyDecision> result = userContext.decideForKeysAsync(TEST_FLAG_KEYS, TEST_OPTIONS);
+        Map<String, OptimizelyDecision> result = userContext.decideForKeysBlocking(TEST_FLAG_KEYS, TEST_OPTIONS);
 
         verify(userContext).coreDecideForKeys(TEST_FLAG_KEYS, TEST_OPTIONS);
         assertEquals(mockDecisionsMap, result);
     }
 
     @Test
-    public void testDecideForKeysAsync_blocking_withoutOptions() throws Exception {
+    public void testDecideForKeysBlocking_withoutOptions() throws Exception {
         // Create spy of the actual class
         OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
             mockOptimizely,
@@ -372,14 +372,14 @@ public class OptimizelyUserContextAndroidTest {
 
         doReturn(mockDecisionsMap).when(userContext).coreDecideForKeys(any(), any());
 
-        Map<String, OptimizelyDecision> result = userContext.decideForKeysAsync(TEST_FLAG_KEYS);
+        Map<String, OptimizelyDecision> result = userContext.decideForKeysBlocking(TEST_FLAG_KEYS);
 
         verify(userContext).coreDecideForKeys(TEST_FLAG_KEYS, Collections.emptyList());
         assertEquals(mockDecisionsMap, result);
     }
 
     @Test
-    public void testDecideAllAsync_blocking_withOptions() throws Exception {
+    public void testDecideAllBlocking_withOptions() throws Exception {
         OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
             mockOptimizely,
             TEST_USER_ID,
@@ -388,14 +388,14 @@ public class OptimizelyUserContextAndroidTest {
 
         doReturn(mockDecisionsMap).when(userContext).coreDecideAll(any());
 
-        Map<String, OptimizelyDecision> result = userContext.decideAllAsync(TEST_OPTIONS);
+        Map<String, OptimizelyDecision> result = userContext.decideAllBlocking(TEST_OPTIONS);
 
         verify(userContext).coreDecideAll(TEST_OPTIONS);
         assertEquals(mockDecisionsMap, result);
     }
 
     @Test
-    public void testDecideAllAsync_blocking_withoutOptions() throws Exception {
+    public void testDecideAllBlocking_withoutOptions() throws Exception {
         OptimizelyUserContextAndroid userContext = spy(new OptimizelyUserContextAndroid(
             mockOptimizely,
             TEST_USER_ID,
@@ -404,7 +404,7 @@ public class OptimizelyUserContextAndroidTest {
 
         doReturn(mockDecisionsMap).when(userContext).coreDecideAll(any());
 
-        Map<String, OptimizelyDecision> result = userContext.decideAllAsync();
+        Map<String, OptimizelyDecision> result = userContext.decideAllBlocking();
 
         verify(userContext).coreDecideAll(Collections.emptyList());
         assertEquals(mockDecisionsMap, result);
