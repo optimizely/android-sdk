@@ -14,8 +14,6 @@
 
 package com.optimizely.ab.android.sdk;
 
-import android.util.Log;
-
 import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.OptimizelyForcedDecision;
 import com.optimizely.ab.OptimizelyUserContext;
@@ -200,6 +198,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param options A list of options for decision-making.
      * @param callback A callback to invoke when the decision is available.
      */
+    @Override
     public void decideAsync(@NonNull String key,
                             @NonNull List<OptimizelyDecideOption> options,
                             @NonNull OptimizelyDecisionCallback callback) {
@@ -223,6 +222,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param callback A callback to invoke when decisions are available.
      * @param options A list of options for decision-making.
      */
+    @Override
     public void decideForKeysAsync(@NonNull List<String> keys,
                                    @NonNull List<OptimizelyDecideOption> options,
                                    @NonNull OptimizelyDecisionsCallback callback) {
@@ -245,6 +245,7 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
      * @param callback A callback to invoke when decisions are available.
      * @param options A list of options for decision-making.
      */
+    @Override
     public void decideAllAsync(@NonNull List<OptimizelyDecideOption> options,
                                @NonNull OptimizelyDecisionsCallback callback) {
         coreDecideAllAsync(options, callback);
@@ -296,6 +297,10 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
 
     /**
      * Returns a key-map of decision results ({@link OptimizelyDecision}) for multiple flag keys and a user context.
+      * <p>
+     * Note: This method blocks the calling thread until decisions are complete.
+     * It should only be called from a background thread.
+     * </p>
      * <ul>
      * <li>If the SDK finds an error for a key, the response will include a decision for the key showing <b>reasons</b> for the error.
      * <li>The SDK will always return key-mapped decisions. When it can not process requests, it’ll return an empty map after logging the errors.
@@ -311,7 +316,10 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
 
     /**
      * Returns a key-map of decision results for multiple flag keys and a user context.
-     *
+     * <p>
+     * Note: This method blocks the calling thread until decisions are complete.
+     * It should only be called from a background thread.
+     * </p>
      * @param keys A list of flag keys for which decisions will be made.
      * @return All decision results mapped by flag keys.
      */
