@@ -151,6 +151,6 @@ public class DefaultCmabClientTest {
         // Verify the retry configuration matches our constants
         verify(mockClient).execute(any(Client.Request.class), eq(DefaultCmabClient.REQUEST_BACKOFF_TIMEOUT), eq(DefaultCmabClient.REQUEST_RETRIES_POWER));
         assertEquals("REQUEST_BACKOFF_TIMEOUT should be 1", 1, DefaultCmabClient.REQUEST_BACKOFF_TIMEOUT);
-        assertEquals("REQUEST_RETRIES_POWER should be 2", 2, DefaultCmabClient.REQUEST_RETRIES_POWER);
+        assertEquals("REQUEST_RETRIES_POWER should be 1", 1, DefaultCmabClient.REQUEST_RETRIES_POWER);
     }
 }
