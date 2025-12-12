@@ -26,6 +26,7 @@ import com.optimizely.ab.Optimizely;
 import com.optimizely.ab.OptimizelyUserContext;
 import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.bucketing.Bucketer;
+import com.optimizely.ab.bucketing.DecisionPath;
 import com.optimizely.ab.bucketing.DecisionService;
 import com.optimizely.ab.config.Experiment;
 import com.optimizely.ab.config.ProjectConfig;
@@ -132,20 +133,23 @@ public class OptimizelyClientTest {
 
             // set to return DecisionResponse with null variation by default (instead of null DecisionResponse)
             when(bucketer.bucket(any(), any(), any())).thenReturn(DecisionResponse.nullNoReasons());
+            when(bucketer.bucket(any(), any(), any(), any())).thenReturn(DecisionResponse.nullNoReasons());
 
             if(datafileVersion==3) {
                 Variation variation = optimizely.getProjectConfig().getExperiments().get(0).getVariations().get(0);
                 when(bucketer.bucket(
-                        optimizely.getProjectConfig().getExperiments().get(0),
-                        GENERIC_USER_ID,
-                        optimizely.getProjectConfig())
+                        eq(optimizely.getProjectConfig().getExperiments().get(0)),
+                        eq(GENERIC_USER_ID),
+                        any(ProjectConfig.class),
+                        any())
                 ).thenReturn(DecisionResponse.responseNoReasons(variation));
             } else {
                 Variation variation = optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY).getVariations().get(1);
                 when(bucketer.bucket(
-                        optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY),
-                        GENERIC_USER_ID,
-                        optimizely.getProjectConfig())
+                        eq(optimizely.getProjectConfig().getExperimentKeyMapping().get(FEATURE_MULTI_VARIATE_EXPERIMENT_KEY)),
+                        eq(GENERIC_USER_ID),
+                        any(ProjectConfig.class),
+                        any())
                 ).thenReturn(DecisionResponse.responseNoReasons(variation));
             }
             spyOnConfig();
@@ -385,7 +389,7 @@ public class OptimizelyClientTest {
         Experiment experiment = optimizelyClient.getProjectConfig().getExperimentKeyMapping().get(FEATURE_ANDROID_EXPERIMENT_KEY);
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.activate(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
-        verify(bucketer).bucket(experiment, bucketingId, optimizely.getProjectConfig());
+        verify(bucketer).bucket(eq(experiment), eq(bucketingId), eq(optimizely.getProjectConfig()), any());
     }
 
     @Test
@@ -910,7 +914,7 @@ public class OptimizelyClientTest {
         Map<String, String> attributes = new HashMap<>();
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         Variation v = optimizelyClient.getVariation("android_experiment_key", "userId", attributes);
-        verify(bucketer).bucket(experiment, bucketingId, optimizely.getProjectConfig());
+        verify(bucketer).bucket(eq(experiment), eq(bucketingId), eq(optimizely.getProjectConfig()), any());
     }
 
     @Test
@@ -2249,7 +2253,9 @@ public class OptimizelyClientTest {
         assertEquals(decision.getVariables().toMap(), variablesExpected.toMap());
         assertEquals(decision.getRuleKey(), FEATURE_MULTI_VARIATE_EXPERIMENT_KEY);
         assertEquals(decision.getFlagKey(), flagKey);
-        assertEquals(decision.getUserContext(), userContext);
+        OptimizelyUserContext decisionUserContext = decision.getUserContext();
+        assertEquals(decisionUserContext.getUserId(), userContext.getUserId());
+        assertEquals(decisionUserContext.getAttributes(), userContext.getAttributes());
         assertTrue(decision.getReasons().isEmpty());
     }
 

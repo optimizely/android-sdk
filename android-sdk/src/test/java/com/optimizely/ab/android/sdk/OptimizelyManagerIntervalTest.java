@@ -115,6 +115,7 @@ public class OptimizelyManagerIntervalTest {
                 any(NotificationCenter.class),
                 any(),                         // nullable (DefaultDecideOptions)
                 any(ODPManager.class),
+                any(),
                 anyString(),
                 any(),
                 any());
@@ -144,6 +145,7 @@ public class OptimizelyManagerIntervalTest {
                 any(NotificationCenter.class),
                 any(),                         // nullable (DefaultDecideOptions)
                 any(ODPManager.class),
+                any(),
                 anyString(),
                 any(),
                 any());
@@ -185,6 +187,7 @@ public class OptimizelyManagerIntervalTest {
                 any(NotificationCenter.class),
                 any(),                         // nullable (DefaultDecideOptions)
                 any(ODPManager.class),
+                any(),
                 anyString(),
                 any(),
                 any());
@@ -229,6 +232,7 @@ public class OptimizelyManagerIntervalTest {
                 any(NotificationCenter.class),
                 any(),                         // nullable (DefaultDecideOptions)
                 any(ODPManager.class),
+                any(),
                 anyString(),
                 any(),
                 any());
@@ -269,6 +273,7 @@ public class OptimizelyManagerIntervalTest {
                 any(NotificationCenter.class),
                 any(),                         // nullable (DefaultDecideOptions)
                 any(ODPManager.class),
+                any(),
                 anyString(),
                 any(),
                 any());

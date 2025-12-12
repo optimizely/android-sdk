@@ -39,9 +39,14 @@ import com.optimizely.ab.android.event_handler.DefaultEventHandler;
 import com.optimizely.ab.android.event_handler.EventDispatcher;
 import com.optimizely.ab.android.odp.DefaultODPApiManager;
 import com.optimizely.ab.android.odp.VuidManager;
+import com.optimizely.ab.android.sdk.cmab.CmabClientHelperAndroid;
+import com.optimizely.ab.android.sdk.cmab.DefaultCmabClient;
 import com.optimizely.ab.android.shared.DatafileConfig;
 import com.optimizely.ab.android.user_profile.DefaultUserProfileService;
 import com.optimizely.ab.bucketing.UserProfileService;
+import com.optimizely.ab.cmab.client.CmabClient;
+import com.optimizely.ab.cmab.service.CmabService;
+import com.optimizely.ab.cmab.service.DefaultCmabService;
 import com.optimizely.ab.config.ProjectConfig;
 import com.optimizely.ab.config.parser.ConfigParseException;
 import com.optimizely.ab.error.ErrorHandler;
@@ -90,6 +95,7 @@ public class OptimizelyManager {
     @NonNull private UserProfileService userProfileService;
     @Nullable private ODPManager odpManager;
     @Nullable private final String vuid;
+    @Nullable private CmabService cmabService;
 
     @Nullable private OptimizelyStartListener optimizelyStartListener;
     private boolean returnInMainThreadFromAsyncInit = true;
@@ -112,6 +118,7 @@ public class OptimizelyManager {
                       @NonNull NotificationCenter notificationCenter,
                       @Nullable List<OptimizelyDecideOption> defaultDecideOptions,
                       @Nullable ODPManager odpManager,
+                      @Nullable CmabService cmabService,
                       @Nullable String vuid,
                       @Nullable String clientEngineName,
                       @Nullable String clientVersion) {
@@ -137,6 +144,7 @@ public class OptimizelyManager {
         this.userProfileService = userProfileService;
         this.vuid = vuid;
         this.odpManager = odpManager;
+        this.cmabService = cmabService;
         this.notificationCenter = notificationCenter;
         this.defaultDecideOptions = defaultDecideOptions;
 
@@ -646,6 +654,7 @@ public class OptimizelyManager {
         builder.withNotificationCenter(notificationCenter);
         builder.withDefaultDecideOptions(defaultDecideOptions);
         builder.withODPManager(odpManager);
+        builder.withCmabService(cmabService);
         Optimizely optimizely = builder.build();
 
         return new OptimizelyClient(optimizely, LoggerFactory.getLogger(OptimizelyClient.class), vuid);
@@ -781,14 +790,19 @@ public class OptimizelyManager {
         @Nullable private List<OptimizelyDecideOption> defaultDecideOptions = null;
         @Nullable private ODPEventManager odpEventManager;
         @Nullable private ODPSegmentManager odpSegmentManager;
+        @Nullable private CmabClient cmabClient;
 
         private int odpSegmentCacheSize = 100;
-        private int odpSegmentCacheTimeoutInSecs = 600;
+        private int odpSegmentCacheTimeoutInSecs = 10*60;
         private int timeoutForODPSegmentFetchInSecs = 10;
         private int timeoutForODPEventDispatchInSecs = 10;
         private boolean odpEnabled = true;
         private boolean vuidEnabled = false;
         private String vuid = null;
+
+        private int cmabCacheSize = 100;
+        private int cmabCacheTimeoutInSecs = 30*60;
+        private String cmabPredictionEndpoint = null;
 
         private String customSdkName = null;
         private String customSdkVersion = null;
@@ -1058,6 +1072,50 @@ public class OptimizelyManager {
             this.customSdkVersion = clientVersion;
             return this;
         }
+
+        /**
+         * Override the default Cmab cache size (100).
+         * @param size the size
+         * @return this {@link Builder} instance
+         */
+        public Builder withCmabCacheSize(int size) {
+            this.cmabCacheSize = size;
+            return this;
+        }
+
+        /**
+         * Override the default Cmab cache timeout (30 minutes).
+         * @param interval the interval
+         * @param timeUnit the time unit of the timeout argument
+         * @return this {@link Builder} instance
+         */
+        public Builder withCmabCacheTimeout(int interval, TimeUnit timeUnit) {
+            this.cmabCacheTimeoutInSecs = (int) timeUnit.toSeconds(interval);
+            return this;
+        }
+
+        /**
+         * Override the default {@link CmabClient} implementation for CMAB operations.
+         *
+         * @param cmabClient The {@link CmabClient} instance to use.
+         * @return this {@link Builder} instance
+         */
+        public Builder withCmabClient(CmabClient cmabClient) {
+            this.cmabClient = cmabClient;
+            return this;
+        }
+
+        /**
+         * Override the default prediction endpoint for the CMAB client.
+         *
+         * @param endpoint The prediction endpoint as a string.
+         * @return this {@link Builder} instance
+         */
+        public Builder withCmabPredictionEndpoint(String endpoint) {
+            this.cmabPredictionEndpoint = endpoint;
+            return this;
+        }
+
         /**
          * Get a new {@link Builder} instance to create {@link OptimizelyManager} with.
          * @param  context the application context used to create default service if not provided.
@@ -1160,6 +1218,21 @@ public class OptimizelyManager {
                         .build();
             }
 
+            DefaultCmabService.Builder cmabBuilder = DefaultCmabService.builder();
+            if (cmabClient == null) {
+                if (cmabPredictionEndpoint == null) {
+                    cmabClient = new DefaultCmabClient(context);
+                } else {
+                    CmabClientHelperAndroid cmabHelper = new CmabClientHelperAndroid();
+                    cmabHelper.setCmabPredictionEndpoint(cmabPredictionEndpoint);
+                    cmabClient = new DefaultCmabClient(context, cmabHelper);
+                }
+            }
+            cmabBuilder.withClient(cmabClient);
+            cmabBuilder.withCmabCacheSize(cmabCacheSize);
+            cmabBuilder.withCmabCacheTimeoutInSecs(cmabCacheTimeoutInSecs);
+            CmabService cmabService = cmabBuilder.build();
+
             return new OptimizelyManager(projectId, sdkKey,
                     datafileConfig,
                     logger,
@@ -1173,6 +1246,7 @@ public class OptimizelyManager {
                     notificationCenter,
                     defaultDecideOptions,
                     odpManager,
+                    cmabService,
                     vuid,
                     customSdkName,
                     customSdkVersion
