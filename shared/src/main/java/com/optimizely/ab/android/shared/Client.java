@@ -171,6 +171,7 @@ public class Client {
                 // don't sleep if this was the last attempt
                 if (attempts >= maxAttempts) break;
 
+                timeout = (int) Math.pow(baseTimeout, attempts);
                 try {
                     logger.info("Request failed, waiting {} seconds to try again", timeout);
                     Thread.sleep(TimeUnit.MILLISECONDS.convert(timeout, TimeUnit.SECONDS));
@@ -178,7 +179,6 @@ public class Client {
                     logger.warn("Exponential backoff failed", e);
                     break;
                 }
-                timeout = timeout * baseTimeout;
             } else {
                 break;
             }

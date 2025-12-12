@@ -135,7 +135,7 @@ open class DefaultCmabClient : CmabClient {
 
         // the numerical base for the exponential backoff (1 second)
         const val REQUEST_BACKOFF_TIMEOUT = 1
-        // retry twice = 3 total attempts
-        const val REQUEST_RETRIES_POWER = 2
+        // retry once = 2 total attempts
+        const val REQUEST_RETRIES_POWER = 1
     }
 }
