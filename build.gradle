@@ -278,7 +278,7 @@ configure(publishedProjects) {
         publishing {
             publications {
                 release(MavenPublication) {
-                    version = project.version
+                    version = version_name
                     group = group_id
                     artifactId = artifactName
 
