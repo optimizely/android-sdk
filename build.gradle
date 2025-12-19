@@ -19,11 +19,13 @@
 buildscript {
     ext.kotlin_version = '1.9.10'
 
-    ext.version_name = System.getenv('GITHUB_TAG')
-    if (version_name == null || version_name.isEmpty()) {
-        ext.version_name = version
+    // Set version from GITHUB_TAG env var, or fall back to gradle.properties version
+    def githubTag = System.getenv('GITHUB_TAG')
+    if (githubTag != null && !githubTag.isEmpty()) {
+        version = githubTag
     }
-    ext.is_release_version = !version_name.endsWith("SNAPSHOT")
+    ext.version_name = version  // Keep version_name for BuildConfig compatibility
+    ext.is_release_version = !version.endsWith("SNAPSHOT")
 
     repositories {
         google()
