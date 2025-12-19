@@ -1,5 +1,24 @@
 # Optimizely Android X SDK Changelog
 
+## 5.1.0
+December 19th, 2025
+
+### New Features
+
+This release introduces new primary features: [Contextual Multi-Armed Bandit (CMAB)](https://docs.developers.optimizely.com/feature-experimentation/docs/run-contextual-multi-armed-bandits) and [Holdouts](https://docs.developers.optimizely.com/feature-experimentation/docs/global-holdouts).
+
+**Contextual Multi-Armed Bandit (CMAB)**
+- Add support for CMAB experiments with new configuration options and cache control (#514).
+- Add new `decideAsync` methods to support asynchronous CMAB decision (#514).
+- For configuration details, see the [CMAB configuration documentation](https://docs.developers.optimizely.com/feature-experimentation/docs/configure-the-cmab-cache-for-the-android-sdk).
+
+**Holdouts**
+- Add Holdouts Feature Experimentation feature (#516).
+
+### Other Changes
+
+- Upgrade targetSDK to 35
+
 ## 5.0.1
 May 30th, 2025
 
