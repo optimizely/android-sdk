@@ -1,5 +1,14 @@
 # Optimizely Android X SDK Changelog
 
+## 5.1.1
+January 20th, 2025
+
+### Bug Fixes
+* Fix Maven publish error ([#519](https://github.com/optimizely/android-sdk/pull/519)).
+
+### Enhancements
+* Upgrade Java Core SDK to 4.3.1 from 4.3.0.
+
 ## 5.1.0
 December 19th, 2025
 
