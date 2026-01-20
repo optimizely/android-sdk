@@ -1,5 +1,13 @@
 # Optimizely Android X SDK Changelog
 
+## 5.1.1
+January 20th, 2025
+
+### Enhancements and fixes
+* Upgrade Java Core SDK to 4.3.1 from 4.3.0.
+* Excludes CMAB from UserProfileService.
+* Fixes missing bucketing reasons in CMAB decision path.
+
 ## 5.1.0
 December 19th, 2025
 
