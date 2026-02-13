@@ -72,8 +72,13 @@ dependencies {
     api project(':event-handler')
     api project(':user-profile')
     api project(':odp')
-    api ("com.optimizely.ab:core-api:$java_core_ver") {
-        exclude group: 'com.google.code.findbugs'
+    // Enable using a local core-api jar for testing when the 'useLocalJars' property is specified
+    if (project.hasProperty('useLocalJars') && file('../libs/core-api.jar').exists()) {
+        api files('../libs/core-api.jar')
+    } else {
+        api ("com.optimizely.ab:core-api:$java_core_ver") {
+            exclude group: 'com.google.code.findbugs'
+        }
     }
     implementation "org.slf4j:slf4j-api:$slf4j_ver"
 
@@ -100,7 +105,7 @@ dependencies {
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.google.code.gson:gson:$gson_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
-    
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
