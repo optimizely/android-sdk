@@ -45,8 +45,13 @@ android {
 }
 
 dependencies {
-    api ("com.optimizely.ab:core-api:$java_core_ver") {
-        exclude group: 'com.google.code.findbugs'
+    // Enable using a local core-api jar for testing when the 'useLocalJars' property is specified
+    if (project.hasProperty('useLocalJars') && file('../libs/core-api.jar').exists()) {
+        api files('../libs/core-api.jar')
+    } else {
+        api ("com.optimizely.ab:core-api:$java_core_ver") {
+            exclude group: 'com.google.code.findbugs'
+        }
     }
 
     implementation "androidx.annotation:annotation:$annotations_ver"
