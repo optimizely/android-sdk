@@ -128,7 +128,7 @@ public class DefaultCmabClientTest {
     }
 
     @Test(expected = CmabFetchException.class)
-    public void testFetchDecisionConnectionFailure() throws Exception {
+    public void testFetchDecisionConnectionFailure() throws CmabFetchException {
         // When openConnection returns null, should throw CmabFetchException
         when(mockClient.openConnection(any(URL.class))).thenReturn(null);
         when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
@@ -143,7 +143,7 @@ public class DefaultCmabClientTest {
     }
 
     @Test(expected = CmabFetchException.class)
-    public void testFetchDecisionThrowsExceptionOn500Error() throws Exception {
+    public void testFetchDecisionThrowsExceptionOn500Error() throws CmabFetchException {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
 
@@ -167,7 +167,7 @@ public class DefaultCmabClientTest {
     }
 
     @Test(expected = CmabFetchException.class)
-    public void testFetchDecisionThrowsExceptionOn400Error() throws Exception {
+    public void testFetchDecisionThrowsExceptionOn400Error() throws CmabFetchException {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
 
@@ -191,7 +191,7 @@ public class DefaultCmabClientTest {
     }
 
     @Test(expected = CmabFetchException.class)
-    public void testFetchDecisionThrowsExceptionOnNetworkError() throws Exception {
+    public void testFetchDecisionThrowsExceptionOnNetworkError() throws CmabFetchException {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
 
@@ -214,7 +214,7 @@ public class DefaultCmabClientTest {
     }
 
     @Test(expected = CmabInvalidResponseException.class)
-    public void testFetchDecisionThrowsExceptionOnInvalidJson() throws Exception {
+    public void testFetchDecisionThrowsExceptionOnInvalidJson() throws CmabInvalidResponseException {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
 

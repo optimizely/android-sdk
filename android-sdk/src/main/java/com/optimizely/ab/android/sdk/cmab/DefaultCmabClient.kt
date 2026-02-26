@@ -71,9 +71,8 @@ open class DefaultCmabClient : CmabClient {
                 val url = URL(apiEndpoint)
                 urlConnection = client.openConnection(url)
                 if (urlConnection == null) {
-                    val errorMessage = String.format(cmabClientHelper.cmabFetchFailed, "Failed to open connection")
-                    logger.error(errorMessage)
-                    throw CmabFetchException(errorMessage)
+                    logger.error("Error opening connection to $apiEndpoint")
+                    return@Request null
                 }
 
                 // set timeouts for releasing failed connections (default is 0 = no timeout).
@@ -130,7 +129,17 @@ open class DefaultCmabClient : CmabClient {
                 }
             }
         }
-        return client.execute(request, REQUEST_BACKOFF_TIMEOUT, REQUEST_RETRIES_POWER)
+        val result = client.execute(request, REQUEST_BACKOFF_TIMEOUT, REQUEST_RETRIES_POWER)
+
+        // Required to throw exception on any error so CmabService can return cmab error decision.
+        // Null result means CMAB fetch failed - throw exception.
+        if (result == null) {
+            val errorMessage = String.format(cmabClientHelper.cmabFetchFailed, "Client returned null - request failed")
+            logger.error(errorMessage)
+            throw CmabFetchException(errorMessage)
+        }
+
+        return result
     }
 
     companion object {
