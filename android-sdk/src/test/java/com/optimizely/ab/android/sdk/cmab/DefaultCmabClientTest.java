@@ -90,15 +90,20 @@ public class DefaultCmabClientTest {
     }
 
     @Test
-    public void testFetchDecisionSuccess() throws Exception {
+    public void testFetchDecisionSuccess() {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
 
-        String mockResponseJson = "{\"variation_id\":\"variation_1\",\"status\":\"success\"}";
-        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
-        when(mockUrlConnection.getResponseCode()).thenReturn(200);
-        when(mockClient.readStream(mockUrlConnection)).thenReturn(mockResponseJson);
-        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        try {
+            String mockResponseJson = "{\"variation_id\":\"variation_1\",\"status\":\"success\"}";
+            when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+            when(mockUrlConnection.getResponseCode()).thenReturn(200);
+            when(mockClient.readStream(mockUrlConnection)).thenReturn(mockResponseJson);
+            when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        } catch (IOException e) {
+            // Never happens with mocked connection
+        }
+
         when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
             Client.Request<String> request = invocation.getArgument(0);
             return request.execute();
@@ -122,13 +127,17 @@ public class DefaultCmabClientTest {
 
         verify(mockUrlConnection).setConnectTimeout(10*1000);
         verify(mockUrlConnection).setReadTimeout(60*1000);
-        verify(mockUrlConnection).setRequestMethod("POST");
+        try {
+            verify(mockUrlConnection).setRequestMethod("POST");
+        } catch (Exception e) {
+            // Never happens - verify() doesn't actually invoke the method
+        }
         verify(mockUrlConnection).setRequestProperty("content-type", "application/json");
         verify(mockUrlConnection).setDoOutput(true);
     }
 
     @Test(expected = CmabFetchException.class)
-    public void testFetchDecisionConnectionFailure() throws CmabFetchException {
+    public void testFetchDecisionConnectionFailure() {
         // When openConnection returns null, should throw CmabFetchException
         when(mockClient.openConnection(any(URL.class))).thenReturn(null);
         when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
@@ -143,14 +152,19 @@ public class DefaultCmabClientTest {
     }
 
     @Test(expected = CmabFetchException.class)
-    public void testFetchDecisionThrowsExceptionOn500Error() throws CmabFetchException {
+    public void testFetchDecisionThrowsExceptionOn500Error() {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
 
-        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
-        when(mockUrlConnection.getResponseCode()).thenReturn(500);
-        when(mockUrlConnection.getResponseMessage()).thenReturn("Internal Server Error");
-        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        try {
+            when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+            when(mockUrlConnection.getResponseCode()).thenReturn(500);
+            when(mockUrlConnection.getResponseMessage()).thenReturn("Internal Server Error");
+            when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        } catch (IOException e) {
+            // Never happens with mocked connection
+        }
+
         when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
             Client.Request<String> request = invocation.getArgument(0);
             return request.execute();
@@ -167,14 +181,19 @@ public class DefaultCmabClientTest {
     }
 
     @Test(expected = CmabFetchException.class)
-    public void testFetchDecisionThrowsExceptionOn400Error() throws CmabFetchException {
+    public void testFetchDecisionThrowsExceptionOn400Error() {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
 
-        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
-        when(mockUrlConnection.getResponseCode()).thenReturn(400);
-        when(mockUrlConnection.getResponseMessage()).thenReturn("Bad Request");
-        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        try {
+            when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+            when(mockUrlConnection.getResponseCode()).thenReturn(400);
+            when(mockUrlConnection.getResponseMessage()).thenReturn("Bad Request");
+            when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        } catch (IOException e) {
+            // Never happens with mocked connection
+        }
+
         when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
             Client.Request<String> request = invocation.getArgument(0);
             return request.execute();
@@ -191,13 +210,18 @@ public class DefaultCmabClientTest {
     }
 
     @Test(expected = CmabFetchException.class)
-    public void testFetchDecisionThrowsExceptionOnNetworkError() throws CmabFetchException {
+    public void testFetchDecisionThrowsExceptionOnNetworkError() {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
 
-        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
-        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
-        when(mockUrlConnection.getResponseCode()).thenThrow(new IOException("Network error"));
+        try {
+            when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+            when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+            doThrow(new IOException("Network error")).when(mockUrlConnection).getResponseCode();
+        } catch (IOException e) {
+            // Never happens with mocked connection
+        }
+
         when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
             Client.Request<String> request = invocation.getArgument(0);
             return request.execute();
@@ -214,15 +238,20 @@ public class DefaultCmabClientTest {
     }
 
     @Test(expected = CmabInvalidResponseException.class)
-    public void testFetchDecisionThrowsExceptionOnInvalidJson() throws CmabInvalidResponseException {
+    public void testFetchDecisionThrowsExceptionOnInvalidJson() {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
 
-        String invalidResponseJson = "{\"invalid\":\"response\"}";
-        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
-        when(mockUrlConnection.getResponseCode()).thenReturn(200);
-        when(mockClient.readStream(mockUrlConnection)).thenReturn(invalidResponseJson);
-        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        try {
+            String invalidResponseJson = "{\"invalid\":\"response\"}";
+            when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+            when(mockUrlConnection.getResponseCode()).thenReturn(200);
+            when(mockClient.readStream(mockUrlConnection)).thenReturn(invalidResponseJson);
+            when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        } catch (IOException e) {
+            // Never happens with mocked connection
+        }
+
         when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
             Client.Request<String> request = invocation.getArgument(0);
             return request.execute();
@@ -242,15 +271,20 @@ public class DefaultCmabClientTest {
     }
 
     @Test
-    public void testRetryConfigurationPassedToClient() throws Exception {
+    public void testRetryConfigurationPassedToClient() {
         HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
         ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
 
-        String mockResponseJson = "{\"variation_id\":\"variation_1\",\"status\":\"success\"}";
-        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
-        when(mockUrlConnection.getResponseCode()).thenReturn(200);
-        when(mockClient.readStream(mockUrlConnection)).thenReturn(mockResponseJson);
-        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        try {
+            String mockResponseJson = "{\"variation_id\":\"variation_1\",\"status\":\"success\"}";
+            when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+            when(mockUrlConnection.getResponseCode()).thenReturn(200);
+            when(mockClient.readStream(mockUrlConnection)).thenReturn(mockResponseJson);
+            when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        } catch (IOException e) {
+            // Never happens with mocked connection
+        }
+
         when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
             Client.Request<String> request = invocation.getArgument(0);
             return request.execute();
