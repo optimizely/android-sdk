@@ -15,6 +15,8 @@
 package com.optimizely.ab.android.sdk.cmab;
 
 import com.optimizely.ab.android.shared.Client;
+import com.optimizely.ab.cmab.client.CmabFetchException;
+import com.optimizely.ab.cmab.client.CmabInvalidResponseException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -125,8 +127,9 @@ public class DefaultCmabClientTest {
         verify(mockUrlConnection).setDoOutput(true);
     }
 
-    @Test
+    @Test(expected = CmabFetchException.class)
     public void testFetchDecisionConnectionFailure() throws Exception {
+        // When openConnection returns null, should throw CmabFetchException
         when(mockClient.openConnection(any(URL.class))).thenReturn(null);
         when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
             Client.Request<String> request = invocation.getArgument(0);
@@ -135,20 +138,139 @@ public class DefaultCmabClientTest {
 
         mockCmabClient = new DefaultCmabClient(mockClient, mockCmabClientHelper);
 
-        String result = mockCmabClient.fetchDecision(testRuleId, testUserId, testAttributes, testCmabUuid);
-        assertNull(result);
+        // Should throw CmabFetchException when connection fails to open
+        mockCmabClient.fetchDecision(testRuleId, testUserId, testAttributes, testCmabUuid);
     }
 
-    @Test
-    public void testRetryOnFailureWithRetryBackoff() throws Exception {
-        when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenReturn(null);
+    @Test(expected = CmabFetchException.class)
+    public void testFetchDecisionThrowsExceptionOn500Error() throws Exception {
+        HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
+        ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
+
+        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+        when(mockUrlConnection.getResponseCode()).thenReturn(500);
+        when(mockUrlConnection.getResponseMessage()).thenReturn("Internal Server Error");
+        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
+            Client.Request<String> request = invocation.getArgument(0);
+            return request.execute();
+        });
+
+        doReturn("{\"user_id\":\"test-user-456\"}")
+            .when(mockCmabClientHelper)
+            .buildRequestJson(any(), any(), any(), any());
 
         mockCmabClient = new DefaultCmabClient(mockClient, mockCmabClientHelper);
 
-        String result = mockCmabClient.fetchDecision(testRuleId, testUserId, testAttributes, testCmabUuid);
-        assertNull(result);
+        // Should throw CmabFetchException for 500 error
+        mockCmabClient.fetchDecision(testRuleId, testUserId, testAttributes, testCmabUuid);
+    }
 
-        // Verify the retry configuration matches our constants
+    @Test(expected = CmabFetchException.class)
+    public void testFetchDecisionThrowsExceptionOn400Error() throws Exception {
+        HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
+        ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
+
+        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+        when(mockUrlConnection.getResponseCode()).thenReturn(400);
+        when(mockUrlConnection.getResponseMessage()).thenReturn("Bad Request");
+        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
+            Client.Request<String> request = invocation.getArgument(0);
+            return request.execute();
+        });
+
+        doReturn("{\"user_id\":\"test-user-456\"}")
+            .when(mockCmabClientHelper)
+            .buildRequestJson(any(), any(), any(), any());
+
+        mockCmabClient = new DefaultCmabClient(mockClient, mockCmabClientHelper);
+
+        // Should throw CmabFetchException for 400 error
+        mockCmabClient.fetchDecision(testRuleId, testUserId, testAttributes, testCmabUuid);
+    }
+
+    @Test(expected = CmabFetchException.class)
+    public void testFetchDecisionThrowsExceptionOnNetworkError() throws Exception {
+        HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
+        ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
+
+        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        when(mockUrlConnection.getResponseCode()).thenThrow(new IOException("Network error"));
+        when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
+            Client.Request<String> request = invocation.getArgument(0);
+            return request.execute();
+        });
+
+        doReturn("{\"user_id\":\"test-user-456\"}")
+            .when(mockCmabClientHelper)
+            .buildRequestJson(any(), any(), any(), any());
+
+        mockCmabClient = new DefaultCmabClient(mockClient, mockCmabClientHelper);
+
+        // Should throw CmabFetchException when network IOException occurs
+        mockCmabClient.fetchDecision(testRuleId, testUserId, testAttributes, testCmabUuid);
+    }
+
+    @Test(expected = CmabInvalidResponseException.class)
+    public void testFetchDecisionThrowsExceptionOnInvalidJson() throws Exception {
+        HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
+        ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
+
+        String invalidResponseJson = "{\"invalid\":\"response\"}";
+        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+        when(mockUrlConnection.getResponseCode()).thenReturn(200);
+        when(mockClient.readStream(mockUrlConnection)).thenReturn(invalidResponseJson);
+        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
+            Client.Request<String> request = invocation.getArgument(0);
+            return request.execute();
+        });
+
+        doReturn("{\"user_id\":\"test-user-456\"}")
+            .when(mockCmabClientHelper)
+            .buildRequestJson(any(), any(), any(), any());
+        doReturn(false)  // Invalid response
+            .when(mockCmabClientHelper)
+            .validateResponse(any());
+
+        mockCmabClient = new DefaultCmabClient(mockClient, mockCmabClientHelper);
+
+        // Should throw CmabInvalidResponseException when response validation fails
+        mockCmabClient.fetchDecision(testRuleId, testUserId, testAttributes, testCmabUuid);
+    }
+
+    @Test
+    public void testRetryConfigurationPassedToClient() throws Exception {
+        HttpURLConnection mockUrlConnection = mock(HttpURLConnection.class);
+        ByteArrayOutputStream mockOutputStream = mock(ByteArrayOutputStream.class);
+
+        String mockResponseJson = "{\"variation_id\":\"variation_1\",\"status\":\"success\"}";
+        when(mockClient.openConnection(any(URL.class))).thenReturn(mockUrlConnection);
+        when(mockUrlConnection.getResponseCode()).thenReturn(200);
+        when(mockClient.readStream(mockUrlConnection)).thenReturn(mockResponseJson);
+        when(mockUrlConnection.getOutputStream()).thenReturn(mockOutputStream);
+        when(mockClient.execute(any(Client.Request.class), anyInt(), anyInt())).thenAnswer(invocation -> {
+            Client.Request<String> request = invocation.getArgument(0);
+            return request.execute();
+        });
+
+        doReturn("{\"user_id\":\"test-user-456\"}")
+            .when(mockCmabClientHelper)
+            .buildRequestJson(any(), any(), any(), any());
+        doReturn(true)
+            .when(mockCmabClientHelper)
+            .validateResponse(any());
+        doReturn("variation_1")
+            .when(mockCmabClientHelper)
+            .parseVariationId(any());
+
+        mockCmabClient = new DefaultCmabClient(mockClient, mockCmabClientHelper);
+
+        mockCmabClient.fetchDecision(testRuleId, testUserId, testAttributes, testCmabUuid);
+
+        // Verify the retry configuration is passed to client.execute()
         verify(mockClient).execute(any(Client.Request.class), eq(DefaultCmabClient.REQUEST_BACKOFF_TIMEOUT), eq(DefaultCmabClient.REQUEST_RETRIES_POWER));
         assertEquals("REQUEST_BACKOFF_TIMEOUT should be 1", 1, DefaultCmabClient.REQUEST_BACKOFF_TIMEOUT);
         assertEquals("REQUEST_RETRIES_POWER should be 1", 1, DefaultCmabClient.REQUEST_RETRIES_POWER);
