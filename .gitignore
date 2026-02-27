@@ -14,4 +14,5 @@ fsc-test-libs/
 values.gradle
 jacoco.exec
 .vscode/
+.settings/
 
