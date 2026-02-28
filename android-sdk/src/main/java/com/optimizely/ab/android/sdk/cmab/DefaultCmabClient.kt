@@ -107,6 +107,12 @@ open class DefaultCmabClient : CmabClient {
                     logger.error(errorMessage)
                     throw CmabFetchException(errorMessage)
                 }
+            } catch (e: CmabInvalidResponseException) {
+                // Propagate validation exceptions as-is
+                throw e
+            } catch (e: CmabFetchException) {
+                // Propagate fetch exceptions as-is
+                throw e
             } catch (e: Exception) {
                 logger.debug("Failed to fetch CMAB decision for ruleId={} and userId={}", ruleId, userId);
                 val errorMessage: String =
@@ -123,7 +129,17 @@ open class DefaultCmabClient : CmabClient {
                 }
             }
         }
-        return client.execute(request, REQUEST_BACKOFF_TIMEOUT, REQUEST_RETRIES_POWER)
+        val result = client.execute(request, REQUEST_BACKOFF_TIMEOUT, REQUEST_RETRIES_POWER)
+
+        // Required to throw exception on any error so CmabService can return cmab error decision.
+        // Null result means CMAB fetch failed - throw exception.
+        if (result == null) {
+            val errorMessage = String.format(cmabClientHelper.cmabFetchFailed, "Client returned null - request failed")
+            logger.error(errorMessage)
+            throw CmabFetchException(errorMessage)
+        }
+
+        return result
     }
 
     companion object {
