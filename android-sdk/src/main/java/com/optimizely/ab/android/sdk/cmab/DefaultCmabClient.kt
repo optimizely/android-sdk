@@ -131,8 +131,8 @@ open class DefaultCmabClient : CmabClient {
         }
         val result = client.execute(request, REQUEST_BACKOFF_TIMEOUT, REQUEST_RETRIES_POWER)
 
-        // Required to throw exception on any error so CmabService can return cmab error decision.
-        // Null result means CMAB fetch failed - throw exception.
+        // CmabService (in java-sdk core) expects exceptions on cmab errors (so it'll convert to Error Decision)
+        // Null result means CMAB fetch failed, so convert to exceptions here.
         if (result == null) {
             val errorMessage = String.format(cmabClientHelper.cmabFetchFailed, "Client returned null - request failed")
             logger.error(errorMessage)
