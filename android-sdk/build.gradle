@@ -27,6 +27,7 @@ android {
         targetSdkVersion target_sdk_version
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunnerArguments clearPackageData: 'true'
         buildConfigField "String", "CLIENT_VERSION", "\"$version_name\""
         multiDexEnabled true
 
@@ -38,6 +39,7 @@ android {
         buildConfig true
     }
     testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests.returnDefaultValues = true
         unitTests.all {
             jvmArgs = [
@@ -93,6 +95,7 @@ dependencies {
     testImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
 
     androidTestImplementation "androidx.work:work-testing:$work_runtime"
+    androidTestUtil "androidx.test:orchestrator:1.5.1"
     androidTestImplementation "androidx.test.ext:junit:$androidx_test_junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_ver"
     // Set this dependency to use JUnit 4 rules
