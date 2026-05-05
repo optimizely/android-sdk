@@ -11,10 +11,12 @@ Feature Rollouts enable progressive rollouts with full impact analytics, metric 
 and confidence intervals.
 See [Feature Rollout docs](https://support.optimizely.com/hc/en-us/articles/45552846481037-Run-Feature-Rollouts-in-Feature-Experimentation) for more information.
 
-- Add Feature Rollout support ([#524](https://github.com/optimizely/android-sdk/pull/524))
-- Remove source clear cron workflow ([#523](https://github.com/optimizely/android-sdk/pull/523))
+- Update to use the Optimizely [Java SDK 4.4.0](https://github.com/optimizely/java-sdk/releases/tag/4.4.0)
+
+### Fixes and Improvements
+
 - Update cmab error handling ([#522](https://github.com/optimizely/android-sdk/pull/522))
-- Option to run local java-sdk lib ([#521](https://github.com/optimizely/android-sdk/pull/521))
+
 
 ## 5.1.1
 January 20th, 2025
