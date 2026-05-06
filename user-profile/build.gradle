@@ -66,9 +66,10 @@ dependencies {
     androidTestImplementation "androidx.test:core:$androidx_test_core"
     androidTestImplementation "androidx.test:core-ktx:$androidx_test_core"
 
-    androidTestImplementation "org.mockito:mockito-core:$mockito_ver_sdk_module"
-    androidTestImplementation "org.mockito:mockito-android:$mockito_ver_sdk_module"
-    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.3"
+    androidTestImplementation("org.mockito:mockito-core:$mockito_ver_sdk_module") { exclude group: 'org.objenesis' }
+    androidTestImplementation("org.mockito:mockito-android:$mockito_ver_sdk_module") { exclude group: 'org.objenesis' }
+    androidTestImplementation("com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.3") { exclude group: 'org.objenesis' }
+    androidTestImplementation "org.objenesis:objenesis:2.6"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"
 }
