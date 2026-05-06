@@ -44,7 +44,7 @@ android {
     buildToolsVersion build_tools_version
     packagingOptions {
         resources {
-            pickFirsts += ['mockito-extensions/org.mockito.plugins.MockMaker']
+            pickFirsts += ['mockito-extensions/org.mockito.plugins.MockMaker', 'mockito-extensions/org.mockito.plugins.StackTraceCleanerProvider']
         }
     }
 }
@@ -84,6 +84,7 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-core:$mockito_ver_sdk_module") { exclude group: 'org.objenesis' }
     androidTestImplementation("org.mockito:mockito-android:$mockito_ver_sdk_module") { exclude group: 'org.objenesis' }
     androidTestImplementation("com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.3") { exclude group: 'org.objenesis' }
+    androidTestImplementation("com.linkedin.dexmaker:dexmaker-mockito:2.28.3") { exclude group: 'org.objenesis' }
     androidTestImplementation "org.objenesis:objenesis:2.6"
     androidTestImplementation "com.noveogroup.android:android-logger:$android_logger_ver"
     androidTestImplementation "com.fasterxml.jackson.core:jackson-databind:$jacksonversion"

@@ -59,7 +59,7 @@ public class BackgroundWatchersCacheTest {
 
     @After
     public void tearDown() {
-        cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
+        if (cache != null) cache.delete(BackgroundWatchersCache.BACKGROUND_WATCHERS_FILE_NAME);
     }
 
     @Test

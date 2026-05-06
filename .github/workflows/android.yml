@@ -81,11 +81,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 21 is too old (not properly supported by github)
+        # API 21-26: not reliably supported by GitHub Actions (emulator boot failures observed on API 25)
+        # API 27 is the lowest level that boots consistently on GitHub-hosted runners
         include:
-          - api-level: 25
-            arch: x86
-            target: google_apis
           - api-level: 27
             arch: x86
             target: google_apis
@@ -93,6 +91,9 @@ jobs:
             arch: x86_64
             target: default
           - api-level: 33
+            arch: x86_64
+            target: google_apis
+          - api-level: 36
             arch: x86_64
             target: google_apis
     steps:

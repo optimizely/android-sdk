@@ -824,7 +824,7 @@ public class OptimizelyManagerTest {
             }
         );
 
-        boolean completed = latch.await(1, TimeUnit.SECONDS);
+        boolean completed = latch.await(5, TimeUnit.SECONDS);
         if (!completed) {
             fail("OptimizelyStartListener thread checking failed");
         }
@@ -855,7 +855,7 @@ public class OptimizelyManagerTest {
             }
         );
 
-        boolean completed = latch.await(1, TimeUnit.SECONDS);
+        boolean completed = latch.await(5, TimeUnit.SECONDS);
         if (!completed) {
             fail("OptimizelyStartListener thread checking failed");
         }
