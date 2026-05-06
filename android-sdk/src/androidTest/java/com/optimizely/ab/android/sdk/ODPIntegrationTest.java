@@ -25,7 +25,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.optimizely.ab.OptimizelyUserContext;
-import com.optimizely.ab.android.odp.DefaultODPApiManager;
 import com.optimizely.ab.odp.ODPApiManager;
 import com.optimizely.ab.odp.ODPEventManager;
 import com.optimizely.ab.odp.ODPManager;
@@ -92,7 +91,7 @@ public class ODPIntegrationTest {
 
     @Before
     public void setup() throws Exception {
-        odpApiManager = mock(DefaultODPApiManager.class);
+        odpApiManager = mock(ODPApiManager.class);
         when(odpApiManager.sendEvents(anyString(), anyString(), anyString())).thenReturn(200);   // return success, otherwise retried 3 times.
 
         odpEventManager = new ODPEventManager(odpApiManager);

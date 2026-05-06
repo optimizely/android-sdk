@@ -82,7 +82,6 @@ jobs:
       fail-fast: false
       matrix:
         # 21 is too old (not properly supported by github)
-        # mockito version is not working in 30+
         include:
           - api-level: 25
             arch: x86
@@ -93,6 +92,9 @@ jobs:
           - api-level: 29
             arch: x86_64
             target: default
+          - api-level: 33
+            arch: x86_64
+            target: google_apis
     steps:
       - name: checkout
         uses: actions/checkout@v4

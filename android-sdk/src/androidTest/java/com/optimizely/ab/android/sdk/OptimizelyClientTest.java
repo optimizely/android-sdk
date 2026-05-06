@@ -83,7 +83,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
@@ -435,7 +435,7 @@ public class OptimizelyClientTest {
 
         optimizelyClient.track("test_event", GENERIC_USER_ID);
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
         ArgumentCaptor<LogEvent> logEventArgumentCaptor = ArgumentCaptor.forClass(LogEvent.class);
         try {
@@ -466,7 +466,7 @@ public class OptimizelyClientTest {
         OptimizelyClient optimizelyClient = new OptimizelyClient(optimizely,
                 logger);
         optimizelyClient.track("test_event", GENERIC_USER_ID);
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -488,7 +488,7 @@ public class OptimizelyClientTest {
         assertTrue(notificationId <= 0);
         assertFalse(optimizelyClient.getNotificationCenter().removeNotificationListener(notificationId));
         assertEquals(false, numberOfCalls[0]);
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
     }
 
@@ -516,7 +516,7 @@ public class OptimizelyClientTest {
         else {
             assertEquals(true, numberOfCalls[0]);
         }
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
     }
 
@@ -528,7 +528,7 @@ public class OptimizelyClientTest {
         Experiment experiment = optimizelyClient.getProjectConfig().getExperimentsForEventKey("test_event").get(0);
         attributes.put(BUCKETING_ATTRIBUTE, bucketingId);
         optimizelyClient.track("test_event", "userId", attributes);
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -573,7 +573,7 @@ public class OptimizelyClientTest {
 
         optimizelyClient.track("test_event", GENERIC_USER_ID, attributes);
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
         ArgumentCaptor<LogEvent> logEventArgumentCaptor = ArgumentCaptor.forClass(LogEvent.class);
 
@@ -615,7 +615,7 @@ public class OptimizelyClientTest {
 
         optimizelyClient.track("test_event", GENERIC_USER_ID, attributes);
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
         Variation v = optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
         assertEquals(v.getKey(), "var_2");
@@ -675,7 +675,7 @@ public class OptimizelyClientTest {
                 Collections.<String, String>emptyMap(),
                 Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
         ArgumentCaptor<LogEvent> logEventArgumentCaptor = ArgumentCaptor.forClass(LogEvent.class);
 
@@ -709,7 +709,7 @@ public class OptimizelyClientTest {
                 GENERIC_USER_ID,
                 Collections.<String, String>emptyMap(),
                 Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -754,7 +754,7 @@ public class OptimizelyClientTest {
         final HashMap<String, String> attributes = new HashMap<>();
         optimizelyClient.track("test_event", GENERIC_USER_ID, attributes,
                 Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -774,7 +774,7 @@ public class OptimizelyClientTest {
                 attributes,
                 Collections.singletonMap(ReservedEventKey.REVENUE.toString(), 1L));
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
         ArgumentCaptor<LogEvent> logEventArgumentCaptor = ArgumentCaptor.forClass(LogEvent.class);
 
@@ -843,7 +843,7 @@ public class OptimizelyClientTest {
         final HashMap<String, Object> eventTags = new HashMap<>();
         eventTags.put("foo", 843);
         optimizelyClient.track("test_event", GENERIC_USER_ID, attributes, eventTags);
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -879,7 +879,7 @@ public class OptimizelyClientTest {
         // id of var_2
         assertTrue(logEvent.getBody().contains("\"enrich_decisions\":true"));
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
         Variation v = optimizelyClient.getForcedVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID);
         assertEquals(v.getKey(), "var_2");
@@ -983,7 +983,7 @@ public class OptimizelyClientTest {
                 logger);
         final HashMap<String, String> attributes = new HashMap<>();
         optimizelyClient.getVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -1000,7 +1000,7 @@ public class OptimizelyClientTest {
 
         v = optimizelyClient.getVariation(FEATURE_ANDROID_EXPERIMENT_KEY, GENERIC_USER_ID, attributes);
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
         assertEquals(v.getKey(), "var_2");
 
@@ -1184,7 +1184,7 @@ public class OptimizelyClientTest {
                 Collections.singletonMap("house", "Gryffindor")
         ));
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
         assertFalse(optimizelyClient.isFeatureEnabled(
                 "InvalidFeatureKey",
@@ -1305,7 +1305,7 @@ public class OptimizelyClientTest {
                 Collections.singletonMap("house", "Gryffindor")
         ));
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
     }
 
@@ -1402,7 +1402,7 @@ public class OptimizelyClientTest {
                 GENERIC_USER_ID,
                 Collections.singletonMap("key", "value")
         ));
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
     }
 
@@ -1509,7 +1509,7 @@ public class OptimizelyClientTest {
                 GENERIC_USER_ID,
                 Collections.singletonMap("house", "Gryffindor")
         ));
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     //FeatureVariableDouble Scenario#3 if feature not found
@@ -1620,7 +1620,7 @@ public class OptimizelyClientTest {
                 GENERIC_USER_ID,
                 Collections.singletonMap("house", "Gryffindor")
         ));
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     //FeatureVariableInteger Scenario#3 if feature not found
@@ -1727,7 +1727,7 @@ public class OptimizelyClientTest {
                 GENERIC_USER_ID,
                 Collections.singletonMap("house", "Gryffindor")
         ));
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     //FeatureVariableString Scenario#3 if feature not found
@@ -1841,7 +1841,7 @@ public class OptimizelyClientTest {
         );
 
         assertTrue(compareJsonStrings(json.toString(), defaultValueOfStringVar));
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     //FeatureVariableJSON Scenario#3 if feature not found
@@ -1953,7 +1953,7 @@ public class OptimizelyClientTest {
         );
 
         assertTrue(compareJsonStrings(json.toString(), defaultValueOfStringVar));
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     //GetAllFeatureVariables Scenario#3 if feature not found
