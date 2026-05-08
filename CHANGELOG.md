@@ -11,16 +11,17 @@ Feature Rollouts enable progressive rollouts with full impact analytics, metric 
 and confidence intervals.
 See [Feature Rollout docs](https://support.optimizely.com/hc/en-us/articles/45552846481037-Run-Feature-Rollouts-in-Feature-Experimentation) for more information.
 
-- Fix old test issues with mockito versions ([#527](https://github.com/optimizely/android-sdk/pull/527))
-- Add Feature Rollout support ([#524](https://github.com/optimizely/android-sdk/pull/524))
-- Remove source clear cron workflow ([#523](https://github.com/optimizely/android-sdk/pull/523))
+- Upgrade dependency to [Java SDK 4.4.0](https://github.com/optimizely/java-sdk/releases/tag/4.4.0)
+
+### Fixes and Improvements
+
 - Update cmab error handling ([#522](https://github.com/optimizely/android-sdk/pull/522))
-- Option to run local java-sdk lib ([#521](https://github.com/optimizely/android-sdk/pull/521))
+
 
 ## 5.1.1
 January 20th, 2025
 
-### Enhancements and fixes
+### Fixes and Improvements
 * Upgrade Java Core SDK to 4.3.1 from 4.3.0.
 * Excludes CMAB from UserProfileService.
 * Fixes missing bucketing reasons in CMAB decision path.
