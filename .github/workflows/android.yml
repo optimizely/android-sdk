@@ -81,18 +81,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 21 is too old (not properly supported by github)
-        # mockito version is not working in 30+
+        # API 21-26: not reliably supported by GitHub Actions (emulator boot failures observed on API 25)
+        # API 29: removed due to emulator hang issues on GitHub-hosted runners
+        # API 28 is the lowest level that boots consistently on GitHub-hosted runners
         include:
-          - api-level: 25
+          - api-level: 28
             arch: x86
             target: google_apis
-          - api-level: 27
-            arch: x86
-            target: google_apis
-          - api-level: 29
+          - api-level: 33
             arch: x86_64
-            target: default
+            target: google_apis
+          - api-level: 36
+            arch: x86_64
+            target: google_apis
     steps:
       - name: checkout
         uses: actions/checkout@v4

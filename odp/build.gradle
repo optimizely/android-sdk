@@ -39,10 +39,15 @@ android {
             minifyEnabled false
         }
         debug {
-            testCoverageEnabled true
+            testCoverageEnabled false
         }
     }
     buildToolsVersion build_tools_version
+    packagingOptions {
+        resources {
+            pickFirsts += ['mockito-extensions/org.mockito.plugins.MockMaker', 'mockito-extensions/org.mockito.plugins.StackTraceCleanerProvider']
+        }
+    }
 }
 
 dependencies {
@@ -67,7 +72,10 @@ dependencies {
     androidTestImplementation "androidx.test:core:$androidx_test_core"
     androidTestImplementation "androidx.test:core-ktx:$androidx_test_core"
 
-    androidTestImplementation "org.mockito:mockito-core:$mockito_ver_sdk_module"
-    androidTestImplementation "org.mockito:mockito-android:$mockito_ver_sdk_module"
+    androidTestImplementation("org.mockito:mockito-core:$mockito_ver_sdk_module") { exclude group: 'org.objenesis' }
+    androidTestImplementation("org.mockito:mockito-android:$mockito_ver_sdk_module") { exclude group: 'org.objenesis' }
+    androidTestImplementation("com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.3") { exclude group: 'org.objenesis' }
+    androidTestImplementation("com.linkedin.dexmaker:dexmaker-mockito:2.28.3") { exclude group: 'org.objenesis' }
+    androidTestImplementation "org.objenesis:objenesis:2.6"
     androidTestImplementation "org.slf4j:slf4j-api:$slf4j_ver"
 }
