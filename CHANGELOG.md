@@ -1,9 +1,27 @@
 # Optimizely Android X SDK Changelog
 
+## 5.2.0
+May 8, 2026
+
+### New Features
+
+**Feature Rollout**: Added support for Feature Rollouts, a new experiment type
+combining Targeted Delivery simplicity with A/B test measurement capabilities.
+Feature Rollouts enable progressive rollouts with full impact analytics, metric tracking,
+and confidence intervals.
+See [Feature Rollout docs](https://support.optimizely.com/hc/en-us/articles/45552846481037-Run-Feature-Rollouts-in-Feature-Experimentation) for more information.
+
+- Upgrade dependency to [Java SDK 4.4.0](https://github.com/optimizely/java-sdk/releases/tag/4.4.0)
+
+### Fixes and Improvements
+
+- Update cmab error handling ([#522](https://github.com/optimizely/android-sdk/pull/522))
+
+
 ## 5.1.1
 January 20th, 2025
 
-### Enhancements and fixes
+### Fixes and Improvements
 * Upgrade Java Core SDK to 4.3.1 from 4.3.0.
 * Excludes CMAB from UserProfileService.
 * Fixes missing bucketing reasons in CMAB decision path.
