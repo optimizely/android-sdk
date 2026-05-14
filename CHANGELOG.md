@@ -16,6 +16,7 @@ See [Feature Rollout docs](https://support.optimizely.com/hc/en-us/articles/4555
 ### Fixes and Improvements
 
 - Update cmab error handling ([#522](https://github.com/optimizely/android-sdk/pull/522))
+- Fix `ConcurrentModificationException` in `decide()` when `setAttribute()` is called concurrently ([#507](https://github.com/optimizely/android-sdk/issues/507), BUG-8620)
 
 
 ## 5.1.1
