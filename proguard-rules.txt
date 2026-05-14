@@ -38,6 +38,17 @@
 
 # Safely ignore warnings about other libraries since we are using Gson
 -dontwarn com.fasterxml.jackson.**
+
+# Keep Jackson naming strategy fields used via reflection by the Java SDK serializer (BUG-8620).
+# When Jackson is on the classpath, JacksonSerializer uses reflection to access SNAKE_CASE.
+# Without these rules, R8 obfuscates the field names, causing NoSuchFieldException.
+-keepclassmembers class com.fasterxml.jackson.databind.PropertyNamingStrategies {
+    public static *;
+}
+-keepclassmembers class com.fasterxml.jackson.databind.PropertyNamingStrategy {
+    public static *;
+}
+
 -dontwarn org.json.**
 
 # Annotations
