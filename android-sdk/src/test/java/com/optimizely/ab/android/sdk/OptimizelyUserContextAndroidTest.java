@@ -35,9 +35,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -408,6 +413,72 @@ public class OptimizelyUserContextAndroidTest {
 
         verify(userContext).coreDecideAll(Collections.emptyList());
         assertEquals(mockDecisionsMap, result);
+    }
+
+    // ===========================================
+    // Regression test for BUG-8620:
+    // ConcurrentModificationException in copy() when setAttribute() is called concurrently
+    // ===========================================
+
+    @Test
+    public void testCopy_noConcurrentModificationExceptionWithConcurrentSetAttribute()
+            throws InterruptedException {
+        Map<String, Object> attributes = new HashMap<>();
+        for (int i = 0; i < 50; i++) {
+            attributes.put("key" + i, "value" + i);
+        }
+
+        OptimizelyUserContextAndroid userContext = new OptimizelyUserContextAndroid(
+            mockOptimizely,
+            TEST_USER_ID,
+            attributes
+        );
+
+        int numThreads = 10;
+        int iterations = 200;
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch doneLatch = new CountDownLatch(numThreads * 2);
+        AtomicReference<Throwable> error = new AtomicReference<>();
+
+        // Writer threads: call setAttribute() concurrently while copy() runs
+        for (int t = 0; t < numThreads; t++) {
+            final int threadNum = t;
+            new Thread(() -> {
+                try {
+                    startLatch.await();
+                    for (int i = 0; i < iterations; i++) {
+                        userContext.setAttribute("concurrentKey" + threadNum + "_" + i, "val");
+                    }
+                } catch (Throwable e) {
+                    error.compareAndSet(null, e);
+                } finally {
+                    doneLatch.countDown();
+                }
+            }).start();
+        }
+
+        // Reader threads: call copy() concurrently while setAttribute() runs
+        for (int t = 0; t < numThreads; t++) {
+            new Thread(() -> {
+                try {
+                    startLatch.await();
+                    for (int i = 0; i < iterations; i++) {
+                        userContext.copy();
+                    }
+                } catch (Throwable e) {
+                    error.compareAndSet(null, e);
+                } finally {
+                    doneLatch.countDown();
+                }
+            }).start();
+        }
+
+        startLatch.countDown();
+        boolean completed = doneLatch.await(15, TimeUnit.SECONDS);
+
+        assertTrue("Threads did not complete within timeout", completed);
+        assertNull("Unexpected exception during concurrent copy/setAttribute: " + error.get(),
+            error.get());
     }
 
 }
