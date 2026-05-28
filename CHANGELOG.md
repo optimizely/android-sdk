@@ -5,6 +5,10 @@ May 28, 2026
 
 ### Fixes
 
+- Upgrade dependency to [Java SDK 4.4.1](https://github.com/optimizely/java-sdk/releases/tag/v4.4.1)
+  - Block ODP identify event for single identifier ([#629](https://github.com/optimizely/java-sdk/pull/629))
+  - Add local holdouts support ([#628](https://github.com/optimizely/java-sdk/pull/628))
+
 ## 5.2.0
 May 8, 2026
 
