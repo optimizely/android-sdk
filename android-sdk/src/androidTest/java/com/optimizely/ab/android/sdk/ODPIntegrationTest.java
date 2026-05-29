@@ -118,7 +118,7 @@ public class ODPIntegrationTest {
         verify(odpApiManager, times(1)).sendEvents(eq("p-1"), eq("h-1/v3/events"), captor.capture());
         String eventStr = captor.getValue();
 
-        // 2 events (client_initialized, identified) will be batched in a single sendEvents() call.
+        // 2 events batched: client_initialized + identified (identified sent because there are 2 identifiers: vuid + fs_user_id).
         JsonArray jsonArray = JsonParser.parseString(eventStr).getAsJsonArray();
         assertEquals(jsonArray.size(), 2);
 
@@ -146,7 +146,7 @@ public class ODPIntegrationTest {
     }
 
     @Test
-    public void identifyOdpEventSentWhenVuidUserContextCreated() throws InterruptedException {
+    public void identifyOdpEventNotSentWhenVuidUserContextCreated() throws InterruptedException {
         optimizelyClient.createUserContext();  // empty userId. vuid will be used.
 
         Thread.sleep(2000);  // wait for batch timeout (1sec)
@@ -155,25 +155,43 @@ public class ODPIntegrationTest {
         verify(odpApiManager, times(1)).sendEvents(eq("p-1"), eq("h-1/v3/events"), captor.capture());
         String eventStr = captor.getValue();
 
-        // 2 events (client_initialized, identified) will be batched in a single sendEvents() call.
+        // only 1 event (client_initialized) since vuid-only context does not send identified event.
         JsonArray jsonArray = JsonParser.parseString(eventStr).getAsJsonArray();
-        assertEquals(jsonArray.size(), 2);
+        assertEquals(jsonArray.size(), 1);
 
         // "client_initialized" event (vuid only)
         JsonObject firstEvt = jsonArray.get(0).getAsJsonObject();
         JsonObject firstIdentifiers = firstEvt.get("identifiers").getAsJsonObject();
 
-        // "identified" event (vuid only)
-        JsonObject secondEvt = jsonArray.get(1).getAsJsonObject();
-        JsonObject secondIdentifiers = secondEvt.get("identifiers").getAsJsonObject();
-
         assertEquals(firstEvt.get("action").getAsString(), "client_initialized");
         assertEquals(firstIdentifiers.size(), 1);
         assertEquals(firstIdentifiers.get("vuid").getAsString(), testVuid);
+    }
 
-        assertEquals(secondEvt.get("action").getAsString(), "identified");
-        assertEquals(secondIdentifiers.size(), 1);
-        assertEquals(secondIdentifiers.get("vuid").getAsString(), testVuid);
+    @Test
+    public void identifyOdpEventNotSentWhenUserContextCreatedWithoutVuid() throws Exception {
+        // build a separate manager without vuid
+        ODPApiManager noVuidOdpApiManager = mock(ODPApiManager.class);
+        when(noVuidOdpApiManager.sendEvents(anyString(), anyString(), anyString())).thenReturn(200);
+
+        ODPEventManager noVuidEventManager = new ODPEventManager(noVuidOdpApiManager);
+        ODPSegmentManager noVuidSegmentManager = new ODPSegmentManager(noVuidOdpApiManager);
+
+        OptimizelyManager noVuidManager = OptimizelyManager.builder()
+            .withSDKKey(testSdkKey)
+            .withODPEventManager(noVuidEventManager)
+            .withODPSegmentManager(noVuidSegmentManager)
+            .build(context);
+
+        noVuidManager.initialize(context, odpDatafile);
+        OptimizelyClient noVuidClient = noVuidManager.getOptimizely();
+
+        noVuidClient.createUserContext(testUser);  // userId only, no vuid
+
+        Thread.sleep(2000);  // wait for batch timeout (1sec)
+
+        // no ODP events sent without vuid
+        verify(noVuidOdpApiManager, times(0)).sendEvents(anyString(), anyString(), anyString());
     }
 
     @Test
