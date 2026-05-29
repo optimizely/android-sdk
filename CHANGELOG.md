@@ -5,7 +5,7 @@ May 28, 2026
 
 ### Fixes
 
-- Upgrade dependency to [Java SDK 4.4.1](https://github.com/optimizely/java-sdk/releases/tag/v4.4.1)
+- Upgrade dependency to [Java SDK 4.4.2](https://github.com/optimizely/java-sdk/releases/tag/v4.4.2)
   - Block ODP identify event for single identifier
 
 ## 5.2.0
