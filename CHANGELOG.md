@@ -1,7 +1,7 @@
 # Optimizely Android X SDK Changelog
 
 ## 5.2.1
-May 28, 2026
+May 29, 2026
 
 ### Fixes
 
