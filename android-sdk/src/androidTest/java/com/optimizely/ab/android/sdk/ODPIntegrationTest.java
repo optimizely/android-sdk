@@ -149,7 +149,7 @@ public class ODPIntegrationTest {
     public void identifyOdpEventNotSentWhenVuidUserContextCreated() throws InterruptedException {
         optimizelyClient.createUserContext();  // empty userId. vuid will be used.
 
-        Thread.sleep(2000);  // wait for batch timeout (1sec)
+        Thread.sleep(2000);  // wait for batch timeout (2 sec)
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(odpApiManager, times(1)).sendEvents(eq("p-1"), eq("h-1/v3/events"), captor.capture());
@@ -188,7 +188,7 @@ public class ODPIntegrationTest {
 
         noVuidClient.createUserContext(testUser);  // userId only, no vuid
 
-        Thread.sleep(2000);  // wait for batch timeout (1sec)
+        Thread.sleep(2000);  // wait for batch timeout (2 sec)
 
         // no ODP events sent without vuid
         verify(noVuidOdpApiManager, times(0)).sendEvents(anyString(), anyString(), anyString());
