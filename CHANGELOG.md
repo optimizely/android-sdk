@@ -1,5 +1,13 @@
 # Optimizely Android X SDK Changelog
 
+## 5.2.1
+May 29, 2026
+
+### Fixes
+
+- Upgrade dependency to [Java SDK 4.4.2](https://github.com/optimizely/java-sdk/releases/tag/v4.4.2)
+  - Block ODP identify event for single identifier
+
 ## 5.2.0
 May 8, 2026
 
