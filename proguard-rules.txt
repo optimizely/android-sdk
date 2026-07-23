@@ -40,6 +40,17 @@
 -dontwarn com.fasterxml.jackson.**
 -dontwarn org.json.**
 
+# Keep Jackson naming strategy fields accessed via reflection by the Java SDK core-api
+# (DefaultJsonSerializer → JacksonSerializer → getSnakeCaseStrategy).
+# Without this, R8 obfuscates the field names, causing NoClassDefFoundError at runtime
+# when Jackson is on the classpath.
+-keepclassmembers class com.fasterxml.jackson.databind.PropertyNamingStrategies {
+    public static *;
+}
+-keepclassmembers class com.fasterxml.jackson.databind.PropertyNamingStrategy {
+    public static *;
+}
+
 # Annotations
 -dontwarn javax.annotation.**
 
