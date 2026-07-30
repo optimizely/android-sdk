@@ -32,6 +32,17 @@
 # Keep Payload classes that get sent to Optimizely's backend
 -keep class com.optimizely.ab.event.internal.payload.** { *; }
 
+# Keep the DefaultJsonSerializer and its LazyHolder inner class.
+# LogEvent.getBody() calls DefaultJsonSerializer.getInstance() which accesses
+# LazyHolder.INSTANCE via the initialization-on-demand holder pattern.
+# Without this rule, R8/ProGuard strips LazyHolder and causes:
+#   NoClassDefFoundError: com.optimizely.ab.event.internal.serializer.DefaultJsonSerializer$LazyHolder
+-keep class com.optimizely.ab.event.internal.serializer.DefaultJsonSerializer { *; }
+-keep class com.optimizely.ab.event.internal.serializer.DefaultJsonSerializer$LazyHolder { *; }
+# GsonSerializer is the serializer selected at runtime on Android (Gson is bundled; Jackson is not).
+# Keeping it ensures R8 does not strip the implementation that DefaultJsonSerializer.create() returns.
+-keep class com.optimizely.ab.event.internal.serializer.GsonSerializer { *; }
+
 # Keep these for logging purposes
 -keep class com.optimizely.ab.bucketing.DecisionService { *; }
 -keep class com.optimizely.ab.Optimizely { *; }
