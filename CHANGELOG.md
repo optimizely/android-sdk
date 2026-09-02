@@ -1,5 +1,17 @@
 # Optimizely Android X SDK Changelog
 
+## 5.4.0
+September 2, 2026
+
+### New Features
+
+**Holdout Targeted Delivery Exclusion**: Holdouts can now be configured to exclude Targeted Delivery rules, so users held out of experiments still receive their Targeted Delivery experiences. This gives you a cleaner measure of experiment impact without holding users back from ongoing rollouts.
+- Upgrade dependency to [Java SDK 4.6.0](https://github.com/optimizely/java-sdk/releases/tag/4.6.0)
+
+### Fixes
+
+- Fix Jackson serializer NoClassDefFoundError when R8 obfuscates naming strategy fields ([#539](https://github.com/optimizely/android-sdk/pull/539))
+
 ## 5.3.0
 July 8, 2026
 
