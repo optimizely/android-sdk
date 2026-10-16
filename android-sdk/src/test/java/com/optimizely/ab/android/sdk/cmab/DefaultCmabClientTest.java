@@ -1,4 +1,4 @@
-// Copyright 2025, Optimizely, Inc. and contributors
+// Copyright 2025, 2026, Optimizely, Inc. and contributors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,8 +55,8 @@ public class DefaultCmabClientTest {
         mockCmabClientHelper = spy(new CmabClientHelperAndroid());
 
         testAttributes = new HashMap<>();
-        testAttributes.put("age", 25);
-        testAttributes.put("country", "US");
+        testAttributes.put("66", 25);
+        testAttributes.put("77", "US");
     }
 
     @Test
@@ -308,5 +308,21 @@ public class DefaultCmabClientTest {
         verify(mockClient).execute(any(Client.Request.class), eq(DefaultCmabClient.REQUEST_BACKOFF_TIMEOUT), eq(DefaultCmabClient.REQUEST_RETRIES_POWER));
         assertEquals("REQUEST_BACKOFF_TIMEOUT should be 1", 1, DefaultCmabClient.REQUEST_BACKOFF_TIMEOUT);
         assertEquals("REQUEST_RETRIES_POWER should be 1", 1, DefaultCmabClient.REQUEST_RETRIES_POWER);
+    }
+
+    @Test
+    public void testBuildRequestJsonUsesAttributeIds() {
+        CmabClientHelperAndroid helper = new CmabClientHelperAndroid();
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("66", 25);
+        attributes.put("77", "US");
+
+        String json = helper.buildRequestJson("user123", "exp1", attributes, "uuid-123");
+
+        assertTrue(json.contains("\"id\":\"66\""));
+        assertTrue(json.contains("\"id\":\"77\""));
+        assertTrue(json.contains("\"type\":\"custom_attribute\""));
+        assertFalse(json.contains("\"id\":\"age\""));
+        assertFalse(json.contains("\"id\":\"country\""));
     }
 }

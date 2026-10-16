@@ -1,5 +1,42 @@
 # Optimizely Android X SDK Changelog
 
+## 5.4.0
+September 2, 2026
+
+### New Features
+
+**Holdout Targeted Delivery Exclusion**: Holdouts can now be configured to exclude Targeted Delivery rules, so users held out of experiments still receive their Targeted Delivery experiences. This gives you a cleaner measure of experiment impact without holding users back from ongoing rollouts.
+- Upgrade dependency to [Java SDK 4.6.0](https://github.com/optimizely/java-sdk/releases/tag/4.6.0)
+
+### Fixes
+
+- Fix Jackson serializer NoClassDefFoundError when R8 obfuscates naming strategy fields ([#539](https://github.com/optimizely/android-sdk/pull/539))
+
+## 5.3.0
+July 8, 2026
+
+### New Features
+
+**Local Holdouts**: Added support for Local Holdouts, enabling holdout experiments
+to be scoped to specific feature flags rather than applied globally.
+Local Holdouts let you measure the true incremental impact of individual features
+by holding out a subset of users from specific rollouts while still serving them other experiences.
+See [Holdouts docs](https://support.optimizely.com/hc/en-us/articles/38941939408269-Global-holdouts) for more information.
+- Upgrade dependency to [Java SDK 4.5.0](https://github.com/optimizely/java-sdk/releases/tag/4.5.0)
+
+### Fixes
+
+- Use attribute id instead of key for CMAB prediction requests
+- Normalize decision event campaign_id, variation_id, and entity_id
+
+## 5.2.1
+May 29, 2026
+
+### Fixes
+
+- Upgrade dependency to [Java SDK 4.4.2](https://github.com/optimizely/java-sdk/releases/tag/v4.4.2)
+  - Block ODP identify event for single identifier
+
 ## 5.2.0
 May 8, 2026
 
