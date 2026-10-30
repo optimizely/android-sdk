@@ -1,5 +1,18 @@
 # Optimizely Android X SDK Changelog
 
+## 5.5.0
+October 30, 2026
+
+### Changed
+
+**Local Holdouts: rule evaluation continues after a holdout hit**:
+When a user matches a local holdout on a rule, the SDK now excludes the user from that rule only
+and continues evaluating the remaining rules, instead of returning the holdout variation and skipping
+the rest of the flag. Each local holdout hit sends its own holdout impression event (using the
+existing event format), regardless of `sendFlagDecisions`. Global holdouts are unchanged.
+
+- Upgrade dependency to [Java SDK 4.7.0](https://github.com/optimizely/java-sdk/releases/tag/4.7.0)
+
 ## 5.4.0
 September 2, 2026
 
