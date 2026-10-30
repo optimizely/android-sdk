@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.optimizely.ab:android-sdk:5.4.0'
+	implementation 'com.optimizely.ab:android-sdk:5.5.0'
 }
 ```
 
