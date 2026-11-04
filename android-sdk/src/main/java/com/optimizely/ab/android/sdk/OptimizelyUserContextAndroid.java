@@ -84,6 +84,31 @@ public class OptimizelyUserContextAndroid extends OptimizelyUserContext {
         super(optimizely, userId, attributes, forcedDecisionsMap, qualifiedSegments, shouldIdentifyUser);
     }
 
+    /**
+     * Returns a copy of this user context with all current attributes, forced decisions, and qualified segments.
+     *
+     * <p>This override holds the mutex of the synchronized attributes map (and qualified segments list,
+     * if present) while the copy is being made. This prevents a {@link java.util.ConcurrentModificationException}
+     * that would otherwise occur when another thread calls {@link #setAttribute} concurrently, because
+     * {@link java.util.Collections#synchronizedMap} only guards individual operations — not the bulk
+     * iteration that happens inside {@code new HashMap<>(attributes)} during the copy constructor.</p>
+     *
+     * @return A new {@link OptimizelyUserContext} with the same state as this instance.
+     */
+    @Override
+    public OptimizelyUserContext copy() {
+        Map<String, Object> attrs = getAttributes();
+        List<String> segs = getQualifiedSegments();
+        synchronized (attrs) {
+            if (segs == null) {
+                return super.copy();
+            }
+            synchronized (segs) {
+                return super.copy();
+            }
+        }
+    }
+
     // ==================================================================
     // [SYNCHRONOUS DECIDE METHODS]
     // - "decideSync" methods skip async decision like cmab for backward compatibility.
