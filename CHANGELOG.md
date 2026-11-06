@@ -1,5 +1,12 @@
 # Optimizely Android X SDK Changelog
 
+## 5.5.1
+November 6, 2026
+
+### Test
+
+Do not merge. Verification of upstream dependency handling in the release flow.
+
 ## 5.5.0
 October 30, 2026
 
