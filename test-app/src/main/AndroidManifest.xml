@@ -38,6 +38,9 @@
             android:name=".NotificationService"
             android:exported="false" />
 
+        <!-- Launcher activity of the test app: it must be exported (required on Android 12+) so the
+             system can start it. It takes no input from other apps. -->
+        <!-- nosemgrep -->
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true"
