@@ -71,9 +71,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.2.0"
     implementation "com.google.android.material:material:1.2.1"
 
-    // required by API-16
+    // JSON library for the SDK (it picks one from the classpath)
     implementation "com.google.code.gson:gson:$gson_ver"
-    implementation 'com.google.code.findbugs:annotations:3.0.0'
 
     testImplementation "junit:junit:$junit_ver"
     testImplementation "org.mockito:mockito-core:$mockito_ver"
