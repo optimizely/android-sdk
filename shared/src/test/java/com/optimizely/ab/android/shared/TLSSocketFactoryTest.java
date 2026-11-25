@@ -23,14 +23,33 @@ import org.junit.Test;
 
 import java.net.Socket;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 
 public class TLSSocketFactoryTest {
 
     @Test
-    public void createdSocketsOnlyEnableTLSv12() throws Exception {
-        TLSSocketFactory factory = new TLSSocketFactory();
+    public void defaultFactoryOnlyEnablesTLSv12() throws Exception {
+        assertOnlyTLSv12(new TLSSocketFactory());
+    }
 
+    @Test
+    public void socketsArePinnedToTLSv12EvenWhenTheContextAllowsMore() throws Exception {
+        // "TLS" allows several protocol versions (TLSv1.3 and TLSv1.2 on the JVM running this test), so this
+        // only passes if enableTLSOnSocket itself limits the sockets to TLSv1.2.
+        SSLContext permissive = SSLContext.getInstance("TLS");
+        permissive.init(null, null, null);
+        SSLSocket unpinned = (SSLSocket) permissive.getSocketFactory().createSocket();
+        try {
+            assertTrue(unpinned.getEnabledProtocols().length > 1);
+        } finally {
+            unpinned.close();
+        }
+
+        assertOnlyTLSv12(new TLSSocketFactory(SSLContext.getInstance("TLS")));
+    }
+
+    private static void assertOnlyTLSv12(TLSSocketFactory factory) throws Exception {
         // An unconnected socket is enough to check which protocols are enabled.
         Socket socket = factory.createSocket();
         try {
